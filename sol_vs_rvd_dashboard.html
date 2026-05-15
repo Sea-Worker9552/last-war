@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SOL2 Internal Rank Analysis vs RvD</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --sol:      #c97d00;
+    --rvd:      #1a6bbf;
+    --red:      #c0392b;
+    --orange:   #d35400;
+    --green:    #1e8449;
+    --yellow:   #b7950b;
+    --bg:       #f0f2f7;
+    --card:     #ffffff;
+    --border:   #d4d8e8;
+    --text:     #1a1d2e;
+    --muted:    #6b6f8a;
+    --grid:     #e2e5f0;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; padding: 20px; max-width: 1300px; margin: 0 auto; }
+
+  h1 { text-align: center; font-size: 1.5rem; letter-spacing: 1.5px; margin-bottom: 3px; }
+  .subtitle { text-align: center; color: var(--muted); font-size: 0.82rem; margin-bottom: 22px; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 14px; }
+  .grid-5 { display: grid; grid-template-columns: repeat(5,1fr); gap: 14px; margin-bottom: 14px; }
+  .mb { margin-bottom: 14px; }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .card-title {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+    margin-bottom: 9px;
+    font-weight: 600;
+  }
+  .big-num { font-size: 1.9rem; font-weight: 700; line-height: 1.1; }
+  .sub-num { font-size: 0.75rem; color: var(--muted); margin-top: 3px; }
+
+  /* Tier badge colors */
+  .elite   { color: #1e8449; }
+  .core    { color: #1a6bbf; }
+  .mid     { color: #b7950b; }
+  .tail    { color: #d35400; }
+  .dead    { color: #c0392b; }
+
+  /* Verdict box */
+  .verdict-box {
+    background: linear-gradient(135deg, rgba(192,57,43,0.07), rgba(192,57,43,0.02));
+    border: 1px solid rgba(192,57,43,0.25);
+    border-radius: 10px;
+    padding: 15px 18px;
+    margin-bottom: 14px;
+  }
+  .verdict-box h3 { color: var(--red); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 7px; }
+  .verdict-box p { font-size: 0.83rem; color: var(--text); line-height: 1.65; }
+  .verdict-box strong.good  { color: var(--green); }
+  .verdict-box strong.bad   { color: var(--red); }
+  .verdict-box strong.warn  { color: var(--orange); }
+
+  /* Tables */
+  table { width: 100%; border-collapse: collapse; font-size: 0.76rem; }
+  th { text-align: left; color: var(--muted); font-weight: 600; padding: 5px 7px; border-bottom: 2px solid var(--border); font-size: 0.67rem; text-transform: uppercase; letter-spacing: 1px; }
+  td { padding: 4px 7px; border-bottom: 1px solid #eceef7; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #f5f7ff; }
+  .rank-badge { display: inline-block; width: 26px; text-align: center; background: #eceef7; border-radius: 4px; font-size: 0.68rem; color: var(--muted); padding: 1px 0; }
+  .win-cell  { color: var(--green); font-weight: 600; }
+  .loss-cell { color: var(--red); font-weight: 600; }
+  .tier-pill {
+    display: inline-block; border-radius: 3px; padding: 1px 5px;
+    font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .pill-elite { background:#d5f0e0; color:#1e8449; }
+  .pill-core  { background:#d4e8fa; color:#1a6bbf; }
+  .pill-mid   { background:#fef3cd; color:#b7950b; }
+  .pill-tail  { background:#fde8d8; color:#d35400; }
+  .pill-dead  { background:#fad7d5; color:#c0392b; }
+
+  /* Bar */
+  .bar-row { margin-bottom: 8px; }
+  .bar-label { display:flex; justify-content:space-between; font-size:0.72rem; color:var(--muted); margin-bottom:2px; }
+  .bar-label strong { color: var(--text); }
+  .bar-track { background:#e8eaf2; border-radius:4px; height:13px; overflow:hidden; }
+  .bar-fill  { height:100%; border-radius:4px; }
+
+  canvas { max-height: 230px; }
+
+  .footer { text-align:center; color:var(--muted); font-size:0.7rem; margin-top:10px; }
+
+  /* Waterfall / delta bar */
+  .delta-bar-wrap { display:flex; align-items:center; gap:6px; }
+  .delta-bar-track { flex:1; background:#e8eaf2; border-radius:3px; height:10px; position:relative; overflow:visible; }
+  .delta-bar-pos { height:100%; background:var(--green); border-radius:3px; }
+  .delta-bar-neg { height:100%; background:var(--red);   border-radius:3px; }
+  .delta-label   { font-size:0.72rem; font-weight:700; min-width:90px; text-align:right; }
+</style>
+</head>
+<body>
+
+<h1>⚔️ SOL2 Internal Analysis — Why Are We Losing?</h1>
+<p class="subtitle">Weekly Rank · 96 SOL2 vs 99 RvD · Head-to-head by equivalent clan rank position &nbsp;|&nbsp; ~4.5 days in</p>
+
+<!-- VERDICT -->
+<div class="verdict-box">
+  <h3>📋 Diagnosis: SOL2 is propped up by the top 20 — everyone below SOL #32 loses their matchup</h3>
+  <p>
+    SOL2's <strong class="good">Elite (#1–5) and Core (#6–20)</strong> are dominant — winning every single head-to-head matchup and generating 
+    <strong class="good">+151.1M net pts</strong>. But they account for only <strong class="good">56% of the roster</strong> in points production.
+    The <strong class="warn">Mid tier (#21–50)</strong> goes 11W/19L, bleeding <strong class="bad">−31.8M</strong> where it should be neutral.
+    The <strong class="bad">Tail (#51–75) goes 0W/25L (−50.7M)</strong> and the 
+    <strong class="bad">Dead Weight (#76–96) goes 0W/21L (−23.6M)</strong>.
+    Combined bottom-half deficit: <strong class="bad">−106M pts</strong> — nearly erasing the top's entire advantage.
+    SOL2's lead exists only because the top-2 players (J Slyce + SODHimothy) alone contribute <strong class="bad">+70M over their RvD equivalents</strong>.
+    Remove them and <strong class="bad">RvD wins by ~27M</strong>.
+  </p>
+</div>
+
+<!-- KPI STRIP -->
+<div class="grid-5">
+  <div class="card">
+    <div class="card-title">H2H Matchup Record</div>
+    <div class="big-num"><span class="elite">31</span><span style="font-size:1.1rem;color:var(--muted)">W</span> / <span class="dead">65</span><span style="font-size:1.1rem;color:var(--muted)">L</span></div>
+    <div class="sub-num">SOL2 wins only 32% of slots</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Top-5 Net Advantage</div>
+    <div class="big-num elite">+97.9M</div>
+    <div class="sub-num">5W / 0L — dominant</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Tail + Dead Wt Deficit</div>
+    <div class="big-num dead">−74.3M</div>
+    <div class="sub-num">46 players — 0W / 46L</div>
+  </div>
+  <div class="card">
+    <div class="card-title">SOL2 Overall Lead</div>
+    <div class="big-num" style="color:var(--sol)">+42.8M</div>
+    <div class="sub-num">but structurally fragile</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Lead w/o Top 2 Players</div>
+    <div class="big-num dead">−27.2M</div>
+    <div class="sub-num">RvD wins if top 2 sat out</div>
+  </div>
+</div>
+
+<!-- TIER CONTRIBUTION + H2H NET -->
+<div class="grid-2">
+  <div class="card">
+    <div class="card-title">SOL2 Points Contribution by Internal Tier</div>
+    <canvas id="contribChart"></canvas>
+  </div>
+  <div class="card">
+    <div class="card-title">Head-to-Head Net Points by Tier (SOL2 Internal Rank vs RvD Equivalent)</div>
+    <canvas id="h2hChart"></canvas>
+  </div>
+</div>
+
+<!-- TIER BREAKDOWN TABLE -->
+<div class="card mb">
+  <div class="card-title">Tier Performance Summary — SOL2 Internal Rank vs RvD Positional Equivalent</div>
+  <table>
+    <thead>
+      <tr>
+        <th>Tier</th><th>SOL2 Rank</th><th>Players</th>
+        <th>SOL2 Total Pts</th><th>% of Clan</th><th>Avg / Player</th>
+        <th>H2H Record</th><th>Net Pts Delta</th><th>Verdict</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="tier-pill pill-elite">Elite</span></td>
+        <td>#1 – #5</td><td>5</td>
+        <td class="elite">229,618,213</td><td class="elite">23.7%</td><td>45,923,643</td>
+        <td class="win-cell">5W / 0L</td><td class="win-cell">+97,918,781</td>
+        <td>🟢 Dominating</td>
+      </tr>
+      <tr>
+        <td><span class="tier-pill pill-core">Core</span></td>
+        <td>#6 – #20</td><td>15</td>
+        <td class="core">316,189,697</td><td class="core">32.6%</td><td>21,079,313</td>
+        <td class="win-cell">15W / 0L</td><td class="win-cell">+53,180,332</td>
+        <td>🔵 Strong</td>
+      </tr>
+      <tr>
+        <td><span class="tier-pill pill-mid">Mid</span></td>
+        <td>#21 – #50</td><td>30</td>
+        <td class="mid">297,753,957</td><td class="mid">30.7%</td><td>9,925,132</td>
+        <td style="color:var(--yellow);font-weight:600">11W / 19L</td><td class="loss-cell">−31,756,179</td>
+        <td>🟡 Losing ground</td>
+      </tr>
+      <tr>
+        <td><span class="tier-pill pill-tail">Tail</span></td>
+        <td>#51 – #75</td><td>25</td>
+        <td class="tail">92,767,670</td><td class="tail">9.6%</td><td>3,710,707</td>
+        <td class="loss-cell">0W / 25L</td><td class="loss-cell">−50,675,746</td>
+        <td>🔴 Swept</td>
+      </tr>
+      <tr>
+        <td><span class="tier-pill pill-dead">Dead Wt</span></td>
+        <td>#76 – #96</td><td>21</td>
+        <td class="dead">33,747,555</td><td class="dead">3.5%</td><td>1,607,026</td>
+        <td class="loss-cell">0W / 21L</td><td class="loss-cell">−23,587,767</td>
+        <td>🔴 Swept</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- CUMULATIVE CURVE + H2H WATERFALL -->
+<div class="grid-2">
+  <div class="card">
+    <div class="card-title">SOL2 Cumulative Points — How Concentrated Is the Output?</div>
+    <canvas id="cumulChart"></canvas>
+  </div>
+  <div class="card">
+    <div class="card-title">Head-to-Head Points Delta per Rank Position (SOL2 − RvD)</div>
+    <canvas id="deltaChart"></canvas>
+  </div>
+</div>
+
+<!-- FULL H2H TABLE -->
+<div class="grid-2">
+  <div class="card">
+    <div class="card-title">Full Head-to-Head — SOL2 vs RvD by Clan Rank Position</div>
+    <div style="max-height:520px;overflow-y:auto">
+    <table>
+      <thead><tr><th>SOL Rank</th><th>SOL2 Player</th><th>SOL2 Pts</th><th>RvD Player</th><th>RvD Pts</th><th>Delta</th></tr></thead>
+      <tbody id="h2hTableBody"></tbody>
+    </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">💀 Dead Weight Detail — SOL2 #76–96 vs RvD Equivalents</div>
+    <div style="margin-bottom:10px; font-size:0.78rem; color:var(--muted); line-height:1.6;">
+      Every player in SOL2's bottom 21 loses to their RvD counterpart. Combined SOL2 output: 
+      <strong style="color:var(--red)">33.7M</strong> vs RvD equivalent: 
+      <strong style="color:var(--rvd)">57.3M</strong> — surrendering 
+      <strong style="color:var(--red)">23.6M pts</strong>.
+    </div>
+    <table>
+      <thead><tr><th>SOL Rank</th><th>SOL2 Player</th><th>SOL2 Pts</th><th>RvD Equiv</th><th>RvD Pts</th><th>Gap</th></tr></thead>
+      <tbody id="deadTableBody"></tbody>
+    </table>
+    <div style="margin-top:10px;">
+      <div class="card-title" style="margin-bottom:6px">Concentration Risk: How much do the top N carry?</div>
+      <div id="cumulBars"></div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  Analysis based on Weekly Rank screenshots &nbsp;·&nbsp; 96 SOL2 + 99 RvD players &nbsp;·&nbsp; Ranks assigned internally by points descending &nbsp;·&nbsp; Generated by Enchanté
+</div>
+
+<script>
+const SOL_C = '#c97d00';
+const RVD_C = '#1a6bbf';
+const GREEN  = '#1e8449';
+const RED    = '#c0392b';
+const GRID   = '#e2e5f0';
+const MUTED  = '#6b6f8a';
+const TEXT   = '#1a1d2e';
+
+// Raw sorted data (already sorted desc by pts)
+const sol = [
+  ["J Slyce n Dyce",68446822],["SODHimothy",58456976],["WHY SOO SERIOUS",35441993],
+  ["mum8828",34220388],["Emtayy590",33052034],["AubreyyyyLoveee",27476682],
+  ["EMoney383",26336015],["Prof Bestia 1331",25889147],["TheoBrews",24565760],
+  ["Akuma667",22999910],["maverick31",22143383],["FreekillX",21391252],
+  ["Greidy kite",21160999],["กลัวๆ",20001769],["Sarah1981",19415856],
+  ["Tickled Pink",18577646],["1Goldguy",17319421],["magnatarj",16553256],
+  ["cm09",16179359],["BReynolds",16179242],["LUNATICC",15474035],
+  ["RaiseHellPraiseDale",15283536],["2mash2mallo",15042032],["Grave Digg3r",14910374],
+  ["Elektra Athena",13809848],["YahnieYami",13608959],["Hazey Mazey",12955949],
+  ["WarriorOfL1ght",12906654],["Xray4",12889432],["Angramainu",12015817],
+  ["NoStomach3135",11710189],["AP0l10",10635787],["CommanderSushi",10599584],
+  ["jaXal",10334387],["Zerker102",9804769],["ปกอิน",8810714],
+  ["Sharkaylee",8540254],["Morty Chauncey Smith",8290903],["Spidey 2099",8239003],
+  ["Heisenberg 12",8164479],["NOThöney",7635709],["TomTaylor3928",7592236],
+  ["Zhikyo",6848135],["Jackies 83",6750154],["Geegio",6732446],
+  ["Jatt09",5987491],["Ramjar",5877730],["Ozymandiasms",5746157],
+  ["Wavey310",5499548],["cristhina",5057646],["RagingHonkers",5013399],
+  ["Babycali",4919881],["Hnfry",4872979],["Marselinne",4611356],
+  ["AngiieCF",4596715],["1amdre",4552612],["Mattydubzz",4480395],
+  ["GrimLocK",4443784],["BuggyThePirate",4035492],["Grantavios1",3915823],
+  ["Comandante Gabriel M",3882837],["The Milk",3605514],["IrishEyes",3555755],
+  ["Jcastornett",3425948],["Monkeyy King",3392354],["Basshukr",3312586],
+  ["MatuFC",3241600],["headless hunter",3160915],["MBlackTH",3144147],
+  ["Overlordjason",3055216],["SargonV",2939217],["ROBO CREW",2708516],
+  ["Tank guy12",2660124],["Zhywesteee",2642935],["Starlight84",2597570],
+  ["Peytini",2552456],["Constaa",2537796],["JoeCare",2470742],
+  ["flytrapmilk",2424953],["ErosEris",2412473],["Gral Denis",2362165],
+  ["Commander Sub Bottom",2344277],["Sabreee",2141602],["Gabriel Schiavão",2064111],
+  ["Glass heart",2037643],["FP973",1803463],["Penelope Unicorn Too",1388338],
+  ["Scorpio Storms",1358217],["yuvraj gurjar",1344868],["sSssSs",1034754],
+  ["Lê Xuân Trung",844485],["ascapwtf",827225],["LittleBill",544374],
+  ["HellfireRage",513258],["its vikas gehlot22",389005],["Mdog gillu",351350],
+];
+
+const rvd = [
+  ["PEREMAN27",30099033],["Cellyツ",26730851],["KOH FAYOUNG",26497084],
+  ["HAAaaaAan",24642201],["Raven Clàw",23730263],["Jhonson 04",21121166],
+  ["LiXx1",21006140],["Zenomort",20910423],["Zhea Steffany",18487505],
+  ["ArisCo",18307780],["John wikwik",18267580],["BeeJii",18079097],
+  ["GrimSucide",18022310],["Wieseng",18011409],["FrenchLoïs",15579577],
+  ["WINTERaespa",15341314],["Bang Harahap",15277709],["Roppay",15184706],
+  ["Dewi Yustisia",14849640],["ice candyyy",14563009],["Metafogo",14545689],
+  ["Cockabondy",14309415],["berikutnya",14139562],["gendon99",13701926],
+  ["Mikassa4",13575189],["Vhinzzz",13095413],["ucup357",12916073],
+  ["bolehland",12541193],["penumpang gelap",11501696],["KING UPIL",11449749],
+  ["Wafino",11288964],["Bisa aje Bang",11144240],["Cheonn Ma",10930701],
+  ["Hunter19941994",10830920],["LeoFartyna",10794587],["ZERRIN FAZQINNA",10695990],
+  ["Zeddicus08",10537288],["Keent0",10381234],["Riya Elysa",10264516],
+  ["LunaLovegood99",10207606],["tuanmuda00",10034469],["Nathan Anisa",9816436],
+  ["Jendral Gasson",9568201],["Al Qhuds",9023676],["Clarisa19",9012563],
+  ["AurichaN",8964048],["星河海湾",8597963],["monarch100",8569465],
+  ["HUSAIN18",8537209],["MhdHans",8534155],["lutu46",8460735],
+  ["SamyangPromax",8454154],["이마대장진",8437896],["Sarah ahhh",7877546],
+  ["JesperSW",7872328],["Nugrohoap",7146124],["RC Pantouw",7010384],
+  ["أرض سومر1",6199748],["Gontay",5946615],["GoGoCo",5712093],
+  ["Yukiharaaa",5555367],["Arsy Spectra",5361277],["Com Dallas",5348708],
+  ["Tinker",4994487],["ZhaO Yun",4934251],["Bankeni",4897400],
+  ["Ämißër",4855872],["aadyy666",4733663],["Little Mahogany",4721166],
+  ["axcil 13",4704236],["Komandan 21bc12257",4439254],["mana mas bro",4355191],
+  ["NUR CAHAYA",4101777],["Rey Taqi",3748030],["Doeng 1998",3575114],
+  ["Alvaro Eliezer",3571495],["samparaja3112",3491600],["deeams",3453352],
+  ["dkunzz",3426754],["jjustinB",3335208],["delz rhey",3282899],
+  ["Zayn Zain",3270566],["Pesdusa",3041995],["MAHE54 JENAR",2991006],
+  ["Kang Muşş",2907088],["Qadariyah",2832037],["Queen Elsya",2755197],
+  ["pajaONE",2707288],["SLASh",2564747],["RikyJoeXtab",2392916],
+  ["shenshimi",2372046],["Fjntastp",2367400],["eca190",1842399],
+  ["궁디대장진",1795965],["PENTIL GLOWING",1627204],["suntiah",1306160],
+  ["Jongos",863986],["KIK1",741424],["lembitt",666996],
+];
+
+const solTotal = sol.reduce((a,b)=>a+b[1],0);
+
+// -------- Tier colours --------
+function tierColor(i) {
+  if (i < 5)  return '#1e8449';
+  if (i < 20) return '#1a6bbf';
+  if (i < 50) return '#b7950b';
+  if (i < 75) return '#d35400';
+  return '#c0392b';
+}
+function tierLabel(i) {
+  if (i < 5)  return 'Elite';
+  if (i < 20) return 'Core';
+  if (i < 50) return 'Mid';
+  if (i < 75) return 'Tail';
+  return 'Dead Wt';
+}
+function tierPill(i) {
+  const cls = ['elite','core','mid','tail','dead'];
+  const lbl = ['Elite','Core','Mid','Tail','Dead'];
+  let c; if(i<5)c=0; else if(i<20)c=1; else if(i<50)c=2; else if(i<75)c=3; else c=4;
+  return `<span class="tier-pill pill-${['elite','core','mid','tail','dead'][c]}">${['Elite','Core','Mid','Tail','Dead Wt'][c]}</span>`;
+}
+
+// -------- Chart 1: Contribution Donut --------
+new Chart(document.getElementById('contribChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Elite #1–5','Core #6–20','Mid #21–50','Tail #51–75','Dead Wt #76–96'],
+    datasets: [{
+      data: [229618213, 316189697, 297753957, 92767670, 33747555],
+      backgroundColor: ['#1e8449','#1a6bbf','#b7950b','#d35400','#c0392b'],
+      borderWidth: 2, borderColor: '#fff',
+    }]
+  },
+  options: {
+    responsive:true, maintainAspectRatio:true, cutout:'60%',
+    plugins: {
+      legend: { position:'right', labels:{color:TEXT,font:{size:11},padding:10} },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${(ctx.raw/1e6).toFixed(1)}M (${(ctx.raw/solTotal*100).toFixed(1)}%)` } }
+    }
+  }
+});
+
+// -------- Chart 2: H2H Net Bar --------
+new Chart(document.getElementById('h2hChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Elite\n#1–5','Core\n#6–20','Mid\n#21–50','Tail\n#51–75','Dead Wt\n#76–96'],
+    datasets: [{
+      label: 'Net Pts Delta (SOL2 − RvD)',
+      data: [97918781, 53180332, -31756179, -50675746, -23587767],
+      backgroundColor: [GREEN, '#1a6bbf', '#b7950b', RED, '#8b0000'],
+      borderRadius: 5,
+    }]
+  },
+  options: {
+    responsive:true, maintainAspectRatio:true,
+    plugins: {
+      legend:{display:false},
+      tooltip: { callbacks:{ label: ctx => ` ${(ctx.raw/1e6).toFixed(2)}M` } }
+    },
+    scales: {
+      x: { ticks:{color:MUTED,font:{size:10}}, grid:{color:GRID} },
+      y: { ticks:{color:MUTED,font:{size:10},callback:v=>(v/1e6).toFixed(0)+'M'}, grid:{color:GRID},
+           title:{display:true,text:'Net Points',color:MUTED,font:{size:10}} }
+    }
+  }
+});
+
+// -------- Chart 3: Cumulative --------
+const cumulPts = [];
+let cum = 0;
+for (let i=0; i<sol.length; i++) { cum += sol[i][1]; cumulPts.push(parseFloat((cum/1e6).toFixed(2))); }
+const cumulPct = cumulPts.map(v => parseFloat((v/(solTotal/1e6)*100).toFixed(1)));
+
+new Chart(document.getElementById('cumulChart'), {
+  type: 'line',
+  data: {
+    labels: sol.map((_,i)=>i+1),
+    datasets: [
+      {
+        label: 'Cumulative % of SOL2 Total',
+        data: cumulPct,
+        borderColor: SOL_C, backgroundColor: 'rgba(201,125,0,0.08)',
+        fill: true, pointRadius: 0, tension: 0.3, borderWidth: 2, yAxisID:'y1'
+      },
+      {
+        label: 'Cumulative Points (M)',
+        data: cumulPts,
+        borderColor: '#1a6bbf', backgroundColor:'transparent',
+        pointRadius:0, tension:0.3, borderWidth:1.5, borderDash:[4,3], yAxisID:'y2'
+      }
+    ]
+  },
+  options: {
+    responsive:true, maintainAspectRatio:true,
+    plugins: {
+      legend:{labels:{color:TEXT,font:{size:10},boxWidth:12}},
+      annotation:{},
+      tooltip: { callbacks:{ label: ctx => ctx.datasetIndex===0
+        ? ` Cum%: ${ctx.raw}%` : ` Cum Pts: ${ctx.raw}M` }}
+    },
+    scales: {
+      x: { ticks:{color:MUTED,font:{size:9},maxTicksLimit:10}, grid:{color:GRID},
+           title:{display:true,text:'SOL2 Internal Rank',color:MUTED,font:{size:9}} },
+      y1: { position:'left', ticks:{color:MUTED,font:{size:9},callback:v=>v+'%'}, grid:{color:GRID},
+            title:{display:true,text:'% of Total',color:MUTED,font:{size:9}} },
+      y2: { position:'right', ticks:{color:'#1a6bbf',font:{size:9},callback:v=>v+'M'}, grid:{display:false},
+            title:{display:true,text:'Points (M)',color:'#1a6bbf',font:{size:9}} }
+    }
+  }
+});
+
+// -------- Chart 4: Per-rank delta scatter --------
+const deltas = sol.slice(0,96).map((s,i)=>({x:i+1, y:parseFloat(((s[1]-(rvd[i]?rvd[i][1]:0))/1e6).toFixed(2))}));
+new Chart(document.getElementById('deltaChart'), {
+  type: 'bar',
+  data: {
+    labels: sol.map((_,i)=>i+1),
+    datasets: [{
+      label: 'Pts Delta (SOL2 − RvD)',
+      data: deltas.map(d=>d.y),
+      backgroundColor: deltas.map(d=> d.y >= 0 ? 'rgba(30,132,73,0.75)' : 'rgba(192,57,43,0.75)'),
+      borderRadius: 2,
+    }]
+  },
+  options: {
+    responsive:true, maintainAspectRatio:true,
+    plugins: {
+      legend:{display:false},
+      tooltip:{callbacks:{label:ctx=>` Rank #${ctx.label}: ${ctx.raw>0?'+':''}${ctx.raw}M`}}
+    },
+    scales: {
+      x: { ticks:{color:MUTED,font:{size:8},maxTicksLimit:15}, grid:{color:GRID},
+           title:{display:true,text:'SOL2 Internal Rank',color:MUTED,font:{size:9}} },
+      y: { ticks:{color:MUTED,font:{size:9},callback:v=>v+'M'}, grid:{color:GRID},
+           title:{display:true,text:'Pts Delta (M)',color:MUTED,font:{size:9}} }
+    }
+  }
+});
+
+// -------- H2H Full Table --------
+const tbody = document.getElementById('h2hTableBody');
+sol.forEach((s,i) => {
+  const r = rvd[i] || ['—',0];
+  const delta = s[1]-r[1];
+  const dFmt = (delta>=0?'+':'')+delta.toLocaleString();
+  const dClass = delta>=0?'win-cell':'loss-cell';
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td>${tierPill(i)} <span class="rank-badge">#${i+1}</span></td>
+    <td>${s[0]}</td>
+    <td style="color:${tierColor(i)};font-weight:600">${s[1].toLocaleString()}</td>
+    <td style="color:var(--rvd)">${r[0]}</td>
+    <td style="color:var(--rvd)">${r[1].toLocaleString()}</td>
+    <td class="${dClass}">${dFmt}</td>`;
+  tbody.appendChild(tr);
+});
+
+// -------- Dead Weight Table --------
+const dtbody = document.getElementById('deadTableBody');
+sol.slice(75).forEach((s,ii) => {
+  const i = ii+75;
+  const r = rvd[i] || ['—',0];
+  const delta = s[1]-r[1];
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td><span class="rank-badge">#${i+1}</span></td>
+    <td style="color:var(--red)">${s[0]}</td>
+    <td style="color:var(--red);font-weight:600">${s[1].toLocaleString()}</td>
+    <td style="color:var(--rvd)">${r[0]}</td>
+    <td style="color:var(--rvd)">${r[1].toLocaleString()}</td>
+    <td class="loss-cell">${delta.toLocaleString()}</td>`;
+  dtbody.appendChild(tr);
+});
+
+// -------- Cumulative Bars --------
+const checkpoints = [[5,'Top 5'],[10,'Top 10'],[20,'Top 20'],[30,'Top 30'],[50,'Top 50'],[70,'Top 70']];
+const barsDiv = document.getElementById('cumulBars');
+let runSum = 0;
+checkpoints.forEach(([n, lbl]) => {
+  while (runSum < n) { runSum++; }
+  // compute actual cumulative
+  const pts = sol.slice(0,n).reduce((a,b)=>a+b[1],0);
+  const pct = (pts/solTotal*100).toFixed(1);
+  barsDiv.innerHTML += `
+    <div class="bar-row">
+      <div class="bar-label"><strong>${lbl} players</strong><span>${pct}% of SOL2 total · ${(pts/1e6).toFixed(1)}M</span></div>
+      <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${n<=5?GREEN:n<=20?SOL_C:n<=50?'#b7950b':RED}"></div></div>
+    </div>`;
+});
+</script>
+</body>
+</html>
