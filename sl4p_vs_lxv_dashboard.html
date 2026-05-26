@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SL4P vs LXV — Weekly Rank Analysis</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --sl4p:   #c97d00;
+    --lxv:    #1a6bbf;
+    --red:    #c0392b;
+    --green:  #1e8449;
+    --orange: #d35400;
+    --yellow: #b7950b;
+    --bg:     #f0f2f7;
+    --card:   #ffffff;
+    --border: #d4d8e8;
+    --text:   #1a1d2e;
+    --muted:  #6b6f8a;
+    --grid:   #e2e5f0;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; padding: 14px; max-width: 1300px; margin: 0 auto; }
+
+  h1 { text-align: center; font-size: clamp(1.1rem, 4vw, 1.5rem); margin-bottom: 3px; }
+  .subtitle { text-align: center; color: var(--muted); font-size: clamp(0.7rem, 2.5vw, 0.82rem); margin-bottom: 16px; line-height: 1.5; }
+
+  .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; margin-bottom: 12px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 12px; }
+  .grid-5 { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 12px; }
+  .mb { margin-bottom: 12px; }
+
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .card-title { font-size: clamp(0.6rem, 2vw, 0.68rem); text-transform: uppercase; letter-spacing: 1.2px; color: var(--muted); margin-bottom: 8px; font-weight: 600; }
+
+  .big-num { font-size: clamp(1.3rem, 5vw, 1.85rem); font-weight: 700; line-height: 1.1; }
+  .sub-num { font-size: clamp(0.62rem, 2vw, 0.73rem); color: var(--muted); margin-top: 3px; }
+
+  .sl4p-col { color: var(--sl4p); }
+  .lxv-col  { color: var(--lxv); }
+  .red-col  { color: var(--red); }
+  .green-col{ color: var(--green); }
+
+  /* Verdict */
+  .verdict-box { background: linear-gradient(135deg,rgba(30,132,73,0.07),rgba(30,132,73,0.02)); border: 1px solid rgba(30,132,73,0.25); border-radius: 10px; padding: 14px 18px; margin-bottom: 12px; }
+  .verdict-box h3 { color: var(--green); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 7px; }
+  .verdict-box p { font-size: 0.83rem; line-height: 1.65; }
+  .verdict-box strong.good { color: var(--green); }
+  .verdict-box strong.bad  { color: var(--red); }
+  .verdict-box strong.warn { color: var(--orange); }
+  .verdict-box strong.sl4p { color: var(--sl4p); }
+  .verdict-box strong.lxv  { color: var(--lxv); }
+
+  /* Tier pills */
+  .tier-pill { display: inline-block; border-radius: 3px; padding: 1px 6px; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+  .pill-apex  { background:#fde8d8; color:#8b2500; }
+  .pill-elite { background:#d5f0e0; color:#1e8449; }
+  .pill-core  { background:#d4e8fa; color:#1a6bbf; }
+  .pill-mid   { background:#fef3cd; color:#b7950b; }
+  .pill-tail  { background:#f0f0f0; color:#555; }
+  .pill-dead  { background:#fad7d5; color:#c0392b; }
+
+  /* Tables */
+  .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  table { width: 100%; border-collapse: collapse; font-size: clamp(0.68rem, 2vw, 0.76rem); }
+  th { text-align: left; color: var(--muted); font-weight: 600; padding: 5px 7px; border-bottom: 2px solid var(--border); font-size: clamp(0.6rem,1.8vw,0.67rem); text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; }
+  td { padding: 4px 7px; border-bottom: 1px solid #eceef7; white-space: nowrap; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #f5f7ff; }
+  .rank-badge { display: inline-block; width: 26px; text-align: center; background: #eceef7; border-radius: 4px; font-size: 0.68rem; color: var(--muted); }
+  .win-cell  { color: var(--green); font-weight: 600; }
+  .loss-cell { color: var(--red);   font-weight: 600; }
+
+  /* Bar */
+  .bar-row { margin-bottom: 8px; }
+  .bar-label { display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--muted); margin-bottom: 2px; }
+  .bar-label strong { color: var(--text); }
+  .bar-track { background: #e2e5f0; border-radius: 4px; height: 13px; overflow: hidden; }
+  .bar-fill  { height: 100%; border-radius: 4px; }
+
+  canvas { max-height: 230px; }
+  .footer { text-align: center; color: var(--muted); font-size: 0.7rem; margin-top: 10px; padding-bottom: 20px; }
+
+  @media (max-width: 600px) {
+    body { padding: 10px; }
+    canvas { max-height: 200px; }
+    .verdict-box p { font-size: 0.79rem; }
+  }
+</style>
+</head>
+<body>
+
+<h1>⚔️ SL4P vs LXV — Weekly Rank Analysis</h1>
+<p class="subtitle">Head-to-head by internal clan rank &nbsp;·&nbsp; 97 SL4P vs 98 LXV players &nbsp;·&nbsp; Score-based tiers</p>
+
+<!-- VERDICT -->
+<div class="verdict-box">
+  <h3>📋 Diagnosis: SL4P leads overall but is structurally fragile — Elite carries, Tail & Dead Weight bleed</h3>
+  <p>
+    <strong class="sl4p">SL4P leads by +138M</strong> — but this comes entirely from the
+    <strong class="good">Elite tier (#3–11) winning +154M</strong> and
+    <strong class="good">Core (#12–21) winning +70M</strong>. Below rank 44, SL4P loses.
+    The <strong class="bad">Tail (#44–81) goes 13W/25L (−14M)</strong> and
+    <strong class="bad">Dead Weight (#82–97) goes 1W/15L (−30M)</strong> — together surrendering <strong class="bad">−44M</strong>.
+    The biggest single factor: <strong class="lxv">LXV's #1 player "Full of it" scored 235.6M</strong> —
+    nearly equal to <strong class="sl4p">SL4P's top-2 combined (234.8M)</strong>.
+    That one player cost SL4P <strong class="bad">−118M in the Apex slot alone</strong>.
+    Without that outlier, SL4P would lead by <strong class="good">~256M</strong>.
+    The overall H2H record is <strong class="bad">46W / 51L</strong> — SL4P wins the score battle by having deeper Elite depth, not by winning more slots.
+  </p>
+</div>
+
+<!-- KPI STRIP -->
+<div class="grid-5">
+  <div class="card">
+    <div class="card-title">SL4P Total</div>
+    <div class="big-num sl4p-col">3,450M</div>
+    <div class="sub-num">97 players</div>
+  </div>
+  <div class="card">
+    <div class="card-title">LXV Total</div>
+    <div class="big-num lxv-col">3,312M</div>
+    <div class="sub-num">98 players</div>
+  </div>
+  <div class="card">
+    <div class="card-title">SL4P Lead</div>
+    <div class="big-num green-col">+138M</div>
+    <div class="sub-num">but only 46W / 51L H2H</div>
+  </div>
+  <div class="card">
+    <div class="card-title">LXV "Full of it"</div>
+    <div class="big-num lxv-col">235.6M</div>
+    <div class="sub-num">≈ SL4P top-2 combined</div>
+  </div>
+  <div class="card">
+    <div class="card-title">SL4P Tail+DW Loss</div>
+    <div class="big-num red-col">−44M</div>
+    <div class="sub-num">ranks #44–97, 16W/40L</div>
+  </div>
+</div>
+
+<!-- TIER SUMMARY TABLE -->
+<div class="card mb">
+  <div class="card-title">Tier Performance — SL4P Internal Rank vs LXV Positional Equivalent (H2H)</div>
+  <div class="table-scroll">
+  <table>
+    <thead>
+      <tr><th>Tier</th><th>SL4P Ranks</th><th>Threshold</th><th>Matchups</th><th>H2H Record</th><th>Net Pts Delta</th><th>SL4P Avg</th><th>LXV Avg</th><th>Verdict</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="tier-pill pill-apex">Apex</span></td>
+        <td>#1–2</td><td>>100M</td><td>2</td>
+        <td style="color:var(--yellow);font-weight:600">1W / 1L</td>
+        <td class="loss-cell">−85,198,292</td>
+        <td>117,397,374</td><td>159,996,520</td>
+        <td>⚠️ LXV outlier dominates</td>
+      </tr>
+      <tr>
+        <td><span class="tier-pill pill-elite">Elite</span></td>
+        <td>#3–11</td><td>75–100M</td><td>9</td>
+        <td class="win-cell">9W / 0L</td>
+        <td class="win-cell">+154,508,900</td>
+        <td>81,113,058</td><td>63,945,402</td>
+        <td>🟢 SL4P dominant</td>
+      </tr>
+      <tr>
+        <td><span class="tier-pill pill-core">Core</span></td>
+        <td>#12–21</td><td>50–75M</td><td>10</td>
+        <td class="win-cell">10W / 0L</td>
+        <td class="win-cell">+69,537,655</td>
+        <td>57,817,448</td><td>50,863,682</td>
+        <td>🟢 SL4P dominant</td>
+      </tr>
+      <tr>
+        <td><span class="tier-pill pill-mid">Mid</span></td>
+        <td>#22–43</td><td>30–50M</td><td>22</td>
+        <td style="color:var(--yellow);font-weight:600">12W / 10L</td>
+        <td class="win-cell">+44,493,733</td>
+        <td>40,127,954</td><td>38,105,511</td>
+        <td>🟡 SL4P slight edge</td>
+      </tr>
+      <tr>
+        <td><span class="tier-pill pill-tail">Tail</span></td>
+        <td>#44–81</td><td>15–30M</td><td>38</td>
+        <td class="loss-cell">13W / 25L</td>
+        <td class="loss-cell">−14,071,814</td>
+        <td>23,442,588</td><td>23,812,898</td>
+        <td>🔴 LXV wins majority</td>
+      </tr>
+      <tr>
+        <td><span class="tier-pill pill-dead">Dead Wt</span></td>
+        <td>#82–97</td><td><15M</td><td>16</td>
+        <td class="loss-cell">1W / 15L</td>
+        <td class="loss-cell">−29,750,814</td>
+        <td>8,362,308</td><td>10,221,734</td>
+        <td>🔴 LXV sweeps</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+
+<!-- CHARTS ROW 1 -->
+<div class="grid-2">
+  <div class="card">
+    <div class="card-title">Net Points Delta by Tier (SL4P − LXV)</div>
+    <canvas id="tierDeltaChart"></canvas>
+  </div>
+  <div class="card">
+    <div class="card-title">H2H Win Rate by Tier</div>
+    <canvas id="winRateChart"></canvas>
+  </div>
+</div>
+
+<!-- CHARTS ROW 2 -->
+<div class="grid-2">
+  <div class="card">
+    <div class="card-title">Per-Rank Points Delta — Every Matchup (SL4P − LXV)</div>
+    <canvas id="deltaChart"></canvas>
+  </div>
+  <div class="card">
+    <div class="card-title">Points Distribution — Players by Score Tier</div>
+    <canvas id="distChart"></canvas>
+  </div>
+</div>
+
+<!-- CHARTS ROW 3 -->
+<div class="grid-2">
+  <div class="card">
+    <div class="card-title">SL4P Cumulative Output — How Top-Heavy?</div>
+    <canvas id="cumulChart"></canvas>
+  </div>
+  <div class="card">
+    <div class="card-title">Avg Points Per Player by Tier</div>
+    <canvas id="avgChart"></canvas>
+  </div>
+</div>
+
+<!-- H2H TABLE + DEAD WEIGHT -->
+<div class="grid-2">
+  <div class="card">
+    <div class="card-title">Full Head-to-Head — SL4P vs LXV by Internal Rank</div>
+    <div class="table-scroll" style="max-height:540px;overflow-y:auto">
+    <table>
+      <thead><tr><th>Rank</th><th>Tier</th><th>SL4P Player</th><th>SL4P Pts</th><th>LXV Player</th><th>LXV Pts</th><th>Delta</th></tr></thead>
+      <tbody id="h2hBody"></tbody>
+    </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">💀 Dead Weight — SL4P #82–97 vs LXV Equivalents</div>
+    <p style="font-size:0.78rem;color:var(--muted);margin-bottom:10px;line-height:1.6">
+      SL4P's bottom 16 go <strong style="color:var(--red)">1W/15L</strong>, surrendering
+      <strong style="color:var(--red)">−29.8M pts</strong>. LXV's equivalent avg is
+      <strong style="color:var(--lxv)">10.2M</strong> vs SL4P's <strong style="color:var(--red)">8.4M</strong>.
+    </p>
+    <div class="table-scroll">
+    <table>
+      <thead><tr><th>SL4P Rank</th><th>SL4P Player</th><th>SL4P Pts</th><th>LXV Player</th><th>LXV Pts</th><th>Gap</th></tr></thead>
+      <tbody id="deadBody"></tbody>
+    </table>
+    </div>
+
+    <div style="margin-top:14px;">
+      <div class="card-title" style="margin-bottom:6px">Concentration Risk — How Much Does the Top Carry?</div>
+      <div id="cumulBars"></div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  SL4P Smurf Lgnd Asslt Pk vs LXV Legion X Vanguard &nbsp;·&nbsp; Weekly Rank &nbsp;·&nbsp; 97 SL4P + 98 LXV players &nbsp;·&nbsp; Generated by Enchanté
+</div>
+
+<script>
+const SL4P_C = '#c97d00';
+const LXV_C  = '#1a6bbf';
+const GREEN  = '#1e8449';
+const RED    = '#c0392b';
+const YELLOW = '#b7950b';
+const GRID   = '#e2e5f0';
+const MUTED  = '#6b6f8a';
+const TEXT   = '#1a1d2e';
+
+const sl4p = [
+  ["Prince Last War",117660998],["Monstersareus",117133750],["M3xicutioner",90004134],
+  ["Prof Bestia 1331",86264161],["Whiskey18",85459720],["AndyFreeze",82791848],
+  ["RGtheGreat",80896484],["Pixxel Panic",77965045],["Stabby Smurf",76044624],
+  ["BLACK HULK",75690500],["Rimuru Samma",74901002],["Anh Ba Bao 43",63112574],
+  ["Uso1",61114198],["QUEENS2000",60451723],["PHKKBC",59608024],
+  ["NecromancerCR",58518342],["w4rL0cK",57736595],["NARUTO UZUMAKI 7",56378852],
+  ["Kute Girl",55420611],["nhatminh27",53527366],["Hazey Mazey",52306194],
+  ["l Judd l",49908395],["Ngoc Thu ii",49584644],["The OG cong chua",49480333],
+  ["Hola Aru",49295018],["Chi Huy 2221b2258",48483515],["KuRo",47360979],
+  ["MomoKnows",45864874],["octiist",45841171],["Jhunrei",42521240],
+  ["Aries Wrath 13",42471467],["Warning2",39866745],["Kareem Pie",39645411],
+  ["Warleymariano",36499075],["Leo Small",35949438],["lord RJ",35405537],
+  ["BubbleBlower69",34304457],["EVA",33466283],["BeeblebroxSmurf",32803038],
+  ["Tian hui",32498689],["XiaoShi",30905698],["BLACK HOSE",30842935],
+  ["OopsAllSmurfs",29816040],["SkyzerPH",29367269],["UuB",29268965],
+  ["NoStomach3135",29148826],["VelvetFuryLai",29101403],["Echo Nyx",29013487],
+  ["iGHCo",29005295],["TheeDonTheGreat",28895941],["aMoneMi",28743071],
+  ["NaNnY18",28044357],["Bawa",27208423],["ShamWow2258",26634762],
+  ["DuckFartz",26586876],["Scr1mps",26257654],["V4l3nt1n444",25231884],
+  ["Luffy D monkey29",25126126],["Veritas2",25068740],["Honey",25033429],
+  ["MrTanh",24539132],["Techniqul",24381241],["BRODY69",24194671],
+  ["xSHOCKx",23441342],["Diaz209",22617628],["Lemon Uncle",22598308],
+  ["BoogeymanZ",22322621],["2CPC",22029951],["Purple Shark",21486618],
+  ["J O H N W i C K",20456109],["AcnOlogia",19990695],["MaryMcFlyAF",19844266],
+  ["Gao Dua",19666753],["Ban N Giau Ten",18927507],["Rishi Ran",18668571],
+  ["Nanda Parbat",17977840],["Nobita0619",17711119],["RunnerMYYY",16696365],
+  ["Jhodie Milan",15276268],["Zeus liuliu",15171000],["DownTownDeLow",15083816],
+  ["A littlekitten",14315261],["deadATbirthOG",13031626],["Santo2026",12586876],
+  ["SLPPSTR MUSIC",12292632],["SuChan tw",12138410],["Afla smruf",11762782],
+  ["Temp OG",11194233],["DulyThaMuly",10291625],["DO I EVER GET BETTER",9052636],
+  ["Nam syo",6143459],["Rena 20",5195726],["Camy II",5008908],
+  ["Droskee2",4038947],["GOD OF WAR",3797296],["Shawty iz a Killa",2815413],
+  ["Aon77",131100],
+];
+
+const lxv = [
+  ["Full of it",235644037],["chimteodan1",84349003],["The Anunnaki",77065242],
+  ["GUN999",74452200],["PapaGami01",67565743],["Tricks899",62507246],
+  ["tajor",62078115],["A Pheo",60815938],["Phantom",57158604],
+  ["Lam Son Milk",57060701],["windxiv",56804829],["ItsKJ",56612819],
+  ["MiSteeK69",56115816],["Rainyday 283",55272585],["o0oNinja Turtleso0o",53584853],
+  ["milk130",52173919],["POPCORN PLZ",50176622],["nami1994",48255410],
+  ["Bumblebiene",46203236],["Hoa Si NuocNam",45204472],["DrakenNyx",45037092],
+  ["OtonoM",44983966],["RiseUp404",43484483],["NANCY 07",42954112],
+  ["MrLooong",41242333],["TheFool000",40469576],["Boss RpNs",39846930],
+  ["DontWakemeup",39480742],["Vic9112",38494113],["AzKat34",38305301],
+  ["EJYA",38268259],["Thien",37872844],["Commando Nebo",37427618],
+  ["Saicenliadan",36846672],["Van chilchil",36720094],["MFIndy",36568091],
+  ["Eduardo00l",36522498],["MaraCP",35776474],["OmniscientOdin",35572427],
+  ["Fatheadtiger",34539151],["Bel",34469633],["xelo06",34393488],
+  ["cuervozlatan",34082444],["GUACACALLO",34035382],["Tieu Nhi VN",33776976],
+  ["Tejaswi05",31254617],["Alisha 20",30991275],["sabot 667",29648027],
+  ["KhaSgVN",29561687],["NiTo420",29160663],["zzSammy",28903129],
+  ["FcAwf",28469145],["DukeNukem1973",28235049],["hyyann",27183558],
+  ["warCraft",26660090],["Davidisaac",26469100],["Dark Moonn",25932447],
+  ["Bia Beo",25860755],["Cmon n0w",25237883],["RedDirtReaper",25135051],
+  ["sushi96",25118876],["Värthu",24532502],["Lil FOXY",24162351],
+  ["VEX HollowFear",24012662],["whiteLies",22776790],["LaLa",22576975],
+  ["VikingHiking2",22197353],["DanielRs",22056566],["Zhihui Guan",20206420],
+  ["Shashwat S",19986823],["Lagarto Juancho69",18888812],["Soulte",18861956],
+  ["YAKULT II",18268952],["DemonSlayer11",17889397],["AvelineRose",17478511],
+  ["FARJAM",16802709],["iiNaldo",16739126],["Jok3er",16575198],
+  ["mmlippy",16553270],["Hello xxx",16529971],["SCULPME",16160089],
+  ["Luxuria0",16115020],["jdscorpio",16112281],["Voi tho",15378397],
+  ["Noxiie",15323477],["deepxn",14442637],["NINNIN",13351897],
+  ["Tom Cat",12774518],["The Ghost 98",10044587],["xxbabebii",9360979],
+  ["EmiliaREZERO",8656164],["Jagdrox2256",7515171],["HELLMERRYY",7361630],
+  ["Mackey212",6218510],["HuyKen93",4267922],["JOCKER",3996309],
+  ["ESRaaa",2628245],["EL DANGER",1184601],
+];
+
+const slTotal = sl4p.reduce((a,b)=>a+b[1],0);
+const lxTotal = lxv.reduce((a,b)=>a+b[1],0);
+const N = 97; // matched H2H count
+
+// Tier definitions [label, lo, hi, pillClass]
+const tiers = [
+  ["Apex",  0,  2, "apex"],
+  ["Elite", 2, 11, "elite"],
+  ["Core", 11, 21, "core"],
+  ["Mid",  21, 43, "mid"],
+  ["Tail", 43, 81, "tail"],
+  ["Dead", 81, 97, "dead"],
+];
+const tierColors = { apex:'#8b2500', elite:GREEN, core:LXV_C, mid:YELLOW, tail:'#888', dead:RED };
+
+function tierOf(i) {
+  for (const [lbl,lo,hi] of tiers) if (i>=lo && i<hi) return lbl;
+  return "Dead";
+}
+function pillOf(i) {
+  for (const [lbl,lo,hi,cls] of tiers) if (i>=lo && i<hi) return `<span class="tier-pill pill-${cls}">${lbl}</span>`;
+  return '';
+}
+
+// ---- Chart 1: Tier Net Delta Bar ----
+const tierLabels = tiers.map(t=>t[0]);
+const tierDeltas = tiers.map(([lbl,lo,hi])=>{
+  let net=0;
+  for(let i=lo;i<Math.min(hi,N);i++) net+=(sl4p[i][1])-(lxv[i][1]);
+  return parseFloat((net/1e6).toFixed(2));
+});
+new Chart(document.getElementById('tierDeltaChart'),{
+  type:'bar',
+  data:{labels:tierLabels,datasets:[{
+    label:'Net Pts Delta (M)',
+    data:tierDeltas,
+    backgroundColor:tierDeltas.map(v=>v>=0?'rgba(30,132,73,0.75)':'rgba(192,57,43,0.75)'),
+    borderRadius:5
+  }]},
+  options:{responsive:true,maintainAspectRatio:true,
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` ${ctx.raw>0?'+':''}${ctx.raw}M`}}},
+    scales:{
+      x:{ticks:{color:MUTED,font:{size:10}},grid:{color:GRID}},
+      y:{ticks:{color:MUTED,font:{size:10},callback:v=>v+'M'},grid:{color:GRID},
+         title:{display:true,text:'Net Pts (M)',color:MUTED,font:{size:9}}}
+    }}
+});
+
+// ---- Chart 2: Win Rate by Tier ----
+const winData = tiers.map(([lbl,lo,hi])=>{
+  let w=0, tot=Math.min(hi,N)-lo;
+  for(let i=lo;i<Math.min(hi,N);i++) if(sl4p[i][1]>=lxv[i][1]) w++;
+  return tot>0?parseFloat((w/tot*100).toFixed(1)):0;
+});
+new Chart(document.getElementById('winRateChart'),{
+  type:'bar',
+  data:{labels:tierLabels,datasets:[
+    {label:'SL4P Win %',data:winData,backgroundColor:SL4P_C,borderRadius:4},
+    {label:'50% line',data:Array(6).fill(50),type:'line',borderColor:'rgba(0,0,0,0.25)',borderDash:[4,3],pointRadius:0,borderWidth:1.5}
+  ]},
+  options:{responsive:true,maintainAspectRatio:true,
+    plugins:{legend:{labels:{color:TEXT,font:{size:10},boxWidth:12}},
+             tooltip:{callbacks:{label:ctx=>ctx.datasetIndex===0?` SL4P wins ${ctx.raw}% of slots`:` 50% reference`}}},
+    scales:{
+      x:{ticks:{color:MUTED,font:{size:10}},grid:{color:GRID}},
+      y:{min:0,max:100,ticks:{color:MUTED,font:{size:10},callback:v=>v+'%'},grid:{color:GRID}}
+    }}
+});
+
+// ---- Chart 3: Per-rank delta bar ----
+const deltas = sl4p.slice(0,N).map((s,i)=>({x:i+1,y:parseFloat(((s[1]-lxv[i][1])/1e6).toFixed(2))}));
+new Chart(document.getElementById('deltaChart'),{
+  type:'bar',
+  data:{
+    labels:sl4p.map((_,i)=>i+1),
+    datasets:[{
+      label:'Pts Delta (M)',
+      data:deltas.map(d=>d.y),
+      backgroundColor:deltas.map(d=>d.y>=0?'rgba(30,132,73,0.7)':'rgba(192,57,43,0.7)'),
+      borderRadius:1
+    }]
+  },
+  options:{responsive:true,maintainAspectRatio:true,
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` #${ctx.label}: ${ctx.raw>0?'+':''}${ctx.raw}M`}}},
+    scales:{
+      x:{ticks:{color:MUTED,font:{size:8},maxTicksLimit:15},grid:{color:GRID},
+         title:{display:true,text:'SL4P Internal Rank',color:MUTED,font:{size:9}}},
+      y:{ticks:{color:MUTED,font:{size:9},callback:v=>v+'M'},grid:{color:GRID}}
+    }}
+});
+
+// ---- Chart 4: Distribution ----
+const distBands = [['>100M',100e6,999e6],['75–100M',75e6,100e6],['50–75M',50e6,75e6],
+                   ['30–50M',30e6,50e6],['15–30M',15e6,30e6],['<15M',0,15e6]];
+const slDist = distBands.map(([,lo,hi])=>sl4p.filter(s=>s[1]>=lo&&s[1]<hi).length);
+const lxDist = distBands.map(([,lo,hi])=>lxv.filter(s=>s[1]>=lo&&s[1]<hi).length);
+new Chart(document.getElementById('distChart'),{
+  type:'bar',
+  data:{labels:distBands.map(b=>b[0]),datasets:[
+    {label:'SL4P',data:slDist,backgroundColor:SL4P_C,borderRadius:4},
+    {label:'LXV', data:lxDist,backgroundColor:LXV_C, borderRadius:4},
+  ]},
+  options:{responsive:true,maintainAspectRatio:true,
+    plugins:{legend:{labels:{color:TEXT,font:{size:10},boxWidth:12}},
+             tooltip:{callbacks:{label:ctx=>` ${ctx.dataset.label}: ${ctx.raw} players`}}},
+    scales:{
+      x:{ticks:{color:MUTED,font:{size:10}},grid:{color:GRID}},
+      y:{ticks:{color:MUTED,font:{size:10}},grid:{color:GRID},
+         title:{display:true,text:'Players',color:MUTED,font:{size:9}}}
+    }}
+});
+
+// ---- Chart 5: Cumulative SL4P ----
+let cum=0;
+const cumulPct=sl4p.map(s=>{cum+=s[1];return parseFloat((cum/slTotal*100).toFixed(1));});
+new Chart(document.getElementById('cumulChart'),{
+  type:'line',
+  data:{
+    labels:sl4p.map((_,i)=>i+1),
+    datasets:[{
+      label:'Cumulative % of SL4P Total',
+      data:cumulPct,
+      borderColor:SL4P_C,backgroundColor:'rgba(201,125,0,0.08)',
+      fill:true,pointRadius:0,tension:0.3,borderWidth:2
+    }]
+  },
+  options:{responsive:true,maintainAspectRatio:true,
+    plugins:{legend:{labels:{color:TEXT,font:{size:10},boxWidth:12}},
+             tooltip:{callbacks:{label:ctx=>` ${ctx.raw}% cumulative`}}},
+    scales:{
+      x:{ticks:{color:MUTED,font:{size:9},maxTicksLimit:10},grid:{color:GRID},
+         title:{display:true,text:'SL4P Internal Rank',color:MUTED,font:{size:9}}},
+      y:{ticks:{color:MUTED,font:{size:9},callback:v=>v+'%'},grid:{color:GRID}}
+    }}
+});
+
+// ---- Chart 6: Avg pts per tier ----
+const slAvgs = tiers.map(([,lo,hi])=>{
+  const seg=sl4p.slice(lo,Math.min(hi,N));
+  return parseFloat((seg.reduce((a,b)=>a+b[1],0)/seg.length/1e6).toFixed(1));
+});
+const lxAvgs = tiers.map(([,lo,hi])=>{
+  const seg=lxv.slice(lo,Math.min(hi,N));
+  return parseFloat((seg.reduce((a,b)=>a+b[1],0)/seg.length/1e6).toFixed(1));
+});
+new Chart(document.getElementById('avgChart'),{
+  type:'bar',
+  data:{labels:tierLabels,datasets:[
+    {label:'SL4P Avg',data:slAvgs,backgroundColor:SL4P_C,borderRadius:4},
+    {label:'LXV Avg', data:lxAvgs,backgroundColor:LXV_C, borderRadius:4},
+  ]},
+  options:{responsive:true,maintainAspectRatio:true,
+    plugins:{legend:{labels:{color:TEXT,font:{size:10},boxWidth:12}},
+             tooltip:{callbacks:{label:ctx=>` ${ctx.dataset.label}: ${ctx.raw}M avg`}}},
+    scales:{
+      x:{ticks:{color:MUTED,font:{size:10}},grid:{color:GRID}},
+      y:{ticks:{color:MUTED,font:{size:10},callback:v=>v+'M'},grid:{color:GRID},
+         title:{display:true,text:'Avg Pts (M)',color:MUTED,font:{size:9}}}
+    }}
+});
+
+// ---- H2H Full Table ----
+const h2hBody = document.getElementById('h2hBody');
+sl4p.forEach((s,i)=>{
+  const l = lxv[i]||['—',0];
+  const delta = s[1]-l[1];
+  const tr = document.createElement('tr');
+  tr.innerHTML=`
+    <td><span class="rank-badge">#${i+1}</span></td>
+    <td>${pillOf(i)}</td>
+    <td style="color:${Object.values({apex:'#8b2500',elite:GREEN,core:LXV_C,mid:YELLOW,tail:'#888',dead:RED})[tiers.findIndex(([,lo,hi])=>i>=lo&&i<hi)]};font-weight:600">${s[0]}</td>
+    <td>${s[1].toLocaleString()}</td>
+    <td style="color:var(--lxv)">${l[0]}</td>
+    <td style="color:var(--lxv)">${l[1].toLocaleString()}</td>
+    <td class="${delta>=0?'win-cell':'loss-cell'}">${delta>=0?'+':''}${delta.toLocaleString()}</td>`;
+  h2hBody.appendChild(tr);
+});
+
+// ---- Dead Weight Table ----
+const deadBody = document.getElementById('deadBody');
+sl4p.slice(81).forEach((s,ii)=>{
+  const i=ii+81, l=lxv[i]||['—',0], delta=s[1]-l[1];
+  const tr=document.createElement('tr');
+  tr.innerHTML=`
+    <td><span class="rank-badge">#${i+1}</span></td>
+    <td style="color:var(--red)">${s[0]}</td>
+    <td style="color:var(--red);font-weight:600">${s[1].toLocaleString()}</td>
+    <td style="color:var(--lxv)">${l[0]}</td>
+    <td style="color:var(--lxv)">${l[1].toLocaleString()}</td>
+    <td class="loss-cell">${delta.toLocaleString()}</td>`;
+  deadBody.appendChild(tr);
+});
+
+// ---- Cumulative Bars ----
+const barsDiv = document.getElementById('cumulBars');
+[[5,'Top 5'],[10,'Top 10'],[20,'Top 20'],[30,'Top 30'],[50,'Top 50']].forEach(([n,lbl])=>{
+  const pts=sl4p.slice(0,n).reduce((a,b)=>a+b[1],0);
+  const pct=(pts/slTotal*100).toFixed(1);
+  const col=n<=5?'#8b2500':n<=11?GREEN:n<=21?LXV_C:n<=43?YELLOW:SL4P_C;
+  barsDiv.innerHTML+=`
+    <div class="bar-row">
+      <div class="bar-label"><strong>${lbl}</strong><span>${pct}% · ${(pts/1e6).toFixed(0)}M</span></div>
+      <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${col}"></div></div>
+    </div>`;
+});
+</script>
+</body>
+</html>
