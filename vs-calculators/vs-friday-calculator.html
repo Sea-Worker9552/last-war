@@ -2,7 +2,7 @@
 <html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Last War: VS Friday Total Mobilization Calculator</title>
   <meta name="description" content="Calculate troop training rounds, speedups, and VS points for Last War: Survival Alliance Duel Friday Total Mobilization event.">
   <!-- Google Fonts: Inter & Outfit -->
@@ -93,7 +93,7 @@
       color: var(--text-main);
       line-height: 1.5;
       min-height: 100vh;
-      padding: 2rem 1.5rem;
+      padding: 1.5rem 1rem;
       transition: background-color 0.3s ease, color 0.3s ease;
     }
 
@@ -102,7 +102,7 @@
       margin: 0 auto;
       display: flex;
       flex-direction: column;
-      gap: 1.5rem;
+      gap: 1.25rem;
     }
 
     /* Header Banner */
@@ -182,7 +182,7 @@
       background: transparent;
       border: none;
       color: var(--text-muted);
-      padding: 0.35rem 0.65rem;
+      padding: 0.4rem 0.75rem;
       font-size: 0.8rem;
       font-weight: 600;
       border-radius: 6px;
@@ -190,6 +190,7 @@
       display: flex;
       align-items: center;
       gap: 0.35rem;
+      min-height: 38px;
       transition: var(--transition-fast);
     }
 
@@ -245,6 +246,7 @@
       align-items: center;
       gap: 0.5rem;
       padding: 0.6rem 1.2rem;
+      min-height: 42px;
       border-radius: var(--radius-sm);
       font-family: 'Inter', sans-serif;
       font-weight: 600;
@@ -340,7 +342,8 @@
       background: var(--input-bg);
       border: 1px solid var(--border-card);
       color: var(--text-muted);
-      padding: 0.4rem 0.85rem;
+      padding: 0.45rem 0.85rem;
+      min-height: 38px;
       border-radius: 999px;
       font-size: 0.82rem;
       font-weight: 600;
@@ -481,6 +484,7 @@
       border: 1px solid var(--input-border);
       border-radius: var(--radius-sm);
       overflow: hidden;
+      min-height: 42px;
       transition: var(--transition-fast);
     }
 
@@ -499,6 +503,7 @@
       font-size: 0.95rem;
       font-weight: 600;
       outline: none;
+      min-height: 40px;
     }
 
     select {
@@ -506,6 +511,7 @@
       border: 1px solid var(--input-border);
       border-radius: var(--radius-sm);
       cursor: pointer;
+      min-height: 42px;
     }
 
     select:focus {
@@ -620,6 +626,7 @@
     .mini-input select {
       font-size: 0.8rem;
       padding: 0.3rem;
+      min-height: 36px;
     }
 
     /* Accent Card */
@@ -674,26 +681,29 @@
       background: var(--bg-card-solid);
       border: 1px solid var(--input-border);
       border-radius: var(--radius-sm);
+      min-height: 42px;
     }
 
     .stepper-sm {
-      height: 32px;
+      min-height: 36px;
+      height: 36px;
     }
 
     .stepper-sm .btn-step {
-      width: 32px;
-      height: 32px;
+      width: 36px;
+      height: 36px;
       font-size: 1rem;
     }
 
     .stepper-sm input {
       padding: 0.2rem 0.4rem;
       width: 45px;
+      min-height: 36px;
     }
 
     .btn-step {
-      width: 38px;
-      height: 38px;
+      width: 42px;
+      height: 42px;
       background: rgba(0, 0, 0, 0.04);
       border: none;
       color: var(--text-main);
@@ -701,6 +711,9 @@
       font-weight: 700;
       cursor: pointer;
       transition: var(--transition-fast);
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .btn-step:hover {
@@ -717,6 +730,7 @@
       align-items: center;
       gap: 0.4rem;
       cursor: pointer;
+      min-height: 36px;
     }
 
     .toggle-switch input {
@@ -724,8 +738,8 @@
     }
 
     .toggle-switch .slider {
-      width: 34px;
-      height: 18px;
+      width: 38px;
+      height: 20px;
       background-color: var(--text-dim);
       border-radius: 999px;
       position: relative;
@@ -735,8 +749,8 @@
     .toggle-switch .slider::before {
       content: "";
       position: absolute;
-      width: 14px;
-      height: 14px;
+      width: 16px;
+      height: 16px;
       border-radius: 50%;
       background-color: white;
       top: 2px;
@@ -749,7 +763,7 @@
     }
 
     .toggle-switch input:checked + .slider::before {
-      transform: translateX(16px);
+      transform: translateX(18px);
     }
 
     .toggle-label {
@@ -982,8 +996,38 @@
     }
 
     @media (max-width: 600px) {
+      body {
+        padding: 0.75rem 0.5rem;
+      }
+
+      .header-content h1 {
+        font-size: 1.6rem;
+      }
+
+      .header-actions {
+        width: 100%;
+        justify-content: space-between;
+      }
+
       .stats-cards-grid {
         grid-template-columns: 1fr;
+      }
+
+      .waterfall-chips, .custom-barracks-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .progress-legend {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+
+      .card {
+        padding: 1.1rem;
+      }
+
+      .stat-value {
+        font-size: 1.4rem;
       }
     }
 
@@ -1115,43 +1159,77 @@
     .legend-nonsecdef::before { color: var(--accent-purple); }
     .legend-speedups::before { color: var(--accent-green); }
 
-    /* Table Matrix Full Width */
+    /* Table Matrix Full Width & Multi-Row Compact Header */
     .table-card.full-width-table {
       width: 100%;
     }
 
     .table-responsive {
       overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     .matrix-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.88rem;
+      font-size: 0.84rem;
       text-align: left;
+      table-layout: auto;
     }
 
     .matrix-table th {
       background: var(--input-bg);
       color: var(--text-muted);
-      font-weight: 600;
-      padding: 0.85rem 1rem;
-      border-bottom: 1px solid var(--border-card);
-      white-space: nowrap;
+      font-weight: 700;
+      padding: 0.65rem 0.6rem;
+      border-bottom: 2px solid var(--border-card);
+      line-height: 1.2;
+      vertical-align: bottom;
+      white-space: normal;
+      font-size: 0.78rem;
     }
 
     .matrix-table td {
-      padding: 0.85rem 1rem;
+      padding: 0.65rem 0.6rem;
       border-bottom: 1px solid var(--border-card);
       color: var(--text-main);
-      white-space: nowrap;
+      white-space: normal;
+      line-height: 1.35;
+      vertical-align: middle;
     }
+
+    /* Column Specific Min/Max Widths for Multi-Line Wrapping */
+    .matrix-table th:nth-child(1), .matrix-table td:nth-child(1) { max-width: 110px; }
+    .matrix-table th:nth-child(2), .matrix-table td:nth-child(2) { max-width: 95px; }
+    .matrix-table th:nth-child(3), .matrix-table td:nth-child(3) { max-width: 140px; }
+    .matrix-table th:nth-child(4), .matrix-table td:nth-child(4) { max-width: 110px; }
+    .matrix-table th:nth-child(5), .matrix-table td:nth-child(5) { max-width: 115px; }
+    .matrix-table th:nth-child(6), .matrix-table td:nth-child(6) { max-width: 140px; }
+    .matrix-table th:nth-child(7), .matrix-table td:nth-child(7) { max-width: 95px; }
+    .matrix-table th:nth-child(8), .matrix-table td:nth-child(8) { max-width: 95px; }
+    .matrix-table th:nth-child(9), .matrix-table td:nth-child(9) { max-width: 95px; }
 
     .table-summary-row td {
       background: rgba(2, 132, 199, 0.08);
       font-weight: 700;
       color: var(--primary-cyan);
       border-top: 2px solid rgba(2, 132, 199, 0.3);
+      padding: 0.75rem 0.6rem;
+    }
+
+    /* Footer Credit Line */
+    .app-footer {
+      text-align: center;
+      padding: 1.25rem 0 0.5rem;
+      margin-top: 1rem;
+      border-top: 1px dashed var(--border-card);
+      font-size: 0.82rem;
+      color: var(--text-dim);
+    }
+
+    .app-footer strong {
+      color: var(--primary-cyan);
+      font-weight: 700;
     }
 
     /* Toast */
@@ -1167,6 +1245,15 @@
       box-shadow: 0 10px 25px rgba(0,0,0,0.2);
       transition: var(--transition-fast);
       z-index: 100;
+    }
+
+    @media (max-width: 600px) {
+      .toast {
+        left: 1rem;
+        right: 1rem;
+        bottom: 1rem;
+        text-align: center;
+      }
     }
 
     .toast.hidden {
@@ -1363,7 +1450,7 @@
       <!-- Panel Right: Barracks Capacities, Batch Durations & Tech Trees -->
       <div class="card">
         <div class="card-title">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 1 0 7.75"/></svg>
           <h3>Barracks Capacities, Batch Durations & Tech Trees</h3>
         </div>
 
@@ -1627,7 +1714,7 @@
         </div>
       </div>
 
-      <!-- Detailed Waterfall Breakdown Matrix Table (Full Width) -->
+      <!-- Detailed Waterfall Breakdown Matrix Table (Full Width & Multi-Row Header Compact) -->
       <div class="card table-card full-width-table">
         <div class="card-title">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
@@ -1638,15 +1725,15 @@
           <table class="matrix-table">
             <thead>
               <tr>
-                <th>Round Mode</th>
-                <th>Cap / Barracks</th>
-                <th>Waterfall Upgrade Steps</th>
-                <th>Base Troops / Rnd</th>
-                <th>Training Rounds Executed</th>
-                <th>Net Base Troops Required</th>
-                <th>Train Pts / Rnd</th>
-                <th>Speedup Pts / Rnd</th>
-                <th>Total Points</th>
+                <th>Round<br>Mode</th>
+                <th>Barracks<br>Capacity</th>
+                <th>Waterfall<br>Steps</th>
+                <th>Base Troops<br>/ Round</th>
+                <th>Training<br>Rounds</th>
+                <th>Net Base Troops<br>Required</th>
+                <th>Train Pts<br>/ Round</th>
+                <th>Speedup Pts<br>/ Round</th>
+                <th>Total<br>Points</th>
               </tr>
             </thead>
             <tbody id="matrixTableBody">
@@ -1666,6 +1753,11 @@
         </div>
       </div>
     </div>
+
+    <!-- Footer Credit Line -->
+    <footer class="app-footer">
+      <p>Credit & special thanks go out to <strong>toxicsugar ❤️</strong> for the inspiration to make this dashboard</p>
+    </footer>
   </div>
 
   <!-- Toast Notification -->
@@ -2328,37 +2420,39 @@
     }
 
     function updateMatrixTable(data) {
-      const stepsStr = data.barracksTargetTiers.map(targetT => `T${Math.max(1, targetT-1)}→T${targetT}`).join(', ');
+      const stepsFormatted = data.barracksTargetTiers.map(targetT => `T${Math.max(1, targetT-1)}→T${targetT}`);
+      const stepsLine1 = `${stepsFormatted[0]}, ${stepsFormatted[1]}`;
+      const stepsLine2 = `${stepsFormatted[2]}, ${stepsFormatted[3]}`;
 
       elements.matrixTableBody.innerHTML = `
         <tr>
           <td><span class="badge-role secdef">SecDef Boost</span></td>
-          <td>${formatNumber(data.secDefCap)}/barracks</td>
-          <td>${stepsStr}</td>
-          <td><strong>${formatNumber(data.secDefCap)} base</strong> <small>(${formatNumber(data.secDefCap * 4)} ops)</small></td>
-          <td><strong>${data.secDefRounds} Training Rnds</strong> (${data.secDefSpeedupActive ? data.secDefRounds : 0} Sped Up)</td>
-          <td><strong style="color:var(--accent-gold)">${formatNumber(data.secDefBaseTroops)} T${data.startBaseTier} Base Troops</strong> <small>(Upgraded to T${data.maxTier})</small></td>
+          <td><strong>${formatNumber(data.secDefCap)}</strong><br><small style="color:var(--text-dim)">/barracks</small></td>
+          <td>${stepsLine1}<br>${stepsLine2}</td>
+          <td><strong>${formatNumber(data.secDefCap)} base</strong><br><small style="color:var(--text-dim)">(${formatNumber(data.secDefCap * 4)} ops)</small></td>
+          <td><strong>${data.secDefRounds} Rounds</strong><br><small style="color:var(--text-dim)">(${data.secDefSpeedupActive ? data.secDefRounds : 0} Sped Up)</small></td>
+          <td><strong style="color:var(--accent-gold)">${formatNumber(data.secDefBaseTroops)} T${data.startBaseTier} Base</strong><br><small style="color:var(--text-dim)">(Upgraded → T${data.maxTier})</small></td>
           <td>${formatNumber(data.secDefTrainPtsPerRnd)}</td>
-          <td>${formatNumber(data.secDefSpeedupPtsPerRnd)} ${data.secDefSpeedupActive ? '⚡' : '(No Speedup)'}</td>
+          <td>${formatNumber(data.secDefSpeedupPtsPerRnd)} ${data.secDefSpeedupActive ? '⚡' : ''}</td>
           <td><strong>${formatNumber(data.totalSecDefPts)}</strong></td>
         </tr>
         <tr>
-          <td><span class="badge-role nonsecdef">Standard (No SecDef)</span></td>
-          <td>${formatNumber(data.nonSecDefCap)}/barracks</td>
-          <td>${stepsStr}</td>
-          <td><strong>${formatNumber(data.nonSecDefCap)} base</strong> <small>(${formatNumber(data.nonSecDefCap * 4)} ops)</small></td>
-          <td><strong>${data.nonSecDefRounds} Training Rnds</strong> (${data.nonSecDefSpeedupActive ? data.nonSecDefRounds : 0} Sped Up)</td>
-          <td><strong style="color:var(--accent-gold)">${formatNumber(data.nonSecDefBaseTroops)} T${data.startBaseTier} Base Troops</strong> <small>(Upgraded to T${data.maxTier})</small></td>
+          <td><span class="badge-role nonsecdef">Standard</span></td>
+          <td><strong>${formatNumber(data.nonSecDefCap)}</strong><br><small style="color:var(--text-dim)">/barracks</small></td>
+          <td>${stepsLine1}<br>${stepsLine2}</td>
+          <td><strong>${formatNumber(data.nonSecDefCap)} base</strong><br><small style="color:var(--text-dim)">(${formatNumber(data.nonSecDefCap * 4)} ops)</small></td>
+          <td><strong>${data.nonSecDefRounds} Rounds</strong><br><small style="color:var(--text-dim)">(${data.nonSecDefSpeedupActive ? data.nonSecDefRounds : 0} Sped Up)</small></td>
+          <td><strong style="color:var(--accent-gold)">${formatNumber(data.nonSecDefBaseTroops)} T${data.startBaseTier} Base</strong><br><small style="color:var(--text-dim)">(Upgraded → T${data.maxTier})</small></td>
           <td>${formatNumber(data.nonSecDefTrainPtsPerRnd)}</td>
-          <td>${formatNumber(data.nonSecDefSpeedupPtsPerRnd)} ${data.nonSecDefSpeedupActive ? '⚡' : '(No Speedup)'}</td>
+          <td>${formatNumber(data.nonSecDefSpeedupPtsPerRnd)} ${data.nonSecDefSpeedupActive ? '⚡' : ''}</td>
           <td><strong>${formatNumber(data.totalNonSecDefPts)}</strong></td>
         </tr>
       `;
 
       elements.tfootTrainPts.textContent = formatNumber(data.grandTrainPts);
       elements.tfootSpeedupPts.textContent = formatNumber(data.grandSpeedupPts);
-      elements.tfootRounds.textContent = `${data.secDefRounds + data.nonSecDefRounds} Training Rnds`;
-      elements.tfootTotalTroops.textContent = `${formatNumber(data.netBaseTroopsRequired)} T${data.startBaseTier} BASE TROOPS (${formatNumber(data.totalWaterfallUpgradeOps)} tier ops)`;
+      elements.tfootRounds.textContent = `${data.secDefRounds + data.nonSecDefRounds} Rounds`;
+      elements.tfootTotalTroops.textContent = `${formatNumber(data.netBaseTroopsRequired)} T${data.startBaseTier} BASE TROOPS (${formatNumber(data.totalWaterfallUpgradeOps)} ops)`;
       elements.tfootGrandTotal.textContent = `${formatNumber(data.grandTotalPts)} PTS`;
     }
 
