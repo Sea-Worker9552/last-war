@@ -203,6 +203,86 @@
       transform: translateX(-50%) translateY(-4px);
     }
 
+    /* Floating Sticky Live VS Points HUD Tracker Widget */
+    .floating-hud-widget {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 1.5rem;
+      z-index: 99;
+      background: var(--bg-card-solid);
+      border: 1px solid var(--border-active);
+      border-radius: var(--radius-md);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      padding: 0.75rem 1rem;
+      width: 270px;
+      transition: var(--transition-fast);
+    }
+
+    .floating-hud-widget.minimized .hud-body {
+      display: none;
+    }
+
+    .hud-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: var(--primary-cyan);
+    }
+
+    .hud-toggle-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      font-weight: 800;
+      cursor: pointer;
+      padding: 0 0.3rem;
+      line-height: 1;
+    }
+
+    .hud-body {
+      margin-top: 0.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      font-size: 0.8rem;
+    }
+
+    .hud-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .hud-row.highlight {
+      padding-top: 0.35rem;
+      border-top: 1px dashed var(--border-card);
+      margin-top: 0.2rem;
+    }
+
+    .hud-label {
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .hud-val {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+    }
+
+    .delta-pos {
+      color: var(--accent-green);
+    }
+
+    .delta-neg {
+      color: var(--accent-gold);
+    }
+
     /* Segmented Theme Switcher Control */
     .theme-switcher-control {
       display: flex;
@@ -1043,6 +1123,12 @@
       .stat-value {
         font-size: 1.4rem;
       }
+
+      .floating-hud-widget {
+        left: 0.5rem;
+        bottom: 0.5rem;
+        width: calc(100% - 1rem);
+      }
     }
 
     .stat-card {
@@ -1261,15 +1347,6 @@
       z-index: 100;
     }
 
-    @media (max-width: 600px) {
-      .toast {
-        left: 1rem;
-        right: 1rem;
-        bottom: 1rem;
-        text-align: center;
-      }
-    }
-
     .toast.hidden {
       opacity: 0;
       transform: translateY(20px);
@@ -1304,6 +1381,28 @@
         </button>
       </div>
     </header>
+
+    <!-- Floating Sticky Live VS Points HUD Tracker Widget -->
+    <div class="floating-hud-widget" id="floatingHudWidget">
+      <div class="hud-header">
+        <span class="hud-title">⚡ Live Goal Tracker</span>
+        <button type="button" class="hud-toggle-btn" id="btnToggleHud" title="Minimize/Expand Tracker">−</button>
+      </div>
+      <div class="hud-body" id="hudBody">
+        <div class="hud-row">
+          <span class="hud-label">Training Needed:</span>
+          <strong id="hudNeededPts" class="hud-val">5,200,000</strong>
+        </div>
+        <div class="hud-row">
+          <span class="hud-label">Current Projection:</span>
+          <strong id="hudProjPts" class="hud-val">7,624,000</strong>
+        </div>
+        <div class="hud-row highlight">
+          <span class="hud-label">Goal Delta:</span>
+          <strong id="hudDeltaPts" class="hud-val delta-pos">+424,000</strong>
+        </div>
+      </div>
+    </div>
 
     <!-- SECTION 1: BASELINE PLAYER GOALS & TRAINING CONFIGURATION (TOP CONTAINER) -->
     <section class="goal-hero-card card">
@@ -1407,7 +1506,7 @@
       </div>
     </section>
 
-    <!-- BOX BELOW GOAL: BASELINE PLAYER TROOP & BARRACKS SETTINGS (MOVED ABOVE AUTO-SOLVER) -->
+    <!-- BOX BELOW GOAL: BASELINE PLAYER TROOP & BARRACKS SETTINGS (GROUPED LOGICALLY BY CATEGORY) -->
     <div class="base-inputs-panel-grid">
       <!-- Panel Left: Troop Tier Goal & Waterfall -->
       <div class="card">
@@ -1461,7 +1560,7 @@
         </div>
       </div>
 
-      <!-- Panel Right: Barracks Capacities, Batch Durations & Tech Trees -->
+      <!-- Panel Right: Barracks Capacities, Batch Durations & Tech Trees (REORGANIZED BY CATEGORY) -->
       <div class="card">
         <div class="card-title">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 1 0 7.75"/></svg>
@@ -1469,7 +1568,7 @@
         </div>
 
         <div class="form-grid">
-          <!-- Capacities -->
+          <!-- CATEGORY 1: Secretary of Defense (Capacities & Batch Durations Grouped Together) -->
           <div class="input-group">
             <label for="secDefCapInput">With SecDef Cap (Troops/Barracks)</label>
             <div class="input-with-suffix">
@@ -1479,19 +1578,19 @@
           </div>
 
           <div class="input-group">
-            <label for="nonSecDefCapInput">Without SecDef Cap (Troops/Barracks)</label>
-            <div class="input-with-suffix">
-              <input type="number" id="nonSecDefCapInput" value="576" min="1" max="5000">
-              <span class="suffix">Troops</span>
-            </div>
-          </div>
-
-          <!-- Durations -->
-          <div class="input-group">
             <label for="secDefTimeSec">SecDef Batch Time (hh:mm:ss)</label>
             <div class="time-input-row">
               <input type="text" id="secDefTimeSec" value="02:38:40" placeholder="02:38:40">
               <span class="subtext-hint" id="secDefTimeSecFormatted">9,520 seconds</span>
+            </div>
+          </div>
+
+          <!-- CATEGORY 2: Standard (No SecDef) (Capacities & Batch Durations Grouped Together) -->
+          <div class="input-group">
+            <label for="nonSecDefCapInput">Without SecDef Cap (Troops/Barracks)</label>
+            <div class="input-with-suffix">
+              <input type="number" id="nonSecDefCapInput" value="576" min="1" max="5000">
+              <span class="suffix">Troops</span>
             </div>
           </div>
 
@@ -1503,7 +1602,7 @@
             </div>
           </div>
 
-          <!-- Tech Trees -->
+          <!-- CATEGORY 3: Tech Trees -->
           <div class="input-group">
             <label for="incentiveTrainingLevelInput">Incentive - Training Tech (x/10)</label>
             <div class="stepper-input">
@@ -1555,7 +1654,7 @@
             <input type="number" id="maxNaturalRoundsInput" value="6" min="1" max="10">
             <button type="button" class="btn-step" data-target="maxNaturalRoundsInput" data-dir="1">+</button>
           </div>
-          <span class="subtext-hint">(24h day time budget; Expiry Buffer batches deduct from this total)</span>
+          <span class="subtext-hint">(24h day time budget; Expiry Buff batches deduct from this total)</span>
         </div>
 
         <div class="realism-input">
@@ -1635,7 +1734,7 @@
         <div class="round-control-box">
           <div class="round-box-header">
             <span class="badge-role secdef">Secretary of Defense</span>
-            <span class="badge-buffer-tag" id="secDefBufferBadge" data-tooltip="💡 Expiry Buffer Batch: Started right before your 5-min SecDef buff timer expires. Trains naturally offline for 0 speedups while locking in +20% unit training capacity AND +20% training speed for that batch!">1 Expiry Buffer Batch ℹ️</span>
+            <span class="badge-buffer-tag" id="secDefBufferBadge" data-tooltip="💡 Expiry Buff Batch: Started right before your 5-min SecDef buff timer expires. Trains naturally offline for 0 speedups while locking in +20% unit training capacity AND +20% training speed for that batch!">1 Expiry Buff Batch ℹ️</span>
           </div>
           <div class="round-box-form">
             <div class="input-group">
@@ -1655,8 +1754,8 @@
               </div>
             </div>
           </div>
-          <div class="subtext-hint round-detail-subtext" id="secDefBufferHint" data-tooltip="💡 Expiry Buffer Batch: Started right before your 5-min SecDef buff timer expires. Trains naturally offline for 0 speedups while locking in +20% unit training capacity AND +20% training speed for that batch!">
-            5 Sped Up + 1 Un-Sped Buffer Batch (1 SecDef Appt)
+          <div class="subtext-hint round-detail-subtext" id="secDefBufferHint" data-tooltip="💡 Expiry Buff Batch: Started right before your 5-min SecDef buff timer expires. Trains naturally offline for 0 speedups while locking in +20% unit training capacity AND +20% training speed for that batch!">
+            5 Sped Up + 1 Un-Sped Buff Batch (1 SecDef Appt)
           </div>
         </div>
 
@@ -1819,6 +1918,7 @@
     let elements = {};
 
     let isCustomTiersActive = false;
+    let isHudMinimized = false;
     let currentSolversData = {
       stratA: { secR: 0, secSpedR: 0, nonSecR: 12, nonSecSpedR: 6 },
       stratB: { secR: 6, secSpedR: 5, nonSecR: 5, nonSecSpedR: 0 },
@@ -1940,6 +2040,12 @@
         tfootTotalTroops: document.getElementById('tfootTotalTroops'),
         tfootGrandTotal: document.getElementById('tfootGrandTotal'),
         
+        floatingHudWidget: document.getElementById('floatingHudWidget'),
+        btnToggleHud: document.getElementById('btnToggleHud'),
+        hudNeededPts: document.getElementById('hudNeededPts'),
+        hudProjPts: document.getElementById('hudProjPts'),
+        hudDeltaPts: document.getElementById('hudDeltaPts'),
+
         btnShareSummary: document.getElementById('btnShareSummary'),
         btnResetDefaults: document.getElementById('btnResetDefaults'),
         toastNotification: document.getElementById('toastNotification')
@@ -2017,6 +2123,20 @@
         });
 
         elements.targetGoalInput.addEventListener('blur', formatTargetInputWithCommas);
+      }
+
+      // Floating Live VS Points HUD Minimize/Expand Toggle
+      if (elements.btnToggleHud && elements.floatingHudWidget) {
+        elements.btnToggleHud.addEventListener('click', () => {
+          isHudMinimized = !isHudMinimized;
+          if (isHudMinimized) {
+            elements.floatingHudWidget.classList.add('minimized');
+            elements.btnToggleHud.textContent = '+';
+          } else {
+            elements.floatingHudWidget.classList.remove('minimized');
+            elements.btnToggleHud.textContent = '−';
+          }
+        });
       }
 
       // Synchronize Dual Expert Tech level between Goal Hero Card and Manual Box 2
@@ -2231,6 +2351,7 @@
       const days = Math.floor(totalMins / 1440);
       const hours = Math.floor((totalMins % 1440) / 60);
       const mins = Math.round(totalMins % 60);
+      
       let res = '';
       if (days > 0) res += `${days}d `;
       if (hours > 0 || days > 0) res += `${hours}h `;
@@ -2240,6 +2361,36 @@
 
     function formatNumber(num) {
       return Math.round(num).toLocaleString('en-US');
+    }
+
+    function solveStandardRounds(remGoal, maxNatSlots, stdTrainPtsPerRnd, stdTotalPtsPerRnd) {
+      if (remGoal <= 0) {
+        return { stdNatRounds: 0, stdSpedRounds: 0, stdTotalRounds: 0, totalPts: 0 };
+      }
+
+      const maxNatYield = maxNatSlots * stdTrainPtsPerRnd;
+
+      if (remGoal <= maxNatYield) {
+        const stdNatRounds = Math.ceil(remGoal / stdTrainPtsPerRnd);
+        return {
+          stdNatRounds: stdNatRounds,
+          stdSpedRounds: 0,
+          stdTotalRounds: stdNatRounds,
+          totalPts: stdNatRounds * stdTrainPtsPerRnd
+        };
+      } else {
+        const stdNatRounds = maxNatSlots;
+        const natPts = stdNatRounds * stdTrainPtsPerRnd;
+        const shortfall = remGoal - natPts;
+        const stdSpedRounds = Math.ceil(shortfall / stdTotalPtsPerRnd);
+        const totalPts = natPts + (stdSpedRounds * stdTotalPtsPerRnd);
+        return {
+          stdNatRounds: stdNatRounds,
+          stdSpedRounds: stdSpedRounds,
+          stdTotalRounds: stdNatRounds + stdSpedRounds,
+          totalPts: totalPts
+        };
+      }
     }
 
     function calculateAll() {
@@ -2315,8 +2466,14 @@
 
       const secDefSec = parseTimeToSeconds(elements.secDefTimeSec.value);
       const nonSecDefSec = parseTimeToSeconds(elements.nonSecDefTimeSec.value);
-      elements.secDefTimeSecFormatted.textContent = `${formatNumber(secDefSec)} seconds (${formatSecondsToHMS(secDefSec)})`;
-      elements.nonSecDefTimeSecFormatted.textContent = `${formatNumber(nonSecDefSec)} seconds (${formatSecondsToHMS(nonSecDefSec)})`;
+
+      // Last War Per-Barracks Ceiling Speedup Consumption Rules:
+      // In-game speedups round UP to the next whole minute PER BARRACKS batch.
+      const secDefMinsPerBarracks = Math.ceil(secDefSec / 60);
+      const nonSecDefMinsPerBarracks = Math.ceil(nonSecDefSec / 60);
+
+      elements.secDefTimeSecFormatted.textContent = `${formatNumber(secDefSec)}s (${formatSecondsToHMS(secDefSec)}) • ${secDefMinsPerBarracks}m speedup/barracks (${secDefMinsPerBarracks * 4}m/round)`;
+      elements.nonSecDefTimeSecFormatted.textContent = `${formatNumber(nonSecDefSec)}s (${formatSecondsToHMS(nonSecDefSec)}) • ${nonSecDefMinsPerBarracks}m speedup/barracks (${nonSecDefMinsPerBarracks * 4}m/round)`;
 
       // Read granular round inputs from Section 2 Manual Portion
       let secDefRounds = parseInt(elements.secDefRoundsInput.value, 10) || 0;
@@ -2326,11 +2483,11 @@
       let secDefUnspedRounds = secDefRounds - secDefSpedRounds;
 
       // Smart Header Badge + Clean Multi-Line Subtext + Tooltip
-      const bufferTooltipMsg = `💡 Expiry Buffer Batch: Started right before your 5-min SecDef buff timer expires. Trains naturally offline for 0 speedups while locking in +20% unit training capacity AND +20% training speed for that batch!`;
+      const buffTooltipMsg = `💡 Expiry Buff Batch: Started right before your 5-min SecDef buff timer expires. Trains naturally offline for 0 speedups while locking in +20% unit training capacity AND +20% training speed for that batch!`;
 
       if (elements.secDefBufferBadge && elements.secDefBufferHint) {
-        elements.secDefBufferBadge.setAttribute('data-tooltip', bufferTooltipMsg);
-        elements.secDefBufferHint.setAttribute('data-tooltip', bufferTooltipMsg);
+        elements.secDefBufferBadge.setAttribute('data-tooltip', buffTooltipMsg);
+        elements.secDefBufferHint.setAttribute('data-tooltip', buffTooltipMsg);
 
         if (secDefRounds === 0) {
           elements.secDefBufferBadge.innerHTML = `0 SecDef Batches ℹ️`;
@@ -2340,25 +2497,25 @@
           elements.secDefBufferHint.textContent = `No SecDef training rounds configured`;
           elements.secDefBufferHint.style.color = `var(--text-dim)`;
         } else if (secDefUnspedRounds === 0) {
-          elements.secDefBufferBadge.innerHTML = `0 Expiry Buffer Batches ℹ️`;
+          elements.secDefBufferBadge.innerHTML = `0 Expiry Buff Batches ℹ️`;
           elements.secDefBufferBadge.style.color = `var(--text-dim)`;
           elements.secDefBufferBadge.style.background = `rgba(100, 116, 139, 0.1)`;
           
           elements.secDefBufferHint.textContent = `All ${secDefSpedRounds} batches 100% sped up (1 SecDef Appt)`;
           elements.secDefBufferHint.style.color = `var(--text-dim)`;
         } else if (secDefUnspedRounds === 1) {
-          elements.secDefBufferBadge.innerHTML = `1 Expiry Buffer Batch ℹ️`;
+          elements.secDefBufferBadge.innerHTML = `1 Expiry Buff Batch ℹ️`;
           elements.secDefBufferBadge.style.color = `var(--accent-green)`;
           elements.secDefBufferBadge.style.background = `rgba(5, 150, 105, 0.12)`;
           
-          elements.secDefBufferHint.textContent = `${secDefSpedRounds} Sped Up + 1 Un-Sped Buffer Batch (1 SecDef Appt)`;
+          elements.secDefBufferHint.textContent = `${secDefSpedRounds} Sped Up + 1 Un-Sped Buff Batch (1 SecDef Appt)`;
           elements.secDefBufferHint.style.color = `var(--accent-green)`;
         } else {
-          elements.secDefBufferBadge.innerHTML = `⚠️ ${secDefUnspedRounds} Expiry Buffer Batches ℹ️`;
+          elements.secDefBufferBadge.innerHTML = `⚠️ ${secDefUnspedRounds} Expiry Buff Batches ℹ️`;
           elements.secDefBufferBadge.style.color = `var(--accent-gold)`;
           elements.secDefBufferBadge.style.background = `rgba(217, 119, 6, 0.15)`;
           
-          elements.secDefBufferHint.textContent = `${secDefSpedRounds} Sped Up + ${secDefUnspedRounds} Un-Sped Buffer Batches (Requires ${secDefUnspedRounds} SecDef Appts!)`;
+          elements.secDefBufferHint.textContent = `${secDefSpedRounds} Sped Up + ${secDefUnspedRounds} Un-Sped Buff Batches (Requires ${secDefUnspedRounds} SecDef Appts!)`;
           elements.secDefBufferHint.style.color = `var(--accent-gold)`;
         }
       }
@@ -2386,11 +2543,11 @@
       const sumTrainPtsPerTroopSet = barracksTargetTiers.reduce((acc, t) => acc + getTroopPointValue(t, duelLevel, incentiveTrainLevel), 0);
       
       const secDefTrainPtsPerRnd = sumTrainPtsPerTroopSet * secDefCap;
-      const secDefSpeedupMinsPerRnd = (secDefSec * 4) / 60;
+      const secDefSpeedupMinsPerRnd = secDefMinsPerBarracks * 4;
       const secDefSpeedupPtsPerRnd = secDefSpeedupMinsPerRnd * speedupPtsPerMin;
 
       const nonSecDefTrainPtsPerRnd = sumTrainPtsPerTroopSet * nonSecDefCap;
-      const nonSecDefSpeedupMinsPerRnd = (nonSecDefSec * 4) / 60;
+      const nonSecDefSpeedupMinsPerRnd = nonSecDefMinsPerBarracks * 4;
       const nonSecDefSpeedupPtsPerRnd = nonSecDefSpeedupMinsPerRnd * speedupPtsPerMin;
 
       // Exact Granular Totals
@@ -2428,7 +2585,7 @@
       elements.resSpeedupPts.textContent = formatNumber(grandSpeedupPts);
       elements.resTotalSpeedupTime.textContent = formatMinutesToDuration(grandTotalSpeedupMins);
       elements.resTotalSpeedupMins.textContent = `${formatNumber(grandTotalSpeedupMins)} minutes total`;
-      
+
       elements.resTotalTroops.textContent = formatNumber(netBaseTroopsRequired);
       elements.resTroopTierBreakdown.textContent = `${formatNumber(netBaseTroopsRequired)} T${startBaseTier} base troops needed at start (Upgraded T${startBaseTier} → T${maxTier}) • ${formatNumber(totalWaterfallUpgradeOps)} tier ops`;
 
@@ -2439,6 +2596,20 @@
       
       const radarPct = targetGoal > 0 ? (radarPts / targetGoal) * 100 : 0;
       elements.progressRadarMarker.style.left = `${Math.min(100, radarPct)}%`;
+
+      // Live Update Sticky Floating HUD Tracker
+      if (elements.hudNeededPts && elements.hudProjPts && elements.hudDeltaPts) {
+        elements.hudNeededPts.textContent = formatNumber(remainingGoal);
+        elements.hudProjPts.textContent = formatNumber(grandTotalPts);
+
+        if (diff >= 0) {
+          elements.hudDeltaPts.textContent = `+${formatNumber(diff)}`;
+          elements.hudDeltaPts.className = 'hud-val delta-pos';
+        } else {
+          elements.hudDeltaPts.textContent = `-${formatNumber(Math.abs(diff))}`;
+          elements.hudDeltaPts.className = 'hud-val delta-neg';
+        }
+      }
 
       updatePracticalSolver({
         targetGoal,
@@ -2491,72 +2662,56 @@
       const R = remainingGoal; // Target remaining points to solve
 
       // STRATEGY 1: No SecDef (Standard Barracks Only)
-      let s1_natRounds = Math.min(maxNaturalPerDay, Math.floor(R / nonSecDefTrainPtsPerRnd));
-      let s1_remAfterNat = Math.max(0, R - (s1_natRounds * nonSecDefTrainPtsPerRnd));
-      let s1_spedRounds = Math.ceil(s1_remAfterNat / nonSecDefTotalPerRnd);
-      
-      let s1_totalRounds = s1_natRounds + s1_spedRounds;
-      let s1_pts = (s1_natRounds * nonSecDefTrainPtsPerRnd) + (s1_spedRounds * nonSecDefTotalPerRnd);
-      let s1_speedupMins = s1_spedRounds * nonSecDefSpeedupMinsPerRnd;
-      let s1_baseTroops = s1_totalRounds * nonSecDefCap;
+      const s1 = solveStandardRounds(R, maxNaturalPerDay, nonSecDefTrainPtsPerRnd, nonSecDefTotalPerRnd);
+      let s1_speedupMins = s1.stdSpedRounds * nonSecDefSpeedupMinsPerRnd;
+      let s1_baseTroops = s1.stdTotalRounds * nonSecDefCap;
 
-      currentSolversData.stratA = { secR: 0, secSpedR: 0, nonSecR: s1_totalRounds, nonSecSpedR: s1_spedRounds };
+      currentSolversData.stratA = { secR: 0, secSpedR: 0, nonSecR: s1.stdTotalRounds, nonSecSpedR: s1.stdSpedRounds };
 
       if (elements.solverOpt1Val) {
-        elements.solverOpt1Val.textContent = `0 SecDef + ${s1_totalRounds} Standard Training Rounds (${s1_spedRounds} Sped Up + ${s1_natRounds} Natural)`;
-        elements.solverOpt1Desc.textContent = `Zero SecDef queue waiting! Solves exact standard rounds to hit ${formatNumber(R)} remaining pts. Requires ${formatMinutesToDuration(s1_speedupMins)} speedups. Yields ${formatNumber(s1_pts)} pts (${formatNumber(s1_baseTroops)} T${startBaseTier} base troops → T${maxTier}).`;
+        elements.solverOpt1Val.textContent = `0 SecDef + ${s1.stdTotalRounds} Standard Training Rounds (${s1.stdSpedRounds} Sped Up + ${s1.stdNatRounds} Natural)`;
+        elements.solverOpt1Desc.textContent = `Zero SecDef queue waiting! Solves exact standard rounds to hit ${formatNumber(R)} remaining pts. Requires ${formatMinutesToDuration(s1_speedupMins)} speedups. Yields ${formatNumber(s1.totalPts)} pts (${formatNumber(s1_baseTroops)} T${startBaseTier} base troops → T${maxTier}).`;
       }
 
       // STRATEGY 2: 1 SecDef Appointment (Recommended Efficiency)
       let s2_secRoundsNeeded = Math.ceil(R / secDefTotalPerRnd);
       let s2_secDefRounds = 0;
       let s2_secSpedRounds = 0;
-      let s2_stdRounds = 0;
-      let s2_stdSpedRounds = 0;
-      let s2_secSpeedupMins = 0;
-      let s2_stdSpeedupMins = 0;
-      let s2_totalPts = 0;
+      let s2_secYield = 0;
 
       if (s2_secRoundsNeeded <= maxSpedPerSecDefAppt) {
         s2_secDefRounds = Math.max(1, s2_secRoundsNeeded);
         s2_secSpedRounds = Math.max(0, s2_secDefRounds - 1);
-        s2_stdRounds = 0;
-        s2_stdSpedRounds = 0;
-        let expiryBufferRounds = s2_secDefRounds > 0 ? 1 : 0;
-        s2_totalPts = (s2_secSpedRounds * secDefTotalPerRnd) + (expiryBufferRounds * (sumTrainPtsPerTroopSet * secDefCap));
+        let expiryBuffRounds = s2_secDefRounds > 0 ? 1 : 0;
+        s2_secYield = (s2_secSpedRounds * secDefTotalPerRnd) + (expiryBuffRounds * (sumTrainPtsPerTroopSet * secDefCap));
         
-        if (s2_totalPts < R) {
+        if (s2_secYield < R) {
           s2_secDefRounds++;
           s2_secSpedRounds = Math.max(0, s2_secDefRounds - 1);
-          s2_totalPts = (s2_secSpedRounds * secDefTotalPerRnd) + (expiryBufferRounds * (sumTrainPtsPerTroopSet * secDefCap));
+          s2_secYield = (s2_secSpedRounds * secDefTotalPerRnd) + (expiryBuffRounds * (sumTrainPtsPerTroopSet * secDefCap));
         }
-        s2_secSpeedupMins = s2_secSpedRounds * secDefSpeedupMinsPerRnd;
       } else {
         s2_secDefRounds = maxSpedPerSecDefAppt; // 8 rounds
         s2_secSpedRounds = Math.max(0, s2_secDefRounds - 1); // 7 sped up
-        let secYield = (s2_secSpedRounds * secDefTotalPerRnd) + (sumTrainPtsPerTroopSet * secDefCap);
-        let remR = Math.max(0, R - secYield);
-        
-        s2_stdRounds = Math.ceil(remR / nonSecDefTotalPerRnd);
-        
-        // Strict Time-Budgeting: SecDef Expiry Buffer batches consume 1 of your natural offline slots in time!
-        let s2_secUnspedRounds = Math.max(0, s2_secDefRounds - s2_secSpedRounds); // 1
-        let s2_remNatSlots = Math.max(0, maxNaturalPerDay - s2_secUnspedRounds); // e.g., 6 - 1 = 5
-        
-        let s2_stdNatRounds = Math.min(s2_remNatSlots, s2_stdRounds);
-        s2_stdSpedRounds = Math.max(0, s2_stdRounds - s2_stdNatRounds);
-
-        s2_totalPts = secYield + (s2_stdSpedRounds * nonSecDefTotalPerRnd) + (s2_stdNatRounds * nonSecDefTrainPtsPerRnd);
-        s2_secSpeedupMins = s2_secSpedRounds * secDefSpeedupMinsPerRnd;
-        s2_stdSpeedupMins = s2_stdSpedRounds * nonSecDefSpeedupMinsPerRnd;
+        s2_secYield = (s2_secSpedRounds * secDefTotalPerRnd) + (sumTrainPtsPerTroopSet * secDefCap);
       }
 
+      let s2_remR = Math.max(0, R - s2_secYield);
+      let s2_secUnspedRounds = Math.max(0, s2_secDefRounds - s2_secSpedRounds);
+      let s2_remNatSlots = Math.max(0, maxNaturalPerDay - s2_secUnspedRounds);
+
+      const s2_std = solveStandardRounds(s2_remR, s2_remNatSlots, nonSecDefTrainPtsPerRnd, nonSecDefTotalPerRnd);
+
+      let s2_totalPts = s2_secYield + s2_std.totalPts;
+      let s2_secSpeedupMins = s2_secSpedRounds * secDefSpeedupMinsPerRnd;
+      let s2_stdSpeedupMins = s2_std.stdSpedRounds * nonSecDefSpeedupMinsPerRnd;
       let s2_totalSpeedupMins = s2_secSpeedupMins + s2_stdSpeedupMins;
-      let s2_baseTroops = (s2_secDefRounds * secDefCap) + (s2_stdRounds * nonSecDefCap);
-      currentSolversData.stratB = { secR: s2_secDefRounds, secSpedR: s2_secSpedRounds, nonSecR: s2_stdRounds, nonSecSpedR: s2_stdSpedRounds };
+      let s2_baseTroops = (s2_secDefRounds * secDefCap) + (s2_std.stdTotalRounds * nonSecDefCap);
+
+      currentSolversData.stratB = { secR: s2_secDefRounds, secSpedR: s2_secSpedRounds, nonSecR: s2_std.stdTotalRounds, nonSecSpedR: s2_std.stdSpedRounds };
 
       if (elements.solverOpt2Val) {
-        if (s2_stdRounds === 0) {
+        if (s2_std.stdTotalRounds === 0) {
           elements.solverOpt2Val.textContent = `${s2_secDefRounds} SecDef Training Rounds (1 Appointment) + 0 Standard Rounds`;
           elements.solverOpt2Desc.textContent = `1 SecDef appointment (${s2_secSpedRounds} sped-up + 1 final batch at expiry with 0 speedups = ${formatMinutesToDuration(s2_secSpeedupMins)} speedups) completely satisfies your ${formatNumber(R)} remaining goal! Yields ${formatNumber(s2_totalPts)} pts (${formatNumber(s2_baseTroops)} T${startBaseTier} base troops → T${maxTier}).`;
         } else {
@@ -2564,8 +2719,8 @@
             `${formatMinutesToDuration(s2_secSpeedupMins)} SecDef speedups + ${formatMinutesToDuration(s2_stdSpeedupMins)} Standard speedups = ${formatMinutesToDuration(s2_totalSpeedupMins)} total` :
             `${formatMinutesToDuration(s2_secSpeedupMins)} SecDef speedups (Standard rounds are 100% natural offline)`;
 
-          elements.solverOpt2Val.textContent = `${s2_secDefRounds} SecDef Training Rounds (${s2_secSpedRounds} Sped Up) + ${s2_stdRounds} Standard Rounds (${s2_stdSpedRounds} Sped Up)`;
-          elements.solverOpt2Desc.textContent = `1 SecDef appointment (${s2_secDefRounds} rounds; ${s2_secSpedRounds} sped-up + 1 final batch at expiry with 0 speedups) + ${s2_stdRounds} standard rounds (${s2_stdSpedRounds} sped up). Uses ${speedupDetail}. Yields ${formatNumber(s2_totalPts)} pts (${formatNumber(s2_baseTroops)} T${startBaseTier} base troops → T${maxTier}).`;
+          elements.solverOpt2Val.textContent = `${s2_secDefRounds} SecDef Training Rounds (${s2_secSpedRounds} Sped Up) + ${s2_std.stdTotalRounds} Standard Rounds (${s2_std.stdSpedRounds} Sped Up)`;
+          elements.solverOpt2Desc.textContent = `1 SecDef appointment (${s2_secDefRounds} rounds; ${s2_secSpedRounds} sped-up + 1 final batch at expiry with 0 speedups) + ${s2_std.stdTotalRounds} standard rounds (${s2_std.stdSpedRounds} sped up). Uses ${speedupDetail}. Yields ${formatNumber(s2_totalPts)} pts (${formatNumber(s2_baseTroops)} T${startBaseTier} base troops → T${maxTier}).`;
         }
       }
 
@@ -2574,56 +2729,44 @@
       let s3_secRoundsNeeded = Math.ceil(R / secDefTotalPerRnd);
       let s3_secDefRounds = 0;
       let s3_secSpedRounds = 0;
-      let s3_stdRounds = 0;
-      let s3_stdSpedRounds = 0;
-      let s3_secSpeedupMins = 0;
-      let s3_stdSpeedupMins = 0;
-      let s3_totalPts = 0;
+      let s3_secYield = 0;
 
       if (s3_secRoundsNeeded <= s3_maxSecRoundsAllowed) {
         s3_secDefRounds = Math.max(1, s3_secRoundsNeeded);
-        s3_stdRounds = 0;
-        s3_stdSpedRounds = 0;
         let apptsUsed = Math.ceil(s3_secDefRounds / maxSpedPerSecDefAppt);
         s3_secSpedRounds = Math.max(0, s3_secDefRounds - apptsUsed);
-        s3_totalPts = (s3_secSpedRounds * secDefTotalPerRnd) + (apptsUsed * (sumTrainPtsPerTroopSet * secDefCap));
+        s3_secYield = (s3_secSpedRounds * secDefTotalPerRnd) + (apptsUsed * (sumTrainPtsPerTroopSet * secDefCap));
         
-        if (s3_totalPts < R) {
+        if (s3_secYield < R) {
           s3_secDefRounds++;
           apptsUsed = Math.ceil(s3_secDefRounds / maxSpedPerSecDefAppt);
           s3_secSpedRounds = Math.max(0, s3_secDefRounds - apptsUsed);
-          s3_totalPts = (s3_secSpedRounds * secDefTotalPerRnd) + (apptsUsed * (sumTrainPtsPerTroopSet * secDefCap));
+          s3_secYield = (s3_secSpedRounds * secDefTotalPerRnd) + (apptsUsed * (sumTrainPtsPerTroopSet * secDefCap));
         }
-        s3_secSpeedupMins = s3_secSpedRounds * secDefSpeedupMinsPerRnd;
-        s3_stdSpeedupMins = 0;
       } else {
         s3_secDefRounds = s3_maxSecRoundsAllowed;
         let apptsUsed = maxSecDefAppts;
         s3_secSpedRounds = s3_secDefRounds - apptsUsed;
-        let secYield = (s3_secSpedRounds * secDefTotalPerRnd) + (apptsUsed * (sumTrainPtsPerTroopSet * secDefCap));
-        let remR = Math.max(0, R - secYield);
-        s3_stdRounds = Math.ceil(remR / nonSecDefTotalPerRnd);
-        
-        // Strict Time-Budgeting: SecDef Expiry Buffer batches consume un-sped offline slots in time!
-        let s3_secUnspedRounds = Math.max(0, s3_secDefRounds - s3_secSpedRounds); // e.g. 2
-        let s3_remNatSlots = Math.max(0, maxNaturalPerDay - s3_secUnspedRounds); // e.g. 6 - 2 = 4
-        
-        let s3_stdNatRounds = Math.min(s3_remNatSlots, s3_stdRounds);
-        s3_stdSpedRounds = Math.max(0, s3_stdRounds - s3_stdNatRounds);
-
-        s3_totalPts = secYield + (s3_stdSpedRounds * nonSecDefTotalPerRnd) + (s3_stdNatRounds * nonSecDefTrainPtsPerRnd);
-        s3_secSpeedupMins = s3_secSpedRounds * secDefSpeedupMinsPerRnd;
-        s3_stdSpeedupMins = s3_stdSpedRounds * nonSecDefSpeedupMinsPerRnd;
+        s3_secYield = (s3_secSpedRounds * secDefTotalPerRnd) + (apptsUsed * (sumTrainPtsPerTroopSet * secDefCap));
       }
 
+      let s3_remR = Math.max(0, R - s3_secYield);
+      let s3_secUnspedRounds = Math.max(0, s3_secDefRounds - s3_secSpedRounds);
+      let s3_remNatSlots = Math.max(0, maxNaturalPerDay - s3_secUnspedRounds);
+
+      const s3_std = solveStandardRounds(s3_remR, s3_remNatSlots, nonSecDefTrainPtsPerRnd, nonSecDefTotalPerRnd);
+
+      let s3_totalPts = s3_secYield + s3_std.totalPts;
+      let s3_secSpeedupMins = s3_secSpedRounds * secDefSpeedupMinsPerRnd;
+      let s3_stdSpeedupMins = s3_std.stdSpedRounds * nonSecDefSpeedupMinsPerRnd;
       let s3_totalSpeedupMins = s3_secSpeedupMins + s3_stdSpeedupMins;
-      let s3_baseTroops = (s3_secDefRounds * secDefCap) + (s3_stdRounds * nonSecDefCap);
+      let s3_baseTroops = (s3_secDefRounds * secDefCap) + (s3_std.stdTotalRounds * nonSecDefCap);
       let s3_apptsCount = Math.min(maxSecDefAppts, Math.ceil(s3_secDefRounds / maxSpedPerSecDefAppt));
 
-      currentSolversData.stratC = { secR: s3_secDefRounds, secSpedR: s3_secSpedRounds, nonSecR: s3_stdRounds, nonSecSpedR: s3_stdSpedRounds };
+      currentSolversData.stratC = { secR: s3_secDefRounds, secSpedR: s3_secSpedRounds, nonSecR: s3_std.stdTotalRounds, nonSecSpedR: s3_std.stdSpedRounds };
 
       if (elements.solverOpt3Val) {
-        if (s3_secDefRounds <= s2_secDefRounds && s3_stdRounds === s2_stdRounds) {
+        if (s3_secDefRounds <= s2_secDefRounds && s3_std.stdTotalRounds === s2_std.stdTotalRounds) {
           elements.solverOpt3Val.textContent = `${s3_secDefRounds} SecDef Training Rounds (Fast Finish)`;
           elements.solverOpt3Desc.textContent = `Goal of ${formatNumber(R)} is already fully met by 1 SecDef appointment! You don't need additional SecDef appointments unless pushing extra chests.`;
         } else {
@@ -2631,7 +2774,7 @@
             `${formatMinutesToDuration(s3_secSpeedupMins)} SecDef speedups + ${formatMinutesToDuration(s3_stdSpeedupMins)} Standard speedups = ${formatMinutesToDuration(s3_totalSpeedupMins)} total` :
             `${formatMinutesToDuration(s3_secSpeedupMins)} SecDef speedups (Standard rounds are 100% natural offline)`;
 
-          elements.solverOpt3Val.textContent = `${s3_secDefRounds} SecDef Training Rounds (${s3_secSpedRounds} Sped Up) + ${s3_stdRounds} Standard Rounds (${s3_stdSpedRounds} Sped Up)`;
+          elements.solverOpt3Val.textContent = `${s3_secDefRounds} SecDef Training Rounds (${s3_secSpedRounds} Sped Up) + ${s3_std.stdTotalRounds} Standard Rounds (${s3_std.stdSpedRounds} Sped Up)`;
           elements.solverOpt3Desc.textContent = `Pushes ${s3_apptsCount} SecDef appointments (${s3_secDefRounds} rounds; ${s3_speedupDetail}) to hit your ${formatNumber(R)} remaining goal. Yields ${formatNumber(s3_totalPts)} pts (${formatNumber(s3_baseTroops)} T${startBaseTier} base troops → T${maxTier}).`;
         }
       }
@@ -2644,7 +2787,7 @@
 
       let secDefRoundsSubtext = `(${data.secDefSpedRounds} Sped Up)`;
       if (data.secDefUnspedRounds > 0) {
-        secDefRoundsSubtext = `(${data.secDefSpedRounds} Sped Up, ${data.secDefUnspedRounds} Expiry Buffer${data.secDefUnspedRounds > 1 ? 's' : ''})`;
+        secDefRoundsSubtext = `(${data.secDefSpedRounds} Sped Up, ${data.secDefUnspedRounds} Expiry Buff${data.secDefUnspedRounds > 1 ? 's' : ''})`;
       }
 
       elements.matrixTableBody.innerHTML = `
@@ -2695,11 +2838,11 @@
       const startBaseT = Math.max(1, maxT - 4);
 
       let speedupDetailStr = '';
-      if (secSpedR > 0 && nonSecR > 0) {
-        speedupDetailStr = `${secSpedR} SecDef training rounds + ${nonSecR} Standard training rounds (${totalSpedUp} total)`;
+      if (secSpedR > 0 && nonSpedR > 0) {
+        speedupDetailStr = `${secSpedR} SecDef training rounds + ${nonSpedR} Standard training rounds (${totalSpedUp} total)`;
       } else if (secSpedR > 0) {
         speedupDetailStr = `${secSpedR} SecDef training rounds (0 Standard rounds)`;
-      } else if (nonSecR > 0) {
+      } else if (nonSpedR > 0) {
         speedupDetailStr = `${nonSecR} Standard training rounds (0 SecDef rounds)`;
       } else {
         speedupDetailStr = `0 rounds (Natural Offline Training only)`;
