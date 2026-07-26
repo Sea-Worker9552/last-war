@@ -93,7 +93,7 @@
       color: var(--text-main);
       line-height: 1.5;
       min-height: 100vh;
-      padding: 1.5rem 1rem;
+      padding: calc(1rem + env(safe-area-inset-top)) calc(1rem + env(safe-area-inset-right)) calc(1.5rem + env(safe-area-inset-bottom)) calc(1rem + env(safe-area-inset-left));
       transition: background-color 0.3s ease, color 0.3s ease;
     }
 
@@ -560,14 +560,14 @@
       margin: 0.4rem 0;
     }
 
-    /* Player Base Training Inputs Panel Grid */
+    /* Player Base Training Inputs Panel Grid (3 Equal Columns in 1 Row) */
     .base-inputs-panel-grid {
       display: grid;
-      grid-template-columns: 1fr 1.35fr;
+      grid-template-columns: 1fr 1.1fr 1fr;
       gap: 1.25rem;
     }
 
-    @media (max-width: 1024px) {
+    @media (max-width: 1100px) {
       .base-inputs-panel-grid {
         grid-template-columns: 1fr;
       }
@@ -712,7 +712,7 @@
 
     .waterfall-chips {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(2, 1fr);
       gap: 0.4rem;
     }
 
@@ -732,7 +732,7 @@
 
     .custom-barracks-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(2, 1fr);
       gap: 0.4rem;
       margin-top: 0.5rem;
     }
@@ -991,6 +991,9 @@
       border-radius: var(--radius-sm);
       padding: 1.1rem;
       transition: var(--transition-fast);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
 
     .clickable-card {
@@ -1022,6 +1025,7 @@
       border-radius: 4px;
       display: inline-block;
       transition: var(--transition-fast);
+      text-align: center;
     }
 
     .clickable-card:hover .apply-hint-badge {
@@ -1064,16 +1068,35 @@
 
     .opt-val {
       font-family: 'Outfit', sans-serif;
-      font-size: 1.35rem;
+      font-size: 1.25rem;
       font-weight: 800;
       color: var(--text-main);
-      margin: 0.3rem 0;
+      margin: 0.2rem 0 0.4rem 0;
+      line-height: 1.3;
     }
 
-    .opt-desc {
+    /* Bullet List inside Strategy Option Cards */
+    .opt-desc-list {
+      list-style: none;
+      padding: 0;
+      margin: 0.5rem 0 0.25rem 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
       font-size: 0.82rem;
       color: var(--text-muted);
-      line-height: 1.4;
+    }
+
+    .opt-desc-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.45rem;
+      line-height: 1.35;
+    }
+
+    .opt-desc-list li strong {
+      color: var(--text-main);
+      font-weight: 700;
     }
 
     /* Stats Cards Grid (4 Columns) */
@@ -1091,7 +1114,7 @@
 
     @media (max-width: 600px) {
       body {
-        padding: 0.75rem 0.5rem;
+        padding: calc(0.75rem + env(safe-area-inset-top)) calc(0.5rem + env(safe-area-inset-right)) calc(1rem + env(safe-area-inset-bottom)) calc(0.5rem + env(safe-area-inset-left));
       }
 
       .header-content h1 {
@@ -1126,7 +1149,7 @@
 
       .floating-hud-widget {
         left: 0.5rem;
-        bottom: 0.5rem;
+        bottom: calc(0.5rem + env(safe-area-inset-bottom));
         width: calc(100% - 1rem);
       }
     }
@@ -1188,76 +1211,6 @@
       color: var(--accent-green);
       font-weight: 600;
     }
-
-    /* Progress Bar */
-    .progress-section {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      margin-top: 0.5rem;
-    }
-
-    .progress-labels {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-
-    .badge-status {
-      font-size: 0.75rem;
-      font-weight: 700;
-      padding: 0.2rem 0.6rem;
-      border-radius: 999px;
-    }
-
-    .badge-status.success {
-      background: rgba(5, 150, 105, 0.12);
-      color: var(--accent-green);
-    }
-
-    .progress-bar-container {
-      position: relative;
-      height: 14px;
-      background: var(--input-bg);
-      border: 1px solid var(--border-card);
-      border-radius: 999px;
-      overflow: hidden;
-    }
-
-    .progress-bar-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--primary-cyan) 0%, var(--accent-green) 100%);
-      border-radius: 999px;
-      transition: width 0.4s ease;
-    }
-
-    .progress-marker-radar {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      width: 3px;
-      background-color: var(--accent-gold);
-      box-shadow: 0 0 8px var(--accent-gold);
-    }
-
-    .progress-legend {
-      display: flex;
-      gap: 1rem;
-      font-size: 0.72rem;
-      color: var(--text-dim);
-      margin-top: 0.2rem;
-    }
-
-    .legend-item::before {
-      content: "• ";
-    }
-
-    .legend-radar::before { color: var(--accent-gold); }
-    .legend-secdef::before { color: var(--primary-cyan); }
-    .legend-nonsecdef::before { color: var(--accent-purple); }
-    .legend-speedups::before { color: var(--accent-green); }
 
     /* Table Matrix Full Width & Multi-Row Compact Header */
     .table-card.full-width-table {
@@ -1506,43 +1459,31 @@
       </div>
     </section>
 
-    <!-- BOX BELOW GOAL: BASELINE PLAYER TROOP & BARRACKS SETTINGS (GROUPED LOGICALLY BY CATEGORY) -->
+    <!-- ROW 2: BASELINE PLAYER TROOP & BARRACKS SETTINGS (3 EQUAL COLUMNS IN 1 ROW) -->
     <div class="base-inputs-panel-grid">
-      <!-- Panel Left: Troop Tier Goal & Waterfall -->
+      <!-- Card 1: Troop Tier Goal & Waterfall Steps -->
       <div class="card">
         <div class="card-title">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
-          <h3>Troop Tier Goal & Waterfall Steps</h3>
+          <h3>1. Troop Tier Goal & Waterfall</h3>
         </div>
 
-        <div class="form-grid">
-          <div class="input-group">
-            <label for="maxTierSelect">Max Troop Tier Goal</label>
-            <select id="maxTierSelect">
-              <option value="10">Tier 10 (275 pts max)</option>
-              <option value="9">Tier 9 (250 pts max)</option>
-              <option value="8" selected>Tier 8 (225 pts max)</option>
-              <option value="7">Tier 7 (200 pts max)</option>
-              <option value="6">Tier 6 (175 pts max)</option>
-              <option value="5">Tier 5 (150 pts max)</option>
-              <option value="4">Tier 4 (125 pts max)</option>
-            </select>
-          </div>
-
-          <div class="input-group">
-            <label for="duelExpertLevelInput">Duel Expert Tech (x/20)</label>
-            <div class="stepper-input">
-              <button type="button" class="btn-step" data-target="duelExpertLevelInput" data-dir="-1">-</button>
-              <input type="number" id="duelExpertLevelInput" value="20" min="0" max="20">
-              <button type="button" class="btn-step" data-target="duelExpertLevelInput" data-dir="1">+</button>
-            </div>
-            <span class="subtext-hint">+5% VS pts/lvl (all)</span>
-          </div>
+        <div class="input-group">
+          <label for="maxTierSelect">Max Troop Tier Goal</label>
+          <select id="maxTierSelect">
+            <option value="10">Tier 10 (275 pts max)</option>
+            <option value="9">Tier 9 (250 pts max)</option>
+            <option value="8" selected>Tier 8 (225 pts max)</option>
+            <option value="7">Tier 7 (200 pts max)</option>
+            <option value="6">Tier 6 (175 pts max)</option>
+            <option value="5">Tier 5 (150 pts max)</option>
+            <option value="4">Tier 4 (125 pts max)</option>
+          </select>
         </div>
 
         <div class="waterfall-preview-box">
           <div class="waterfall-header">
-            <span>Auto-Configured Waterfall (4 Barracks)</span>
+            <span>Waterfall Steps (4 Barracks)</span>
             <button id="btnToggleCustomTiers" class="text-link-btn">Custom Tiers</button>
           </div>
           <div class="waterfall-chips" id="waterfallChipsContainer">
@@ -1560,15 +1501,15 @@
         </div>
       </div>
 
-      <!-- Panel Right: Barracks Capacities, Batch Durations & Tech Trees (REORGANIZED BY CATEGORY) -->
+      <!-- Card 2: Barracks Capacities & Batch Durations -->
       <div class="card">
         <div class="card-title">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 1 0 7.75"/></svg>
-          <h3>Barracks Capacities, Batch Durations & Tech Trees</h3>
+          <h3>2. Barracks Capacities & Timing</h3>
         </div>
 
-        <div class="form-grid">
-          <!-- CATEGORY 1: Secretary of Defense (Capacities & Batch Durations Grouped Together) -->
+        <div class="form-grid" style="grid-template-columns: 1fr;">
+          <!-- Category 1: SecDef -->
           <div class="input-group">
             <label for="secDefCapInput">With SecDef Cap (Troops/Barracks)</label>
             <div class="input-with-suffix">
@@ -1585,7 +1526,7 @@
             </div>
           </div>
 
-          <!-- CATEGORY 2: Standard (No SecDef) (Capacities & Batch Durations Grouped Together) -->
+          <!-- Category 2: Standard / Non-SecDef -->
           <div class="input-group">
             <label for="nonSecDefCapInput">Without SecDef Cap (Troops/Barracks)</label>
             <div class="input-with-suffix">
@@ -1601,8 +1542,29 @@
               <span class="subtext-hint" id="nonSecDefTimeSecFormatted">9,641 seconds</span>
             </div>
           </div>
+        </div>
+      </div>
 
-          <!-- CATEGORY 3: Tech Trees -->
+      <!-- Card 3: Alliance Duel & VS Tech Trees (Microchip / High-Tech CPU Icon) -->
+      <div class="card">
+        <div class="card-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 15h3M1 9h3M1 15h3"/></svg>
+          <h3>3. VS Tech Trees</h3>
+        </div>
+
+        <div class="form-grid" style="grid-template-columns: 1fr;">
+          <!-- Tech 1: Duel Expert Tech -->
+          <div class="input-group">
+            <label for="duelExpertLevelInput">Alliance Duel Expert Tech (x/20)</label>
+            <div class="stepper-input">
+              <button type="button" class="btn-step" data-target="duelExpertLevelInput" data-dir="-1">-</button>
+              <input type="number" id="duelExpertLevelInput" value="20" min="0" max="20">
+              <button type="button" class="btn-step" data-target="duelExpertLevelInput" data-dir="1">+</button>
+            </div>
+            <span class="subtext-hint">+5% VS pts/lvl (all activities)</span>
+          </div>
+
+          <!-- Tech 2: Incentive Training Tech -->
           <div class="input-group">
             <label for="incentiveTrainingLevelInput">Incentive - Training Tech (x/10)</label>
             <div class="stepper-input">
@@ -1613,6 +1575,7 @@
             <span class="subtext-hint">+5% training pts per lvl</span>
           </div>
 
+          <!-- Tech 3: Incentive Speedup Tech -->
           <div class="input-group">
             <label for="incentiveSpeedupLevelInput">Incentive - Speed-Up Tech (x/10)</label>
             <div class="stepper-input">
@@ -1625,7 +1588,7 @@
         </div>
 
         <div class="subtext-hint highlight-text-hint" id="techBonusSummaryText">
-          Training Boost: +150% (Duel: +100%, Inc: +50%) • Speedup Rate: 125 pts/min (Duel: +100%, Inc: +50%)
+          Training Boost: +150% • Speedup Rate: 125 pts/min
         </div>
       </div>
     </div>
@@ -1683,34 +1646,46 @@
       <div class="solver-options-grid">
         <!-- Option 1: No SecDef (Standard Barracks Only) -->
         <div class="solver-option-card clickable-card" id="solverCard1">
-          <div class="opt-header">
-            <span class="opt-tag">Strategy 1</span>
-            <span class="badge-opt alt" id="solverOpt1Title">No SecDef (Standard Barracks Only)</span>
+          <div>
+            <div class="opt-header">
+              <span class="opt-tag">Strategy 1</span>
+              <span class="badge-opt alt" id="solverOpt1Title">No SecDef</span>
+            </div>
+            <div class="opt-val" id="solverOpt1Val">0 SecDef + 11 Standard Rounds</div>
+            <ul class="opt-desc-list" id="solverOpt1List">
+              <!-- Bullet points populated dynamically -->
+            </ul>
           </div>
-          <div class="opt-val" id="solverOpt1Val">0 SecDef + 6 Standard Training Rounds</div>
-          <div class="opt-desc" id="solverOpt1Desc">Zero SecDef queue waiting! Solves exact standard training rounds needed for your specific goal.</div>
           <div class="apply-hint-badge">👉 Click to Apply Strategy</div>
         </div>
 
         <!-- Option 2: 1 SecDef Appointment (Recommended Efficiency) -->
         <div class="solver-option-card clickable-card highlighted" id="solverCard2">
-          <div class="opt-header">
-            <span class="opt-tag">Strategy 2</span>
-            <span class="badge-opt gold" id="solverOpt2Title">1 SecDef Appt (Recommended Efficiency)</span>
+          <div>
+            <div class="opt-header">
+              <span class="opt-tag">Strategy 2</span>
+              <span class="badge-opt gold" id="solverOpt2Title">1 SecDef Appt (Recommended)</span>
+            </div>
+            <div class="opt-val" id="solverOpt2Val">6 SecDef + 5 Standard Rounds</div>
+            <ul class="opt-desc-list" id="solverOpt2List">
+              <!-- Bullet points populated dynamically -->
+            </ul>
           </div>
-          <div class="opt-val" id="solverOpt2Val">6 SecDef Training Rounds + 5 Standard Training Rounds</div>
-          <div class="opt-desc" id="solverOpt2Desc">1 SecDef appointment (includes 1 final SecDef-buffed batch at expiry with 0 speedups) + natural offline rounds. Maximum speedup efficiency!</div>
           <div class="apply-hint-badge">👉 Click to Apply Strategy</div>
         </div>
 
         <!-- Option 3: Heavy Speedup / Multi-SecDef Push (High Target Goals) -->
         <div class="solver-option-card clickable-card" id="solverCard3">
-          <div class="opt-header">
-            <span class="opt-tag">Strategy 3</span>
-            <span class="badge-opt" id="solverOpt3Title">High Target Goal Push</span>
+          <div>
+            <div class="opt-header">
+              <span class="opt-tag">Strategy 3</span>
+              <span class="badge-opt" id="solverOpt3Title">High Target Push</span>
+            </div>
+            <div class="opt-val" id="solverOpt3Val">12 SecDef + 4 Standard Rounds</div>
+            <ul class="opt-desc-list" id="solverOpt3List">
+              <!-- Bullet points populated dynamically -->
+            </ul>
           </div>
-          <div class="opt-val" id="solverOpt3Val">12 SecDef Training Rounds + 4 Standard Training Rounds</div>
-          <div class="opt-desc" id="solverOpt3Desc">Scales up SecDef rounds across 2 appointments to hit high point targets (10M - 15M+).</div>
           <div class="apply-hint-badge">👉 Click to Apply Strategy</div>
         </div>
       </div>
@@ -2011,17 +1986,17 @@
         solverTargetText: document.getElementById('solverTargetText'),
         solverOpt1Title: document.getElementById('solverOpt1Title'),
         solverOpt1Val: document.getElementById('solverOpt1Val'),
-        solverOpt1Desc: document.getElementById('solverOpt1Desc'),
+        solverOpt1List: document.getElementById('solverOpt1List'),
         solverCard1: document.getElementById('solverCard1'),
         
         solverOpt2Title: document.getElementById('solverOpt2Title'),
         solverOpt2Val: document.getElementById('solverOpt2Val'),
-        solverOpt2Desc: document.getElementById('solverOpt2Desc'),
+        solverOpt2List: document.getElementById('solverOpt2List'),
         solverCard2: document.getElementById('solverCard2'),
         
         solverOpt3Title: document.getElementById('solverOpt3Title'),
         solverOpt3Val: document.getElementById('solverOpt3Val'),
-        solverOpt3Desc: document.getElementById('solverOpt3Desc'),
+        solverOpt3List: document.getElementById('solverOpt3List'),
         solverCard3: document.getElementById('solverCard3'),
         
         resTotalPoints: document.getElementById('resTotalPoints'),
@@ -2139,7 +2114,7 @@
         });
       }
 
-      // Synchronize Dual Expert Tech level between Goal Hero Card and Manual Box 2
+      // Synchronize Dual Expert Tech level between Goal Hero Card and VS Tech Card
       if (elements.goalDuelExpertLevelInput && elements.duelExpertLevelInput) {
         elements.goalDuelExpertLevelInput.addEventListener('input', (e) => {
           elements.duelExpertLevelInput.value = e.target.value;
@@ -2668,9 +2643,15 @@
 
       currentSolversData.stratA = { secR: 0, secSpedR: 0, nonSecR: s1.stdTotalRounds, nonSecSpedR: s1.stdSpedRounds };
 
-      if (elements.solverOpt1Val) {
-        elements.solverOpt1Val.textContent = `0 SecDef + ${s1.stdTotalRounds} Standard Training Rounds (${s1.stdSpedRounds} Sped Up + ${s1.stdNatRounds} Natural)`;
-        elements.solverOpt1Desc.textContent = `Zero SecDef queue waiting! Solves exact standard rounds to hit ${formatNumber(R)} remaining pts. Requires ${formatMinutesToDuration(s1_speedupMins)} speedups. Yields ${formatNumber(s1.totalPts)} pts (${formatNumber(s1_baseTroops)} T${startBaseTier} base troops → T${maxTier}).`;
+      if (elements.solverOpt1Val && elements.solverOpt1List) {
+        elements.solverOpt1Val.textContent = `0 SecDef + ${s1.stdTotalRounds} Standard Rounds`;
+        elements.solverOpt1List.innerHTML = `
+          <li>🛡️ <strong>0 SecDef Appointments</strong> (No appointment queue wait)</li>
+          <li>🪖 <strong>${s1.stdTotalRounds} Standard Rounds</strong> (${s1.stdSpedRounds} Sped Up + ${s1.stdNatRounds} Natural Offline)</li>
+          <li>⏱️ <strong>${formatMinutesToDuration(s1_speedupMins)} speedups</strong> used</li>
+          <li>📦 <strong>${formatNumber(s1_baseTroops)} T${startBaseTier} base troops</strong> → T${maxTier}</li>
+          <li>🏆 <strong>Yields ${formatNumber(s1.totalPts)} pts</strong></li>
+        `;
       }
 
       // STRATEGY 2: 1 SecDef Appointment (Recommended Efficiency)
@@ -2710,18 +2691,23 @@
 
       currentSolversData.stratB = { secR: s2_secDefRounds, secSpedR: s2_secSpedRounds, nonSecR: s2_std.stdTotalRounds, nonSecSpedR: s2_std.stdSpedRounds };
 
-      if (elements.solverOpt2Val) {
-        if (s2_std.stdTotalRounds === 0) {
-          elements.solverOpt2Val.textContent = `${s2_secDefRounds} SecDef Training Rounds (1 Appointment) + 0 Standard Rounds`;
-          elements.solverOpt2Desc.textContent = `1 SecDef appointment (${s2_secSpedRounds} sped-up + 1 final batch at expiry with 0 speedups = ${formatMinutesToDuration(s2_secSpeedupMins)} speedups) completely satisfies your ${formatNumber(R)} remaining goal! Yields ${formatNumber(s2_totalPts)} pts (${formatNumber(s2_baseTroops)} T${startBaseTier} base troops → T${maxTier}).`;
-        } else {
-          let speedupDetail = s2_stdSpeedupMins > 0 ? 
-            `${formatMinutesToDuration(s2_secSpeedupMins)} SecDef speedups + ${formatMinutesToDuration(s2_stdSpeedupMins)} Standard speedups = ${formatMinutesToDuration(s2_totalSpeedupMins)} total` :
-            `${formatMinutesToDuration(s2_secSpeedupMins)} SecDef speedups (Standard rounds are 100% natural offline)`;
+      if (elements.solverOpt2Val && elements.solverOpt2List) {
+        let secDefDescText = s2_secSpedRounds > 0 ? 
+          `<strong>1 SecDef Appointment</strong> (${s2_secSpedRounds} Sped Up + 1 Expiry Buff batch)` :
+          `<strong>1 SecDef Appointment</strong> (1 Expiry Buff batch)`;
 
-          elements.solverOpt2Val.textContent = `${s2_secDefRounds} SecDef Training Rounds (${s2_secSpedRounds} Sped Up) + ${s2_std.stdTotalRounds} Standard Rounds (${s2_std.stdSpedRounds} Sped Up)`;
-          elements.solverOpt2Desc.textContent = `1 SecDef appointment (${s2_secDefRounds} rounds; ${s2_secSpedRounds} sped-up + 1 final batch at expiry with 0 speedups) + ${s2_std.stdTotalRounds} standard rounds (${s2_std.stdSpedRounds} sped up). Uses ${speedupDetail}. Yields ${formatNumber(s2_totalPts)} pts (${formatNumber(s2_baseTroops)} T${startBaseTier} base troops → T${maxTier}).`;
-        }
+        let stdDescText = s2_std.stdTotalRounds > 0 ?
+          `<strong>${s2_std.stdTotalRounds} Standard Rounds</strong> without SecDef (${s2_std.stdSpedRounds} Sped Up + ${s2_std.stdNatRounds} Natural)` :
+          `<strong>0 Standard Rounds</strong> needed`;
+
+        elements.solverOpt2Val.textContent = `${s2_secDefRounds} SecDef + ${s2_std.stdTotalRounds} Standard Rounds`;
+        elements.solverOpt2List.innerHTML = `
+          <li>🛡️ ${secDefDescText}</li>
+          <li>🪖 ${stdDescText}</li>
+          <li>⏱️ <strong>${formatMinutesToDuration(s2_totalSpeedupMins)} speedups</strong> used</li>
+          <li>📦 <strong>${formatNumber(s2_baseTroops)} T${startBaseTier} base troops</strong> → T${maxTier}</li>
+          <li>🏆 <strong>Yields ${formatNumber(s2_totalPts)} pts</strong></li>
+        `;
       }
 
       // STRATEGY 3: Multi-SecDef / Heavy Speedup Push (High Target Goals)
@@ -2765,18 +2751,20 @@
 
       currentSolversData.stratC = { secR: s3_secDefRounds, secSpedR: s3_secSpedRounds, nonSecR: s3_std.stdTotalRounds, nonSecSpedR: s3_std.stdSpedRounds };
 
-      if (elements.solverOpt3Val) {
-        if (s3_secDefRounds <= s2_secDefRounds && s3_std.stdTotalRounds === s2_std.stdTotalRounds) {
-          elements.solverOpt3Val.textContent = `${s3_secDefRounds} SecDef Training Rounds (Fast Finish)`;
-          elements.solverOpt3Desc.textContent = `Goal of ${formatNumber(R)} is already fully met by 1 SecDef appointment! You don't need additional SecDef appointments unless pushing extra chests.`;
-        } else {
-          let s3_speedupDetail = s3_stdSpeedupMins > 0 ? 
-            `${formatMinutesToDuration(s3_secSpeedupMins)} SecDef speedups + ${formatMinutesToDuration(s3_stdSpeedupMins)} Standard speedups = ${formatMinutesToDuration(s3_totalSpeedupMins)} total` :
-            `${formatMinutesToDuration(s3_secSpeedupMins)} SecDef speedups (Standard rounds are 100% natural offline)`;
+      if (elements.solverOpt3Val && elements.solverOpt3List) {
+        let secDefDescText = `${s3_apptsCount} SecDef Appointment${s3_apptsCount > 1 ? 's' : ''} (${s3_secSpedRounds} Sped Up + ${s3_apptsCount} Expiry Buff batch${s3_apptsCount > 1 ? 'es' : ''})`;
+        let stdDescText = s3_std.stdTotalRounds > 0 ?
+          `<strong>${s3_std.stdTotalRounds} Standard Rounds</strong> without SecDef (${s3_std.stdSpedRounds} Sped Up + ${s3_std.stdNatRounds} Natural)` :
+          `<strong>0 Standard Rounds</strong> needed`;
 
-          elements.solverOpt3Val.textContent = `${s3_secDefRounds} SecDef Training Rounds (${s3_secSpedRounds} Sped Up) + ${s3_std.stdTotalRounds} Standard Rounds (${s3_std.stdSpedRounds} Sped Up)`;
-          elements.solverOpt3Desc.textContent = `Pushes ${s3_apptsCount} SecDef appointments (${s3_secDefRounds} rounds; ${s3_speedupDetail}) to hit your ${formatNumber(R)} remaining goal. Yields ${formatNumber(s3_totalPts)} pts (${formatNumber(s3_baseTroops)} T${startBaseTier} base troops → T${maxTier}).`;
-        }
+        elements.solverOpt3Val.textContent = `${s3_secDefRounds} SecDef + ${s3_std.stdTotalRounds} Standard Rounds`;
+        elements.solverOpt3List.innerHTML = `
+          <li>🛡️ <strong>${secDefDescText}</strong></li>
+          <li>🪖 ${stdDescText}</li>
+          <li>⏱️ <strong>${formatMinutesToDuration(s3_totalSpeedupMins)} speedups</strong> used</li>
+          <li>📦 <strong>${formatNumber(s3_baseTroops)} T${startBaseTier} base troops</strong> → T${maxTier}</li>
+          <li>🏆 <strong>Yields ${formatNumber(s3_totalPts)} pts</strong></li>
+        `;
       }
     }
 
