@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Last War: Special Forces & T10 Research Cost Dashboard</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
     <style>
         :root {
             --bg-main: #f8fafc;
@@ -212,8 +211,10 @@
             content: ''; position: absolute; width: 6px; height: 6px; background: var(--accent-cyan);
             border-radius: 50%; top: 3px; left: 6px;
         }
+        .legend-badge.green-bar { background: var(--accent-green); }
+        .legend-badge.green-dashed { background: transparent; border-bottom: 2px dashed var(--accent-green); height: 6px; width: 18px; }
 
-        .chart-svg-container { width: 100%; height: 320px; position: relative; }
+        .chart-svg-container { width: 100%; height: 260px; position: relative; }
 
         .chart-tooltip {
             position: absolute; background: var(--bg-header); border: 1px solid var(--border-color);
@@ -247,7 +248,8 @@
         .tech-pill.filler-truck { border-color: var(--accent-purple); background: rgba(168, 85, 247, 0.1); color: var(--accent-purple); }
 
         .badge-valor { background: rgba(22, 163, 74, 0.1); color: var(--accent-green); padding: 4px 8px; border-radius: 6px; font-weight: 600; }
-        .badge-gold { background: rgba(217, 119, 6, 0.1); color: var(--accent-gold); padding: 4px 8px; border-radius: 6px; font-weight: 600; }
+        .badge-gold { background: rgba(217, 119, 6, 0.1); color: var(--accent-gold); padding: 4px 8px; border-radius: 6px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; }
+        .badge-gold.flex-overcap { background: rgba(220, 38, 38, 0.15); color: var(--accent-red); border: 1px solid var(--accent-red); }
         .badge-speedup { background: rgba(8, 145, 178, 0.1); color: var(--accent-cyan); padding: 4px 8px; border-radius: 6px; font-weight: 600; }
 
         .btn-edit-week {
@@ -487,6 +489,22 @@
                 <label>Weekly Gold Limit: <span id="val-gold-cap" style="color:var(--accent-gold)">600M Gold/wk</span></label>
                 <input type="range" id="input-gold-cap" min="100000000" max="2000000000" step="50000000" value="600000000" oninput="updateControls()">
             </div>
+
+            <!-- Smart Flex Cap Buffer Control -->
+            <div class="control-group">
+                <label>
+                    <span>Gold Limit Flexibility Buffer</span>
+                    <span class="info-tooltip-trigger" onclick="toggleGoldFlexTooltip(event)" title="Click for flex cap explanation">ℹ️</span>
+                </label>
+                <div class="tooltip-popup" id="tooltip-goldflex-info">
+                    <strong>💡 Smart Flex Buffer (+10%):</strong><br>
+                    Allows exceeding your weekly Gold limit by up to 10% (e.g. 660M instead of 600M) if doing so completes a major prerequisite level or unlocks key tech for the following week!
+                </div>
+                <div class="radio-grid">
+                    <div class="radio-card active" id="goldflex-strict" onclick="setGoldFlex('strict')">🛑 Strict Cap (0%)</div>
+                    <div class="radio-card" id="goldflex-flex" onclick="setGoldFlex('flex')">⚡ Smart Flex (+10%)</div>
+                </div>
+            </div>
         </div>
 
         <!-- Collapsible Baseline Box with Touch Horizontal Scrolling -->
@@ -527,10 +545,10 @@
             </div>
         </div>
 
-        <!-- Chart with Graphical Legend -->
+        <!-- Top Chart: Gold Spent & Speedup Days (Aligned X-Axis) -->
         <div class="chart-card">
             <div class="chart-header">
-                <h3>📈 Weekly Resource Drain & Speedups Required (VS Wednesday)</h3>
+                <h3>📈 Weekly Resource Drain & Speedups Required</h3>
                 <div class="chart-legend-graphical">
                     <div class="legend-item"><span class="legend-badge gold-bar"></span> 💰 Gold Spent</div>
                     <div class="legend-item"><span class="legend-badge red-dashed"></span> 🛑 Gold Limit Cap</div>
@@ -539,6 +557,18 @@
             </div>
             <div class="chart-svg-container" id="chart-container"></div>
             <div class="chart-tooltip" id="chart-tooltip"></div>
+        </div>
+
+        <!-- Bottom Chart: Weekly Valor Badges Spent (Exactly Aligned X-Axis) -->
+        <div class="chart-card">
+            <div class="chart-header">
+                <h3>🛡️ Weekly Valor Badges Spent</h3>
+                <div class="chart-legend-graphical">
+                    <div class="legend-item"><span class="legend-badge green-bar"></span> 🛡️ Valor Badges</div>
+                    <div class="legend-item"><span class="legend-badge green-dashed"></span> 🎯 Valor Target (~9k)</div>
+                </div>
+            </div>
+            <div class="chart-svg-container" id="valor-chart-container"></div>
         </div>
 
         <!-- Table -->
@@ -1250,6 +1280,7 @@
             baseSpeed: 200,
             capitol: 'science',
             fillerMode: 'none',
+            goldFlex: 'strict',
             valorTarget: 9000,
             goldCap: 600000000,
             activeWeek: 1,
@@ -1259,14 +1290,33 @@
             cachedWeeks: []
         };
 
+        function generateEmojiFavicon(emojiChar) {
+            try {
+                let canvas = document.createElement('canvas');
+                canvas.width = 64; canvas.height = 64;
+                let ctx = canvas.getContext('2d');
+                ctx.font = '52px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(emojiChar, 32, 36);
+
+                let link = document.createElement('link');
+                link.rel = 'icon';
+                link.type = 'image/png';
+                link.href = canvas.toDataURL('image/png');
+                document.getElementsByTagName('head')[0].appendChild(link);
+            } catch(e) {}
+        }
+
         function saveStateToLocalStorage() {
             try {
-                localStorage.setItem('lastwar_sf_state_v2', JSON.stringify({
+                localStorage.setItem('lastwar_sf_state_v3', JSON.stringify({
                     theme: state.theme,
                     preset: state.preset,
                     baseSpeed: state.baseSpeed,
                     capitol: state.capitol,
                     fillerMode: state.fillerMode,
+                    goldFlex: state.goldFlex,
                     valorTarget: state.valorTarget,
                     goldCap: state.goldCap,
                     startingBaseline: state.startingBaseline,
@@ -1277,7 +1327,7 @@
 
         function loadStateFromLocalStorage() {
             try {
-                let saved = localStorage.getItem('lastwar_sf_state_v2');
+                let saved = localStorage.getItem('lastwar_sf_state_v3');
                 if (saved) {
                     let parsed = JSON.parse(saved);
                     state = Object.assign(state, parsed);
@@ -1287,33 +1337,33 @@
 
         function resetAllSettings() {
             if (confirm("Reset all settings, starting baseline levels, and custom weekly plans to default?")) {
-                try { localStorage.removeItem('lastwar_sf_state_v2'); } catch(e) {}
+                try { localStorage.removeItem('lastwar_sf_state_v3'); } catch(e) {}
                 location.reload();
             }
         }
 
         function syncUIFromState() {
-            // Preset
             document.querySelectorAll('.btn-preset').forEach(b => b.classList.remove('active'));
             if (document.getElementById('btn-preset-' + state.preset)) {
                 document.getElementById('btn-preset-' + state.preset).classList.add('active');
             }
-            // Sliders
             document.getElementById('input-base-speed').value = state.baseSpeed;
             document.getElementById('val-base-speed').innerText = state.baseSpeed + '%';
             document.getElementById('input-valor-target').value = state.valorTarget;
             document.getElementById('val-valor-target').innerText = '~' + state.valorTarget.toLocaleString() + '/wk';
             document.getElementById('input-gold-cap').value = state.goldCap;
             document.getElementById('val-gold-cap').innerText = (state.goldCap / 1e6).toFixed(0) + 'M Gold/wk';
-            // Capitol
             document.querySelectorAll('.radio-grid .radio-card').forEach(r => r.classList.remove('active'));
             if (document.getElementById('cap-' + state.capitol)) {
                 document.getElementById('cap-' + state.capitol).classList.add('active');
             }
-            // Filler Mode
             if (document.getElementById('filler-' + state.fillerMode)) {
                 document.querySelectorAll('#filler-truck-first, #filler-sf-first, #filler-none').forEach(r => r.classList.remove('active'));
                 document.getElementById('filler-' + state.fillerMode).classList.add('active');
+            }
+            if (document.getElementById('goldflex-' + state.goldFlex)) {
+                document.querySelectorAll('#goldflex-strict, #goldflex-flex').forEach(r => r.classList.remove('active'));
+                document.getElementById('goldflex-' + state.goldFlex).classList.add('active');
             }
         }
 
@@ -1338,9 +1388,17 @@
             tt.style.display = (tt.style.display === 'block') ? 'none' : 'block';
         }
 
+        function toggleGoldFlexTooltip(evt) {
+            evt.stopPropagation();
+            let tt = document.getElementById('tooltip-goldflex-info');
+            tt.style.display = (tt.style.display === 'block') ? 'none' : 'block';
+        }
+
         document.addEventListener('click', function() {
-            let tt = document.getElementById('tooltip-filler-info');
-            if (tt) tt.style.display = 'none';
+            let tt1 = document.getElementById('tooltip-filler-info');
+            if (tt1) tt1.style.display = 'none';
+            let tt2 = document.getElementById('tooltip-goldflex-info');
+            if (tt2) tt2.style.display = 'none';
         });
 
         function parseTime(t_str) {
@@ -1403,6 +1461,14 @@
             state.fillerMode = mode;
             document.querySelectorAll('#filler-truck-first, #filler-sf-first, #filler-none').forEach(r => r.classList.remove('active'));
             if (document.getElementById('filler-' + mode)) document.getElementById('filler-' + mode).classList.add('active');
+            saveStateToLocalStorage();
+            runSimulationAndRender();
+        }
+
+        function setGoldFlex(mode) {
+            state.goldFlex = mode;
+            document.querySelectorAll('#goldflex-strict, #goldflex-flex').forEach(r => r.classList.remove('active'));
+            if (document.getElementById('goldflex-' + mode)) document.getElementById('goldflex-' + mode).classList.add('active');
             saveStateToLocalStorage();
             runSimulationAndRender();
         }
@@ -1586,6 +1652,10 @@
             let weeks = [], currentWeek = 1, cumGold = 0, cumValor = 0, cumSpeedups = 0;
             const flexMaxValor = Math.min(11000, state.valorTarget + 2000);
 
+            // Effective Gold Cap calculation
+            const strictGoldCap = state.goldCap;
+            const flexGoldCap = (state.goldFlex === 'flex') ? state.goldCap * 1.10 : state.goldCap;
+
             while (completedSet.size < totalNodes && currentWeek <= 100) {
                 let weekCompletedState = {};
                 Object.keys(techs).forEach(t_id => {
@@ -1631,7 +1701,12 @@
                         let candIdx = -1;
                         for (let i=0; i<available.length; i++) {
                             let cand = nodes[available[i]];
-                            if ((wValor + cand.valor <= flexMaxValor) && (wGold + cand.gold <= state.goldCap)) {
+                            // Standard strict limit check
+                            if ((wValor + cand.valor <= flexMaxValor) && (wGold + cand.gold <= strictGoldCap)) {
+                                candIdx = i; break;
+                            }
+                            // Smart Flex (+10%) check if enabled and it unlocks downstream prereqs or completes a major tech level
+                            else if (state.goldFlex === 'flex' && (wValor + cand.valor <= flexMaxValor) && (wGold + cand.gold <= flexGoldCap)) {
                                 candIdx = i; break;
                             }
                         }
@@ -1655,7 +1730,7 @@
                         available.sort((a,b) => priority(a) - priority(b));
                     }
 
-                    if (state.fillerMode !== 'none' && (wValor < 7000 || (wGold + 100000000 > state.goldCap && wValor < state.valorTarget))) {
+                    if (state.fillerMode !== 'none' && (wValor < 7000 || (wGold + 100000000 > strictGoldCap && wValor < state.valorTarget))) {
                         if (state.fillerMode === 'truck-first') {
                             while (truckAvailable.length > 0 && wValor < state.valorTarget) {
                                 let candIdx = -1;
@@ -1680,7 +1755,7 @@
                                 let candIdx = -1;
                                 for (let i=0; i<nonT10SfAvailable.length; i++) {
                                     let cand = nonT10SfNodes[nonT10SfAvailable[i]];
-                                    if ((wValor + cand.valor <= flexMaxValor) && (wGold + cand.gold <= state.goldCap)) {
+                                    if ((wValor + cand.valor <= flexMaxValor) && (wGold + cand.gold <= flexGoldCap)) {
                                         candIdx = i; break;
                                     }
                                 }
@@ -1699,7 +1774,7 @@
                                 let candIdx = -1;
                                 for (let i=0; i<nonT10SfAvailable.length; i++) {
                                     let cand = nonT10SfNodes[nonT10SfAvailable[i]];
-                                    if ((wValor + cand.valor <= flexMaxValor) && (wGold + cand.gold <= state.goldCap)) {
+                                    if ((wValor + cand.valor <= flexMaxValor) && (wGold + cand.gold <= flexGoldCap)) {
                                         candIdx = i; break;
                                     }
                                 }
@@ -1740,6 +1815,7 @@
 
                 weeks.push({
                     week: currentWeek, valorSpent: wValor, goldSpent: wGold, speedupsDays: wSpeedSec / 86400,
+                    isFlexOvercap: (wGold > strictGoldCap),
                     targetTechs: wTargetTechs, fillerTechs: wFillerTechs,
                     cumGold: cumGold, cumValor: cumValor, cumSpeedups: cumSpeedups,
                     priorTechState: weekCompletedState
@@ -1756,55 +1832,57 @@
             document.getElementById('kpi-speedup-hours').innerText = (cumSpeedups*24).toFixed(0) + ' Hours';
             document.getElementById('kpi-valor').innerText = cumValor.toLocaleString();
 
-            renderChart(weeks);
+            renderGoldChart(weeks);
+            renderValorChart(weeks);
             renderTable(weeks);
         }
 
-        function renderChart(weeks) {
+        function renderGoldChart(weeks) {
             let container = document.getElementById('chart-container');
             let maxGold = Math.max(...weeks.map(w => w.goldSpent), state.goldCap);
             let maxSpeed = Math.max(...weeks.map(w => w.speedupsDays), 1);
-            let svgW = 1000, svgH = 300;
+            let svgW = 1000, svgH = 260;
             let isDark = document.documentElement.getAttribute('data-theme') === 'dark';
             let strokeGrid = isDark ? '#334155' : '#e2e8f0';
             let textColor = isDark ? '#94a3b8' : '#64748b';
 
             let html = `<svg viewBox="0 0 ${svgW} ${svgH}" style="width:100%; height:100%;">`;
             for (let i=0; i<=4; i++) {
-                let y = svgH - 40 - (i * 55);
+                let y = svgH - 35 - (i * 48);
                 let goldLabel = ((maxGold * (i/4)) / 1e6).toFixed(0) + 'M';
                 let speedLabel = (maxSpeed * (i/4)).toFixed(0) + 'd';
-                
+
                 html += `<line x1="55" y1="${y}" x2="${svgW-55}" y2="${y}" stroke="${strokeGrid}" stroke-dasharray="4" />`;
                 html += `<text x="50" y="${y+4}" text-anchor="end" fill="${textColor}" font-size="10">${goldLabel}</text>`;
                 html += `<text x="${svgW-45}" y="${y+4}" text-anchor="start" fill="#0891b2" font-size="10" font-weight="bold">${speedLabel}</text>`;
             }
 
             let barW = Math.max(8, (svgW - 120) / weeks.length - 4);
-            let capY = svgH - 40 - ((state.goldCap / maxGold) * 220);
+            let capY = svgH - 35 - ((state.goldCap / maxGold) * 192);
             html += `<line x1="55" y1="${capY}" x2="${svgW-55}" y2="${capY}" stroke="#dc2626" stroke-width="2" stroke-dasharray="6" />`;
 
             let speedPoints = [];
             weeks.forEach((w, idx) => {
                 let x = 65 + idx * ((svgW - 120) / weeks.length);
-                let barH = (w.goldSpent / maxGold) * 220;
-                let barY = svgH - 40 - barH;
+                let barH = (w.goldSpent / maxGold) * 192;
+                let barY = svgH - 35 - barH;
 
                 let goldStr = w.goldSpent >= 1e9 ? (w.goldSpent/1e9).toFixed(1) + 'B' : (w.goldSpent/1e6).toFixed(0) + 'M';
+                let barColor = w.isFlexOvercap ? '#ef4444' : '#d97706';
 
-                html += `<rect x="${x}" y="${barY}" width="${barW}" height="${barH}" fill="#d97706" rx="3" opacity="0.85"
+                html += `<rect x="${x}" y="${barY}" width="${barW}" height="${barH}" fill="${barColor}" rx="3" opacity="0.85"
                           onmouseover="showTooltip(event, ${w.week}, '${(w.goldSpent/1e6).toFixed(1)}M Gold', '${w.speedupsDays.toFixed(1)} Days (${(w.speedupsDays*24).toFixed(0)}h)', '${w.valorSpent.toLocaleString()} Badges')"
                           onmouseout="hideTooltip()"></rect>`;
 
-                let textY = barH > 25 ? barY + 14 : barY - 4;
-                let textFill = barH > 25 ? "#ffffff" : "#d97706";
+                let textY = barH > 22 ? barY + 13 : barY - 4;
+                let textFill = barH > 22 ? "#ffffff" : barColor;
                 html += `<text x="${x + barW/2}" y="${textY}" text-anchor="middle" fill="${textFill}" font-size="9" font-weight="bold">${goldStr}</text>`;
 
-                let speedY = svgH - 40 - ((w.speedupsDays / maxSpeed) * 220);
+                let speedY = svgH - 35 - ((w.speedupsDays / maxSpeed) * 192);
                 speedPoints.push({ x: x + barW/2, y: speedY, days: w.speedupsDays.toFixed(1) });
 
                 if (weeks.length <= 15 || idx % 2 === 0) {
-                    html += `<text x="${x + barW/2}" y="${svgH-15}" text-anchor="middle" fill="${textColor}" font-size="10">W${w.week}</text>`;
+                    html += `<text x="${x + barW/2}" y="${svgH-12}" text-anchor="middle" fill="${textColor}" font-size="10">W${w.week}</text>`;
                 }
             });
 
@@ -1815,6 +1893,51 @@
                 html += `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#0891b2" />`;
                 if (weeks.length <= 18) {
                     html += `<text x="${p.x}" y="${p.y - 8}" text-anchor="middle" fill="#0891b2" font-size="9" font-weight="bold">${p.days}d</text>`;
+                }
+            });
+
+            html += `</svg>`;
+            container.innerHTML = html;
+        }
+
+        function renderValorChart(weeks) {
+            let container = document.getElementById('valor-chart-container');
+            let maxValor = Math.max(...weeks.map(w => w.valorSpent), state.valorTarget, 10000);
+            let svgW = 1000, svgH = 240;
+            let isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            let strokeGrid = isDark ? '#334155' : '#e2e8f0';
+            let textColor = isDark ? '#94a3b8' : '#64748b';
+
+            let html = `<svg viewBox="0 0 ${svgW} ${svgH}" style="width:100%; height:100%;">`;
+            for (let i=0; i<=4; i++) {
+                let y = svgH - 35 - (i * 44);
+                let valorLabel = ((maxValor * (i/4))).toFixed(0);
+
+                html += `<line x1="55" y1="${y}" x2="${svgW-55}" y2="${y}" stroke="${strokeGrid}" stroke-dasharray="4" />`;
+                html += `<text x="50" y="${y+4}" text-anchor="end" fill="${textColor}" font-size="10">${valorLabel}</text>`;
+            }
+
+            let barW = Math.max(8, (svgW - 120) / weeks.length - 4);
+            let targetY = svgH - 35 - ((state.valorTarget / maxValor) * 176);
+            html += `<line x1="55" y1="${targetY}" x2="${svgW-55}" y2="${targetY}" stroke="#16a34a" stroke-width="2" stroke-dasharray="6" />`;
+
+            weeks.forEach((w, idx) => {
+                let x = 65 + idx * ((svgW - 120) / weeks.length);
+                let barH = (w.valorSpent / maxValor) * 176;
+                let barY = svgH - 35 - barH;
+
+                let valorStr = w.valorSpent.toLocaleString();
+
+                html += `<rect x="${x}" y="${barY}" width="${barW}" height="${barH}" fill="#16a34a" rx="3" opacity="0.85"
+                          onmouseover="showTooltip(event, ${w.week}, '${(w.goldSpent/1e6).toFixed(1)}M Gold', '${w.speedupsDays.toFixed(1)} Days (${(w.speedupsDays*24).toFixed(0)}h)', '${w.valorSpent.toLocaleString()} Badges')"
+                          onmouseout="hideTooltip()"></rect>`;
+
+                let textY = barH > 22 ? barY + 13 : barY - 4;
+                let textFill = barH > 22 ? "#ffffff" : "#16a34a";
+                html += `<text x="${x + barW/2}" y="${textY}" text-anchor="middle" fill="${textFill}" font-size="9" font-weight="bold">${valorStr}</text>`;
+
+                if (weeks.length <= 15 || idx % 2 === 0) {
+                    html += `<text x="${x + barW/2}" y="${svgH-12}" text-anchor="middle" fill="${textColor}" font-size="10">W${w.week}</text>`;
                 }
             });
 
@@ -1860,13 +1983,15 @@
             let html = '';
             weeks.forEach(w => {
                 let goldStr = w.goldSpent >= 1e9 ? (w.goldSpent/1e9).toFixed(2) + 'B' : (w.goldSpent/1e6).toFixed(1) + 'M';
+                let goldClass = w.isFlexOvercap ? 'badge-gold flex-overcap' : 'badge-gold';
+                let flexTag = w.isFlexOvercap ? ' ⚡ Flex +10%' : '';
                 let targetHtml = formatStackedTechPills(w.targetTechs, false) || '<em>None</em>';
                 let fillerColumnHtml = (w.fillerTechs && w.fillerTechs.length > 0) ? formatStackedTechPills(w.fillerTechs, true) : '<em>-</em>';
 
                 html += `<tr>
                     <td><strong>Week ${w.week}</strong></td>
                     <td><span class="badge-valor">${w.valorSpent.toLocaleString()}</span></td>
-                    <td><span class="badge-gold">${goldStr}</span></td>
+                    <td><span class="${goldClass}">${goldStr}${flexTag}</span></td>
                     <td><span class="badge-speedup">${w.speedupsDays.toFixed(1)}d (${(w.speedupsDays*24).toFixed(0)}h)</span></td>
                     <td>${targetHtml}</td>
                     <td>${fillerColumnHtml}</td>
@@ -2132,6 +2257,7 @@
         }
 
         window.onload = function() {
+            generateEmojiFavicon("🛡️");
             loadStateFromLocalStorage();
             syncUIFromState();
             setTheme(state.theme || 'light');
