@@ -114,7 +114,7 @@
         }
 
         .control-boxes-grid {
-            display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;
+            display: grid; grid-template-columns: 0.85fr 1.15fr; gap: 16px;
         }
 
         @media (max-width: 640px) {
@@ -251,6 +251,7 @@
         .legend-item { display: flex; align-items: center; gap: 6px; }
         .legend-badge { display: inline-block; width: 16px; height: 12px; border-radius: 3px; }
         .legend-badge.gold-bar { background: var(--accent-gold); }
+        .legend-badge.cyan-bar { background: var(--accent-cyan); }
         .legend-badge.red-dashed { background: transparent; border-bottom: 2px dashed var(--accent-red); height: 6px; width: 18px; }
         .legend-badge.cyan-line {
             background: transparent; border-bottom: 2px solid var(--accent-cyan); height: 6px; width: 18px; position: relative;
@@ -260,7 +261,7 @@
             border-radius: 50%; top: 3px; left: 6px;
         }
         .legend-badge.green-bar { background: var(--accent-green); }
-        .legend-badge.green-dashed { background: transparent; border-bottom: 2px dashed var(--accent-green); height: 6px; width: 18px; }
+        .legend-badge.purple-dashed { background: transparent; border-bottom: 2px dashed #a855f7; height: 6px; width: 18px; }
 
         .chart-svg-container { width: 100%; height: 260px; position: relative; }
 
@@ -540,6 +541,19 @@
             display: block !important;
         }
 
+    
+        .control-num-input {
+            width: 85px; height: 28px; background: var(--bg-card); border: 1px solid var(--border-color);
+            color: var(--accent-gold); text-align: right; font-weight: 700; font-size: 0.88rem;
+            border-radius: 6px; padding: 2px 6px;
+            -moz-appearance: textfield;
+        }
+
+        .control-num-input::-webkit-inner-spin-button,
+        .control-num-input::-webkit-outer-spin-button {
+            -webkit-appearance: none; margin: 0;
+        }
+
     </style>
 </head>
 <body>
@@ -571,11 +585,17 @@
             <div class="control-boxes-grid">
                 <!-- Box 1: Base Research Speed -->
                 <div class="control-box">
-                    <label>⚡ Base Research Speed %: <span id="val-base-speed" style="color:var(--accent-blue)">200%</span></label>
-                    <input type="range" id="input-base-speed" min="0" max="400" step="5" value="200" oninput="updateControls()">
+                    <label>
+                        <span>⚡ Base Research Speed %:</span>
+                        <div style="display:flex; align-items:center; gap:4px;">
+                            <input type="number" class="control-num-input" id="input-num-base-speed" min="0" max="400" step="5" value="200" style="color:var(--accent-blue)" oninput="syncSpeedFromNumber(this.value)">
+                            <span style="font-weight:700; color:var(--accent-blue)">%</span>
+                        </div>
+                    </label>
+                    <input type="range" id="input-base-speed" min="0" max="400" step="5" value="200" oninput="syncSpeedFromSlider(this.value)">
                 </div>
 
-                <!-- Box 2: Capitol Position Buff (Side-by-Side with Speed) -->
+                <!-- Box 2: Capitol Position Buff -->
                 <div class="control-box">
                     <label>🏛️ Capitol Position Buff</label>
                     <div class="radio-grid">
@@ -588,27 +608,39 @@
 
                 <!-- Box 3: Weekly Valor Target -->
                 <div class="control-box">
-                    <label>🎯 Weekly Valor Target: <span id="val-valor-target" style="color:var(--accent-green)">~9,000/wk</span></label>
-                    <input type="range" id="input-valor-target" min="5000" max="15000" step="250" value="9000" oninput="updateControls()">
+                    <label>
+                        <span>🎯 Weekly Valor Target:</span>
+                        <div style="display:flex; align-items:center; gap:4px;">
+                            <input type="number" class="control-num-input" id="input-num-valor-target" min="1000" max="25000" step="250" value="9000" style="color:var(--accent-green)" oninput="syncValorFromNumber(this.value)">
+                            <span style="font-weight:700; color:var(--accent-green); font-size:0.8rem">/wk</span>
+                        </div>
+                    </label>
+                    <input type="range" id="input-valor-target" min="1000" max="25000" step="250" value="9000" oninput="syncValorFromSlider(this.value)">
                 </div>
 
-                <!-- Box 4: Weekly Gold Limit with Embedded Gold Flex Buffer -->
+                <!-- Box 4: Weekly Gold Limit (In Millions) with Embedded Flex Buffer -->
                 <div class="control-box">
-                    <label>💰 Weekly Gold Limit: <span id="val-gold-cap" style="color:var(--accent-gold)">600M Gold/wk</span></label>
-                    <input type="range" id="input-gold-cap" min="100000000" max="2000000000" step="50000000" value="600000000" oninput="updateControls()">
+                    <label>
+                        <span>💰 Gold Limit (Millions):</span>
+                        <div style="display:flex; align-items:center; gap:4px; white-space:nowrap;">
+                            <input type="number" class="control-num-input" id="input-num-gold-cap" min="50" max="3000" step="25" value="600" style="color:var(--accent-gold)" oninput="syncGoldFromNumber(this.value)">
+                            <span style="font-weight:700; color:var(--accent-gold); font-size:0.8rem; white-space:nowrap;">M Gold/wk</span>
+                        </div>
+                    </label>
+                    <input type="range" id="input-gold-cap" min="50" max="3000" step="25" value="600" oninput="syncGoldFromSlider(this.value)">
 
                     <!-- Embedded Gold Flex Buffer Sub-Control -->
                     <div style="border-top:1px dashed var(--border-color); padding-top:8px; margin-top:4px;">
                         <label style="font-size:0.75rem; margin-bottom:6px;">
-                            <span>⚡ Gold Limit Flex Buffer (+10%)
+                            <span>⚡ Gold Limit Flex Buffer (+10%)</span>
                             <span class="info-tooltip-wrap">
                                 <span class="info-tooltip-trigger">ℹ️</span>
                                 <div class="tooltip-box">
                                     <strong>💡 Smart Flex Buffer (+10%):</strong><br>
                                     Allows exceeding your weekly Gold limit by up to 10% (e.g. 660M instead of 600M) if doing so completes a major prerequisite level or unlocks key tech for the following week!
                                 </div>
-                            </span></label>
-                        
+                            </span>
+                        </label>
                         <div class="radio-grid">
                             <div class="radio-card active" id="goldflex-strict" onclick="setGoldFlex('strict')">🛑 Strict (0%)</div>
                             <div class="radio-card" id="goldflex-flex" onclick="setGoldFlex('flex')">⚡ Flex (+10%)</div>
@@ -726,9 +758,9 @@
             <div class="chart-header">
                 <h3>📈 Weekly Resource Drain & Speedups Required</h3>
                 <div class="chart-legend-graphical">
-                    <div class="legend-item"><span class="legend-badge gold-bar"></span> 💰 Gold Spent</div>
-                    <div class="legend-item"><span class="legend-badge red-dashed"></span> 🛑 Gold Limit Cap</div>
-                    <div class="legend-item"><span class="legend-badge cyan-line"></span> ⚡ Speedup Days</div>
+                    <div class="legend-item"><span class="legend-badge gold-bar"></span> Gold Spent</div>
+                    <div class="legend-item"><span class="legend-badge red-dashed"></span> Weekly Gold Limit</div>
+                    <div class="legend-item"><span class="legend-badge cyan-line"></span> Speedups Needed</div>
                 </div>
             </div>
             <div class="chart-svg-container" id="chart-container"></div>
@@ -740,11 +772,13 @@
             <div class="chart-header">
                 <h3>🛡️ Weekly Valor Badges Spent</h3>
                 <div class="chart-legend-graphical">
-                    <div class="legend-item"><span class="legend-badge green-bar"></span> 🛡️ Valor Badges</div>
-                    <div class="legend-item"><span class="legend-badge green-dashed"></span> 🎯 Valor Target (~9k)</div>
+                    <div class="legend-item"><span class="legend-badge green-bar"></span> T10 Target Valor</div>
+                    <div class="legend-item"><span class="legend-badge cyan-bar"></span> Non-T10 / Filler Valor</div>
+                    <div class="legend-item"><span class="legend-badge purple-dashed"></span> Weekly Valor Target</div>
                 </div>
             </div>
             <div class="chart-svg-container" id="valor-chart-container"></div>
+            <div class="chart-tooltip" id="valor-chart-tooltip"></div>
         </div>
 
         <!-- Table -->
@@ -5865,17 +5899,69 @@
             runSimulationAndRender();
         }
 
+        
+        function syncSpeedFromSlider(val) {
+            state.baseSpeed = parseInt(val) || 0;
+            document.getElementById('input-num-base-speed').value = state.baseSpeed;
+            saveStateToLocalStorage();
+            runSimulationAndRender();
+        }
+
+        function syncSpeedFromNumber(valStr) {
+            let val = parseInt(valStr) || 0;
+            state.baseSpeed = val;
+            document.getElementById('input-base-speed').value = val;
+            saveStateToLocalStorage();
+            runSimulationAndRender();
+        }
+
+        function syncValorFromSlider(val) {
+            state.valorTarget = parseInt(val) || 0;
+            document.getElementById('input-num-valor-target').value = state.valorTarget;
+            saveStateToLocalStorage();
+            runSimulationAndRender();
+        }
+
+        function syncValorFromNumber(valStr) {
+            let val = parseInt(valStr) || 0;
+            state.valorTarget = val;
+            document.getElementById('input-valor-target').value = val;
+            saveStateToLocalStorage();
+            runSimulationAndRender();
+        }
+
+        function syncGoldFromSlider(valInMillions) {
+            let goldInMillions = parseFloat(valInMillions) || 0;
+            state.goldCap = goldInMillions * 1000000;
+            document.getElementById('input-num-gold-cap').value = goldInMillions;
+            saveStateToLocalStorage();
+            runSimulationAndRender();
+        }
+
+        function syncGoldFromNumber(valInMillionsStr) {
+            let goldInMillions = parseFloat(valInMillionsStr) || 0;
+            state.goldCap = goldInMillions * 1000000;
+            document.getElementById('input-gold-cap').value = goldInMillions;
+            saveStateToLocalStorage();
+            runSimulationAndRender();
+        }
+
         function syncUIFromState() {
             document.querySelectorAll('.btn-preset').forEach(b => b.classList.remove('active'));
             if (document.getElementById('btn-preset-' + state.preset)) {
                 document.getElementById('btn-preset-' + state.preset).classList.add('active');
             }
+
             document.getElementById('input-base-speed').value = state.baseSpeed;
-            document.getElementById('val-base-speed').innerText = state.baseSpeed + '%';
+            document.getElementById('input-num-base-speed').value = state.baseSpeed;
+
             document.getElementById('input-valor-target').value = state.valorTarget;
-            document.getElementById('val-valor-target').innerText = '~' + state.valorTarget.toLocaleString() + '/wk';
-            document.getElementById('input-gold-cap').value = state.goldCap;
-            document.getElementById('val-gold-cap').innerText = (state.goldCap / 1e6).toFixed(0) + 'M Gold/wk';
+            document.getElementById('input-num-valor-target').value = state.valorTarget;
+
+            let goldInMillions = Math.round(state.goldCap / 1000000);
+            document.getElementById('input-gold-cap').value = goldInMillions;
+            document.getElementById('input-num-gold-cap').value = goldInMillions;
+
             document.querySelectorAll('.radio-grid .radio-card').forEach(r => r.classList.remove('active'));
             if (document.getElementById('cap-' + state.capitol)) {
                 document.getElementById('cap-' + state.capitol).classList.add('active');
@@ -6024,13 +6110,14 @@
         }
 
         function updateControls() {
-            state.baseSpeed = parseInt(document.getElementById('input-base-speed').value);
-            state.valorTarget = parseInt(document.getElementById('input-valor-target').value);
-            state.goldCap = parseFloat(document.getElementById('input-gold-cap').value);
+            state.baseSpeed = parseInt(document.getElementById('input-base-speed').value) || 0;
+            state.valorTarget = parseInt(document.getElementById('input-valor-target').value) || 0;
+            let goldInMillions = parseFloat(document.getElementById('input-gold-cap').value) || 0;
+            state.goldCap = goldInMillions * 1000000;
 
-            document.getElementById('val-base-speed').innerText = state.baseSpeed + '%';
-            document.getElementById('val-valor-target').innerText = '~' + state.valorTarget.toLocaleString() + '/wk';
-            document.getElementById('val-gold-cap').innerText = (state.goldCap / 1e6).toFixed(0) + 'M Gold/wk';
+            document.getElementById('input-num-base-speed').value = state.baseSpeed;
+            document.getElementById('input-num-valor-target').value = state.valorTarget;
+            document.getElementById('input-num-gold-cap').value = goldInMillions;
 
             saveStateToLocalStorage();
             runSimulationAndRender();
@@ -6420,7 +6507,7 @@
                     weekCompletedState[t_id] = doneLvls;
                 });
 
-                let wValor = 0, wGold = 0, wSpeedSec = 0;
+                let wValor = 0, wTargetValor = 0, wFillerValor = 0, wGold = 0, wSpeedSec = 0;
                 let wTargetTechs = [], wFillerTechs = [], wItems = [];
 
                 if (state.weeklyOverrides[currentWeek]) {
@@ -6442,6 +6529,7 @@
                             wFillerTechs.push('🛡️ ' + item.tech_name + ' Lvl ' + item.level);
                             defenseFortCompletedSet.add(key);
                         } else if (state.preset === 'sf-full' || (t10MaxMap[item.tech_id] && item.level <= t10MaxMap[item.tech_id])) {
+                            wTargetValor += item.valor || 0;
                             wTargetTechs.push(item.tech_name + ' Lvl ' + item.level);
                             completedSet.add(key);
                             if (adj[key]) {
@@ -6451,6 +6539,7 @@
                                 });
                             }
                         } else {
+                            wFillerValor += item.valor || 0;
                             wFillerTechs.push(item.tech_name + ' Lvl ' + item.level);
                             nonT10SfCompletedSet.add(key);
                         }
@@ -6475,9 +6564,12 @@
                         wValor += n.valor; wGold += n.gold; wSpeedSec += n.actual_time_sec;
                         
                         if (state.preset === 'sf-full' || (t10MaxMap[n.tech_id] && n.level <= t10MaxMap[n.tech_id])) {
+                            wTargetValor += n.valor;
                             wTargetTechs.push(n.tech_name + ' Lvl ' + n.level);
                         } else {
-                            wFillerTechs.push(n.tech_name + ' Lvl ' + n.level);
+                            wFillerValor += n.valor;
+                            wFillerValor += n.valor;
+                                    wFillerTechs.push(n.tech_name + ' Lvl ' + n.level);
                                     wItems.push({ tech_id: n.tech_id, tech_name: n.tech_name, level: n.level, valor: n.valor, gold: n.gold, actual_time_sec: n.actual_time_sec });
                         }
                         wItems.push({ tech_id: n.tech_id, tech_name: n.tech_name, level: n.level, valor: n.valor, gold: n.gold, actual_time_sec: n.actual_time_sec });
@@ -6516,6 +6608,7 @@
                                     let key = truckAvailable.splice(candIdx, 1)[0];
                                     let n = truckNodes[key];
                                     wValor += n.valor; wGold += n.gold; wSpeedSec += n.actual_time_sec;
+                                    wFillerValor += n.valor;
                                     wFillerTechs.push('🚚 ' + n.tech_name + ' Lvl ' + n.level);
                                     wItems.push({ tech_id: 'truck:' + n.tech_id, tech_name: '🚚 ' + n.tech_name, level: n.level, valor: n.valor, gold: n.gold, actual_time_sec: n.actual_time_sec });
                                     truckCompletedSet.add(key);
@@ -6536,6 +6629,7 @@
                                     let key = nonT10SfAvailable.splice(candIdx, 1)[0];
                                     let n = nonT10SfNodes[key];
                                     wValor += n.valor; wGold += n.gold; wSpeedSec += n.actual_time_sec;
+                                    wFillerValor += n.valor;
                                     wFillerTechs.push(n.tech_name + ' Lvl ' + n.level);
                                     wItems.push({ tech_id: n.tech_id, tech_name: n.tech_name, level: n.level, valor: n.valor, gold: n.gold, actual_time_sec: n.actual_time_sec });
                                     nonT10SfCompletedSet.add(key);
@@ -6556,6 +6650,7 @@
                                     let key = siegeAvailable.splice(candIdx, 1)[0];
                                     let n = siegeNodes[key];
                                     wValor += n.valor; wGold += n.gold; wSpeedSec += n.actual_time_sec;
+                                    wFillerValor += n.valor;
                                     wFillerTechs.push('🏰 ' + n.tech_name + ' Lvl ' + n.level);
                                     wItems.push({ tech_id: 'siege:' + n.tech_id, tech_name: '🏰 ' + n.tech_name, level: n.level, valor: n.valor, gold: n.gold, actual_time_sec: n.actual_time_sec });
                                     siegeCompletedSet.add(key);
@@ -6576,6 +6671,7 @@
                                     let key = defenseFortAvailable.splice(candIdx, 1)[0];
                                     let n = defenseFortNodes[key];
                                     wValor += n.valor; wGold += n.gold; wSpeedSec += n.actual_time_sec;
+                                    wFillerValor += n.valor;
                                     wFillerTechs.push('🛡️ ' + n.tech_name + ' Lvl ' + n.level);
                                     wItems.push({ tech_id: 'def_fort:' + n.tech_id, tech_name: '🛡️ ' + n.tech_name, level: n.level, valor: n.valor, gold: n.gold, actual_time_sec: n.actual_time_sec });
                                     defenseFortCompletedSet.add(key);
@@ -6590,7 +6686,7 @@
                 cumGold += wGold; cumValor += wValor; cumSpeedups += (wSpeedSec / 86400);
 
                 weeks.push({
-                    week: currentWeek, valorSpent: wValor, goldSpent: wGold, speedupsDays: wSpeedSec / 86400,
+                    week: currentWeek, valorSpent: wValor, targetValor: wTargetValor, fillerValor: wFillerValor, goldSpent: wGold, speedupsDays: wSpeedSec / 86400,
                     isFlexOvercap: (!isSaveWeek && wGold > state.goldCap),
                     isSaveWeek: isSaveWeek, saveValorCap: effectiveValorCap, saveGoldCap: effectiveGoldCap,
                     targetTechs: wTargetTechs, fillerTechs: wFillerTechs,
@@ -6638,7 +6734,9 @@
 
             let barW = Math.max(8, (svgW - 120) / weeks.length - 4);
             let capY = svgH - 35 - ((state.goldCap / maxGold) * 192);
+            let goldCapLabel = (state.goldCap >= 1e9) ? (state.goldCap / 1e9).toFixed(1) + 'B' : (state.goldCap / 1e6).toFixed(0) + 'M';
             html += `<line x1="55" y1="${capY}" x2="${svgW-55}" y2="${capY}" stroke="#dc2626" stroke-width="2" stroke-dasharray="6" />`;
+            html += `<text x="${svgW-60}" y="${capY - 6}" text-anchor="end" fill="#dc2626" font-size="11" font-weight="bold">Weekly Gold Limit: ${goldCapLabel}</text>`;
 
             let speedPoints = [];
             weeks.forEach((w, idx) => {
@@ -6698,23 +6796,43 @@
             }
 
             let barW = Math.max(8, (svgW - 120) / weeks.length - 4);
+            
+            // Draw Dashed Target Threshold Line with Attached Dynamic Label
             let targetY = svgH - 35 - ((state.valorTarget / maxValor) * 176);
-            html += `<line x1="55" y1="${targetY}" x2="${svgW-55}" y2="${targetY}" stroke="#16a34a" stroke-width="2" stroke-dasharray="6" />`;
+            let valorLineColor = '#a855f7';
+            html += `<line x1="55" y1="${targetY}" x2="${svgW-55}" y2="${targetY}" stroke="${valorLineColor}" stroke-width="2" stroke-dasharray="6" />`;
+            html += `<text x="${svgW-60}" y="${targetY - 6}" text-anchor="end" fill="${valorLineColor}" font-size="11" font-weight="bold">Weekly Valor Target: ~${state.valorTarget.toLocaleString()}</text>`;
 
             weeks.forEach((w, idx) => {
                 let x = 65 + idx * ((svgW - 120) / weeks.length);
-                let barH = (w.valorSpent / maxValor) * 176;
-                let barY = svgH - 35 - barH;
+                let targetH = ((w.targetValor || 0) / maxValor) * 176;
+                let fillerH = ((w.fillerValor || 0) / maxValor) * 176;
+                let totalH = targetH + fillerH;
+
+                let targetYPos = svgH - 35 - targetH;
+                let fillerYPos = targetYPos - fillerH;
 
                 let valorStr = w.valorSpent.toLocaleString();
-                let barColor = w.isSaveWeek ? '#a855f7' : '#16a34a';
+                let tooltipText = `Week ${w.week}: ${valorStr} Total Valor
+🎯 T10 Target: ${(w.targetValor||0).toLocaleString()}
+📦 Non-T10 / Filler: ${(w.fillerValor||0).toLocaleString()}`;
 
-                html += `<rect x="${x}" y="${barY}" width="${barW}" height="${barH}" fill="${barColor}" rx="3" opacity="0.85"
-                          onmouseover="showTooltip(event, ${w.week}, '${(w.goldSpent/1e6).toFixed(1)}M Gold', '${w.speedupsDays.toFixed(1)} Days (${(w.speedupsDays*24).toFixed(0)}h)', '${w.valorSpent.toLocaleString()} Badges')"
-                          onmouseout="hideTooltip()"></rect>`;
+                // Bottom Stack: T10 Target Valor (Vibrant Green)
+                if (targetH > 0) {
+                    html += `<rect x="${x}" y="${targetYPos}" width="${barW}" height="${targetH}" fill="#16a34a" rx="${fillerH > 0 ? 0 : 3}" opacity="0.9"
+                              onmouseover="showValorTooltip(event, ${w.week}, '${valorStr}', '${(w.targetValor||0).toLocaleString()}', '${(w.fillerValor||0).toLocaleString()}', '${(w.goldSpent/1e6).toFixed(1)}M', '${w.speedupsDays.toFixed(1)}d')"
+                              onmouseout="hideValorTooltip()"></rect>`;
+                }
 
-                let textY = barH > 22 ? barY + 13 : barY - 4;
-                let textFill = barH > 22 ? "#ffffff" : barColor;
+                // Top Stack: Non-T10 / Filler Valor (Vibrant Cyan)
+                if (fillerH > 0) {
+                    html += `<rect x="${x}" y="${fillerYPos}" width="${barW}" height="${fillerH}" fill="#0891b2" rx="3" opacity="0.9"
+                              onmouseover="showValorTooltip(event, ${w.week}, '${valorStr}', '${(w.targetValor||0).toLocaleString()}', '${(w.fillerValor||0).toLocaleString()}', '${(w.goldSpent/1e6).toFixed(1)}M', '${w.speedupsDays.toFixed(1)}d')"
+                              onmouseout="hideValorTooltip()"></rect>`;
+                }
+
+                let textY = totalH > 22 ? fillerYPos + 13 : fillerYPos - 4;
+                let textFill = totalH > 22 ? "#ffffff" : "#16a34a";
                 html += `<text x="${x + barW/2}" y="${textY}" text-anchor="middle" fill="${textFill}" font-size="9" font-weight="bold">${valorStr}</text>`;
 
                 if (weeks.length <= 15 || idx % 2 === 0) {
@@ -6737,6 +6855,20 @@
 
         function hideTooltip() {
             let tt = document.getElementById('chart-tooltip');
+            if (tt) tt.style.display = 'none';
+        }
+
+        function showValorTooltip(evt, week, totalValor, targetValor, fillerValor, gold, speed) {
+            let tt = document.getElementById('valor-chart-tooltip');
+            if (!tt) return;
+            tt.style.display = 'block';
+            tt.style.left = (evt.layerX + 15) + 'px';
+            tt.style.top = (evt.layerY - 50) + 'px';
+            tt.innerHTML = `<strong>Week ${week}</strong><br>🛡️ <strong>Total Valor: ${totalValor}</strong><br><span style="color:#16a34a">🎯 T10 Target: ${targetValor}</span><br><span style="color:#0891b2">📦 Non-T10 / Filler: ${fillerValor}</span><br><span style="font-size:0.78rem; color:var(--text-secondary); margin-top:4px; display:block">💰 Gold: ${gold} | ⚡ Speedups: ${speed}</span>`;
+        }
+
+        function hideValorTooltip() {
+            let tt = document.getElementById('valor-chart-tooltip');
             if (tt) tt.style.display = 'none';
         }
 
