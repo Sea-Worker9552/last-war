@@ -507,7 +507,7 @@
             </div>
         </div>
 
-        <!-- Collapsible Baseline Box with Touch Horizontal Scrolling -->
+        <!-- Collapsible Special Forces Baseline Box -->
         <div class="collapsible-card">
             <div class="collapsible-header" onclick="toggleBaselineBox()">
                 <span>🎯 Initial Special Forces Tech Progress</span>
@@ -518,6 +518,20 @@
                     Type in or click +/- to set your current standing levels up to full Special Forces limits (e.g. Lvl 10). Scroll left/right on mobile.
                 </p>
                 <div class="tree-grid-centered" id="baseline-tree-grid"></div>
+            </div>
+        </div>
+
+        <!-- Collapsible Intercity Truck Baseline Box (Tree Layout Centered Row by Row) -->
+        <div class="collapsible-card">
+            <div class="collapsible-header" onclick="toggleTruckBaselineBox()">
+                <span>🚚 Initial Intercity Truck Tech Progress</span>
+                <span id="truck-baseline-arrow">▼ Expand</span>
+            </div>
+            <div class="collapsible-body" id="truck-baseline-body">
+                <p style="font-size:0.85rem; color:var(--text-secondary); width:100%; text-align:center;">
+                    Type in or click +/- to set your current standing levels for Intercity Truck tree filler techs. Scroll left/right on mobile.
+                </p>
+                <div class="tree-grid-centered" id="truck-baseline-tree-grid"></div>
             </div>
         </div>
 
@@ -1285,6 +1299,7 @@
             goldCap: 600000000,
             activeWeek: 1,
             startingBaseline: {},
+            startingTruckBaseline: {},
             weeklyOverrides: {},
             modalDraftQueue: [],
             cachedWeeks: []
@@ -1310,7 +1325,7 @@
 
         function saveStateToLocalStorage() {
             try {
-                localStorage.setItem('lastwar_sf_state_v3', JSON.stringify({
+                localStorage.setItem('lastwar_sf_state_v4', JSON.stringify({
                     theme: state.theme,
                     preset: state.preset,
                     baseSpeed: state.baseSpeed,
@@ -1320,6 +1335,7 @@
                     valorTarget: state.valorTarget,
                     goldCap: state.goldCap,
                     startingBaseline: state.startingBaseline,
+                    startingTruckBaseline: state.startingTruckBaseline,
                     weeklyOverrides: state.weeklyOverrides
                 }));
             } catch(e) {}
@@ -1327,7 +1343,7 @@
 
         function loadStateFromLocalStorage() {
             try {
-                let saved = localStorage.getItem('lastwar_sf_state_v3');
+                let saved = localStorage.getItem('lastwar_sf_state_v4');
                 if (saved) {
                     let parsed = JSON.parse(saved);
                     state = Object.assign(state, parsed);
@@ -1337,7 +1353,7 @@
 
         function resetAllSettings() {
             if (confirm("Reset all settings, starting baseline levels, and custom weekly plans to default?")) {
-                try { localStorage.removeItem('lastwar_sf_state_v3'); } catch(e) {}
+                try { localStorage.removeItem('lastwar_sf_state_v4'); } catch(e) {}
                 location.reload();
             }
         }
@@ -1433,6 +1449,19 @@
                 body.classList.add('open');
                 arrow.innerText = '▲ Collapse';
                 renderBaselineTree();
+            }
+        }
+
+        function toggleTruckBaselineBox() {
+            let body = document.getElementById('truck-baseline-body');
+            let arrow = document.getElementById('truck-baseline-arrow');
+            if (body.classList.contains('open')) {
+                body.classList.remove('open');
+                arrow.innerText = '▼ Expand';
+            } else {
+                body.classList.add('open');
+                arrow.innerText = '▲ Collapse';
+                renderTruckBaselineTree();
             }
         }
 
@@ -1628,6 +1657,7 @@
             let truckCompletedSet = new Set();
             let nonT10SfCompletedSet = new Set();
 
+            // Process Special Forces Starting Baseline
             Object.keys(state.startingBaseline).forEach(t_id => {
                 let startLvl = state.startingBaseline[t_id] || 0;
                 let maxT10 = t10MaxMap[t_id] || 0;
@@ -1656,10 +1686,26 @@
                 }
             });
 
+            // Process Intercity Truck Starting Baseline (Centered Rows Layout & Zero Bugs!)
+            Object.keys(state.startingTruckBaseline).forEach(t_id => {
+                let startLvl = state.startingTruckBaseline[t_id] || 0;
+                for (let l = 1; l <= startLvl; l++) {
+                    let truckKey = 'truck:' + t_id + ':' + l;
+                    if (truckNodes[truckKey]) {
+                        truckCompletedSet.add(truckKey);
+                        if (truckAdj[truckKey]) {
+                            truckAdj[truckKey].forEach(c => {
+                                if (truckInDegree[c] !== undefined) truckInDegree[c]--;
+                            });
+                        }
+                    }
+                }
+            });
+
             let available = Object.keys(inDegree).filter(k => inDegree[k] === 0 && !completedSet.has(k));
             available.sort((a,b) => priority(a) - priority(b));
 
-            let truckAvailable = Object.keys(truckInDegree).filter(k => truckInDegree[k] === 0);
+            let truckAvailable = Object.keys(truckInDegree).filter(k => truckInDegree[k] === 0 && !truckCompletedSet.has(k));
             let nonT10SfAvailable = Object.keys(nonT10SfInDegree).filter(k => nonT10SfInDegree[k] === 0 && !nonT10SfCompletedSet.has(k));
 
             let totalNodes = Object.keys(nodes).length;
@@ -2039,6 +2085,30 @@
             grid.innerHTML = html;
         }
 
+        function renderTruckBaselineTree() {
+            let grid = document.getElementById('truck-baseline-tree-grid');
+            let html = '';
+            TRUCK_DATA.rows.forEach(r => {
+                html += `<div class="tree-row-centered">`;
+                r.elements.forEach(e => {
+                    let maxLvl = e.maxLevel;
+                    let curLvl = state.startingTruckBaseline[e.id] || 0;
+                    html += `<div class="hedg-card">
+                        <div class="hedg-icon">🚚</div>
+                        <div class="hedg-title">${e.name}</div>
+                        <div class="card-stepper">
+                            <button class="btn-step" onclick="adjustTruckBaseline('${e.id}', -1, ${maxLvl})">-</button>
+                            <input type="number" class="input-lvl-number" id="truck-base-input-${e.id}" min="0" max="${maxLvl}" value="${curLvl}" onchange="typeTruckBaseline('${e.id}', this.value, ${maxLvl})">
+                            <button class="btn-step" onclick="adjustTruckBaseline('${e.id}', 1, ${maxLvl})">+</button>
+                            <span class="lvl-max-label">/ ${maxLvl}</span>
+                        </div>
+                    </div>`;
+                });
+                html += `</div>`;
+            });
+            grid.innerHTML = html;
+        }
+
         function adjustBaseline(techId, delta) {
             let cur = state.startingBaseline[techId] || 0;
             let maxLvl = 10;
@@ -2057,6 +2127,23 @@
             SF_DATA.rows.forEach(r => r.elements.forEach(e => { if (e.id === techId) sfMax = e.maxLevel; }));
             let nextLvl = Math.max(0, Math.min(sfMax, val));
             state.startingBaseline[techId] = nextLvl;
+            saveStateToLocalStorage();
+            runSimulationAndRender();
+        }
+
+        function adjustTruckBaseline(techId, delta, maxLvl) {
+            let cur = state.startingTruckBaseline[techId] || 0;
+            let nextLvl = Math.max(0, Math.min(maxLvl, cur + delta));
+            state.startingTruckBaseline[techId] = nextLvl;
+            renderTruckBaselineTree();
+            saveStateToLocalStorage();
+            runSimulationAndRender();
+        }
+
+        function typeTruckBaseline(techId, valStr, maxLvl) {
+            let val = parseInt(valStr) || 0;
+            let nextLvl = Math.max(0, Math.min(maxLvl, val));
+            state.startingTruckBaseline[techId] = nextLvl;
             saveStateToLocalStorage();
             runSimulationAndRender();
         }
