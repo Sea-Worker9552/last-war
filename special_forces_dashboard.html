@@ -105,44 +105,39 @@
         .control-panel {
             background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px;
             padding: 20px 24px; margin-bottom: 20px; box-shadow: var(--shadow-sm);
-            display: grid; grid-template-columns: 1fr 420px; gap: 24px; align-items: start;
+            display: grid; grid-template-columns: 1fr 420px; gap: 20px; align-items: start;
         }
 
-        @media (max-width: 1024px) {
+        @media (max-width: 1100px) {
             .control-panel { grid-template-columns: 1fr; }
         }
 
-        .control-left-section {
-            display: flex; flex-direction: column; gap: 20px;
+        .control-boxes-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;
         }
 
-        .control-row {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; align-items: start;
+        @media (max-width: 640px) {
+            .control-boxes-grid { grid-template-columns: 1fr; }
         }
 
-        .control-group { display: flex; flex-direction: column; gap: 8px; position: relative; }
+        .control-box {
+            background: var(--bg-main); border: 1px solid var(--border-color); border-radius: 12px;
+            padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; position: relative;
+            box-shadow: var(--shadow-sm); transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
 
-        .control-group label {
-            font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+        .control-box:hover {
+            border-color: var(--accent-gold); box-shadow: var(--shadow-md);
+        }
+
+        .control-box label {
+            font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
             color: var(--text-secondary); display: flex; justify-content: space-between; align-items: center;
         }
 
-        .info-tooltip-trigger {
-            cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
-            width: 18px; height: 18px; border-radius: 50%; background: var(--bg-input);
-            border: 1px solid var(--border-color); color: var(--accent-blue); font-size: 0.75rem; font-weight: bold;
-        }
-
-        .tooltip-popup {
-            position: absolute; top: 28px; right: 0; left: 0; background: var(--bg-card);
-            border: 1px solid var(--border-color); border-radius: 12px; padding: 12px 14px;
-            font-size: 0.8rem; color: var(--text-primary); box-shadow: var(--shadow-md); z-index: 100;
-            display: none; text-transform: none; font-weight: normal; line-height: 1.4;
-        }
-
-        .control-group input[type="range"] {
+        .control-box input[type="range"] {
             width: 100%; accent-color: var(--accent-gold); height: 6px; background: var(--bg-input);
-            border-radius: 3px; cursor: pointer;
+            border-radius: 3px; cursor: pointer; margin-top: 4px;
         }
 
         .radio-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 4px; }
@@ -521,6 +516,29 @@
             width: 100%; max-width: 480px; padding: 24px; display: flex; flex-direction: column; gap: 16px;
             box-shadow: var(--shadow-lg);
         }
+    
+        .info-tooltip-wrap {
+            position: relative; display: inline-flex; align-items: center;
+        }
+
+        .info-tooltip-trigger {
+            cursor: help; display: inline-flex; align-items: center; justify-content: center;
+            width: 18px; height: 18px; border-radius: 50%; background: var(--bg-input);
+            border: 1px solid var(--border-color); color: var(--accent-blue); font-size: 0.75rem; font-weight: bold;
+        }
+
+        .tooltip-box {
+            display: none !important; position: absolute; top: 26px; right: 0; width: 280px;
+            background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px;
+            padding: 12px 14px; font-size: 0.8rem; color: var(--text-primary);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3); z-index: 1000;
+            pointer-events: none; text-transform: none; font-weight: normal; line-height: 1.4;
+        }
+
+        .info-tooltip-wrap:hover .tooltip-box {
+            display: block !important;
+        }
+
     </style>
 </head>
 <body>
@@ -548,66 +566,72 @@
 
         <!-- Controls -->
         <div class="control-panel">
-            <!-- Left Column: Primary Research Parameters -->
-            <div class="control-left-section">
-                <div class="control-row">
-                    <div class="control-group">
-                        <label>Base Research Speed %: <span id="val-base-speed" style="color:var(--accent-blue)">200%</span></label>
-                        <input type="range" id="input-base-speed" min="0" max="400" step="5" value="200" oninput="updateControls()">
-                    </div>
+            <!-- Left Column: 2x2 Grid of Individual Card Boxes -->
+            <div class="control-boxes-grid">
+                <!-- Box 1: Base Research Speed -->
+                <div class="control-box">
+                    <label>⚡ Base Research Speed %: <span id="val-base-speed" style="color:var(--accent-blue)">200%</span></label>
+                    <input type="range" id="input-base-speed" min="0" max="400" step="5" value="200" oninput="updateControls()">
+                </div>
 
-                    <div class="control-group">
-                        <label>Capitol Position Buff</label>
-                        <div class="radio-grid">
-                            <div class="radio-card active" id="cap-science" onclick="setCapitol('science')">🔬 Sec. Science (+50%)</div>
-                            <div class="radio-card" id="cap-dev" onclick="setCapitol('dev')">🛠️ Sec. Dev (+25%)</div>
-                            <div class="radio-card" id="cap-vp" onclick="setCapitol('vp')">🎖️ Vice Pres (+20%)</div>
-                            <div class="radio-card" id="cap-none" onclick="setCapitol('none')">🚫 None (+0%)</div>
-                        </div>
+                <!-- Box 2: Capitol Position Buff (Side-by-Side with Speed) -->
+                <div class="control-box">
+                    <label>🏛️ Capitol Position Buff</label>
+                    <div class="radio-grid">
+                        <div class="radio-card active" id="cap-science" onclick="setCapitol('science')">🔬 Sec. Science (+50%)</div>
+                        <div class="radio-card" id="cap-dev" onclick="setCapitol('dev')">🛠️ Sec. Dev (+25%)</div>
+                        <div class="radio-card" id="cap-vp" onclick="setCapitol('vp')">🎖️ Vice Pres (+20%)</div>
+                        <div class="radio-card" id="cap-none" onclick="setCapitol('none')">🚫 None (+0%)</div>
                     </div>
                 </div>
 
-                <div class="control-row">
-                    <div class="control-group">
-                        <label>Weekly Valor Target: <span id="val-valor-target" style="color:var(--accent-green)">~9,000/wk</span></label>
-                        <input type="range" id="input-valor-target" min="5000" max="15000" step="250" value="9000" oninput="updateControls()">
-                    </div>
+                <!-- Box 3: Weekly Valor Target -->
+                <div class="control-box">
+                    <label>🎯 Weekly Valor Target: <span id="val-valor-target" style="color:var(--accent-green)">~9,000/wk</span></label>
+                    <input type="range" id="input-valor-target" min="5000" max="15000" step="250" value="9000" oninput="updateControls()">
+                </div>
 
-                    <div class="control-group">
-                        <label>Weekly Gold Limit: <span id="val-gold-cap" style="color:var(--accent-gold)">600M Gold/wk</span></label>
-                        <input type="range" id="input-gold-cap" min="100000000" max="2000000000" step="50000000" value="600000000" oninput="updateControls()">
-                    </div>
+                <!-- Box 4: Weekly Gold Limit with Embedded Gold Flex Buffer -->
+                <div class="control-box">
+                    <label>💰 Weekly Gold Limit: <span id="val-gold-cap" style="color:var(--accent-gold)">600M Gold/wk</span></label>
+                    <input type="range" id="input-gold-cap" min="100000000" max="2000000000" step="50000000" value="600000000" oninput="updateControls()">
 
-                    <div class="control-group">
-                        <label>
-                            <span>Gold Limit Flexibility Buffer</span>
-                            <span class="info-tooltip-trigger" onclick="toggleGoldFlexTooltip(event)" title="Click for flex cap explanation">ℹ️</span>
-                        </label>
-                        <div class="tooltip-popup" id="tooltip-goldflex-info">
-                            <strong>💡 Smart Flex Buffer (+10%):</strong><br>
-                            Allows exceeding your weekly Gold limit by up to 10% (e.g. 660M instead of 600M) if doing so completes a major prerequisite level or unlocks key tech for the following week!
-                        </div>
+                    <!-- Embedded Gold Flex Buffer Sub-Control -->
+                    <div style="border-top:1px dashed var(--border-color); padding-top:8px; margin-top:4px;">
+                        <label style="font-size:0.75rem; margin-bottom:6px;">
+                            <span>⚡ Gold Limit Flex Buffer (+10%)
+                            <span class="info-tooltip-wrap">
+                                <span class="info-tooltip-trigger">ℹ️</span>
+                                <div class="tooltip-box">
+                                    <strong>💡 Smart Flex Buffer (+10%):</strong><br>
+                                    Allows exceeding your weekly Gold limit by up to 10% (e.g. 660M instead of 600M) if doing so completes a major prerequisite level or unlocks key tech for the following week!
+                                </div>
+                            </span></label>
+                        
                         <div class="radio-grid">
-                            <div class="radio-card active" id="goldflex-strict" onclick="setGoldFlex('strict')">🛑 Strict Cap (0%)</div>
-                            <div class="radio-card" id="goldflex-flex" onclick="setGoldFlex('flex')">⚡ Smart Flex (+10%)</div>
+                            <div class="radio-card active" id="goldflex-strict" onclick="setGoldFlex('strict')">🛑 Strict (0%)</div>
+                            <div class="radio-card" id="goldflex-flex" onclick="setGoldFlex('flex')">⚡ Flex (+10%)</div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Right Column: Filler Tech Categories & Priority Order -->
-            <div class="control-group">
+            <!-- Right Column: Filler Tech Categories & Priority Order Card -->
+            <div class="control-box" style="background:var(--bg-card); border-color:var(--border-color);">
                 <label>
-                    <span>Filler Tech Categories & Priority Order (Descending Priority)</span>
-                    <span class="info-tooltip-trigger" onclick="toggleTooltip(event)" title="Click for strategy explanation">ℹ️</span>
-                </label>
-                <div class="tooltip-popup" id="tooltip-filler-info">
-                    <strong>💡 Filler Strategy Purpose:</strong><br>
-                    Maintains ~9,000 Valor Badges spent every Wednesday for maximum VS Day points while avoiding Gold limit bottlenecks.<br><br>
-                    • Check options to enable tech types as filler.<br>
-                    • Use ▲ / ▼ to reorder descending priority.<br>
-                    • <strong>Siege to Seize</strong> &amp; <strong>Defense Fortifications</strong> can be checked anytime! In the weekly schedule, their filler introduction will automatically activate once Special Forces reaches 40% completion (89/221 levels).
-                </div>
+                    <span>Filler Tech Strategy & Priority
+                    <span class="info-tooltip-wrap">
+                        <span class="info-tooltip-trigger">ℹ️</span>
+                        <div class="tooltip-box">
+                            <strong>💡 Filler Strategy Purpose:</strong><br>
+                            Maintains ~9,000 Valor Badges spent every Wednesday for maximum VS Day points while avoiding Gold limit bottlenecks.<br><br>
+                            • Check options to enable tech types as filler.<br>
+                            • Use ▲ / ▼ to reorder descending priority.<br>
+                            • <strong>Siege to Seize</strong> &amp; <strong>Defense Fortifications</strong> can be checked anytime! In the weekly schedule, their filler introduction will automatically activate once Special Forces reaches 40% completion (89/221 levels).
+                        </div>
+                    </span>
+                    </label>
+                
                 <div id="filler-master-toggle-box"></div>
                 <div class="sf-progress-indicator" id="sf-completion-status">
                     <span>🛡️ Special Forces Progress: 0 / 221 levels (0.0% Complete)</span>
@@ -647,7 +671,7 @@
         <!-- Collapsible Siege to Seize Baseline Box -->
         <div class="collapsible-card">
             <div class="collapsible-header" onclick="toggleSiegeBaselineBox()">
-                <span>🏰 Initial Siege to Seize Tech Progress (Cpt Hedge Authentic Tree)</span>
+                <span>🏰 Initial Siege to Seize Tech Progress</span>
                 <span id="siege-baseline-arrow">▼ Expand</span>
             </div>
             <div class="collapsible-body" id="siege-baseline-body">
@@ -661,7 +685,7 @@
         <!-- Collapsible Defense Fortifications Baseline Box -->
         <div class="collapsible-card">
             <div class="collapsible-header" onclick="toggleDefenseFortBaselineBox()">
-                <span>🛡️ Initial Defense Fortifications Tech Progress (Cpt Hedge Authentic Tree)</span>
+                <span>🛡️ Initial Defense Fortifications Tech Progress</span>
                 <span id="defense-fort-baseline-arrow">▼ Expand</span>
             </div>
             <div class="collapsible-body" id="defense-fort-baseline-body">
@@ -6151,6 +6175,20 @@
                                 nonT10SfInDegree[key]++;
                             }
                         }
+                        if (lvl.requirements) {
+                            lvl.requirements.forEach(req => {
+                                if (!req.external && fullSfTechs[req.elementId]) {
+                                    let r_key = (req.minLevel > maxT10) ? 'sf_filler:' + req.elementId + ':' + req.minLevel : req.elementId + ':' + req.minLevel;
+                                    if (nonT10SfNodes[r_key]) {
+                                        nonT10SfAdj[r_key].push(key);
+                                        nonT10SfInDegree[key]++;
+                                    } else if (nodes[r_key]) {
+                                        adj[r_key].push(key);
+                                        nonT10SfInDegree[key]++;
+                                    }
+                                }
+                            });
+                        }
                     }
                 });
             });
@@ -6189,6 +6227,14 @@
                             if (lvl.level > 1) {
                                 let parent = 'truck:' + t_id + ':' + (lvl.level - 1);
                                 if (truckNodes[parent]) { truckAdj[parent].push(key); truckInDegree[key]++; }
+                            }
+                            if (lvl.requirements) {
+                                lvl.requirements.forEach(req => {
+                                    if (!req.external && truckTechs[req.elementId]) {
+                                        let r_key = 'truck:' + req.elementId + ':' + (req.minLevel || 1);
+                                        if (truckNodes[r_key]) { truckAdj[r_key].push(key); truckInDegree[key]++; }
+                                    }
+                                });
                             }
                         }
                     });
