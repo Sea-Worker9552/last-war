@@ -237,6 +237,14 @@
 
         td { padding: 12px 16px; border-bottom: 1px solid var(--border-color); vertical-align: top; }
 
+        tr.save-week-row {
+            background: rgba(168, 85, 247, 0.04);
+        }
+
+        tr.save-week-row td {
+            border-bottom-color: rgba(168, 85, 247, 0.2);
+        }
+
         .tech-stack-list { display: flex; flex-direction: column; gap: 4px; }
 
         .tech-pill {
@@ -251,13 +259,35 @@
         .badge-gold { background: rgba(217, 119, 6, 0.1); color: var(--accent-gold); padding: 4px 8px; border-radius: 6px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; }
         .badge-gold.flex-overcap { background: rgba(220, 38, 38, 0.15); color: var(--accent-red); border: 1px solid var(--accent-red); }
         .badge-speedup { background: rgba(8, 145, 178, 0.1); color: var(--accent-cyan); padding: 4px 8px; border-radius: 6px; font-weight: 600; }
+        .badge-save-week { background: rgba(168, 85, 247, 0.15); color: var(--accent-purple); border: 1px solid var(--accent-purple); padding: 4px 8px; border-radius: 6px; font-weight: 700; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 4px; width: fit-content; }
+
+        .btn-action-group { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+
+        .btn-save-toggle {
+            background: var(--bg-input); border: 1px solid var(--border-color); color: var(--text-secondary);
+            padding: 6px 10px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600;
+        }
+
+        .btn-save-toggle:hover { border-color: var(--accent-purple); color: var(--accent-purple); }
+
+        .btn-save-toggle.active {
+            background: var(--accent-purple); color: #ffffff; border-color: var(--accent-purple);
+            box-shadow: 0 2px 8px rgba(168, 85, 247, 0.3);
+        }
 
         .btn-edit-week {
             background: var(--bg-input); border: 1px solid var(--accent-gold); color: var(--accent-gold);
-            padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600;
+            padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600;
         }
 
         .btn-edit-week:hover { background: var(--accent-gold); color: #fff; }
+
+        .btn-caps-settings {
+            background: var(--bg-input); border: 1px solid var(--accent-purple); color: var(--accent-purple);
+            padding: 6px 10px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600;
+        }
+
+        .btn-caps-settings:hover { background: var(--accent-purple); color: #fff; }
 
         .modal-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.85);
@@ -350,8 +380,20 @@
         }
 
         .hedg-icon {
-            width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, #38bdf8, #0284c7);
-            display: flex; align-items: center; justify-content: center; font-size: 1.3rem; margin-bottom: 6px;
+            width: 46px; height: 46px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 6px;
+            color: #ffffff;
+            border: 2px solid rgba(255,255,255,0.6);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+            /* High-contrast drop shadow so emojis pop on any background */
+            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.55));
+            position: relative;
+        }
+
+        .hedg-icon::after {
+            content: ''; position: absolute; inset: 0; border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(0,0,0,0.15) 100%);
+            pointer-events: none;
         }
 
         .hedg-title { font-size: 0.9rem; font-weight: 700; color: var(--text-primary); text-align: center; margin-bottom: 6px; line-height: 1.2; }
@@ -418,6 +460,13 @@
         .btn-save {
             background: var(--accent-gold); color: #ffffff; border: none; padding: 8px 20px; border-radius: 8px;
             font-weight: 700; cursor: pointer;
+        }
+
+        /* Save Caps Mini Modal */
+        .caps-modal-content {
+            background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px;
+            width: 100%; max-width: 480px; padding: 24px; display: flex; flex-direction: column; gap: 16px;
+            box-shadow: var(--shadow-lg);
         }
     </style>
 </head>
@@ -589,7 +638,7 @@
         <div class="table-card">
             <div class="chart-header">
                 <h3>🗓️ Week-by-Week Research Schedule & Custom Planner</h3>
-                <span style="font-size:0.85rem; color:var(--text-secondary)">Click "Edit Tree" for any week to customize levels researched</span>
+                <span style="font-size:0.85rem; color:var(--text-secondary)">Toggle "🐖 Save Week" to conserve resources during off-weeks</span>
             </div>
             <table>
                 <thead>
@@ -600,7 +649,7 @@
                         <th>Speedups Needed</th>
                         <th>T10 Target Techs Researched</th>
                         <th>Filler Tech Researched</th>
-                        <th>Action</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody id="table-body"></tbody>
@@ -635,6 +684,28 @@
             <div class="modal-footer">
                 <button class="btn-close" onclick="closeModal()">Cancel</button>
                 <button class="btn-save" onclick="saveModalOverrides()">Save Week Plan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Save Caps Adjuster Mini Modal -->
+    <div class="modal-overlay" id="caps-modal">
+        <div class="caps-modal-content">
+            <h3 id="caps-modal-title" style="color:var(--accent-purple)">🐖 Save Week Limits Adjuster</h3>
+            <p style="font-size:0.85rem; color:var(--text-secondary)">
+                Set custom reduced resource caps for this alliance conservation week.
+            </p>
+            <div class="control-group">
+                <label>Save Week Valor Cap: <span id="val-save-valor-cap" style="color:var(--accent-green)">4,500</span></label>
+                <input type="range" id="input-save-valor-cap" min="0" max="15000" step="250" value="4500" oninput="updateSaveCapsValues()">
+            </div>
+            <div class="control-group">
+                <label>Save Week Gold Cap: <span id="val-save-gold-cap" style="color:var(--accent-gold)">300M</span></label>
+                <input type="range" id="input-save-gold-cap" min="0" max="2000000000" step="25000000" value="300000000" oninput="updateSaveCapsValues()">
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:10px;">
+                <button class="btn-close" onclick="closeSaveCapsModal()">Cancel</button>
+                <button class="btn-save" style="background:var(--accent-purple)" onclick="applySaveCaps()">Save Caps</button>
             </div>
         </div>
     </div>
@@ -1301,9 +1372,67 @@
             startingBaseline: {},
             startingTruckBaseline: {},
             weeklyOverrides: {},
+            saveWeeks: {}, // Key: weekNum -> { enabled: bool, valorCap: int, goldCap: float }
             modalDraftQueue: [],
             cachedWeeks: []
         };
+
+        // Tech Node Color & Icon Mapping for Special Forces and Intercity Truck Trees
+        const TECH_GRAPHICS_MAP = {
+            // Special Forces Tree
+            'hp-boost-1': { icon: '❤️', gradient: 'linear-gradient(135deg, #0f172a, #334155)', shadow: '0 4px 12px rgba(0,0,0,0.4)' },
+            'hp-boost-2': { icon: '❤️', gradient: 'linear-gradient(135deg, #0f172a, #334155)', shadow: '0 4px 12px rgba(0,0,0,0.4)' },
+            'hp-boost-3': { icon: '❤️', gradient: 'linear-gradient(135deg, #0f172a, #334155)', shadow: '0 4px 12px rgba(0,0,0,0.4)' },
+            
+            'attack-boost-1': { icon: '⚔️', gradient: 'linear-gradient(135deg, #ea580c, #7c2d12)', shadow: '0 4px 12px rgba(234,88,12,0.4)' },
+            'attack-boost-2': { icon: '⚔️', gradient: 'linear-gradient(135deg, #ea580c, #7c2d12)', shadow: '0 4px 12px rgba(234,88,12,0.4)' },
+            'attack-boost-3': { icon: '⚔️', gradient: 'linear-gradient(135deg, #ea580c, #7c2d12)', shadow: '0 4px 12px rgba(234,88,12,0.4)' },
+            
+            'defense-boost-1': { icon: '🛡️', gradient: 'linear-gradient(135deg, #0284c7, #0f172a)', shadow: '0 4px 12px rgba(2,132,199,0.4)' },
+            'defense-boost-2': { icon: '🛡️', gradient: 'linear-gradient(135deg, #0284c7, #0f172a)', shadow: '0 4px 12px rgba(2,132,199,0.4)' },
+            'defense-boost-3': { icon: '🛡️', gradient: 'linear-gradient(135deg, #0284c7, #0f172a)', shadow: '0 4px 12px rgba(2,132,199,0.4)' },
+
+            'advanced-protection-1': { icon: '🏰', gradient: 'linear-gradient(135deg, #2563eb, #0f172a)', shadow: '0 4px 12px rgba(37,99,235,0.4)' },
+            'advanced-protection': { icon: '🏰', gradient: 'linear-gradient(135deg, #1d4ed8, #0f172a)', shadow: '0 4px 12px rgba(29,78,216,0.4)' },
+
+            'defense-training-7': { icon: '🪖', gradient: 'linear-gradient(135deg, #0369a1, #0f172a)', shadow: '0 4px 12px rgba(3,105,161,0.4)' },
+            'defense-training-8': { icon: '🪖', gradient: 'linear-gradient(135deg, #0369a1, #0f172a)', shadow: '0 4px 12px rgba(3,105,161,0.4)' },
+
+            'weapon-training-7': { icon: '🎯', gradient: 'linear-gradient(135deg, #d97706, #451a03)', shadow: '0 4px 12px rgba(217,119,6,0.4)' },
+            'weapon-training-8': { icon: '🎯', gradient: 'linear-gradient(135deg, #d97706, #451a03)', shadow: '0 4px 12px rgba(217,119,6,0.4)' },
+
+            'advanced-armor-7': { icon: '🦺', gradient: 'linear-gradient(135deg, #0f172a, #1e293b)', shadow: '0 4px 12px rgba(0,0,0,0.4)' },
+            'advanced-armor-8': { icon: '🦺', gradient: 'linear-gradient(135deg, #0f172a, #1e293b)', shadow: '0 4px 12px rgba(0,0,0,0.4)' },
+
+            'focused-training-1': { icon: '🧠', gradient: 'linear-gradient(135deg, #7c3aed, #0f172a)', shadow: '0 4px 12px rgba(124,58,237,0.4)' },
+            'barracks-expansion-1': { icon: '⛺', gradient: 'linear-gradient(135deg, #9333ea, #3b0764)', shadow: '0 4px 12px rgba(147,51,234,0.4)' },
+            
+            // Morale: Dark Slate/Navy background so the bright Red Flag (🚩) pops with 100% contrast!
+            'morale': { icon: '🚩', gradient: 'linear-gradient(135deg, #1e293b, #090d16)', shadow: '0 4px 12px rgba(0,0,0,0.6)' },
+
+            // Rapid Field Dressing: Dark Slate background so the skin-toned Bandage (🩹) pops!
+            'rapid-field-dressing-1': { icon: '🩹', gradient: 'linear-gradient(135deg, #0f172a, #1e293b)', shadow: '0 4px 12px rgba(0,0,0,0.5)' },
+            'infirmary-expansion-1': { icon: '🏥', gradient: 'linear-gradient(135deg, #047857, #022c22)', shadow: '0 4px 12px rgba(4,120,87,0.4)' },
+
+            'unit-x': { icon: '🎖️', gradient: 'linear-gradient(135deg, #d97706, #78350f)', shadow: '0 0 20px rgba(217,119,6,0.8)' },
+
+            // Intercity Truck Tree
+            'basic-goods': { icon: '📦', gradient: 'linear-gradient(135deg, #7e22ce, #1e1b4b)', shadow: '0 4px 12px rgba(126,34,206,0.4)' },
+            'attack-boost': { icon: '⚔️', gradient: 'linear-gradient(135deg, #c2410c, #451a03)', shadow: '0 4px 12px rgba(194,65,12,0.4)' },
+            'defense-boost': { icon: '🛡️', gradient: 'linear-gradient(135deg, #0369a1, #0c4a6e)', shadow: '0 4px 12px rgba(3,105,161,0.4)' },
+            'rapid-transit': { icon: '⚡', gradient: 'linear-gradient(135deg, #0e7490, #164e63)', shadow: '0 4px 12px rgba(14,116,144,0.4)' },
+            'plunder': { icon: '💰', gradient: 'linear-gradient(135deg, #b45309, #451a03)', shadow: '0 4px 12px rgba(180,83,9,0.4)' },
+            'lucky': { icon: '🍀', gradient: 'linear-gradient(135deg, #047857, #022c22)', shadow: '0 4px 12px rgba(4,120,87,0.4)' },
+            'extra-truck': { icon: '🚛', gradient: 'linear-gradient(135deg, #7e22ce, #3b0764)', shadow: '0 0 18px rgba(126,34,206,0.6)' },
+            'ultimate-guard': { icon: '🛡️✨', gradient: 'linear-gradient(135deg, #1d4ed8, #1e3a8a)', shadow: '0 4px 12px rgba(29,78,216,0.4)' },
+            'reindeer-sleigh-ride': { icon: '🛷', gradient: 'linear-gradient(135deg, #be185d, #500724)', shadow: '0 4px 12px rgba(190,24,93,0.4)' }
+        };
+
+        function getTechGraphic(techId, fallbackIcon='🛡️') {
+            let style = TECH_GRAPHICS_MAP[techId];
+            if (style) return style;
+            return { icon: fallbackIcon, gradient: 'linear-gradient(135deg, #38bdf8, #0284c7)', shadow: '0 4px 12px rgba(2,132,199,0.3)' };
+        }
 
         function generateEmojiFavicon(emojiChar) {
             try {
@@ -1325,7 +1454,7 @@
 
         function saveStateToLocalStorage() {
             try {
-                localStorage.setItem('lastwar_sf_state_v4', JSON.stringify({
+                localStorage.setItem('lastwar_sf_state_v5', JSON.stringify({
                     theme: state.theme,
                     preset: state.preset,
                     baseSpeed: state.baseSpeed,
@@ -1336,14 +1465,15 @@
                     goldCap: state.goldCap,
                     startingBaseline: state.startingBaseline,
                     startingTruckBaseline: state.startingTruckBaseline,
-                    weeklyOverrides: state.weeklyOverrides
+                    weeklyOverrides: state.weeklyOverrides,
+                    saveWeeks: state.saveWeeks
                 }));
             } catch(e) {}
         }
 
         function loadStateFromLocalStorage() {
             try {
-                let saved = localStorage.getItem('lastwar_sf_state_v4');
+                let saved = localStorage.getItem('lastwar_sf_state_v5');
                 if (saved) {
                     let parsed = JSON.parse(saved);
                     state = Object.assign(state, parsed);
@@ -1352,8 +1482,8 @@
         }
 
         function resetAllSettings() {
-            if (confirm("Reset all settings, starting baseline levels, and custom weekly plans to default?")) {
-                try { localStorage.removeItem('lastwar_sf_state_v4'); } catch(e) {}
+            if (confirm("Reset all settings, starting baseline levels, custom weekly plans, and save weeks to default?")) {
+                try { localStorage.removeItem('lastwar_sf_state_v5'); } catch(e) {}
                 location.reload();
             }
         }
@@ -1522,6 +1652,62 @@
             setTimeout(() => { toast.style.display = 'none'; }, 3500);
         }
 
+        function toggleSaveWeek(weekNum) {
+            if (!state.saveWeeks[weekNum]) {
+                state.saveWeeks[weekNum] = {
+                    enabled: true,
+                    valorCap: Math.round(state.valorTarget * 0.5),
+                    goldCap: state.goldCap * 0.5
+                };
+            } else {
+                state.saveWeeks[weekNum].enabled = !state.saveWeeks[weekNum].enabled;
+            }
+            saveStateToLocalStorage();
+            runSimulationAndRender();
+        }
+
+        function openSaveCapsModal(weekNum) {
+            state.activeWeek = weekNum;
+            let sw = state.saveWeeks[weekNum] || {
+                enabled: true,
+                valorCap: Math.round(state.valorTarget * 0.5),
+                goldCap: state.goldCap * 0.5
+            };
+
+            document.getElementById('caps-modal-title').innerText = `🐖 Save Week ${weekNum} Limits Adjuster`;
+            document.getElementById('input-save-valor-cap').value = sw.valorCap;
+            document.getElementById('input-save-gold-cap').value = sw.goldCap;
+
+            updateSaveCapsValues();
+            document.getElementById('caps-modal').classList.add('active');
+        }
+
+        function updateSaveCapsValues() {
+            let v = parseInt(document.getElementById('input-save-valor-cap').value);
+            let g = parseFloat(document.getElementById('input-save-gold-cap').value);
+            document.getElementById('val-save-valor-cap').innerText = v.toLocaleString();
+            document.getElementById('val-save-gold-cap').innerText = (g / 1e6).toFixed(0) + 'M';
+        }
+
+        function closeSaveCapsModal() {
+            document.getElementById('caps-modal').classList.remove('active');
+        }
+
+        function applySaveCaps() {
+            let weekNum = state.activeWeek;
+            let v = parseInt(document.getElementById('input-save-valor-cap').value);
+            let g = parseFloat(document.getElementById('input-save-gold-cap').value);
+
+            state.saveWeeks[weekNum] = {
+                enabled: true,
+                valorCap: v,
+                goldCap: g
+            };
+            closeSaveCapsModal();
+            saveStateToLocalStorage();
+            runSimulationAndRender();
+        }
+
         function runSimulationAndRender() {
             const treeData = (state.preset === 'sf-full') ? SF_DATA : T10_DATA;
             const fullSfTechs = {};
@@ -1686,7 +1872,7 @@
                 }
             });
 
-            // Process Intercity Truck Starting Baseline (Centered Rows Layout & Zero Bugs!)
+            // Process Intercity Truck Starting Baseline
             Object.keys(state.startingTruckBaseline).forEach(t_id => {
                 let startLvl = state.startingTruckBaseline[t_id] || 0;
                 for (let l = 1; l <= startLvl; l++) {
@@ -1710,13 +1896,15 @@
 
             let totalNodes = Object.keys(nodes).length;
             let weeks = [], currentWeek = 1, cumGold = 0, cumValor = 0, cumSpeedups = 0;
-            const flexMaxValor = Math.min(11000, state.valorTarget + 2000);
-
-            // Effective Gold Cap calculation
-            const strictGoldCap = state.goldCap;
-            const flexGoldCap = (state.goldFlex === 'flex') ? state.goldCap * 1.10 : state.goldCap;
 
             while (completedSet.size < totalNodes && currentWeek <= 100) {
+                let saveConfig = state.saveWeeks[currentWeek] || { enabled: false };
+                let isSaveWeek = saveConfig.enabled;
+
+                let effectiveValorCap = isSaveWeek ? (saveConfig.valorCap !== undefined ? saveConfig.valorCap : Math.round(state.valorTarget * 0.5)) : Math.min(11000, state.valorTarget + 2000);
+                let effectiveGoldCap = isSaveWeek ? (saveConfig.goldCap !== undefined ? saveConfig.goldCap : state.goldCap * 0.5) : ((state.goldFlex === 'flex') ? state.goldCap * 1.10 : state.goldCap);
+                let strictGoldCap = isSaveWeek ? effectiveGoldCap : state.goldCap;
+
                 let weekCompletedState = {};
                 Object.keys(techs).forEach(t_id => {
                     let doneLvls = 0;
@@ -1761,12 +1949,7 @@
                         let candIdx = -1;
                         for (let i=0; i<available.length; i++) {
                             let cand = nodes[available[i]];
-                            // Standard strict limit check
-                            if ((wValor + cand.valor <= flexMaxValor) && (wGold + cand.gold <= strictGoldCap)) {
-                                candIdx = i; break;
-                            }
-                            // Smart Flex (+10%) check if enabled and it unlocks downstream prereqs or completes a major tech level
-                            else if (state.goldFlex === 'flex' && (wValor + cand.valor <= flexMaxValor) && (wGold + cand.gold <= flexGoldCap)) {
+                            if ((wValor + cand.valor <= effectiveValorCap) && (wGold + cand.gold <= effectiveGoldCap)) {
                                 candIdx = i; break;
                             }
                         }
@@ -1790,13 +1973,15 @@
                         available.sort((a,b) => priority(a) - priority(b));
                     }
 
-                    if (state.fillerMode !== 'none' && (wValor < 7000 || (wGold + 100000000 > strictGoldCap && wValor < state.valorTarget))) {
+                    let fillerTargetValor = isSaveWeek ? effectiveValorCap : state.valorTarget;
+
+                    if (state.fillerMode !== 'none' && (wValor < fillerTargetValor * 0.8 || (wGold + 100000000 > strictGoldCap && wValor < fillerTargetValor))) {
                         if (state.fillerMode === 'truck-first') {
-                            while (truckAvailable.length > 0 && wValor < state.valorTarget) {
+                            while (truckAvailable.length > 0 && wValor < fillerTargetValor) {
                                 let candIdx = -1;
                                 for (let i=0; i<truckAvailable.length; i++) {
                                     let cand = truckNodes[truckAvailable[i]];
-                                    if (wValor + cand.valor <= flexMaxValor) {
+                                    if (wValor + cand.valor <= effectiveValorCap) {
                                         candIdx = i; break;
                                     }
                                 }
@@ -1811,11 +1996,11 @@
                                 truckAdj[key].forEach(c => { truckInDegree[c]--; if (truckInDegree[c] === 0) truckAvailable.push(c); });
                             }
 
-                            while (nonT10SfAvailable.length > 0 && wValor < state.valorTarget) {
+                            while (nonT10SfAvailable.length > 0 && wValor < fillerTargetValor) {
                                 let candIdx = -1;
                                 for (let i=0; i<nonT10SfAvailable.length; i++) {
                                     let cand = nonT10SfNodes[nonT10SfAvailable[i]];
-                                    if ((wValor + cand.valor <= flexMaxValor) && (wGold + cand.gold <= flexGoldCap)) {
+                                    if ((wValor + cand.valor <= effectiveValorCap) && (wGold + cand.gold <= effectiveGoldCap)) {
                                         candIdx = i; break;
                                     }
                                 }
@@ -1830,11 +2015,11 @@
                                 nonT10SfAdj[key].forEach(c => { nonT10SfInDegree[c]--; if (nonT10SfInDegree[c] === 0) nonT10SfAvailable.push(c); });
                             }
                         } else if (state.fillerMode === 'sf-first') {
-                            while (nonT10SfAvailable.length > 0 && wValor < state.valorTarget) {
+                            while (nonT10SfAvailable.length > 0 && wValor < fillerTargetValor) {
                                 let candIdx = -1;
                                 for (let i=0; i<nonT10SfAvailable.length; i++) {
                                     let cand = nonT10SfNodes[nonT10SfAvailable[i]];
-                                    if ((wValor + cand.valor <= flexMaxValor) && (wGold + cand.gold <= flexGoldCap)) {
+                                    if ((wValor + cand.valor <= effectiveValorCap) && (wGold + cand.gold <= effectiveGoldCap)) {
                                         candIdx = i; break;
                                     }
                                 }
@@ -1849,11 +2034,11 @@
                                 nonT10SfAdj[key].forEach(c => { nonT10SfInDegree[c]--; if (nonT10SfInDegree[c] === 0) nonT10SfAvailable.push(c); });
                             }
 
-                            while (truckAvailable.length > 0 && wValor < state.valorTarget) {
+                            while (truckAvailable.length > 0 && wValor < fillerTargetValor) {
                                 let candIdx = -1;
                                 for (let i=0; i<truckAvailable.length; i++) {
                                     let cand = truckNodes[truckAvailable[i]];
-                                    if (wValor + cand.valor <= flexMaxValor) {
+                                    if (wValor + cand.valor <= effectiveValorCap) {
                                         candIdx = i; break;
                                     }
                                 }
@@ -1875,7 +2060,8 @@
 
                 weeks.push({
                     week: currentWeek, valorSpent: wValor, goldSpent: wGold, speedupsDays: wSpeedSec / 86400,
-                    isFlexOvercap: (wGold > strictGoldCap),
+                    isFlexOvercap: (!isSaveWeek && wGold > state.goldCap),
+                    isSaveWeek: isSaveWeek, saveValorCap: effectiveValorCap, saveGoldCap: effectiveGoldCap,
                     targetTechs: wTargetTechs, fillerTechs: wFillerTechs,
                     cumGold: cumGold, cumValor: cumValor, cumSpeedups: cumSpeedups,
                     priorTechState: weekCompletedState
@@ -1928,7 +2114,7 @@
                 let barY = svgH - 35 - barH;
 
                 let goldStr = w.goldSpent >= 1e9 ? (w.goldSpent/1e9).toFixed(1) + 'B' : (w.goldSpent/1e6).toFixed(0) + 'M';
-                let barColor = w.isFlexOvercap ? '#ef4444' : '#d97706';
+                let barColor = w.isSaveWeek ? '#a855f7' : (w.isFlexOvercap ? '#ef4444' : '#d97706');
 
                 html += `<rect x="${x}" y="${barY}" width="${barW}" height="${barH}" fill="${barColor}" rx="3" opacity="0.85"
                           onmouseover="showTooltip(event, ${w.week}, '${(w.goldSpent/1e6).toFixed(1)}M Gold', '${w.speedupsDays.toFixed(1)} Days (${(w.speedupsDays*24).toFixed(0)}h)', '${w.valorSpent.toLocaleString()} Badges')"
@@ -1987,13 +2173,14 @@
                 let barY = svgH - 35 - barH;
 
                 let valorStr = w.valorSpent.toLocaleString();
+                let barColor = w.isSaveWeek ? '#a855f7' : '#16a34a';
 
-                html += `<rect x="${x}" y="${barY}" width="${barW}" height="${barH}" fill="#16a34a" rx="3" opacity="0.85"
+                html += `<rect x="${x}" y="${barY}" width="${barW}" height="${barH}" fill="${barColor}" rx="3" opacity="0.85"
                           onmouseover="showTooltip(event, ${w.week}, '${(w.goldSpent/1e6).toFixed(1)}M Gold', '${w.speedupsDays.toFixed(1)} Days (${(w.speedupsDays*24).toFixed(0)}h)', '${w.valorSpent.toLocaleString()} Badges')"
                           onmouseout="hideTooltip()"></rect>`;
 
                 let textY = barH > 22 ? barY + 13 : barY - 4;
-                let textFill = barH > 22 ? "#ffffff" : "#16a34a";
+                let textFill = barH > 22 ? "#ffffff" : barColor;
                 html += `<text x="${x + barW/2}" y="${textY}" text-anchor="middle" fill="${textFill}" font-size="9" font-weight="bold">${valorStr}</text>`;
 
                 if (weeks.length <= 15 || idx % 2 === 0) {
@@ -2042,20 +2229,38 @@
             let tbody = document.getElementById('table-body');
             let html = '';
             weeks.forEach(w => {
+                let isSave = w.isSaveWeek;
+                let rowClass = isSave ? 'save-week-row' : '';
+                
                 let goldStr = w.goldSpent >= 1e9 ? (w.goldSpent/1e9).toFixed(2) + 'B' : (w.goldSpent/1e6).toFixed(1) + 'M';
                 let goldClass = w.isFlexOvercap ? 'badge-gold flex-overcap' : 'badge-gold';
                 let flexTag = w.isFlexOvercap ? ' ⚡ Flex +10%' : '';
+                
                 let targetHtml = formatStackedTechPills(w.targetTechs, false) || '<em>None</em>';
                 let fillerColumnHtml = (w.fillerTechs && w.fillerTechs.length > 0) ? formatStackedTechPills(w.fillerTechs, true) : '<em>-</em>';
 
-                html += `<tr>
+                let saveBtnClass = isSave ? 'btn-save-toggle active' : 'btn-save-toggle';
+                let saveBtnLabel = isSave ? '🐖 Save Active' : '🐖 Save Week';
+
+                let capsBtnHtml = isSave ? `<button class="btn-caps-settings" onclick="openSaveCapsModal(${w.week})" title="Adjust Save Caps">⚙️ Caps</button>` : '';
+
+                let saveIndicatorHtml = isSave ? `<div style="margin-top:8px;"><span class="badge-save-week">🐖 Save Wk (Valor: ${w.saveValorCap.toLocaleString()}, Gold: ${(w.saveGoldCap/1e6).toFixed(0)}M)</span></div>` : '';
+
+                html += `<tr class="${rowClass}">
                     <td><strong>Week ${w.week}</strong></td>
                     <td><span class="badge-valor">${w.valorSpent.toLocaleString()}</span></td>
                     <td><span class="${goldClass}">${goldStr}${flexTag}</span></td>
                     <td><span class="badge-speedup">${w.speedupsDays.toFixed(1)}d (${(w.speedupsDays*24).toFixed(0)}h)</span></td>
                     <td>${targetHtml}</td>
                     <td>${fillerColumnHtml}</td>
-                    <td><button class="btn-edit-week" onclick="openModal(${w.week})">✏️ Edit Tree</button></td>
+                    <td>
+                        <div class="btn-action-group">
+                            <button class="${saveBtnClass}" onclick="toggleSaveWeek(${w.week})">${saveBtnLabel}</button>
+                            ${capsBtnHtml}
+                            <button class="btn-edit-week" onclick="openModal(${w.week})">✏️ Edit Tree</button>
+                        </div>
+                        ${saveIndicatorHtml}
+                    </td>
                 </tr>`;
             });
             tbody.innerHTML = html;
@@ -2069,8 +2274,9 @@
                 html += `<div class="tree-row-centered">`;
                 r.elements.forEach(e => {
                     let curLvl = state.startingBaseline[e.id] || 0;
+                    let gfx = getTechGraphic(e.id, '🛡️');
                     html += `<div class="hedg-card">
-                        <div class="hedg-icon">🛡️</div>
+                        <div class="hedg-icon" style="background:${gfx.gradient}; box-shadow:${gfx.shadow}">${gfx.icon}</div>
                         <div class="hedg-title">${e.name}</div>
                         <div class="card-stepper">
                             <button class="btn-step" onclick="adjustBaseline('${e.id}', -1)">-</button>
@@ -2093,8 +2299,9 @@
                 r.elements.forEach(e => {
                     let maxLvl = e.maxLevel;
                     let curLvl = state.startingTruckBaseline[e.id] || 0;
+                    let gfx = getTechGraphic(e.id, '🚚');
                     html += `<div class="hedg-card">
-                        <div class="hedg-icon">🚚</div>
+                        <div class="hedg-icon" style="background:${gfx.gradient}; box-shadow:${gfx.shadow}">${gfx.icon}</div>
                         <div class="hedg-title">${e.name}</div>
                         <div class="card-stepper">
                             <button class="btn-step" onclick="adjustTruckBaseline('${e.id}', -1, ${maxLvl})">-</button>
@@ -2274,9 +2481,11 @@
                     }
                     dropdownHtml += `</select>`;
 
+                    let gfx = getTechGraphic(e.id, '🛡️');
+
                     html += `<div class="${cardClass}">
                         ${tagHtml}
-                        <div class="hedg-icon">🛡️</div>
+                        <div class="hedg-icon" style="background:${gfx.gradient}; box-shadow:${gfx.shadow}">${gfx.icon}</div>
                         <div class="hedg-title">${e.name}</div>
                         ${statusHtml}
                         ${dropdownHtml}
