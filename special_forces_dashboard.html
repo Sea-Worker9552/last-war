@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Last War: Special Forces & T10 Research Cost Dashboard</title>
+    <title>Last War: Special Forces & T10 Cost Dashboard</title>
     <style>
         :root {
             --bg-main: #f8fafc;
@@ -104,8 +104,20 @@
 
         .control-panel {
             background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px;
-            padding: 20px; margin-bottom: 20px; box-shadow: var(--shadow-sm);
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;
+            padding: 20px 24px; margin-bottom: 20px; box-shadow: var(--shadow-sm);
+            display: grid; grid-template-columns: 1fr 420px; gap: 24px; align-items: start;
+        }
+
+        @media (max-width: 1024px) {
+            .control-panel { grid-template-columns: 1fr; }
+        }
+
+        .control-left-section {
+            display: flex; flex-direction: column; gap: 20px;
+        }
+
+        .control-row {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; align-items: start;
         }
 
         .control-group { display: flex; flex-direction: column; gap: 8px; position: relative; }
@@ -134,7 +146,6 @@
         }
 
         .radio-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 4px; }
-        .radio-grid.three-col { grid-template-columns: 1fr 1fr 1fr; }
 
         .radio-card {
             background: var(--bg-input); border: 1px solid var(--border-color); padding: 8px 10px;
@@ -146,6 +157,47 @@
 
         .radio-card.active {
             border-color: var(--accent-blue); background: rgba(2, 132, 199, 0.1); font-weight: 600; color: var(--accent-blue);
+        }
+
+        /* Modular Reorderable Filler Preference List */
+        .filler-priority-box {
+            background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 12px;
+            padding: 12px; display: flex; flex-direction: column; gap: 8px; margin-top: 4px; min-height: 120px;
+        }
+
+        .filler-item-row {
+            background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px;
+            padding: 8px 12px; display: flex; justify-content: space-between; align-items: center;
+            font-size: 0.85rem; font-weight: 600; user-select: none;
+        }
+
+        .filler-item-left {
+            display: flex; align-items: center; gap: 10px;
+        }
+
+        .filler-item-controls {
+            display: flex; align-items: center; gap: 4px;
+        }
+
+        .btn-reorder {
+            background: var(--bg-input); border: 1px solid var(--border-color); color: var(--text-primary);
+            width: 26px; height: 26px; border-radius: 6px; cursor: pointer; font-weight: bold;
+            display: flex; align-items: center; justify-content: center; font-size: 0.8rem;
+        }
+
+        .btn-reorder:hover:not(:disabled) {
+            background: var(--accent-blue); color: #fff; border-color: var(--accent-blue);
+        }
+
+        .btn-reorder:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        .lock-note-tag {
+            font-size: 0.72rem; color: var(--accent-gold); font-weight: 600; background: rgba(217,119,6,0.12);
+            padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(217,119,6,0.4); margin-left: 4px;
+        }
+
+        .sf-progress-indicator {
+            font-size: 0.78rem; color: var(--accent-blue); font-weight: 700; display: flex; align-items: center; gap: 6px;
         }
 
         .collapsible-card {
@@ -254,6 +306,8 @@
 
         .tech-pill.filler-sf { border-color: #cbd5e1; background: var(--bg-input); color: var(--text-primary); }
         .tech-pill.filler-truck { border-color: var(--accent-purple); background: rgba(168, 85, 247, 0.1); color: var(--accent-purple); }
+        .tech-pill.filler-siege { border-color: var(--accent-gold); background: rgba(217, 119, 6, 0.1); color: var(--accent-gold); }
+        .tech-pill.filler-def { border-color: var(--accent-blue); background: rgba(2, 132, 199, 0.1); color: var(--accent-blue); }
 
         .badge-valor { background: rgba(22, 163, 74, 0.1); color: var(--accent-green); padding: 4px 8px; border-radius: 6px; font-weight: 600; }
         .badge-gold { background: rgba(217, 119, 6, 0.1); color: var(--accent-gold); padding: 4px 8px; border-radius: 6px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; }
@@ -307,10 +361,10 @@
             align-items: center; border-bottom: 1px solid var(--border-color); z-index: 110;
         }
 
-        .sticky-queue-bar {
-            position: sticky; top: 0; background: var(--bg-card); border-bottom: 1px solid var(--border-color);
-            padding: 12px 24px; display: flex; flex-direction: column; gap: 10px; z-index: 100;
-            box-shadow: var(--shadow-sm);
+        .modal-queue-header {
+            background: var(--bg-card); border-bottom: 1px solid var(--border-color);
+            padding: 12px 24px; display: flex; flex-direction: column; gap: 10px;
+            flex-shrink: 0; box-shadow: var(--shadow-sm); z-index: 100;
         }
 
         .queue-metrics-bar {
@@ -385,7 +439,6 @@
             color: #ffffff;
             border: 2px solid rgba(255,255,255,0.6);
             box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-            /* High-contrast drop shadow so emojis pop on any background */
             filter: drop-shadow(0 2px 5px rgba(0,0,0,0.55));
             position: relative;
         }
@@ -495,64 +548,71 @@
 
         <!-- Controls -->
         <div class="control-panel">
-            <div class="control-group">
-                <label>Base Research Speed %: <span id="val-base-speed" style="color:var(--accent-blue)">200%</span></label>
-                <input type="range" id="input-base-speed" min="0" max="400" step="5" value="200" oninput="updateControls()">
-            </div>
+            <!-- Left Column: Primary Research Parameters -->
+            <div class="control-left-section">
+                <div class="control-row">
+                    <div class="control-group">
+                        <label>Base Research Speed %: <span id="val-base-speed" style="color:var(--accent-blue)">200%</span></label>
+                        <input type="range" id="input-base-speed" min="0" max="400" step="5" value="200" oninput="updateControls()">
+                    </div>
 
-            <div class="control-group">
-                <label>Capitol Position Buff</label>
-                <div class="radio-grid">
-                    <div class="radio-card active" id="cap-science" onclick="setCapitol('science')">🔬 Sec. Science (+50%)</div>
-                    <div class="radio-card" id="cap-dev" onclick="setCapitol('dev')">🛠️ Sec. Dev (+25%)</div>
-                    <div class="radio-card" id="cap-vp" onclick="setCapitol('vp')">🎖️ Vice Pres (+20%)</div>
-                    <div class="radio-card" id="cap-none" onclick="setCapitol('none')">🚫 None (+0%)</div>
+                    <div class="control-group">
+                        <label>Capitol Position Buff</label>
+                        <div class="radio-grid">
+                            <div class="radio-card active" id="cap-science" onclick="setCapitol('science')">🔬 Sec. Science (+50%)</div>
+                            <div class="radio-card" id="cap-dev" onclick="setCapitol('dev')">🛠️ Sec. Dev (+25%)</div>
+                            <div class="radio-card" id="cap-vp" onclick="setCapitol('vp')">🎖️ Vice Pres (+20%)</div>
+                            <div class="radio-card" id="cap-none" onclick="setCapitol('none')">🚫 None (+0%)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-row">
+                    <div class="control-group">
+                        <label>Weekly Valor Target: <span id="val-valor-target" style="color:var(--accent-green)">~9,000/wk</span></label>
+                        <input type="range" id="input-valor-target" min="5000" max="15000" step="250" value="9000" oninput="updateControls()">
+                    </div>
+
+                    <div class="control-group">
+                        <label>Weekly Gold Limit: <span id="val-gold-cap" style="color:var(--accent-gold)">600M Gold/wk</span></label>
+                        <input type="range" id="input-gold-cap" min="100000000" max="2000000000" step="50000000" value="600000000" oninput="updateControls()">
+                    </div>
+
+                    <div class="control-group">
+                        <label>
+                            <span>Gold Limit Flexibility Buffer</span>
+                            <span class="info-tooltip-trigger" onclick="toggleGoldFlexTooltip(event)" title="Click for flex cap explanation">ℹ️</span>
+                        </label>
+                        <div class="tooltip-popup" id="tooltip-goldflex-info">
+                            <strong>💡 Smart Flex Buffer (+10%):</strong><br>
+                            Allows exceeding your weekly Gold limit by up to 10% (e.g. 660M instead of 600M) if doing so completes a major prerequisite level or unlocks key tech for the following week!
+                        </div>
+                        <div class="radio-grid">
+                            <div class="radio-card active" id="goldflex-strict" onclick="setGoldFlex('strict')">🛑 Strict Cap (0%)</div>
+                            <div class="radio-card" id="goldflex-flex" onclick="setGoldFlex('flex')">⚡ Smart Flex (+10%)</div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
+            <!-- Right Column: Filler Tech Categories & Priority Order -->
             <div class="control-group">
                 <label>
-                    <span>Filler Strategy Preference</span>
+                    <span>Filler Tech Categories & Priority Order (Descending Priority)</span>
                     <span class="info-tooltip-trigger" onclick="toggleTooltip(event)" title="Click for strategy explanation">ℹ️</span>
                 </label>
                 <div class="tooltip-popup" id="tooltip-filler-info">
                     <strong>💡 Filler Strategy Purpose:</strong><br>
                     Maintains ~9,000 Valor Badges spent every Wednesday for maximum VS Day points while avoiding Gold limit bottlenecks.<br><br>
-                    • <strong>🚀 T10 Target Only:</strong> Disables filler padding (default).<br>
-                    • <strong>🚚 Truck First → SF:</strong> Uses Intercity Truck (0 Gold) first, then Non-T10 SF.<br>
-                    • <strong>⚔️ Non-T10 SF First:</strong> Uses cheaper Non-T10 SF levels (e.g. HP/Attack/Defense Boost Lvl 5-10) first.
+                    • Check options to enable tech types as filler.<br>
+                    • Use ▲ / ▼ to reorder descending priority.<br>
+                    • <strong>Siege to Seize</strong> &amp; <strong>Defense Fortifications</strong> can be checked anytime! In the weekly schedule, their filler introduction will automatically activate once Special Forces reaches 40% completion (89/221 levels).
                 </div>
-                <div class="radio-grid three-col">
-                    <div class="radio-card active" id="filler-none" onclick="setFillerMode('none')">🚀 T10 Target Only</div>
-                    <div class="radio-card" id="filler-truck-first" onclick="setFillerMode('truck-first')">🚚 Truck First → SF</div>
-                    <div class="radio-card" id="filler-sf-first" onclick="setFillerMode('sf-first')">⚔️ Non-T10 SF First</div>
+                <div id="filler-master-toggle-box"></div>
+                <div class="sf-progress-indicator" id="sf-completion-status">
+                    <span>🛡️ Special Forces Progress: 0 / 221 levels (0.0% Complete)</span>
                 </div>
-            </div>
-
-            <div class="control-group">
-                <label>Weekly Valor Target: <span id="val-valor-target" style="color:var(--accent-green)">~9,000/wk</span></label>
-                <input type="range" id="input-valor-target" min="5000" max="15000" step="250" value="9000" oninput="updateControls()">
-            </div>
-
-            <div class="control-group">
-                <label>Weekly Gold Limit: <span id="val-gold-cap" style="color:var(--accent-gold)">600M Gold/wk</span></label>
-                <input type="range" id="input-gold-cap" min="100000000" max="2000000000" step="50000000" value="600000000" oninput="updateControls()">
-            </div>
-
-            <!-- Smart Flex Cap Buffer Control -->
-            <div class="control-group">
-                <label>
-                    <span>Gold Limit Flexibility Buffer</span>
-                    <span class="info-tooltip-trigger" onclick="toggleGoldFlexTooltip(event)" title="Click for flex cap explanation">ℹ️</span>
-                </label>
-                <div class="tooltip-popup" id="tooltip-goldflex-info">
-                    <strong>💡 Smart Flex Buffer (+10%):</strong><br>
-                    Allows exceeding your weekly Gold limit by up to 10% (e.g. 660M instead of 600M) if doing so completes a major prerequisite level or unlocks key tech for the following week!
-                </div>
-                <div class="radio-grid">
-                    <div class="radio-card active" id="goldflex-strict" onclick="setGoldFlex('strict')">🛑 Strict Cap (0%)</div>
-                    <div class="radio-card" id="goldflex-flex" onclick="setGoldFlex('flex')">⚡ Smart Flex (+10%)</div>
-                </div>
+                <div class="filler-priority-box" id="filler-priority-container"></div>
             </div>
         </div>
 
@@ -570,7 +630,7 @@
             </div>
         </div>
 
-        <!-- Collapsible Intercity Truck Baseline Box (Tree Layout Centered Row by Row) -->
+        <!-- Collapsible Intercity Truck Baseline Box -->
         <div class="collapsible-card">
             <div class="collapsible-header" onclick="toggleTruckBaselineBox()">
                 <span>🚚 Initial Intercity Truck Tech Progress</span>
@@ -581,6 +641,34 @@
                     Type in or click +/- to set your current standing levels for Intercity Truck tree filler techs. Scroll left/right on mobile.
                 </p>
                 <div class="tree-grid-centered" id="truck-baseline-tree-grid"></div>
+            </div>
+        </div>
+
+        <!-- Collapsible Siege to Seize Baseline Box -->
+        <div class="collapsible-card">
+            <div class="collapsible-header" onclick="toggleSiegeBaselineBox()">
+                <span>🏰 Initial Siege to Seize Tech Progress (Cpt Hedge Authentic Tree)</span>
+                <span id="siege-baseline-arrow">▼ Expand</span>
+            </div>
+            <div class="collapsible-body" id="siege-baseline-body">
+                <p style="font-size:0.85rem; color:var(--text-secondary); width:100%; text-align:center;">
+                    Type in or click +/- to set your current standing levels for Siege to Seize filler techs (9 Rows, 14 Elements). Scroll left/right on mobile.
+                </p>
+                <div class="tree-grid-centered" id="siege-baseline-tree-grid"></div>
+            </div>
+        </div>
+
+        <!-- Collapsible Defense Fortifications Baseline Box -->
+        <div class="collapsible-card">
+            <div class="collapsible-header" onclick="toggleDefenseFortBaselineBox()">
+                <span>🛡️ Initial Defense Fortifications Tech Progress (Cpt Hedge Authentic Tree)</span>
+                <span id="defense-fort-baseline-arrow">▼ Expand</span>
+            </div>
+            <div class="collapsible-body" id="defense-fort-baseline-body">
+                <p style="font-size:0.85rem; color:var(--text-secondary); width:100%; text-align:center;">
+                    Type in or click +/- to set your current standing levels for Defense Fortifications filler techs (9 Rows, 14 Elements). Scroll left/right on mobile.
+                </p>
+                <div class="tree-grid-centered" id="defense-fort-baseline-tree-grid"></div>
             </div>
         </div>
 
@@ -608,7 +696,7 @@
             </div>
         </div>
 
-        <!-- Top Chart: Gold Spent & Speedup Days (Aligned X-Axis) -->
+        <!-- Top Chart: Gold Spent & Speedup Days -->
         <div class="chart-card">
             <div class="chart-header">
                 <h3>📈 Weekly Resource Drain & Speedups Required</h3>
@@ -622,7 +710,7 @@
             <div class="chart-tooltip" id="chart-tooltip"></div>
         </div>
 
-        <!-- Bottom Chart: Weekly Valor Badges Spent (Exactly Aligned X-Axis) -->
+        <!-- Bottom Chart: Weekly Valor Badges Spent -->
         <div class="chart-card">
             <div class="chart-header">
                 <h3>🛡️ Weekly Valor Badges Spent</h3>
@@ -667,8 +755,10 @@
                 <button class="btn-close" onclick="closeModal()">✕</button>
             </div>
 
-            <!-- Sticky Top Queue Bar -->
-            <div class="sticky-queue-bar">
+            
+
+            <!-- Always Visible Fixed Queue Header -->
+            <div class="modal-queue-header">
                 <div class="queue-metrics-bar">
                     <span style="color:var(--accent-green)" id="modal-valor-spent">🛡️ Valor: 0</span>
                     <span style="color:var(--accent-gold)" id="modal-gold-spent">💰 Gold: 0M</span>
@@ -1358,28 +1448,4152 @@
     }
   ]
 };
+        const SIEGE_DATA = {
+  "name": "Siege to Seize",
+  "isComplete": true,
+  "rows": [
+    {
+      "id": "row-1",
+      "elements": [
+        {
+          "id": "power-boost-1",
+          "name": "Power Boost I",
+          "image": "/images/tech/siege-to-seize/power-boost-1.png",
+          "maxLevel": 10,
+          "currentLevel": 0,
+          "levels": [
+            {
+              "level": 1,
+              "iron": 11218200,
+              "food": 11218200,
+              "gold": 33654500,
+              "valor": 400,
+              "requirements": [],
+              "techCenterLevel": 21,
+              "researchTime": "3d 22:20:00"
+            },
+            {
+              "level": 2,
+              "iron": 11218200,
+              "food": 11218200,
+              "gold": 33654500,
+              "valor": 400,
+              "requirements": [],
+              "techCenterLevel": 21,
+              "researchTime": "3d 22:20:00"
+            },
+            {
+              "level": 3,
+              "iron": 11218200,
+              "food": 11218200,
+              "gold": 33654500,
+              "valor": 400,
+              "requirements": [],
+              "techCenterLevel": 21,
+              "researchTime": "3d 22:20:00"
+            },
+            {
+              "level": 4,
+              "iron": 15705400,
+              "food": 15705400,
+              "gold": 47116300,
+              "valor": 550,
+              "requirements": [],
+              "techCenterLevel": 22,
+              "researchTime": "5d 12:04:00"
+            },
+            {
+              "level": 5,
+              "iron": 15705400,
+              "food": 15705400,
+              "gold": 47116300,
+              "valor": 550,
+              "requirements": [],
+              "techCenterLevel": 22,
+              "researchTime": "5d 12:04:00"
+            },
+            {
+              "level": 6,
+              "iron": 15705400,
+              "food": 15705400,
+              "gold": 47116300,
+              "valor": 550,
+              "requirements": [],
+              "techCenterLevel": 22,
+              "researchTime": "5d 12:04:00"
+            },
+            {
+              "level": 7,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            },
+            {
+              "level": 8,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            },
+            {
+              "level": 9,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            },
+            {
+              "level": 10,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            }
+          ]
+        }
+      ],
+      "connections": [
+        {
+          "from": "power-boost-1",
+          "to": [
+            "final-stand-1",
+            "fierce-assault-1",
+            "vigilant-formation-1"
+          ]
+        }
+      ],
+      "row": 1
+    },
+    {
+      "id": "row-2",
+      "elements": [
+        {
+          "id": "final-stand-1",
+          "name": "Final Stand I",
+          "image": "/images/tech/siege-to-seize/final-stand-1.png",
+          "maxLevel": 10,
+          "currentLevel": 0,
+          "levels": [
+            {
+              "level": 1,
+              "iron": 11218200,
+              "food": 11218200,
+              "gold": 33654500,
+              "valor": 400,
+              "requirements": [
+                {
+                  "elementId": "power-boost-1",
+                  "minLevel": 1
+                }
+              ],
+              "techCenterLevel": 21,
+              "researchTime": "3d 22:20:00"
+            },
+            {
+              "level": 2,
+              "iron": 11218200,
+              "food": 11218200,
+              "gold": 33654500,
+              "valor": 400,
+              "requirements": [],
+              "techCenterLevel": 21,
+              "researchTime": "3d 22:20:00"
+            },
+            {
+              "level": 3,
+              "iron": 11218200,
+              "food": 11218200,
+              "gold": 33654500,
+              "valor": 400,
+              "requirements": [],
+              "techCenterLevel": 21,
+              "researchTime": "3d 22:20:00"
+            },
+            {
+              "level": 4,
+              "iron": 15705400,
+              "food": 15705400,
+              "gold": 47116300,
+              "valor": 550,
+              "requirements": [],
+              "techCenterLevel": 22,
+              "researchTime": "5d 12:04:00"
+            },
+            {
+              "level": 5,
+              "iron": 15705400,
+              "food": 15705400,
+              "gold": 47116300,
+              "valor": 550,
+              "requirements": [],
+              "techCenterLevel": 22,
+              "researchTime": "5d 12:04:00"
+            },
+            {
+              "level": 6,
+              "iron": 15705400,
+              "food": 15705400,
+              "gold": 47116300,
+              "valor": 550,
+              "requirements": [],
+              "techCenterLevel": 22,
+              "researchTime": "5d 12:04:00"
+            },
+            {
+              "level": 7,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            },
+            {
+              "level": 8,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            },
+            {
+              "level": 9,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            },
+            {
+              "level": 10,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            }
+          ]
+        },
+        {
+          "id": "fierce-assault-1",
+          "name": "Fierce Assault I",
+          "image": "/images/tech/siege-to-seize/fierce-assault-1.png",
+          "maxLevel": 10,
+          "currentLevel": 0,
+          "levels": [
+            {
+              "level": 1,
+              "iron": 11218200,
+              "food": 11218200,
+              "gold": 33654500,
+              "valor": 400,
+              "requirements": [
+                {
+                  "elementId": "power-boost-1",
+                  "minLevel": 1
+                }
+              ],
+              "techCenterLevel": 21,
+              "researchTime": "3d 22:20:00"
+            },
+            {
+              "level": 2,
+              "iron": 11218200,
+              "food": 11218200,
+              "gold": 33654500,
+              "valor": 400,
+              "requirements": [],
+              "techCenterLevel": 21,
+              "researchTime": "3d 22:20:00"
+            },
+            {
+              "level": 3,
+              "iron": 11218200,
+              "food": 11218200,
+              "gold": 33654500,
+              "valor": 400,
+              "requirements": [],
+              "techCenterLevel": 21,
+              "researchTime": "3d 22:20:00"
+            },
+            {
+              "level": 4,
+              "iron": 15705400,
+              "food": 15705400,
+              "gold": 47116300,
+              "valor": 550,
+              "requirements": [],
+              "techCenterLevel": 22,
+              "researchTime": "5d 12:04:00"
+            },
+            {
+              "level": 5,
+              "iron": 15705400,
+              "food": 15705400,
+              "gold": 47116300,
+              "valor": 550,
+              "requirements": [],
+              "techCenterLevel": 22,
+              "researchTime": "5d 12:04:00"
+            },
+            {
+              "level": 6,
+              "iron": 15705400,
+              "food": 15705400,
+              "gold": 47116300,
+              "valor": 550,
+              "requirements": [],
+              "techCenterLevel": 22,
+              "researchTime": "5d 12:04:00"
+            },
+            {
+              "level": 7,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            },
+            {
+              "level": 8,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            },
+            {
+              "level": 9,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            },
+            {
+              "level": 10,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            }
+          ]
+        },
+        {
+          "id": "vigilant-formation-1",
+          "name": "Vigilant Formation I",
+          "image": "/images/tech/siege-to-seize/vigilant-formation-1.png",
+          "maxLevel": 10,
+          "currentLevel": 0,
+          "levels": [
+            {
+              "level": 1,
+              "iron": 11218200,
+              "food": 11218200,
+              "gold": 33654500,
+              "valor": 400,
+              "requirements": [
+                {
+                  "elementId": "power-boost-1",
+                  "minLevel": 1
+                }
+              ],
+              "techCenterLevel": 21,
+              "researchTime": "3d 22:20:00"
+            },
+            {
+              "level": 2,
+              "iron": 11218200,
+              "food": 11218200,
+              "gold": 33654500,
+              "valor": 400,
+              "requirements": [],
+              "techCenterLevel": 21,
+              "researchTime": "3d 22:20:00"
+            },
+            {
+              "level": 3,
+              "iron": 11218200,
+              "food": 11218200,
+              "gold": 33654500,
+              "valor": 400,
+              "requirements": [],
+              "techCenterLevel": 21,
+              "researchTime": "3d 22:20:00"
+            },
+            {
+              "level": 4,
+              "iron": 15705400,
+              "food": 15705400,
+              "gold": 47116300,
+              "valor": 550,
+              "requirements": [],
+              "techCenterLevel": 22,
+              "researchTime": "5d 12:04:00"
+            },
+            {
+              "level": 5,
+              "iron": 15705400,
+              "food": 15705400,
+              "gold": 47116300,
+              "valor": 550,
+              "requirements": [],
+              "techCenterLevel": 22,
+              "researchTime": "5d 12:04:00"
+            },
+            {
+              "level": 6,
+              "iron": 15705400,
+              "food": 15705400,
+              "gold": 47116300,
+              "valor": 550,
+              "requirements": [],
+              "techCenterLevel": 22,
+              "researchTime": "5d 12:04:00"
+            },
+            {
+              "level": 7,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            },
+            {
+              "level": 8,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            },
+            {
+              "level": 9,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            },
+            {
+              "level": 10,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            }
+          ]
+        }
+      ],
+      "connections": [
+        {
+          "from": "final-stand-1",
+          "to": [
+            "extra-drill-ground"
+          ]
+        },
+        {
+          "from": "fierce-assault-1",
+          "to": [
+            "extra-drill-ground"
+          ]
+        },
+        {
+          "from": "vigilant-formation-1",
+          "to": [
+            "extra-drill-ground"
+          ]
+        }
+      ],
+      "row": 2
+    },
+    {
+      "id": "row-3",
+      "elements": [
+        {
+          "id": "extra-drill-ground",
+          "name": "Extra Drill Ground",
+          "image": "/images/tech/siege-to-seize/extra-drill-ground.png",
+          "maxLevel": 1,
+          "currentLevel": 0,
+          "levels": [
+            {
+              "level": 1,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [
+                {
+                  "elementId": "final-stand-1",
+                  "minLevel": 10
+                },
+                {
+                  "elementId": "fierce-assault-1",
+                  "minLevel": 10
+                },
+                {
+                  "elementId": "vigilant-formation-1",
+                  "minLevel": 10
+                }
+              ],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            }
+          ]
+        }
+      ],
+      "connections": [
+        {
+          "from": "extra-drill-ground",
+          "to": [
+            "barrack-expansion-1",
+            "focused-training-1"
+          ]
+        }
+      ],
+      "row": 3
+    },
+    {
+      "id": "row-4",
+      "elements": [
+        {
+          "id": "barrack-expansion-1",
+          "name": "Barrack Expansion I",
+          "image": "/images/tech/siege-to-seize/barrack-expansion-1.png",
+          "maxLevel": 10,
+          "currentLevel": 0,
+          "levels": [
+            {
+              "level": 1,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [
+                {
+                  "elementId": "extra-drill-ground",
+                  "minLevel": 1
+                }
+              ],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            },
+            {
+              "level": 2,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            },
+            {
+              "level": 3,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            },
+            {
+              "level": 4,
+              "iron": 25521300,
+              "food": 25521300,
+              "gold": 76563900,
+              "valor": 900,
+              "requirements": [],
+              "techCenterLevel": 24,
+              "researchTime": "9d 07:11:00"
+            },
+            {
+              "level": 5,
+              "iron": 25521300,
+              "food": 25521300,
+              "gold": 76563900,
+              "valor": 900,
+              "requirements": [],
+              "techCenterLevel": 24,
+              "researchTime": "9d 07:11:00"
+            },
+            {
+              "level": 6,
+              "iron": 25521300,
+              "food": 25521300,
+              "gold": 76563900,
+              "valor": 900,
+              "requirements": [],
+              "techCenterLevel": 24,
+              "researchTime": "9d 07:11:00"
+            },
+            {
+              "level": 7,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 8,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 9,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 10,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            }
+          ]
+        },
+        {
+          "id": "focused-training-1",
+          "name": "Focused Training I",
+          "image": "/images/tech/siege-to-seize/focused-training-1.png",
+          "maxLevel": 10,
+          "currentLevel": 0,
+          "levels": [
+            {
+              "level": 1,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [
+                {
+                  "elementId": "extra-drill-ground",
+                  "minLevel": 1
+                }
+              ],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            },
+            {
+              "level": 2,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            },
+            {
+              "level": 3,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            },
+            {
+              "level": 4,
+              "iron": 25521300,
+              "food": 25521300,
+              "gold": 76563900,
+              "valor": 900,
+              "requirements": [],
+              "techCenterLevel": 24,
+              "researchTime": "9d 07:11:00"
+            },
+            {
+              "level": 5,
+              "iron": 25521300,
+              "food": 25521300,
+              "gold": 76563900,
+              "valor": 900,
+              "requirements": [],
+              "techCenterLevel": 24,
+              "researchTime": "9d 07:11:00"
+            },
+            {
+              "level": 6,
+              "iron": 25521300,
+              "food": 25521300,
+              "gold": 76563900,
+              "valor": 900,
+              "requirements": [],
+              "techCenterLevel": 24,
+              "researchTime": "9d 07:11:00"
+            },
+            {
+              "level": 7,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 8,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 9,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 10,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            }
+          ]
+        }
+      ],
+      "connections": [
+        {
+          "from": "barrack-expansion-1",
+          "to": [
+            "final-stand-2",
+            "fierce-assault-2",
+            "vigilant-formation-2"
+          ]
+        },
+        {
+          "from": "focused-training-1",
+          "to": [
+            "final-stand-2",
+            "fierce-assault-2",
+            "vigilant-formation-2"
+          ]
+        }
+      ],
+      "row": 4
+    },
+    {
+      "id": "row-5",
+      "elements": [
+        {
+          "id": "final-stand-2",
+          "name": "Final Stand II",
+          "image": "/images/tech/siege-to-seize/final-stand-2.png",
+          "maxLevel": 10,
+          "currentLevel": 0,
+          "levels": [
+            {
+              "level": 1,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [
+                {
+                  "elementId": "barrack-expansion-1",
+                  "minLevel": 3
+                },
+                {
+                  "elementId": "focused-training-1",
+                  "minLevel": 3
+                }
+              ],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            },
+            {
+              "level": 2,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            },
+            {
+              "level": 3,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            },
+            {
+              "level": 4,
+              "iron": 25521300,
+              "food": 25521300,
+              "gold": 76563900,
+              "valor": 900,
+              "requirements": [],
+              "techCenterLevel": 24,
+              "researchTime": "9d 07:11:00"
+            },
+            {
+              "level": 5,
+              "iron": 25521300,
+              "food": 25521300,
+              "gold": 76563900,
+              "valor": 900,
+              "requirements": [],
+              "techCenterLevel": 24,
+              "researchTime": "9d 07:11:00"
+            },
+            {
+              "level": 6,
+              "iron": 25521300,
+              "food": 25521300,
+              "gold": 76563900,
+              "valor": 900,
+              "requirements": [],
+              "techCenterLevel": 24,
+              "researchTime": "9d 07:11:00"
+            },
+            {
+              "level": 7,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 8,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 9,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 10,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            }
+          ]
+        },
+        {
+          "id": "fierce-assault-2",
+          "name": "Fierce Assault II",
+          "image": "/images/tech/siege-to-seize/fierce-assault-2.png",
+          "maxLevel": 10,
+          "currentLevel": 0,
+          "levels": [
+            {
+              "level": 1,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [
+                {
+                  "elementId": "barrack-expansion-1",
+                  "minLevel": 3
+                },
+                {
+                  "elementId": "focused-training-1",
+                  "minLevel": 3
+                }
+              ],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            },
+            {
+              "level": 2,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            },
+            {
+              "level": 3,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            },
+            {
+              "level": 4,
+              "iron": 25521300,
+              "food": 25521300,
+              "gold": 76563900,
+              "valor": 900,
+              "requirements": [],
+              "techCenterLevel": 24,
+              "researchTime": "9d 07:11:00"
+            },
+            {
+              "level": 5,
+              "iron": 25521300,
+              "food": 25521300,
+              "gold": 76563900,
+              "valor": 900,
+              "requirements": [],
+              "techCenterLevel": 24,
+              "researchTime": "9d 07:11:00"
+            },
+            {
+              "level": 6,
+              "iron": 25521300,
+              "food": 25521300,
+              "gold": 76563900,
+              "valor": 900,
+              "requirements": [],
+              "techCenterLevel": 24,
+              "researchTime": "9d 07:11:00"
+            },
+            {
+              "level": 7,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 8,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 9,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 10,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            }
+          ]
+        },
+        {
+          "id": "vigilant-formation-2",
+          "name": "Vigilant Formation II",
+          "image": "/images/tech/siege-to-seize/vigilant-formation-2.png",
+          "maxLevel": 10,
+          "currentLevel": 0,
+          "levels": [
+            {
+              "level": 1,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [
+                {
+                  "elementId": "barrack-expansion-1",
+                  "minLevel": 3
+                },
+                {
+                  "elementId": "focused-training-1",
+                  "minLevel": 3
+                }
+              ],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            },
+            {
+              "level": 2,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            },
+            {
+              "level": 3,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            },
+            {
+              "level": 4,
+              "iron": 25521300,
+              "food": 25521300,
+              "gold": 76563900,
+              "valor": 900,
+              "requirements": [],
+              "techCenterLevel": 24,
+              "researchTime": "9d 07:11:00"
+            },
+            {
+              "level": 5,
+              "iron": 25521300,
+              "food": 25521300,
+              "gold": 76563900,
+              "valor": 900,
+              "requirements": [],
+              "techCenterLevel": 24,
+              "researchTime": "9d 07:11:00"
+            },
+            {
+              "level": 6,
+              "iron": 25521300,
+              "food": 25521300,
+              "gold": 76563900,
+              "valor": 900,
+              "requirements": [],
+              "techCenterLevel": 24,
+              "researchTime": "9d 07:11:00"
+            },
+            {
+              "level": 7,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 8,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 9,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 10,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            }
+          ]
+        }
+      ],
+      "connections": [
+        {
+          "from": "final-stand-2",
+          "to": [
+            "drill-ground-expansion"
+          ]
+        },
+        {
+          "from": "fierce-assault-2",
+          "to": [
+            "drill-ground-expansion"
+          ]
+        },
+        {
+          "from": "vigilant-formation-2",
+          "to": [
+            "drill-ground-expansion"
+          ]
+        }
+      ],
+      "row": 5
+    },
+    {
+      "id": "row-6",
+      "elements": [
+        {
+          "id": "drill-ground-expansion",
+          "name": "Drill Ground Expansion",
+          "image": "/images/tech/siege-to-seize/drill-ground-expansion.png",
+          "maxLevel": 10,
+          "currentLevel": 0,
+          "levels": [
+            {
+              "level": 1,
+              "iron": 25521300,
+              "food": 25521300,
+              "gold": 76563900,
+              "valor": 900,
+              "requirements": [
+                {
+                  "elementId": "final-stand-2",
+                  "minLevel": 6
+                },
+                {
+                  "elementId": "fierce-assault-2",
+                  "minLevel": 6
+                },
+                {
+                  "elementId": "vigilant-formation-2",
+                  "minLevel": 6
+                }
+              ],
+              "techCenterLevel": 24,
+              "researchTime": "9d 07:11:00"
+            },
+            {
+              "level": 2,
+              "iron": 25521300,
+              "food": 25521300,
+              "gold": 76563900,
+              "valor": 900,
+              "requirements": [],
+              "techCenterLevel": 24,
+              "researchTime": "9d 07:11:00"
+            },
+            {
+              "level": 3,
+              "iron": 25521300,
+              "food": 25521300,
+              "gold": 76563900,
+              "valor": 900,
+              "requirements": [],
+              "techCenterLevel": 24,
+              "researchTime": "9d 07:11:00"
+            },
+            {
+              "level": 4,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 5,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 6,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 7,
+              "iron": 54232800,
+              "food": 54232800,
+              "gold": 162698400,
+              "valor": 1850,
+              "requirements": [],
+              "techCenterLevel": 26,
+              "researchTime": "13d 09:23:00"
+            },
+            {
+              "level": 8,
+              "iron": 54232800,
+              "food": 54232800,
+              "gold": 162698400,
+              "valor": 1850,
+              "requirements": [],
+              "techCenterLevel": 26,
+              "researchTime": "13d 09:23:00"
+            },
+            {
+              "level": 9,
+              "iron": 54232800,
+              "food": 54232800,
+              "gold": 162698400,
+              "valor": 1850,
+              "requirements": [],
+              "techCenterLevel": 26,
+              "researchTime": "13d 09:23:00"
+            },
+            {
+              "level": 10,
+              "iron": 54232800,
+              "food": 54232800,
+              "gold": 162698400,
+              "valor": 1850,
+              "requirements": [],
+              "techCenterLevel": 26,
+              "researchTime": "13d 09:23:00"
+            }
+          ]
+        }
+      ],
+      "connections": [
+        {
+          "from": "drill-ground-expansion",
+          "to": [
+            "rapid-march-1"
+          ]
+        }
+      ],
+      "row": 6
+    },
+    {
+      "id": "row-7",
+      "elements": [
+        {
+          "id": "rapid-march-1",
+          "name": "Rapid March I",
+          "image": "/images/tech/siege-to-seize/rapid-march-1.png",
+          "maxLevel": 10,
+          "currentLevel": 0,
+          "levels": [
+            {
+              "level": 1,
+              "iron": 25521300,
+              "food": 25521300,
+              "gold": 76563900,
+              "valor": 900,
+              "requirements": [
+                {
+                  "elementId": "drill-ground-expansion",
+                  "minLevel": 1
+                }
+              ],
+              "techCenterLevel": 24,
+              "researchTime": "9d 07:11:00"
+            },
+            {
+              "level": 2,
+              "iron": 25521300,
+              "food": 25521300,
+              "gold": 76563900,
+              "valor": 900,
+              "requirements": [],
+              "techCenterLevel": 24,
+              "researchTime": "9d 07:11:00"
+            },
+            {
+              "level": 3,
+              "iron": 25521300,
+              "food": 25521300,
+              "gold": 76563900,
+              "valor": 900,
+              "requirements": [],
+              "techCenterLevel": 24,
+              "researchTime": "9d 07:11:00"
+            },
+            {
+              "level": 4,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 5,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 6,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 7,
+              "iron": 54232800,
+              "food": 54232800,
+              "gold": 162698400,
+              "valor": 1850,
+              "requirements": [],
+              "techCenterLevel": 26,
+              "researchTime": "13d 09:23:00"
+            },
+            {
+              "level": 8,
+              "iron": 54232800,
+              "food": 54232800,
+              "gold": 162698400,
+              "valor": 1850,
+              "requirements": [],
+              "techCenterLevel": 26,
+              "researchTime": "13d 09:23:00"
+            },
+            {
+              "level": 9,
+              "iron": 54232800,
+              "food": 54232800,
+              "gold": 162698400,
+              "valor": 1850,
+              "requirements": [],
+              "techCenterLevel": 26,
+              "researchTime": "13d 09:23:00"
+            },
+            {
+              "level": 10,
+              "iron": 54232800,
+              "food": 54232800,
+              "gold": 162698400,
+              "valor": 1850,
+              "requirements": [],
+              "techCenterLevel": 26,
+              "researchTime": "13d 09:23:00"
+            }
+          ]
+        }
+      ],
+      "connections": [
+        {
+          "from": "rapid-march-1",
+          "to": [
+            "final-stand-3",
+            "fierce-assault-3",
+            "vigilant-formation-3"
+          ]
+        }
+      ],
+      "row": 7
+    },
+    {
+      "id": "row-8",
+      "elements": [
+        {
+          "id": "final-stand-3",
+          "name": "Final Stand III",
+          "image": "/images/tech/siege-to-seize/final-stand-3.png",
+          "maxLevel": 10,
+          "currentLevel": 0,
+          "levels": [
+            {
+              "level": 1,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [
+                {
+                  "elementId": "rapid-march-1",
+                  "minLevel": 6
+                }
+              ],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 2,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 3,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 4,
+              "iron": 54232800,
+              "food": 54232800,
+              "gold": 162698400,
+              "valor": 1850,
+              "requirements": [],
+              "techCenterLevel": 26,
+              "researchTime": "13d 09:23:00"
+            },
+            {
+              "level": 5,
+              "iron": 54232800,
+              "food": 54232800,
+              "gold": 162698400,
+              "valor": 1850,
+              "requirements": [],
+              "techCenterLevel": 26,
+              "researchTime": "13d 09:23:00"
+            },
+            {
+              "level": 6,
+              "iron": 54232800,
+              "food": 54232800,
+              "gold": 162698400,
+              "valor": 1850,
+              "requirements": [],
+              "techCenterLevel": 26,
+              "researchTime": "13d 09:23:00"
+            },
+            {
+              "level": 7,
+              "iron": 75925900,
+              "food": 75925900,
+              "gold": 227777700,
+              "valor": 2550,
+              "requirements": [],
+              "techCenterLevel": 27,
+              "researchTime": "16d 01:39:00"
+            },
+            {
+              "level": 8,
+              "iron": 75925900,
+              "food": 75925900,
+              "gold": 227777700,
+              "valor": 2550,
+              "requirements": [],
+              "techCenterLevel": 27,
+              "researchTime": "16d 01:39:00"
+            },
+            {
+              "level": 9,
+              "iron": 75925900,
+              "food": 75925900,
+              "gold": 227777700,
+              "valor": 2550,
+              "requirements": [],
+              "techCenterLevel": 27,
+              "researchTime": "16d 01:39:00"
+            },
+            {
+              "level": 10,
+              "iron": 75925900,
+              "food": 75925900,
+              "gold": 227777700,
+              "valor": 2550,
+              "requirements": [],
+              "techCenterLevel": 27,
+              "researchTime": "16d 01:39:00"
+            }
+          ]
+        },
+        {
+          "id": "fierce-assault-3",
+          "name": "Fierce Assault III",
+          "image": "/images/tech/siege-to-seize/fierce-assault-3.png",
+          "maxLevel": 10,
+          "currentLevel": 0,
+          "levels": [
+            {
+              "level": 1,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [
+                {
+                  "elementId": "rapid-march-1",
+                  "minLevel": 6
+                }
+              ],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 2,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 3,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 4,
+              "iron": 54232800,
+              "food": 54232800,
+              "gold": 162698400,
+              "valor": 1850,
+              "requirements": [],
+              "techCenterLevel": 26,
+              "researchTime": "13d 09:23:00"
+            },
+            {
+              "level": 5,
+              "iron": 54232800,
+              "food": 54232800,
+              "gold": 162698400,
+              "valor": 1850,
+              "requirements": [],
+              "techCenterLevel": 26,
+              "researchTime": "13d 09:23:00"
+            },
+            {
+              "level": 6,
+              "iron": 54232800,
+              "food": 54232800,
+              "gold": 162698400,
+              "valor": 1850,
+              "requirements": [],
+              "techCenterLevel": 26,
+              "researchTime": "13d 09:23:00"
+            },
+            {
+              "level": 7,
+              "iron": 75925900,
+              "food": 75925900,
+              "gold": 227777700,
+              "valor": 2550,
+              "requirements": [],
+              "techCenterLevel": 27,
+              "researchTime": "16d 01:39:00"
+            },
+            {
+              "level": 8,
+              "iron": 75925900,
+              "food": 75925900,
+              "gold": 227777700,
+              "valor": 2550,
+              "requirements": [],
+              "techCenterLevel": 27,
+              "researchTime": "16d 01:39:00"
+            },
+            {
+              "level": 9,
+              "iron": 75925900,
+              "food": 75925900,
+              "gold": 227777700,
+              "valor": 2550,
+              "requirements": [],
+              "techCenterLevel": 27,
+              "researchTime": "16d 01:39:00"
+            },
+            {
+              "level": 10,
+              "iron": 75925900,
+              "food": 75925900,
+              "gold": 227777700,
+              "valor": 2550,
+              "requirements": [],
+              "techCenterLevel": 27,
+              "researchTime": "16d 01:39:00"
+            }
+          ]
+        },
+        {
+          "id": "vigilant-formation-3",
+          "name": "Vigilant Formation III",
+          "image": "/images/tech/siege-to-seize/vigilant-formation-3.png",
+          "maxLevel": 10,
+          "currentLevel": 0,
+          "levels": [
+            {
+              "level": 1,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [
+                {
+                  "elementId": "rapid-march-1",
+                  "minLevel": 6
+                }
+              ],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 2,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 3,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 4,
+              "iron": 54232800,
+              "food": 54232800,
+              "gold": 162698400,
+              "valor": 1850,
+              "requirements": [],
+              "techCenterLevel": 26,
+              "researchTime": "13d 09:23:00"
+            },
+            {
+              "level": 5,
+              "iron": 54232800,
+              "food": 54232800,
+              "gold": 162698400,
+              "valor": 1850,
+              "requirements": [],
+              "techCenterLevel": 26,
+              "researchTime": "13d 09:23:00"
+            },
+            {
+              "level": 6,
+              "iron": 54232800,
+              "food": 54232800,
+              "gold": 162698400,
+              "valor": 1850,
+              "requirements": [],
+              "techCenterLevel": 26,
+              "researchTime": "13d 09:23:00"
+            },
+            {
+              "level": 7,
+              "iron": 75925900,
+              "food": 75925900,
+              "gold": 227777700,
+              "valor": 2550,
+              "requirements": [],
+              "techCenterLevel": 27,
+              "researchTime": "16d 01:39:00"
+            },
+            {
+              "level": 8,
+              "iron": 75925900,
+              "food": 75925900,
+              "gold": 227777700,
+              "valor": 2550,
+              "requirements": [],
+              "techCenterLevel": 27,
+              "researchTime": "16d 01:39:00"
+            },
+            {
+              "level": 9,
+              "iron": 75925900,
+              "food": 75925900,
+              "gold": 227777700,
+              "valor": 2550,
+              "requirements": [],
+              "techCenterLevel": 27,
+              "researchTime": "16d 01:39:00"
+            },
+            {
+              "level": 10,
+              "iron": 75925900,
+              "food": 75925900,
+              "gold": 227777700,
+              "valor": 2550,
+              "requirements": [],
+              "techCenterLevel": 27,
+              "researchTime": "16d 01:39:00"
+            }
+          ]
+        }
+      ],
+      "connections": [
+        {
+          "from": "final-stand-3",
+          "to": [
+            "fatal-strike-1"
+          ]
+        },
+        {
+          "from": "fierce-assault-3",
+          "to": [
+            "fatal-strike-1"
+          ]
+        },
+        {
+          "from": "vigilant-formation-3",
+          "to": [
+            "fatal-strike-1"
+          ]
+        }
+      ],
+      "row": 8
+    },
+    {
+      "id": "row-9",
+      "elements": [
+        {
+          "id": "fatal-strike-1",
+          "name": "Fatal Strike I",
+          "image": "/images/tech/siege-to-seize/fatal-strike-1.png",
+          "maxLevel": 10,
+          "currentLevel": 0,
+          "levels": [
+            {
+              "level": 1,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [
+                {
+                  "elementId": "final-stand-3",
+                  "minLevel": 1
+                },
+                {
+                  "elementId": "fierce-assault-3",
+                  "minLevel": 1
+                },
+                {
+                  "elementId": "vigilant-formation-3",
+                  "minLevel": 1
+                }
+              ],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 2,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [
+                {
+                  "elementId": "final-stand-3",
+                  "minLevel": 2
+                },
+                {
+                  "elementId": "fierce-assault-3",
+                  "minLevel": 2
+                },
+                {
+                  "elementId": "vigilant-formation-3",
+                  "minLevel": 2
+                }
+              ],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 3,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [
+                {
+                  "elementId": "final-stand-3",
+                  "minLevel": 3
+                },
+                {
+                  "elementId": "fierce-assault-3",
+                  "minLevel": 3
+                },
+                {
+                  "elementId": "vigilant-formation-3",
+                  "minLevel": 3
+                }
+              ],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 4,
+              "iron": 54232800,
+              "food": 54232800,
+              "gold": 162698400,
+              "valor": 1850,
+              "requirements": [
+                {
+                  "elementId": "final-stand-3",
+                  "minLevel": 4
+                },
+                {
+                  "elementId": "fierce-assault-3",
+                  "minLevel": 4
+                },
+                {
+                  "elementId": "vigilant-formation-3",
+                  "minLevel": 4
+                }
+              ],
+              "techCenterLevel": 26,
+              "researchTime": "13d 09:23:00"
+            },
+            {
+              "level": 5,
+              "iron": 54232800,
+              "food": 54232800,
+              "gold": 162698400,
+              "valor": 1850,
+              "requirements": [
+                {
+                  "elementId": "final-stand-3",
+                  "minLevel": 5
+                },
+                {
+                  "elementId": "fierce-assault-3",
+                  "minLevel": 5
+                },
+                {
+                  "elementId": "vigilant-formation-3",
+                  "minLevel": 5
+                }
+              ],
+              "techCenterLevel": 26,
+              "researchTime": "13d 09:23:00"
+            },
+            {
+              "level": 6,
+              "iron": 54232800,
+              "food": 54232800,
+              "gold": 162698400,
+              "valor": 1850,
+              "requirements": [
+                {
+                  "elementId": "final-stand-3",
+                  "minLevel": 6
+                },
+                {
+                  "elementId": "fierce-assault-3",
+                  "minLevel": 6
+                },
+                {
+                  "elementId": "vigilant-formation-3",
+                  "minLevel": 6
+                }
+              ],
+              "techCenterLevel": 26,
+              "researchTime": "13d 09:23:00"
+            },
+            {
+              "level": 7,
+              "iron": 75925900,
+              "food": 75925900,
+              "gold": 227777700,
+              "valor": 2550,
+              "requirements": [
+                {
+                  "elementId": "final-stand-3",
+                  "minLevel": 7
+                },
+                {
+                  "elementId": "fierce-assault-3",
+                  "minLevel": 7
+                },
+                {
+                  "elementId": "vigilant-formation-3",
+                  "minLevel": 7
+                }
+              ],
+              "techCenterLevel": 27,
+              "researchTime": "16d 01:39:00"
+            },
+            {
+              "level": 8,
+              "iron": 75925900,
+              "food": 75925900,
+              "gold": 227777700,
+              "valor": 2550,
+              "requirements": [
+                {
+                  "elementId": "final-stand-3",
+                  "minLevel": 8
+                },
+                {
+                  "elementId": "fierce-assault-3",
+                  "minLevel": 8
+                },
+                {
+                  "elementId": "vigilant-formation-3",
+                  "minLevel": 8
+                }
+              ],
+              "techCenterLevel": 27,
+              "researchTime": "16d 01:39:00"
+            },
+            {
+              "level": 9,
+              "iron": 75925900,
+              "food": 75925900,
+              "gold": 227777700,
+              "valor": 2550,
+              "requirements": [
+                {
+                  "elementId": "final-stand-3",
+                  "minLevel": 9
+                },
+                {
+                  "elementId": "fierce-assault-3",
+                  "minLevel": 9
+                },
+                {
+                  "elementId": "vigilant-formation-3",
+                  "minLevel": 9
+                }
+              ],
+              "techCenterLevel": 27,
+              "researchTime": "16d 01:39:00"
+            },
+            {
+              "level": 10,
+              "iron": 75925900,
+              "food": 75925900,
+              "gold": 227777700,
+              "valor": 2550,
+              "requirements": [
+                {
+                  "elementId": "final-stand-3",
+                  "minLevel": 10
+                },
+                {
+                  "elementId": "fierce-assault-3",
+                  "minLevel": 10
+                },
+                {
+                  "elementId": "vigilant-formation-3",
+                  "minLevel": 10
+                }
+              ],
+              "techCenterLevel": 27,
+              "researchTime": "16d 01:39:00"
+            }
+          ]
+        }
+      ],
+      "connections": [],
+      "row": 9
+    }
+  ]
+};
+        const DEFENSE_FORT_DATA = {
+  "name": "Defense Fortifications",
+  "isComplete": true,
+  "rows": [
+    {
+      "id": "row-1",
+      "elements": [
+        {
+          "id": "extra-hospitals",
+          "name": "Extra Hospitals",
+          "image": "/images/tech/defense-fortifications/extra-hospitals.png",
+          "maxLevel": 1,
+          "currentLevel": 0,
+          "levels": [
+            {
+              "level": 1,
+              "iron": 6232300,
+              "food": 6232300,
+              "gold": 18696900,
+              "valor": 250,
+              "requirements": [],
+              "techCenterLevel": 20,
+              "researchTime": "2d 19:23:00"
+            }
+          ]
+        }
+      ],
+      "connections": [
+        {
+          "from": "extra-hospitals",
+          "to": [
+            "hold-the-line-1",
+            "counter-defense-1",
+            "solid-defense-1"
+          ]
+        }
+      ],
+      "row": 1
+    },
+    {
+      "id": "row-2",
+      "elements": [
+        {
+          "id": "hold-the-line-1",
+          "name": "Hold the Line I",
+          "image": "/images/tech/defense-fortifications/hold-the-line-1.png",
+          "maxLevel": 10,
+          "currentLevel": 0,
+          "levels": [
+            {
+              "level": 1,
+              "iron": 11218200,
+              "food": 11218200,
+              "gold": 33654500,
+              "valor": 400,
+              "requirements": [
+                {
+                  "elementId": "extra-hospitals",
+                  "minLevel": 1
+                }
+              ],
+              "techCenterLevel": 21,
+              "researchTime": "3d 22:20:00"
+            },
+            {
+              "level": 2,
+              "iron": 11218200,
+              "food": 11218200,
+              "gold": 33654500,
+              "valor": 400,
+              "requirements": [],
+              "techCenterLevel": 21,
+              "researchTime": "3d 22:20:00"
+            },
+            {
+              "level": 3,
+              "iron": 11218200,
+              "food": 11218200,
+              "gold": 33654500,
+              "valor": 400,
+              "requirements": [],
+              "techCenterLevel": 21,
+              "researchTime": "3d 22:20:00"
+            },
+            {
+              "level": 4,
+              "iron": 15705400,
+              "food": 15705400,
+              "gold": 47116300,
+              "valor": 550,
+              "requirements": [],
+              "techCenterLevel": 22,
+              "researchTime": "5d 12:04:00"
+            },
+            {
+              "level": 5,
+              "iron": 15705400,
+              "food": 15705400,
+              "gold": 47116300,
+              "valor": 550,
+              "requirements": [],
+              "techCenterLevel": 22,
+              "researchTime": "5d 12:04:00"
+            },
+            {
+              "level": 6,
+              "iron": 15705400,
+              "food": 15705400,
+              "gold": 47116300,
+              "valor": 550,
+              "requirements": [],
+              "techCenterLevel": 22,
+              "researchTime": "5d 12:04:00"
+            },
+            {
+              "level": 7,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            },
+            {
+              "level": 8,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            },
+            {
+              "level": 9,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            },
+            {
+              "level": 10,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            }
+          ]
+        },
+        {
+          "id": "counter-defense-1",
+          "name": "Counter Defense I",
+          "image": "/images/tech/defense-fortifications/counter-defense-1.png",
+          "maxLevel": 10,
+          "currentLevel": 0,
+          "levels": [
+            {
+              "level": 1,
+              "iron": 11218200,
+              "food": 11218200,
+              "gold": 33654500,
+              "valor": 400,
+              "requirements": [
+                {
+                  "elementId": "extra-hospitals",
+                  "minLevel": 1
+                }
+              ],
+              "techCenterLevel": 21,
+              "researchTime": "3d 22:20:00"
+            },
+            {
+              "level": 2,
+              "iron": 11218200,
+              "food": 11218200,
+              "gold": 33654500,
+              "valor": 400,
+              "requirements": [],
+              "techCenterLevel": 21,
+              "researchTime": "3d 22:20:00"
+            },
+            {
+              "level": 3,
+              "iron": 11218200,
+              "food": 11218200,
+              "gold": 33654500,
+              "valor": 400,
+              "requirements": [],
+              "techCenterLevel": 21,
+              "researchTime": "3d 22:20:00"
+            },
+            {
+              "level": 4,
+              "iron": 15705400,
+              "food": 15705400,
+              "gold": 47116300,
+              "valor": 550,
+              "requirements": [],
+              "techCenterLevel": 22,
+              "researchTime": "5d 12:04:00"
+            },
+            {
+              "level": 5,
+              "iron": 15705400,
+              "food": 15705400,
+              "gold": 47116300,
+              "valor": 550,
+              "requirements": [],
+              "techCenterLevel": 22,
+              "researchTime": "5d 12:04:00"
+            },
+            {
+              "level": 6,
+              "iron": 15705400,
+              "food": 15705400,
+              "gold": 47116300,
+              "valor": 550,
+              "requirements": [],
+              "techCenterLevel": 22,
+              "researchTime": "5d 12:04:00"
+            },
+            {
+              "level": 7,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            },
+            {
+              "level": 8,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            },
+            {
+              "level": 9,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            },
+            {
+              "level": 10,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            }
+          ]
+        },
+        {
+          "id": "solid-defense-1",
+          "name": "Solid Defense I",
+          "image": "/images/tech/defense-fortifications/solid-defense-1.png",
+          "maxLevel": 10,
+          "currentLevel": 0,
+          "levels": [
+            {
+              "level": 1,
+              "iron": 11218200,
+              "food": 11218200,
+              "gold": 33654500,
+              "valor": 400,
+              "requirements": [
+                {
+                  "elementId": "extra-hospitals",
+                  "minLevel": 1
+                }
+              ],
+              "techCenterLevel": 21,
+              "researchTime": "3d 22:20:00"
+            },
+            {
+              "level": 2,
+              "iron": 11218200,
+              "food": 11218200,
+              "gold": 33654500,
+              "valor": 400,
+              "requirements": [],
+              "techCenterLevel": 21,
+              "researchTime": "3d 22:20:00"
+            },
+            {
+              "level": 3,
+              "iron": 11218200,
+              "food": 11218200,
+              "gold": 33654500,
+              "valor": 400,
+              "requirements": [],
+              "techCenterLevel": 21,
+              "researchTime": "3d 22:20:00"
+            },
+            {
+              "level": 4,
+              "iron": 15705400,
+              "food": 15705400,
+              "gold": 47116300,
+              "valor": 550,
+              "requirements": [],
+              "techCenterLevel": 22,
+              "researchTime": "5d 12:04:00"
+            },
+            {
+              "level": 5,
+              "iron": 15705400,
+              "food": 15705400,
+              "gold": 47116300,
+              "valor": 550,
+              "requirements": [],
+              "techCenterLevel": 22,
+              "researchTime": "5d 12:04:00"
+            },
+            {
+              "level": 6,
+              "iron": 15705400,
+              "food": 15705400,
+              "gold": 47116300,
+              "valor": 550,
+              "requirements": [],
+              "techCenterLevel": 22,
+              "researchTime": "5d 12:04:00"
+            },
+            {
+              "level": 7,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            },
+            {
+              "level": 8,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            },
+            {
+              "level": 9,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            },
+            {
+              "level": 10,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            }
+          ]
+        }
+      ],
+      "connections": [
+        {
+          "from": "hold-the-line-1",
+          "to": [
+            "defense-fortifications"
+          ]
+        },
+        {
+          "from": "counter-defense-1",
+          "to": [
+            "defense-fortifications"
+          ]
+        },
+        {
+          "from": "solid-defense-1",
+          "to": [
+            "defense-fortifications"
+          ]
+        }
+      ],
+      "row": 2
+    },
+    {
+      "id": "row-3",
+      "elements": [
+        {
+          "id": "defense-fortifications",
+          "name": "Defense Fortifications",
+          "image": "/images/tech/defense-fortifications/defense-fortifications.png",
+          "maxLevel": 10,
+          "currentLevel": 0,
+          "levels": [
+            {
+              "level": 1,
+              "iron": 11218200,
+              "food": 11218200,
+              "gold": 33654500,
+              "valor": 400,
+              "requirements": [
+                {
+                  "elementId": "hold-the-line-1",
+                  "minLevel": 1
+                },
+                {
+                  "elementId": "counter-defense-1",
+                  "minLevel": 1
+                },
+                {
+                  "elementId": "solid-defense-1",
+                  "minLevel": 1
+                }
+              ],
+              "techCenterLevel": 21,
+              "researchTime": "3d 22:20:00"
+            },
+            {
+              "level": 2,
+              "iron": 11218200,
+              "food": 11218200,
+              "gold": 33654500,
+              "valor": 400,
+              "requirements": [],
+              "techCenterLevel": 21,
+              "researchTime": "3d 22:20:00"
+            },
+            {
+              "level": 3,
+              "iron": 11218200,
+              "food": 11218200,
+              "gold": 33654500,
+              "valor": 400,
+              "requirements": [],
+              "techCenterLevel": 21,
+              "researchTime": "3d 22:20:00"
+            },
+            {
+              "level": 4,
+              "iron": 15705400,
+              "food": 15705400,
+              "gold": 47116300,
+              "valor": 550,
+              "requirements": [],
+              "techCenterLevel": 22,
+              "researchTime": "5d 12:04:00"
+            },
+            {
+              "level": 5,
+              "iron": 15705400,
+              "food": 15705400,
+              "gold": 47116300,
+              "valor": 550,
+              "requirements": [],
+              "techCenterLevel": 22,
+              "researchTime": "5d 12:04:00"
+            },
+            {
+              "level": 6,
+              "iron": 15705400,
+              "food": 15705400,
+              "gold": 47116300,
+              "valor": 550,
+              "requirements": [],
+              "techCenterLevel": 22,
+              "researchTime": "5d 12:04:00"
+            },
+            {
+              "level": 7,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            },
+            {
+              "level": 8,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            },
+            {
+              "level": 9,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            },
+            {
+              "level": 10,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            }
+          ]
+        }
+      ],
+      "connections": [
+        {
+          "from": "defense-fortifications",
+          "to": [
+            "infirmary-expansion-1",
+            "efficient-healing"
+          ]
+        }
+      ],
+      "row": 3
+    },
+    {
+      "id": "row-4",
+      "elements": [
+        {
+          "id": "infirmary-expansion-1",
+          "name": "Infirmary Expansion I",
+          "image": "/images/tech/defense-fortifications/infirmary-expansion-1.png",
+          "maxLevel": 10,
+          "currentLevel": 0,
+          "levels": [
+            {
+              "level": 1,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [
+                {
+                  "elementId": "defense-fortifications",
+                  "minLevel": 7
+                }
+              ],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            },
+            {
+              "level": 2,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            },
+            {
+              "level": 3,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            },
+            {
+              "level": 4,
+              "iron": 25521300,
+              "food": 25521300,
+              "gold": 76563900,
+              "valor": 900,
+              "requirements": [],
+              "techCenterLevel": 24,
+              "researchTime": "9d 07:11:00"
+            },
+            {
+              "level": 5,
+              "iron": 25521300,
+              "food": 25521300,
+              "gold": 76563900,
+              "valor": 900,
+              "requirements": [],
+              "techCenterLevel": 24,
+              "researchTime": "9d 07:11:00"
+            },
+            {
+              "level": 6,
+              "iron": 25521300,
+              "food": 25521300,
+              "gold": 76563900,
+              "valor": 900,
+              "requirements": [],
+              "techCenterLevel": 24,
+              "researchTime": "9d 07:11:00"
+            },
+            {
+              "level": 7,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 8,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 9,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 10,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            }
+          ]
+        },
+        {
+          "id": "efficient-healing",
+          "name": "Efficient Healing",
+          "image": "/images/tech/defense-fortifications/efficient-healing.png",
+          "maxLevel": 10,
+          "currentLevel": 0,
+          "levels": [
+            {
+              "level": 1,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [
+                {
+                  "elementId": "defense-fortifications",
+                  "minLevel": 7
+                }
+              ],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            },
+            {
+              "level": 2,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            },
+            {
+              "level": 3,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            },
+            {
+              "level": 4,
+              "iron": 25521300,
+              "food": 25521300,
+              "gold": 76563900,
+              "valor": 900,
+              "requirements": [],
+              "techCenterLevel": 24,
+              "researchTime": "9d 07:11:00"
+            },
+            {
+              "level": 5,
+              "iron": 25521300,
+              "food": 25521300,
+              "gold": 76563900,
+              "valor": 900,
+              "requirements": [],
+              "techCenterLevel": 24,
+              "researchTime": "9d 07:11:00"
+            },
+            {
+              "level": 6,
+              "iron": 25521300,
+              "food": 25521300,
+              "gold": 76563900,
+              "valor": 900,
+              "requirements": [],
+              "techCenterLevel": 24,
+              "researchTime": "9d 07:11:00"
+            },
+            {
+              "level": 7,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 8,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 9,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 10,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            }
+          ]
+        }
+      ],
+      "connections": [
+        {
+          "from": "infirmary-expansion-1",
+          "to": [
+            "hold-the-line-2",
+            "counter-defense-2",
+            "solid-defense-2"
+          ]
+        },
+        {
+          "from": "efficient-healing",
+          "to": [
+            "hold-the-line-2",
+            "counter-defense-2",
+            "solid-defense-2"
+          ]
+        }
+      ],
+      "row": 4
+    },
+    {
+      "id": "row-5",
+      "elements": [
+        {
+          "id": "hold-the-line-2",
+          "name": "Hold the Line II",
+          "image": "/images/tech/defense-fortifications/hold-the-line-2.png",
+          "maxLevel": 10,
+          "currentLevel": 0,
+          "levels": [
+            {
+              "level": 1,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [
+                {
+                  "elementId": "infirmary-expansion-1",
+                  "minLevel": 1
+                },
+                {
+                  "elementId": "efficient-healing",
+                  "minLevel": 1
+                }
+              ],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            },
+            {
+              "level": 2,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            },
+            {
+              "level": 3,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            },
+            {
+              "level": 4,
+              "iron": 25521300,
+              "food": 25521300,
+              "gold": 76563900,
+              "valor": 900,
+              "requirements": [],
+              "techCenterLevel": 24,
+              "researchTime": "9d 07:11:00"
+            },
+            {
+              "level": 5,
+              "iron": 25521300,
+              "food": 25521300,
+              "gold": 76563900,
+              "valor": 900,
+              "requirements": [],
+              "techCenterLevel": 24,
+              "researchTime": "9d 07:11:00"
+            },
+            {
+              "level": 6,
+              "iron": 25521300,
+              "food": 25521300,
+              "gold": 76563900,
+              "valor": 900,
+              "requirements": [],
+              "techCenterLevel": 24,
+              "researchTime": "9d 07:11:00"
+            },
+            {
+              "level": 7,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 8,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 9,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 10,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            }
+          ]
+        },
+        {
+          "id": "counter-defense-2",
+          "name": "Counter Defense II",
+          "image": "/images/tech/defense-fortifications/counter-defense-2.png",
+          "maxLevel": 10,
+          "currentLevel": 0,
+          "levels": [
+            {
+              "level": 1,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [
+                {
+                  "elementId": "infirmary-expansion-1",
+                  "minLevel": 1
+                },
+                {
+                  "elementId": "efficient-healing",
+                  "minLevel": 1
+                }
+              ],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            },
+            {
+              "level": 2,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            },
+            {
+              "level": 3,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            },
+            {
+              "level": 4,
+              "iron": 25521300,
+              "food": 25521300,
+              "gold": 76563900,
+              "valor": 900,
+              "requirements": [],
+              "techCenterLevel": 24,
+              "researchTime": "9d 07:11:00"
+            },
+            {
+              "level": 5,
+              "iron": 25521300,
+              "food": 25521300,
+              "gold": 76563900,
+              "valor": 900,
+              "requirements": [],
+              "techCenterLevel": 24,
+              "researchTime": "9d 07:11:00"
+            },
+            {
+              "level": 6,
+              "iron": 25521300,
+              "food": 25521300,
+              "gold": 76563900,
+              "valor": 900,
+              "requirements": [],
+              "techCenterLevel": 24,
+              "researchTime": "9d 07:11:00"
+            },
+            {
+              "level": 7,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 8,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 9,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 10,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            }
+          ]
+        },
+        {
+          "id": "solid-defense-2",
+          "name": "Solid Defense II",
+          "image": "/images/tech/defense-fortifications/solid-defense-2.png",
+          "maxLevel": 10,
+          "currentLevel": 0,
+          "levels": [
+            {
+              "level": 1,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [
+                {
+                  "elementId": "infirmary-expansion-1",
+                  "minLevel": 1
+                },
+                {
+                  "elementId": "efficient-healing",
+                  "minLevel": 1
+                }
+              ],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            },
+            {
+              "level": 2,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            },
+            {
+              "level": 3,
+              "iron": 20417000,
+              "food": 20417000,
+              "gold": 61251100,
+              "valor": 700,
+              "requirements": [],
+              "techCenterLevel": 23,
+              "researchTime": "7d 03:41:00"
+            },
+            {
+              "level": 4,
+              "iron": 25521300,
+              "food": 25521300,
+              "gold": 76563900,
+              "valor": 900,
+              "requirements": [],
+              "techCenterLevel": 24,
+              "researchTime": "9d 07:11:00"
+            },
+            {
+              "level": 5,
+              "iron": 25521300,
+              "food": 25521300,
+              "gold": 76563900,
+              "valor": 900,
+              "requirements": [],
+              "techCenterLevel": 24,
+              "researchTime": "9d 07:11:00"
+            },
+            {
+              "level": 6,
+              "iron": 25521300,
+              "food": 25521300,
+              "gold": 76563900,
+              "valor": 900,
+              "requirements": [],
+              "techCenterLevel": 24,
+              "researchTime": "9d 07:11:00"
+            },
+            {
+              "level": 7,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 8,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 9,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 10,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            }
+          ]
+        }
+      ],
+      "connections": [
+        {
+          "from": "hold-the-line-2",
+          "to": [
+            "resource-protection"
+          ]
+        },
+        {
+          "from": "counter-defense-2",
+          "to": [
+            "resource-protection"
+          ]
+        },
+        {
+          "from": "solid-defense-2",
+          "to": [
+            "resource-protection"
+          ]
+        }
+      ],
+      "row": 5
+    },
+    {
+      "id": "row-6",
+      "elements": [
+        {
+          "id": "resource-protection",
+          "name": "Resource Protection",
+          "image": "/images/tech/defense-fortifications/resource-protection.png",
+          "maxLevel": 10,
+          "currentLevel": 0,
+          "levels": [
+            {
+              "level": 1,
+              "iron": 25521300,
+              "food": 25521300,
+              "gold": 76563900,
+              "valor": 900,
+              "requirements": [
+                {
+                  "elementId": "hold-the-line-2",
+                  "minLevel": 6
+                },
+                {
+                  "elementId": "counter-defense-2",
+                  "minLevel": 6
+                },
+                {
+                  "elementId": "solid-defense-2",
+                  "minLevel": 6
+                }
+              ],
+              "techCenterLevel": 24,
+              "researchTime": "9d 07:11:00"
+            },
+            {
+              "level": 2,
+              "iron": 25521300,
+              "food": 25521300,
+              "gold": 76563900,
+              "valor": 900,
+              "requirements": [],
+              "techCenterLevel": 24,
+              "researchTime": "9d 07:11:00"
+            },
+            {
+              "level": 3,
+              "iron": 25521300,
+              "food": 25521300,
+              "gold": 76563900,
+              "valor": 900,
+              "requirements": [],
+              "techCenterLevel": 24,
+              "researchTime": "9d 07:11:00"
+            },
+            {
+              "level": 4,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 5,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 6,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 7,
+              "iron": 54232800,
+              "food": 54232800,
+              "gold": 162698400,
+              "valor": 1850,
+              "requirements": [],
+              "techCenterLevel": 26,
+              "researchTime": "13d 09:23:00"
+            },
+            {
+              "level": 8,
+              "iron": 54232800,
+              "food": 54232800,
+              "gold": 162698400,
+              "valor": 1850,
+              "requirements": [],
+              "techCenterLevel": 26,
+              "researchTime": "13d 09:23:00"
+            },
+            {
+              "level": 9,
+              "iron": 54232800,
+              "food": 54232800,
+              "gold": 162698400,
+              "valor": 1850,
+              "requirements": [],
+              "techCenterLevel": 26,
+              "researchTime": "13d 09:23:00"
+            },
+            {
+              "level": 10,
+              "iron": 54232800,
+              "food": 54232800,
+              "gold": 162698400,
+              "valor": 1850,
+              "requirements": [],
+              "techCenterLevel": 26,
+              "researchTime": "13d 09:23:00"
+            }
+          ]
+        }
+      ],
+      "connections": [
+        {
+          "from": "resource-protection",
+          "to": [
+            "rapid-march-1"
+          ]
+        }
+      ],
+      "row": 6
+    },
+    {
+      "id": "row-7",
+      "elements": [
+        {
+          "id": "rapid-march-1",
+          "name": "Rapid March I",
+          "image": "/images/tech/defense-fortifications/rapid-march-1.png",
+          "maxLevel": 10,
+          "currentLevel": 0,
+          "levels": [
+            {
+              "level": 1,
+              "iron": 25521300,
+              "food": 25521300,
+              "gold": 76563900,
+              "valor": 900,
+              "requirements": [
+                {
+                  "elementId": "resource-protection",
+                  "minLevel": 1
+                }
+              ],
+              "techCenterLevel": 24,
+              "researchTime": "9d 07:11:00"
+            },
+            {
+              "level": 2,
+              "iron": 25521300,
+              "food": 25521300,
+              "gold": 76563900,
+              "valor": 900,
+              "requirements": [],
+              "techCenterLevel": 24,
+              "researchTime": "9d 07:11:00"
+            },
+            {
+              "level": 3,
+              "iron": 25521300,
+              "food": 25521300,
+              "gold": 76563900,
+              "valor": 900,
+              "requirements": [],
+              "techCenterLevel": 24,
+              "researchTime": "9d 07:11:00"
+            },
+            {
+              "level": 4,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 5,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 6,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 7,
+              "iron": 54232800,
+              "food": 54232800,
+              "gold": 162698400,
+              "valor": 1850,
+              "requirements": [],
+              "techCenterLevel": 26,
+              "researchTime": "13d 09:23:00"
+            },
+            {
+              "level": 8,
+              "iron": 54232800,
+              "food": 54232800,
+              "gold": 162698400,
+              "valor": 1850,
+              "requirements": [],
+              "techCenterLevel": 26,
+              "researchTime": "13d 09:23:00"
+            },
+            {
+              "level": 9,
+              "iron": 54232800,
+              "food": 54232800,
+              "gold": 162698400,
+              "valor": 1850,
+              "requirements": [],
+              "techCenterLevel": 26,
+              "researchTime": "13d 09:23:00"
+            },
+            {
+              "level": 10,
+              "iron": 54232800,
+              "food": 54232800,
+              "gold": 162698400,
+              "valor": 1850,
+              "requirements": [],
+              "techCenterLevel": 26,
+              "researchTime": "13d 09:23:00"
+            }
+          ]
+        }
+      ],
+      "connections": [
+        {
+          "from": "rapid-march-1",
+          "to": [
+            "hold-the-line-3",
+            "counter-defense-3",
+            "solid-defense-3"
+          ]
+        }
+      ],
+      "row": 7
+    },
+    {
+      "id": "row-8",
+      "elements": [
+        {
+          "id": "hold-the-line-3",
+          "name": "Hold the Line III",
+          "image": "/images/tech/defense-fortifications/hold-the-line-3.png",
+          "maxLevel": 10,
+          "currentLevel": 0,
+          "levels": [
+            {
+              "level": 1,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [
+                {
+                  "elementId": "rapid-march-1",
+                  "minLevel": 4
+                }
+              ],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 2,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 3,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 4,
+              "iron": 54232800,
+              "food": 54232800,
+              "gold": 162698400,
+              "valor": 1850,
+              "requirements": [],
+              "techCenterLevel": 26,
+              "researchTime": "13d 09:23:00"
+            },
+            {
+              "level": 5,
+              "iron": 54232800,
+              "food": 54232800,
+              "gold": 162698400,
+              "valor": 1850,
+              "requirements": [],
+              "techCenterLevel": 26,
+              "researchTime": "13d 09:23:00"
+            },
+            {
+              "level": 6,
+              "iron": 54232800,
+              "food": 54232800,
+              "gold": 162698400,
+              "valor": 1850,
+              "requirements": [],
+              "techCenterLevel": 26,
+              "researchTime": "13d 09:23:00"
+            },
+            {
+              "level": 7,
+              "iron": 75925900,
+              "food": 75925900,
+              "gold": 227777700,
+              "valor": 2550,
+              "requirements": [],
+              "techCenterLevel": 27,
+              "researchTime": "16d 01:39:00"
+            },
+            {
+              "level": 8,
+              "iron": 75925900,
+              "food": 75925900,
+              "gold": 227777700,
+              "valor": 2550,
+              "requirements": [],
+              "techCenterLevel": 27,
+              "researchTime": "16d 01:39:00"
+            },
+            {
+              "level": 9,
+              "iron": 75925900,
+              "food": 75925900,
+              "gold": 227777700,
+              "valor": 2550,
+              "requirements": [],
+              "techCenterLevel": 27,
+              "researchTime": "16d 01:39:00"
+            },
+            {
+              "level": 10,
+              "iron": 75925900,
+              "food": 75925900,
+              "gold": 227777700,
+              "valor": 2550,
+              "requirements": [],
+              "techCenterLevel": 27,
+              "researchTime": "16d 01:39:00"
+            }
+          ]
+        },
+        {
+          "id": "counter-defense-3",
+          "name": "Counter Defense III",
+          "image": "/images/tech/defense-fortifications/counter-defense-3.png",
+          "maxLevel": 10,
+          "currentLevel": 0,
+          "levels": [
+            {
+              "level": 1,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [
+                {
+                  "elementId": "rapid-march-1",
+                  "minLevel": 4
+                }
+              ],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 2,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 3,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 4,
+              "iron": 54232800,
+              "food": 54232800,
+              "gold": 162698400,
+              "valor": 1850,
+              "requirements": [],
+              "techCenterLevel": 26,
+              "researchTime": "13d 09:23:00"
+            },
+            {
+              "level": 5,
+              "iron": 54232800,
+              "food": 54232800,
+              "gold": 162698400,
+              "valor": 1850,
+              "requirements": [],
+              "techCenterLevel": 26,
+              "researchTime": "13d 09:23:00"
+            },
+            {
+              "level": 6,
+              "iron": 54232800,
+              "food": 54232800,
+              "gold": 162698400,
+              "valor": 1850,
+              "requirements": [],
+              "techCenterLevel": 26,
+              "researchTime": "13d 09:23:00"
+            },
+            {
+              "level": 7,
+              "iron": 75925900,
+              "food": 75925900,
+              "gold": 227777700,
+              "valor": 2550,
+              "requirements": [],
+              "techCenterLevel": 27,
+              "researchTime": "16d 01:39:00"
+            },
+            {
+              "level": 8,
+              "iron": 75925900,
+              "food": 75925900,
+              "gold": 227777700,
+              "valor": 2550,
+              "requirements": [],
+              "techCenterLevel": 27,
+              "researchTime": "16d 01:39:00"
+            },
+            {
+              "level": 9,
+              "iron": 75925900,
+              "food": 75925900,
+              "gold": 227777700,
+              "valor": 2550,
+              "requirements": [],
+              "techCenterLevel": 27,
+              "researchTime": "16d 01:39:00"
+            },
+            {
+              "level": 10,
+              "iron": 75925900,
+              "food": 75925900,
+              "gold": 227777700,
+              "valor": 2550,
+              "requirements": [],
+              "techCenterLevel": 27,
+              "researchTime": "16d 01:39:00"
+            }
+          ]
+        },
+        {
+          "id": "solid-defense-3",
+          "name": "Solid Defense III",
+          "image": "/images/tech/defense-fortifications/solid-defense-3.png",
+          "maxLevel": 10,
+          "currentLevel": 0,
+          "levels": [
+            {
+              "level": 1,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [
+                {
+                  "elementId": "rapid-march-1",
+                  "minLevel": 4
+                }
+              ],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 2,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 3,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 4,
+              "iron": 54232800,
+              "food": 54232800,
+              "gold": 162698400,
+              "valor": 1850,
+              "requirements": [],
+              "techCenterLevel": 26,
+              "researchTime": "13d 09:23:00"
+            },
+            {
+              "level": 5,
+              "iron": 54232800,
+              "food": 54232800,
+              "gold": 162698400,
+              "valor": 1850,
+              "requirements": [],
+              "techCenterLevel": 26,
+              "researchTime": "13d 09:23:00"
+            },
+            {
+              "level": 6,
+              "iron": 54232800,
+              "food": 54232800,
+              "gold": 162698400,
+              "valor": 1850,
+              "requirements": [],
+              "techCenterLevel": 26,
+              "researchTime": "13d 09:23:00"
+            },
+            {
+              "level": 7,
+              "iron": 75925900,
+              "food": 75925900,
+              "gold": 227777700,
+              "valor": 2550,
+              "requirements": [],
+              "techCenterLevel": 27,
+              "researchTime": "16d 01:39:00"
+            },
+            {
+              "level": 8,
+              "iron": 75925900,
+              "food": 75925900,
+              "gold": 227777700,
+              "valor": 2550,
+              "requirements": [],
+              "techCenterLevel": 27,
+              "researchTime": "16d 01:39:00"
+            },
+            {
+              "level": 9,
+              "iron": 75925900,
+              "food": 75925900,
+              "gold": 227777700,
+              "valor": 2550,
+              "requirements": [],
+              "techCenterLevel": 27,
+              "researchTime": "16d 01:39:00"
+            },
+            {
+              "level": 10,
+              "iron": 75925900,
+              "food": 75925900,
+              "gold": 227777700,
+              "valor": 2550,
+              "requirements": [],
+              "techCenterLevel": 27,
+              "researchTime": "16d 01:39:00"
+            }
+          ]
+        }
+      ],
+      "connections": [
+        {
+          "from": "hold-the-line-3",
+          "to": [
+            "survival-skills"
+          ]
+        },
+        {
+          "from": "counter-defense-3",
+          "to": [
+            "survival-skills"
+          ]
+        },
+        {
+          "from": "solid-defense-3",
+          "to": [
+            "survival-skills"
+          ]
+        }
+      ],
+      "row": 8
+    },
+    {
+      "id": "row-9",
+      "elements": [
+        {
+          "id": "survival-skills",
+          "name": "Survival Skills",
+          "image": "/images/tech/defense-fortifications/survival-skills.png",
+          "maxLevel": 10,
+          "currentLevel": 0,
+          "levels": [
+            {
+              "level": 1,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [
+                {
+                  "elementId": "hold-the-line-3",
+                  "minLevel": 1
+                },
+                {
+                  "elementId": "counter-defense-3",
+                  "minLevel": 1
+                },
+                {
+                  "elementId": "solid-defense-3",
+                  "minLevel": 1
+                }
+              ],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 2,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [
+                {
+                  "elementId": "hold-the-line-3",
+                  "minLevel": 2
+                },
+                {
+                  "elementId": "counter-defense-3",
+                  "minLevel": 2
+                },
+                {
+                  "elementId": "solid-defense-3",
+                  "minLevel": 2
+                }
+              ],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 3,
+              "iron": 31901600,
+              "food": 31901600,
+              "gold": 95704900,
+              "valor": 1100,
+              "requirements": [
+                {
+                  "elementId": "hold-the-line-3",
+                  "minLevel": 3
+                },
+                {
+                  "elementId": "counter-defense-3",
+                  "minLevel": 3
+                },
+                {
+                  "elementId": "solid-defense-3",
+                  "minLevel": 3
+                }
+              ],
+              "techCenterLevel": 25,
+              "researchTime": "11d 03:49:00"
+            },
+            {
+              "level": 4,
+              "iron": 54232800,
+              "food": 54232800,
+              "gold": 162698400,
+              "valor": 1850,
+              "requirements": [
+                {
+                  "elementId": "hold-the-line-3",
+                  "minLevel": 4
+                },
+                {
+                  "elementId": "counter-defense-3",
+                  "minLevel": 4
+                },
+                {
+                  "elementId": "solid-defense-3",
+                  "minLevel": 4
+                }
+              ],
+              "techCenterLevel": 26,
+              "researchTime": "13d 09:23:00"
+            },
+            {
+              "level": 5,
+              "iron": 54232800,
+              "food": 54232800,
+              "gold": 162698400,
+              "valor": 1850,
+              "requirements": [
+                {
+                  "elementId": "hold-the-line-3",
+                  "minLevel": 5
+                },
+                {
+                  "elementId": "counter-defense-3",
+                  "minLevel": 5
+                },
+                {
+                  "elementId": "solid-defense-3",
+                  "minLevel": 5
+                }
+              ],
+              "techCenterLevel": 26,
+              "researchTime": "13d 09:23:00"
+            },
+            {
+              "level": 6,
+              "iron": 54232800,
+              "food": 54232800,
+              "gold": 162698400,
+              "valor": 1850,
+              "requirements": [
+                {
+                  "elementId": "hold-the-line-3",
+                  "minLevel": 6
+                },
+                {
+                  "elementId": "counter-defense-3",
+                  "minLevel": 6
+                },
+                {
+                  "elementId": "solid-defense-3",
+                  "minLevel": 6
+                }
+              ],
+              "techCenterLevel": 26,
+              "researchTime": "13d 09:23:00"
+            },
+            {
+              "level": 7,
+              "iron": 75925900,
+              "food": 75925900,
+              "gold": 227777700,
+              "valor": 2550,
+              "requirements": [
+                {
+                  "elementId": "hold-the-line-3",
+                  "minLevel": 7
+                },
+                {
+                  "elementId": "counter-defense-3",
+                  "minLevel": 7
+                },
+                {
+                  "elementId": "solid-defense-3",
+                  "minLevel": 7
+                }
+              ],
+              "techCenterLevel": 27,
+              "researchTime": "16d 01:39:00"
+            },
+            {
+              "level": 8,
+              "iron": 75925900,
+              "food": 75925900,
+              "gold": 227777700,
+              "valor": 2550,
+              "requirements": [
+                {
+                  "elementId": "hold-the-line-3",
+                  "minLevel": 8
+                },
+                {
+                  "elementId": "counter-defense-3",
+                  "minLevel": 8
+                },
+                {
+                  "elementId": "solid-defense-3",
+                  "minLevel": 8
+                }
+              ],
+              "techCenterLevel": 27,
+              "researchTime": "16d 01:39:00"
+            },
+            {
+              "level": 9,
+              "iron": 75925900,
+              "food": 75925900,
+              "gold": 227777700,
+              "valor": 2550,
+              "requirements": [
+                {
+                  "elementId": "hold-the-line-3",
+                  "minLevel": 9
+                },
+                {
+                  "elementId": "counter-defense-3",
+                  "minLevel": 9
+                },
+                {
+                  "elementId": "solid-defense-3",
+                  "minLevel": 9
+                }
+              ],
+              "techCenterLevel": 27,
+              "researchTime": "16d 01:39:00"
+            },
+            {
+              "level": 10,
+              "iron": 75925900,
+              "food": 75925900,
+              "gold": 227777700,
+              "valor": 2550,
+              "requirements": [
+                {
+                  "elementId": "hold-the-line-3",
+                  "minLevel": 10
+                },
+                {
+                  "elementId": "counter-defense-3",
+                  "minLevel": 10
+                },
+                {
+                  "elementId": "solid-defense-3",
+                  "minLevel": 10
+                }
+              ],
+              "techCenterLevel": 27,
+              "researchTime": "16d 01:39:00"
+            }
+          ]
+        }
+      ],
+      "connections": [],
+      "row": 9
+    }
+  ]
+};
+
+        const DEFAULT_FILLER_OPTIONS = [
+            { id: 'truck', label: '🚚 Intercity Truck', enabled: true, requiresSf40: false },
+            { id: 'non-t10-sf', label: '⚔️ Non-T10 Special Forces', enabled: true, requiresSf40: false },
+            { id: 'siege', label: '🏰 Siege to Seize', enabled: true, requiresSf40: true },
+            { id: 'defense-fort', label: '🛡️ Defense Fortifications', enabled: true, requiresSf40: true }
+        ];
 
         let state = {
             theme: 'light',
             preset: 't10-balanced',
             baseSpeed: 200,
             capitol: 'science',
-            fillerMode: 'none',
             goldFlex: 'strict',
             valorTarget: 9000,
             goldCap: 600000000,
             activeWeek: 1,
             startingBaseline: {},
             startingTruckBaseline: {},
+            startingSiegeBaseline: {},
+            startingDefenseFortBaseline: {},
             weeklyOverrides: {},
-            saveWeeks: {}, // Key: weekNum -> { enabled: bool, valorCap: int, goldCap: float }
+            saveWeeks: {},
+            fillerMasterEnabled: false,
+            fillerOptions: JSON.parse(JSON.stringify(DEFAULT_FILLER_OPTIONS)),
             modalDraftQueue: [],
             cachedWeeks: []
         };
 
-        // Tech Node Color & Icon Mapping for Special Forces and Intercity Truck Trees
         const TECH_GRAPHICS_MAP = {
-            // Special Forces Tree
             'hp-boost-1': { icon: '❤️', gradient: 'linear-gradient(135deg, #0f172a, #334155)', shadow: '0 4px 12px rgba(0,0,0,0.4)' },
             'hp-boost-2': { icon: '❤️', gradient: 'linear-gradient(135deg, #0f172a, #334155)', shadow: '0 4px 12px rgba(0,0,0,0.4)' },
             'hp-boost-3': { icon: '❤️', gradient: 'linear-gradient(135deg, #0f172a, #334155)', shadow: '0 4px 12px rgba(0,0,0,0.4)' },
@@ -1407,16 +5621,13 @@
             'focused-training-1': { icon: '🧠', gradient: 'linear-gradient(135deg, #7c3aed, #0f172a)', shadow: '0 4px 12px rgba(124,58,237,0.4)' },
             'barracks-expansion-1': { icon: '⛺', gradient: 'linear-gradient(135deg, #9333ea, #3b0764)', shadow: '0 4px 12px rgba(147,51,234,0.4)' },
             
-            // Morale: Dark Slate/Navy background so the bright Red Flag (🚩) pops with 100% contrast!
             'morale': { icon: '🚩', gradient: 'linear-gradient(135deg, #1e293b, #090d16)', shadow: '0 4px 12px rgba(0,0,0,0.6)' },
 
-            // Rapid Field Dressing: Dark Slate background so the skin-toned Bandage (🩹) pops!
             'rapid-field-dressing-1': { icon: '🩹', gradient: 'linear-gradient(135deg, #0f172a, #1e293b)', shadow: '0 4px 12px rgba(0,0,0,0.5)' },
             'infirmary-expansion-1': { icon: '🏥', gradient: 'linear-gradient(135deg, #047857, #022c22)', shadow: '0 4px 12px rgba(4,120,87,0.4)' },
 
             'unit-x': { icon: '🎖️', gradient: 'linear-gradient(135deg, #d97706, #78350f)', shadow: '0 0 20px rgba(217,119,6,0.8)' },
 
-            // Intercity Truck Tree
             'basic-goods': { icon: '📦', gradient: 'linear-gradient(135deg, #7e22ce, #1e1b4b)', shadow: '0 4px 12px rgba(126,34,206,0.4)' },
             'attack-boost': { icon: '⚔️', gradient: 'linear-gradient(135deg, #c2410c, #451a03)', shadow: '0 4px 12px rgba(194,65,12,0.4)' },
             'defense-boost': { icon: '🛡️', gradient: 'linear-gradient(135deg, #0369a1, #0c4a6e)', shadow: '0 4px 12px rgba(3,105,161,0.4)' },
@@ -1425,7 +5636,43 @@
             'lucky': { icon: '🍀', gradient: 'linear-gradient(135deg, #047857, #022c22)', shadow: '0 4px 12px rgba(4,120,87,0.4)' },
             'extra-truck': { icon: '🚛', gradient: 'linear-gradient(135deg, #7e22ce, #3b0764)', shadow: '0 0 18px rgba(126,34,206,0.6)' },
             'ultimate-guard': { icon: '🛡️✨', gradient: 'linear-gradient(135deg, #1d4ed8, #1e3a8a)', shadow: '0 4px 12px rgba(29,78,216,0.4)' },
-            'reindeer-sleigh-ride': { icon: '🛷', gradient: 'linear-gradient(135deg, #be185d, #500724)', shadow: '0 4px 12px rgba(190,24,93,0.4)' }
+            'reindeer-sleigh-ride': { icon: '🛷', gradient: 'linear-gradient(135deg, #be185d, #500724)', shadow: '0 4px 12px rgba(190,24,93,0.4)' },
+
+            'power-boost-1': { icon: '⚡', gradient: 'linear-gradient(135deg, #d97706, #451a03)', shadow: '0 4px 12px rgba(217,119,6,0.4)' },
+            'final-stand-1': { icon: '🛡️', gradient: 'linear-gradient(135deg, #0284c7, #0f172a)', shadow: '0 4px 12px rgba(2,132,199,0.4)' },
+            'final-stand-2': { icon: '🛡️', gradient: 'linear-gradient(135deg, #0284c7, #0f172a)', shadow: '0 4px 12px rgba(2,132,199,0.4)' },
+            'final-stand-3': { icon: '🛡️', gradient: 'linear-gradient(135deg, #0284c7, #0f172a)', shadow: '0 4px 12px rgba(2,132,199,0.4)' },
+
+            'fierce-assault-1': { icon: '⚔️', gradient: 'linear-gradient(135deg, #ea580c, #7c2d12)', shadow: '0 4px 12px rgba(234,88,12,0.4)' },
+            'fierce-assault-2': { icon: '⚔️', gradient: 'linear-gradient(135deg, #ea580c, #7c2d12)', shadow: '0 4px 12px rgba(234,88,12,0.4)' },
+            'fierce-assault-3': { icon: '⚔️', gradient: 'linear-gradient(135deg, #ea580c, #7c2d12)', shadow: '0 4px 12px rgba(234,88,12,0.4)' },
+
+            'vigilant-formation-1': { icon: '🦺', gradient: 'linear-gradient(135deg, #0369a1, #0f172a)', shadow: '0 4px 12px rgba(3,105,161,0.4)' },
+            'vigilant-formation-2': { icon: '🦺', gradient: 'linear-gradient(135deg, #0369a1, #0f172a)', shadow: '0 4px 12px rgba(3,105,161,0.4)' },
+            'vigilant-formation-3': { icon: '🦺', gradient: 'linear-gradient(135deg, #0369a1, #0f172a)', shadow: '0 4px 12px rgba(3,105,161,0.4)' },
+
+            'extra-drill-ground': { icon: '⛺', gradient: 'linear-gradient(135deg, #9333ea, #3b0764)', shadow: '0 4px 12px rgba(147,51,234,0.4)' },
+            'drill-ground-expansion': { icon: '⛺', gradient: 'linear-gradient(135deg, #9333ea, #3b0764)', shadow: '0 4px 12px rgba(147,51,234,0.4)' },
+            'rapid-march-1': { icon: '⚡', gradient: 'linear-gradient(135deg, #0e7490, #164e63)', shadow: '0 4px 12px rgba(14,116,144,0.4)' },
+            'fatal-strike-1': { icon: '🎯', gradient: 'linear-gradient(135deg, #d97706, #78350f)', shadow: '0 0 18px rgba(217,119,6,0.6)' },
+
+            'extra-hospitals': { icon: '🏥', gradient: 'linear-gradient(135deg, #047857, #022c22)', shadow: '0 4px 12px rgba(4,120,87,0.4)' },
+            'hold-the-line-1': { icon: '🛡️', gradient: 'linear-gradient(135deg, #0284c7, #0c4a6e)', shadow: '0 4px 12px rgba(2,132,199,0.4)' },
+            'hold-the-line-2': { icon: '🛡️', gradient: 'linear-gradient(135deg, #0284c7, #0c4a6e)', shadow: '0 4px 12px rgba(2,132,199,0.4)' },
+            'hold-the-line-3': { icon: '🛡️', gradient: 'linear-gradient(135deg, #0284c7, #0c4a6e)', shadow: '0 4px 12px rgba(2,132,199,0.4)' },
+
+            'counter-defense-1': { icon: '⚔️', gradient: 'linear-gradient(135deg, #c2410c, #451a03)', shadow: '0 4px 12px rgba(194,65,12,0.4)' },
+            'counter-defense-2': { icon: '⚔️', gradient: 'linear-gradient(135deg, #c2410c, #451a03)', shadow: '0 4px 12px rgba(194,65,12,0.4)' },
+            'counter-defense-3': { icon: '⚔️', gradient: 'linear-gradient(135deg, #c2410c, #451a03)', shadow: '0 4px 12px rgba(194,65,12,0.4)' },
+
+            'solid-defense-1': { icon: '🏰', gradient: 'linear-gradient(135deg, #2563eb, #0f172a)', shadow: '0 4px 12px rgba(37,99,235,0.4)' },
+            'solid-defense-2': { icon: '🏰', gradient: 'linear-gradient(135deg, #2563eb, #0f172a)', shadow: '0 4px 12px rgba(37,99,235,0.4)' },
+            'solid-defense-3': { icon: '🏰', gradient: 'linear-gradient(135deg, #2563eb, #0f172a)', shadow: '0 4px 12px rgba(37,99,235,0.4)' },
+
+            'defense-fortifications': { icon: '🏰', gradient: 'linear-gradient(135deg, #1d4ed8, #1e3a8a)', shadow: '0 4px 12px rgba(29,78,216,0.4)' },
+            'efficient-healing': { icon: '🩹', gradient: 'linear-gradient(135deg, #0f172a, #1e293b)', shadow: '0 4px 12px rgba(0,0,0,0.5)' },
+            'resource-protection': { icon: '📦', gradient: 'linear-gradient(135deg, #7e22ce, #1e1b4b)', shadow: '0 4px 12px rgba(126,34,206,0.4)' },
+            'survival-skills': { icon: '❤️', gradient: 'linear-gradient(135deg, #be185d, #500724)', shadow: '0 4px 12px rgba(190,24,93,0.4)' }
         };
 
         function getTechGraphic(techId, fallbackIcon='🛡️') {
@@ -1434,58 +5681,163 @@
             return { icon: fallbackIcon, gradient: 'linear-gradient(135deg, #38bdf8, #0284c7)', shadow: '0 4px 12px rgba(2,132,199,0.3)' };
         }
 
-        function generateEmojiFavicon(emojiChar) {
-            try {
-                let canvas = document.createElement('canvas');
-                canvas.width = 64; canvas.height = 64;
-                let ctx = canvas.getContext('2d');
-                ctx.font = '52px sans-serif';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillText(emojiChar, 32, 36);
-
-                let link = document.createElement('link');
-                link.rel = 'icon';
-                link.type = 'image/png';
-                link.href = canvas.toDataURL('image/png');
-                document.getElementsByTagName('head')[0].appendChild(link);
-            } catch(e) {}
+        function getSfCompletionStats() {
+            let totalSfLevels = 221;
+            let currentDone = 0;
+            if (state.startingBaseline) {
+                Object.keys(state.startingBaseline).forEach(tid => {
+                    currentDone += state.startingBaseline[tid] || 0;
+                });
+            }
+            let pct = (currentDone / totalSfLevels) * 100;
+            let is40Unlocked = (currentDone >= 89);
+            return { currentDone, totalSfLevels, pct, is40Unlocked };
         }
 
         function saveStateToLocalStorage() {
             try {
-                localStorage.setItem('lastwar_sf_state_v5', JSON.stringify({
+                localStorage.setItem('lastwar_sf_state_v7', JSON.stringify({
                     theme: state.theme,
                     preset: state.preset,
                     baseSpeed: state.baseSpeed,
                     capitol: state.capitol,
-                    fillerMode: state.fillerMode,
                     goldFlex: state.goldFlex,
                     valorTarget: state.valorTarget,
                     goldCap: state.goldCap,
                     startingBaseline: state.startingBaseline,
                     startingTruckBaseline: state.startingTruckBaseline,
+                    startingSiegeBaseline: state.startingSiegeBaseline,
+                    startingDefenseFortBaseline: state.startingDefenseFortBaseline,
                     weeklyOverrides: state.weeklyOverrides,
-                    saveWeeks: state.saveWeeks
+                    saveWeeks: state.saveWeeks,
+                    fillerMasterEnabled: state.fillerMasterEnabled,
+                    fillerOptions: state.fillerOptions
                 }));
             } catch(e) {}
         }
 
         function loadStateFromLocalStorage() {
             try {
-                let saved = localStorage.getItem('lastwar_sf_state_v5');
+                let saved = localStorage.getItem('lastwar_sf_state_v7');
+                if (!saved) {
+                    saved = localStorage.getItem('lastwar_sf_state_v6');
+                }
                 if (saved) {
                     let parsed = JSON.parse(saved);
+                    if (!Array.isArray(parsed.fillerOptions) || parsed.fillerOptions.length !== 4 || !parsed.fillerOptions[0].id) {
+                        delete parsed.fillerOptions;
+                    }
                     state = Object.assign(state, parsed);
                 }
             } catch(e) {}
+            
+            if (!state.startingSiegeBaseline) state.startingSiegeBaseline = {};
+            if (!state.startingDefenseFortBaseline) state.startingDefenseFortBaseline = {};
+
+            if (!Array.isArray(state.fillerOptions) || state.fillerOptions.length !== 4 || !state.fillerOptions[0].id) {
+                state.fillerOptions = JSON.parse(JSON.stringify(DEFAULT_FILLER_OPTIONS));
+            }
         }
 
         function resetAllSettings() {
             if (confirm("Reset all settings, starting baseline levels, custom weekly plans, and save weeks to default?")) {
-                try { localStorage.removeItem('lastwar_sf_state_v5'); } catch(e) {}
+                try {
+                    localStorage.removeItem('lastwar_sf_state_v7');
+                    localStorage.removeItem('lastwar_sf_state_v6');
+                    localStorage.removeItem('lastwar_sf_state_v5');
+                } catch(e) {}
                 location.reload();
             }
+        }
+
+        function toggleMasterFiller(enabled) {
+            state.fillerMasterEnabled = enabled;
+            saveStateToLocalStorage();
+            runSimulationAndRender();
+        }
+
+        function renderFillerPriorityUI() {
+            if (!Array.isArray(state.fillerOptions) || state.fillerOptions.length !== 4) {
+                state.fillerOptions = JSON.parse(JSON.stringify(DEFAULT_FILLER_OPTIONS));
+            }
+
+            let stats = getSfCompletionStats();
+            let statusContainer = document.getElementById('sf-completion-status');
+            if (statusContainer) {
+                statusContainer.innerHTML = `<span>🛡️ Initial Special Forces Progress: <strong>${stats.currentDone} / 221 levels (${stats.pct.toFixed(1)}% Complete)</strong></span> ` +
+                    (stats.is40Unlocked ? `<span class="lock-note-tag" style="background:rgba(22,163,74,0.15);color:var(--accent-green);border-color:var(--accent-green)">🔓 40% Threshold Unlocked in Baseline!</span>` : `<span class="lock-note-tag">⏳ 40% Threshold (89 levels) will activate dynamically in schedule</span>`);
+            }
+
+            let headerToggleContainer = document.getElementById('filler-master-toggle-box');
+            if (headerToggleContainer) {
+                let isMasterOn = !!state.fillerMasterEnabled;
+                headerToggleContainer.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:center; width:100%; margin-bottom:8px;">
+                        <label style="cursor:pointer; display:flex; align-items:center; gap:10px; font-weight:700; font-size:0.9rem; color:var(--text-primary);">
+                            <input type="checkbox" id="chk-master-filler" ${isMasterOn ? 'checked' : ''} onchange="toggleMasterFiller(this.checked)" style="width:18px; height:18px; accent-color:var(--accent-gold); cursor:pointer;">
+                            <span>Enable Weekly Filler Tech Strategy</span>
+                        </label>
+                        <span class="badge-pill" style="font-weight:700; font-size:0.8rem; padding:4px 10px; border-radius:12px; ${isMasterOn ? 'background:rgba(22,163,74,0.15); color:var(--accent-green); border:1px solid var(--accent-green)' : 'background:var(--bg-input); color:var(--text-secondary); border:1px solid var(--border-color)'}">
+                            ${isMasterOn ? '🟢 Filler Active' : '⚪ Filler Disabled'}
+                        </span>
+                    </div>
+                `;
+            }
+
+            let container = document.getElementById('filler-priority-container');
+            if (!container) return;
+
+            if (!state.fillerMasterEnabled) {
+                container.innerHTML = `
+                    <div style="text-align:center; padding:24px 16px; color:var(--text-secondary); font-size:0.85rem; background:var(--bg-card); border-radius:8px; border:1px dashed var(--border-color);">
+                        <div style="font-size:1.4rem; margin-bottom:6px;">⏸️</div>
+                        <strong>Filler Strategy is OFF</strong><br>
+                        Check "Enable Weekly Filler Tech Strategy" above to configure priority order and automatically reach weekly Valor targets.
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            state.fillerOptions.forEach((opt, idx) => {
+                let lockNote = opt.requiresSf40 ? `<span class="lock-note-tag">🔒 Unlocks at 40% SF Research (89 levels)</span>` : '';
+                let isChecked = opt.enabled ? 'checked' : '';
+
+                let upDisabled = (idx === 0) ? 'disabled' : '';
+                let downDisabled = (idx === state.fillerOptions.length - 1) ? 'disabled' : '';
+
+                html += `<div class="filler-item-row">
+                    <div class="filler-item-left">
+                        <input type="checkbox" id="chk-filler-${opt.id}" ${isChecked} onchange="toggleFillerOption('${opt.id}', this.checked)">
+                        <label for="chk-filler-${opt.id}" style="cursor:pointer; display:flex; align-items:center; gap:8px; flex-wrap:wrap">
+                            <span>Priority ${idx + 1}: <strong>${opt.label}</strong></span>
+                            ${lockNote}
+                        </label>
+                    </div>
+                    <div class="filler-item-controls">
+                        <button class="btn-reorder" ${upDisabled} onclick="moveFillerOption(${idx}, -1)" title="Move Up Priority">▲</button>
+                        <button class="btn-reorder" ${downDisabled} onclick="moveFillerOption(${idx}, 1)" title="Move Down Priority">▼</button>
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function toggleFillerOption(id, isChecked) {
+            let opt = state.fillerOptions.find(o => o.id === id);
+            if (opt) opt.enabled = isChecked;
+            saveStateToLocalStorage();
+            runSimulationAndRender();
+        }
+
+        function moveFillerOption(idx, dir) {
+            let targetIdx = idx + dir;
+            if (targetIdx < 0 || targetIdx >= state.fillerOptions.length) return;
+            let temp = state.fillerOptions[idx];
+            state.fillerOptions[idx] = state.fillerOptions[targetIdx];
+            state.fillerOptions[targetIdx] = temp;
+            saveStateToLocalStorage();
+            runSimulationAndRender();
         }
 
         function syncUIFromState() {
@@ -1503,14 +5855,11 @@
             if (document.getElementById('cap-' + state.capitol)) {
                 document.getElementById('cap-' + state.capitol).classList.add('active');
             }
-            if (document.getElementById('filler-' + state.fillerMode)) {
-                document.querySelectorAll('#filler-truck-first, #filler-sf-first, #filler-none').forEach(r => r.classList.remove('active'));
-                document.getElementById('filler-' + state.fillerMode).classList.add('active');
-            }
             if (document.getElementById('goldflex-' + state.goldFlex)) {
                 document.querySelectorAll('#goldflex-strict, #goldflex-flex').forEach(r => r.classList.remove('active'));
                 document.getElementById('goldflex-' + state.goldFlex).classList.add('active');
             }
+            renderFillerPriorityUI();
         }
 
         function setTheme(t) {
@@ -1525,7 +5874,6 @@
             }
             document.documentElement.setAttribute('data-theme', applyTheme);
             saveStateToLocalStorage();
-            runSimulationAndRender();
         }
 
         function toggleTooltip(evt) {
@@ -1595,6 +5943,32 @@
             }
         }
 
+        function toggleSiegeBaselineBox() {
+            let body = document.getElementById('siege-baseline-body');
+            let arrow = document.getElementById('siege-baseline-arrow');
+            if (body.classList.contains('open')) {
+                body.classList.remove('open');
+                arrow.innerText = '▼ Expand';
+            } else {
+                body.classList.add('open');
+                arrow.innerText = '▲ Collapse';
+                renderSiegeBaselineTree();
+            }
+        }
+
+        function toggleDefenseFortBaselineBox() {
+            let body = document.getElementById('defense-fort-baseline-body');
+            let arrow = document.getElementById('defense-fort-baseline-arrow');
+            if (body.classList.contains('open')) {
+                body.classList.remove('open');
+                arrow.innerText = '▼ Expand';
+            } else {
+                body.classList.add('open');
+                arrow.innerText = '▲ Collapse';
+                renderDefenseFortBaselineTree();
+            }
+        }
+
         function selectPreset(preset) {
             state.preset = preset;
             document.querySelectorAll('.btn-preset').forEach(b => b.classList.remove('active'));
@@ -1612,14 +5986,6 @@
             state.capitol = cap;
             document.querySelectorAll('.radio-card').forEach(r => r.classList.remove('active'));
             if (document.getElementById('cap-' + cap)) document.getElementById('cap-' + cap).classList.add('active');
-            saveStateToLocalStorage();
-            runSimulationAndRender();
-        }
-
-        function setFillerMode(mode) {
-            state.fillerMode = mode;
-            document.querySelectorAll('#filler-truck-first, #filler-sf-first, #filler-none').forEach(r => r.classList.remove('active'));
-            if (document.getElementById('filler-' + mode)) document.getElementById('filler-' + mode).classList.add('active');
             saveStateToLocalStorage();
             runSimulationAndRender();
         }
@@ -1709,6 +6075,8 @@
         }
 
         function runSimulationAndRender() {
+            renderFillerPriorityUI();
+
             const treeData = (state.preset === 'sf-full') ? SF_DATA : T10_DATA;
             const fullSfTechs = {};
             SF_DATA.rows.forEach(r => r.elements.forEach(e => fullSfTechs[e.id] = e));
@@ -1787,7 +6155,7 @@
                 });
             });
 
-            // Build Intercity Truck Nodes strictly for Extra Truck Rush
+            // Build Intercity Truck Nodes
             let truckTechs = {};
             TRUCK_DATA.rows.forEach(r => r.elements.forEach(e => truckTechs[e.id] = e));
             let truckNodes = {}, truckInDegree = {}, truckAdj = {};
@@ -1822,17 +6190,72 @@
                                 let parent = 'truck:' + t_id + ':' + (lvl.level - 1);
                                 if (truckNodes[parent]) { truckAdj[parent].push(key); truckInDegree[key]++; }
                             }
-                            if (lvl.requirements) {
-                                lvl.requirements.forEach(req => {
-                                    if (truckTechs[req.elementId] && extraTruckRushMax[req.elementId]) {
-                                        let r_key = 'truck:' + req.elementId + ':' + (req.minLevel || 1);
-                                        if (truckNodes[r_key]) { truckAdj[r_key].push(key); truckInDegree[key]++; }
-                                    }
-                                });
-                            }
                         }
                     });
                 }
+            });
+
+            // Build Siege to Seize & Defense Fortifications Nodes from Authentic Cpt Hedge Trees
+            let siegeTechs = {};
+            SIEGE_DATA.rows.forEach(r => r.elements.forEach(e => siegeTechs[e.id] = e));
+            let siegeNodes = {}, siegeInDegree = {}, siegeAdj = {};
+            Object.keys(siegeTechs).forEach(t_id => {
+                siegeTechs[t_id].levels.forEach(lvl => {
+                    let key = 'siege:' + t_id + ':' + lvl.level;
+                    siegeNodes[key] = {
+                        key: key, tech_id: t_id, tech_name: siegeTechs[t_id].name, level: lvl.level,
+                        valor: lvl.valor || 0, gold: lvl.gold || 0, actual_time_sec: parseTime(lvl.researchTime) / speedFactor
+                    };
+                    siegeInDegree[key] = 0; siegeAdj[key] = [];
+                });
+            });
+            Object.keys(siegeTechs).forEach(t_id => {
+                siegeTechs[t_id].levels.forEach(lvl => {
+                    let key = 'siege:' + t_id + ':' + lvl.level;
+                    if (lvl.level > 1) {
+                        let parent = 'siege:' + t_id + ':' + (lvl.level - 1);
+                        if (siegeNodes[parent]) { siegeAdj[parent].push(key); siegeInDegree[key]++; }
+                    }
+                    if (lvl.requirements) {
+                        lvl.requirements.forEach(req => {
+                            if (siegeTechs[req.elementId]) {
+                                let r_key = 'siege:' + req.elementId + ':' + (req.minLevel || 1);
+                                if (siegeNodes[r_key]) { siegeAdj[r_key].push(key); siegeInDegree[key]++; }
+                            }
+                        });
+                    }
+                });
+            });
+
+            let defenseFortTechs = {};
+            DEFENSE_FORT_DATA.rows.forEach(r => r.elements.forEach(e => defenseFortTechs[e.id] = e));
+            let defenseFortNodes = {}, defenseFortInDegree = {}, defenseFortAdj = {};
+            Object.keys(defenseFortTechs).forEach(t_id => {
+                defenseFortTechs[t_id].levels.forEach(lvl => {
+                    let key = 'def_fort:' + t_id + ':' + lvl.level;
+                    defenseFortNodes[key] = {
+                        key: key, tech_id: t_id, tech_name: defenseFortTechs[t_id].name, level: lvl.level,
+                        valor: lvl.valor || 0, gold: lvl.gold || 0, actual_time_sec: parseTime(lvl.researchTime) / speedFactor
+                    };
+                    defenseFortInDegree[key] = 0; defenseFortAdj[key] = [];
+                });
+            });
+            Object.keys(defenseFortTechs).forEach(t_id => {
+                defenseFortTechs[t_id].levels.forEach(lvl => {
+                    let key = 'def_fort:' + t_id + ':' + lvl.level;
+                    if (lvl.level > 1) {
+                        let parent = 'def_fort:' + t_id + ':' + (lvl.level - 1);
+                        if (defenseFortNodes[parent]) { defenseFortAdj[parent].push(key); defenseFortInDegree[key]++; }
+                    }
+                    if (lvl.requirements) {
+                        lvl.requirements.forEach(req => {
+                            if (defenseFortTechs[req.elementId]) {
+                                let r_key = 'def_fort:' + req.elementId + ':' + (req.minLevel || 1);
+                                if (defenseFortNodes[r_key]) { defenseFortAdj[r_key].push(key); defenseFortInDegree[key]++; }
+                            }
+                        });
+                    }
+                });
             });
 
             let rowMap = {};
@@ -1842,6 +6265,8 @@
             let completedSet = new Set();
             let truckCompletedSet = new Set();
             let nonT10SfCompletedSet = new Set();
+            let siegeCompletedSet = new Set();
+            let defenseFortCompletedSet = new Set();
 
             // Process Special Forces Starting Baseline
             Object.keys(state.startingBaseline).forEach(t_id => {
@@ -1888,11 +6313,45 @@
                 }
             });
 
+            // Process Siege to Seize Starting Baseline
+            Object.keys(state.startingSiegeBaseline).forEach(t_id => {
+                let startLvl = state.startingSiegeBaseline[t_id] || 0;
+                for (let l = 1; l <= startLvl; l++) {
+                    let key = 'siege:' + t_id + ':' + l;
+                    if (siegeNodes[key]) {
+                        siegeCompletedSet.add(key);
+                        if (siegeAdj[key]) {
+                            siegeAdj[key].forEach(c => {
+                                if (siegeInDegree[c] !== undefined) siegeInDegree[c]--;
+                            });
+                        }
+                    }
+                }
+            });
+
+            // Process Defense Fortifications Starting Baseline
+            Object.keys(state.startingDefenseFortBaseline).forEach(t_id => {
+                let startLvl = state.startingDefenseFortBaseline[t_id] || 0;
+                for (let l = 1; l <= startLvl; l++) {
+                    let key = 'def_fort:' + t_id + ':' + l;
+                    if (defenseFortNodes[key]) {
+                        defenseFortCompletedSet.add(key);
+                        if (defenseFortAdj[key]) {
+                            defenseFortAdj[key].forEach(c => {
+                                if (defenseFortInDegree[c] !== undefined) defenseFortInDegree[c]--;
+                            });
+                        }
+                    }
+                }
+            });
+
             let available = Object.keys(inDegree).filter(k => inDegree[k] === 0 && !completedSet.has(k));
             available.sort((a,b) => priority(a) - priority(b));
 
             let truckAvailable = Object.keys(truckInDegree).filter(k => truckInDegree[k] === 0 && !truckCompletedSet.has(k));
             let nonT10SfAvailable = Object.keys(nonT10SfInDegree).filter(k => nonT10SfInDegree[k] === 0 && !nonT10SfCompletedSet.has(k));
+            let siegeAvailable = Object.keys(siegeInDegree).filter(k => siegeInDegree[k] === 0 && !siegeCompletedSet.has(k));
+            let defenseFortAvailable = Object.keys(defenseFortInDegree).filter(k => defenseFortInDegree[k] === 0 && !defenseFortCompletedSet.has(k));
 
             let totalNodes = Object.keys(nodes).length;
             let weeks = [], currentWeek = 1, cumGold = 0, cumValor = 0, cumSpeedups = 0;
@@ -1915,7 +6374,7 @@
                 });
 
                 let wValor = 0, wGold = 0, wSpeedSec = 0;
-                let wTargetTechs = [], wFillerTechs = [];
+                let wTargetTechs = [], wFillerTechs = [], wItems = [];
 
                 if (state.weeklyOverrides[currentWeek]) {
                     let customItems = state.weeklyOverrides[currentWeek];
@@ -1923,10 +6382,18 @@
                         wValor += item.valor || 0;
                         wGold += item.gold || 0;
                         wSpeedSec += item.actual_time_sec || 0;
+                        wItems.push(Object.assign({}, item));
+
                         let key = item.tech_id + ':' + item.level;
                         if (item.tech_id.startsWith('truck:')) {
                             wFillerTechs.push('🚚 ' + item.tech_name + ' Lvl ' + item.level);
                             truckCompletedSet.add(key);
+                        } else if (item.tech_id.startsWith('siege:')) {
+                            wFillerTechs.push('🏰 ' + item.tech_name + ' Lvl ' + item.level);
+                            siegeCompletedSet.add(key);
+                        } else if (item.tech_id.startsWith('def_fort:')) {
+                            wFillerTechs.push('🛡️ ' + item.tech_name + ' Lvl ' + item.level);
+                            defenseFortCompletedSet.add(key);
                         } else if (state.preset === 'sf-full' || (t10MaxMap[item.tech_id] && item.level <= t10MaxMap[item.tech_id])) {
                             wTargetTechs.push(item.tech_name + ' Lvl ' + item.level);
                             completedSet.add(key);
@@ -1945,6 +6412,7 @@
                     available.sort((a,b) => priority(a) - priority(b));
                     nonT10SfAvailable = Object.keys(nonT10SfInDegree).filter(k => nonT10SfInDegree[k] === 0 && !nonT10SfCompletedSet.has(k));
                 } else {
+                    // Primary Target Research Execution
                     while (available.length > 0) {
                         let candIdx = -1;
                         for (let i=0; i<available.length; i++) {
@@ -1963,7 +6431,9 @@
                             wTargetTechs.push(n.tech_name + ' Lvl ' + n.level);
                         } else {
                             wFillerTechs.push(n.tech_name + ' Lvl ' + n.level);
+                                    wItems.push({ tech_id: n.tech_id, tech_name: n.tech_name, level: n.level, valor: n.valor, gold: n.gold, actual_time_sec: n.actual_time_sec });
                         }
+                        wItems.push({ tech_id: n.tech_id, tech_name: n.tech_name, level: n.level, valor: n.valor, gold: n.gold, actual_time_sec: n.actual_time_sec });
 
                         completedSet.add(key);
                         adj[key].forEach(c => {
@@ -1973,84 +6443,98 @@
                         available.sort((a,b) => priority(a) - priority(b));
                     }
 
+                    // Filler Research Execution: Dynamically evaluate 40% SF threshold per week
                     let fillerTargetValor = isSaveWeek ? effectiveValorCap : state.valorTarget;
+                    let currentSfDoneCount = completedSet.size;
+                    let isSf40DoneThisWeek = (currentSfDoneCount >= 89);
 
-                    if (state.fillerMode !== 'none' && (wValor < fillerTargetValor * 0.8 || (wGold + 100000000 > strictGoldCap && wValor < fillerTargetValor))) {
-                        if (state.fillerMode === 'truck-first') {
-                            while (truckAvailable.length > 0 && wValor < fillerTargetValor) {
-                                let candIdx = -1;
-                                for (let i=0; i<truckAvailable.length; i++) {
-                                    let cand = truckNodes[truckAvailable[i]];
-                                    if (wValor + cand.valor <= effectiveValorCap) {
-                                        candIdx = i; break;
+                    if (state.fillerMasterEnabled && (wValor < fillerTargetValor * 0.8 || (wGold + 100000000 > strictGoldCap && wValor < fillerTargetValor))) {
+                        for (let opt of state.fillerOptions) {
+                            if (!opt.enabled) continue;
+                            
+                            // If this option requires 40% SF research, check if 89+ levels are completed as of this week
+                            if (opt.requiresSf40 && !isSf40DoneThisWeek) continue;
+
+                            if (opt.id === 'truck') {
+                                while (truckAvailable.length > 0 && wValor < fillerTargetValor) {
+                                    let candIdx = -1;
+                                    for (let i=0; i<truckAvailable.length; i++) {
+                                        let cand = truckNodes[truckAvailable[i]];
+                                        if (wValor + cand.valor <= effectiveValorCap) {
+                                            candIdx = i; break;
+                                        }
                                     }
+                                    if (candIdx === -1) break;
+
+                                    let key = truckAvailable.splice(candIdx, 1)[0];
+                                    let n = truckNodes[key];
+                                    wValor += n.valor; wGold += n.gold; wSpeedSec += n.actual_time_sec;
+                                    wFillerTechs.push('🚚 ' + n.tech_name + ' Lvl ' + n.level);
+                                    wItems.push({ tech_id: 'truck:' + n.tech_id, tech_name: '🚚 ' + n.tech_name, level: n.level, valor: n.valor, gold: n.gold, actual_time_sec: n.actual_time_sec });
+                                    truckCompletedSet.add(key);
+
+                                    truckAdj[key].forEach(c => { truckInDegree[c]--; if (truckInDegree[c] === 0) truckAvailable.push(c); });
                                 }
-                                if (candIdx === -1) break;
-
-                                let key = truckAvailable.splice(candIdx, 1)[0];
-                                let n = truckNodes[key];
-                                wValor += n.valor; wGold += n.gold; wSpeedSec += n.actual_time_sec;
-                                wFillerTechs.push('🚚 ' + n.tech_name + ' Lvl ' + n.level);
-                                truckCompletedSet.add(key);
-
-                                truckAdj[key].forEach(c => { truckInDegree[c]--; if (truckInDegree[c] === 0) truckAvailable.push(c); });
-                            }
-
-                            while (nonT10SfAvailable.length > 0 && wValor < fillerTargetValor) {
-                                let candIdx = -1;
-                                for (let i=0; i<nonT10SfAvailable.length; i++) {
-                                    let cand = nonT10SfNodes[nonT10SfAvailable[i]];
-                                    if ((wValor + cand.valor <= effectiveValorCap) && (wGold + cand.gold <= effectiveGoldCap)) {
-                                        candIdx = i; break;
+                            } else if (opt.id === 'non-t10-sf') {
+                                while (nonT10SfAvailable.length > 0 && wValor < fillerTargetValor) {
+                                    let candIdx = -1;
+                                    for (let i=0; i<nonT10SfAvailable.length; i++) {
+                                        let cand = nonT10SfNodes[nonT10SfAvailable[i]];
+                                        if ((wValor + cand.valor <= effectiveValorCap) && (wGold + cand.gold <= effectiveGoldCap)) {
+                                            candIdx = i; break;
+                                        }
                                     }
+                                    if (candIdx === -1) break;
+
+                                    let key = nonT10SfAvailable.splice(candIdx, 1)[0];
+                                    let n = nonT10SfNodes[key];
+                                    wValor += n.valor; wGold += n.gold; wSpeedSec += n.actual_time_sec;
+                                    wFillerTechs.push(n.tech_name + ' Lvl ' + n.level);
+                                    wItems.push({ tech_id: n.tech_id, tech_name: n.tech_name, level: n.level, valor: n.valor, gold: n.gold, actual_time_sec: n.actual_time_sec });
+                                    nonT10SfCompletedSet.add(key);
+
+                                    nonT10SfAdj[key].forEach(c => { nonT10SfInDegree[c]--; if (nonT10SfInDegree[c] === 0) nonT10SfAvailable.push(c); });
                                 }
-                                if (candIdx === -1) break;
-
-                                let key = nonT10SfAvailable.splice(candIdx, 1)[0];
-                                let n = nonT10SfNodes[key];
-                                wValor += n.valor; wGold += n.gold; wSpeedSec += n.actual_time_sec;
-                                wFillerTechs.push(n.tech_name + ' Lvl ' + n.level);
-                                nonT10SfCompletedSet.add(key);
-
-                                nonT10SfAdj[key].forEach(c => { nonT10SfInDegree[c]--; if (nonT10SfInDegree[c] === 0) nonT10SfAvailable.push(c); });
-                            }
-                        } else if (state.fillerMode === 'sf-first') {
-                            while (nonT10SfAvailable.length > 0 && wValor < fillerTargetValor) {
-                                let candIdx = -1;
-                                for (let i=0; i<nonT10SfAvailable.length; i++) {
-                                    let cand = nonT10SfNodes[nonT10SfAvailable[i]];
-                                    if ((wValor + cand.valor <= effectiveValorCap) && (wGold + cand.gold <= effectiveGoldCap)) {
-                                        candIdx = i; break;
+                            } else if (opt.id === 'siege') {
+                                while (siegeAvailable.length > 0 && wValor < fillerTargetValor) {
+                                    let candIdx = -1;
+                                    for (let i=0; i<siegeAvailable.length; i++) {
+                                        let cand = siegeNodes[siegeAvailable[i]];
+                                        if ((wValor + cand.valor <= effectiveValorCap) && (wGold + cand.gold <= effectiveGoldCap)) {
+                                            candIdx = i; break;
+                                        }
                                     }
+                                    if (candIdx === -1) break;
+
+                                    let key = siegeAvailable.splice(candIdx, 1)[0];
+                                    let n = siegeNodes[key];
+                                    wValor += n.valor; wGold += n.gold; wSpeedSec += n.actual_time_sec;
+                                    wFillerTechs.push('🏰 ' + n.tech_name + ' Lvl ' + n.level);
+                                    wItems.push({ tech_id: 'siege:' + n.tech_id, tech_name: '🏰 ' + n.tech_name, level: n.level, valor: n.valor, gold: n.gold, actual_time_sec: n.actual_time_sec });
+                                    siegeCompletedSet.add(key);
+
+                                    siegeAdj[key].forEach(c => { siegeInDegree[c]--; if (siegeInDegree[c] === 0) siegeAvailable.push(c); });
                                 }
-                                if (candIdx === -1) break;
-
-                                let key = nonT10SfAvailable.splice(candIdx, 1)[0];
-                                let n = nonT10SfNodes[key];
-                                wValor += n.valor; wGold += n.gold; wSpeedSec += n.actual_time_sec;
-                                wFillerTechs.push(n.tech_name + ' Lvl ' + n.level);
-                                nonT10SfCompletedSet.add(key);
-
-                                nonT10SfAdj[key].forEach(c => { nonT10SfInDegree[c]--; if (nonT10SfInDegree[c] === 0) nonT10SfAvailable.push(c); });
-                            }
-
-                            while (truckAvailable.length > 0 && wValor < fillerTargetValor) {
-                                let candIdx = -1;
-                                for (let i=0; i<truckAvailable.length; i++) {
-                                    let cand = truckNodes[truckAvailable[i]];
-                                    if (wValor + cand.valor <= effectiveValorCap) {
-                                        candIdx = i; break;
+                            } else if (opt.id === 'defense-fort') {
+                                while (defenseFortAvailable.length > 0 && wValor < fillerTargetValor) {
+                                    let candIdx = -1;
+                                    for (let i=0; i<defenseFortAvailable.length; i++) {
+                                        let cand = defenseFortNodes[defenseFortAvailable[i]];
+                                        if ((wValor + cand.valor <= effectiveValorCap) && (wGold + cand.gold <= effectiveGoldCap)) {
+                                            candIdx = i; break;
+                                        }
                                     }
+                                    if (candIdx === -1) break;
+
+                                    let key = defenseFortAvailable.splice(candIdx, 1)[0];
+                                    let n = defenseFortNodes[key];
+                                    wValor += n.valor; wGold += n.gold; wSpeedSec += n.actual_time_sec;
+                                    wFillerTechs.push('🛡️ ' + n.tech_name + ' Lvl ' + n.level);
+                                    wItems.push({ tech_id: 'def_fort:' + n.tech_id, tech_name: '🛡️ ' + n.tech_name, level: n.level, valor: n.valor, gold: n.gold, actual_time_sec: n.actual_time_sec });
+                                    defenseFortCompletedSet.add(key);
+
+                                    defenseFortAdj[key].forEach(c => { defenseFortInDegree[c]--; if (defenseFortInDegree[c] === 0) defenseFortAvailable.push(c); });
                                 }
-                                if (candIdx === -1) break;
-
-                                let key = truckAvailable.splice(candIdx, 1)[0];
-                                let n = truckNodes[key];
-                                wValor += n.valor; wGold += n.gold; wSpeedSec += n.actual_time_sec;
-                                wFillerTechs.push('🚚 ' + n.tech_name + ' Lvl ' + n.level);
-                                truckCompletedSet.add(key);
-
-                                truckAdj[key].forEach(c => { truckInDegree[c]--; if (truckInDegree[c] === 0) truckAvailable.push(c); });
                             }
                         }
                     }
@@ -2063,6 +6547,7 @@
                     isFlexOvercap: (!isSaveWeek && wGold > state.goldCap),
                     isSaveWeek: isSaveWeek, saveValorCap: effectiveValorCap, saveGoldCap: effectiveGoldCap,
                     targetTechs: wTargetTechs, fillerTechs: wFillerTechs,
+                    items: wItems,
                     cumGold: cumGold, cumValor: cumValor, cumSpeedups: cumSpeedups,
                     priorTechState: weekCompletedState
                 });
@@ -2085,6 +6570,7 @@
 
         function renderGoldChart(weeks) {
             let container = document.getElementById('chart-container');
+            if (!container) return;
             let maxGold = Math.max(...weeks.map(w => w.goldSpent), state.goldCap);
             let maxSpeed = Math.max(...weeks.map(w => w.speedupsDays), 1);
             let svgW = 1000, svgH = 260;
@@ -2148,6 +6634,7 @@
 
         function renderValorChart(weeks) {
             let container = document.getElementById('valor-chart-container');
+            if (!container) return;
             let maxValor = Math.max(...weeks.map(w => w.valorSpent), state.valorTarget, 10000);
             let svgW = 1000, svgH = 240;
             let isDark = document.documentElement.getAttribute('data-theme') === 'dark';
@@ -2194,6 +6681,7 @@
 
         function showTooltip(evt, week, gold, speed, valor) {
             let tt = document.getElementById('chart-tooltip');
+            if (!tt) return;
             tt.style.display = 'block';
             tt.style.left = (evt.layerX + 15) + 'px';
             tt.style.top = (evt.layerY - 40) + 'px';
@@ -2201,7 +6689,8 @@
         }
 
         function hideTooltip() {
-            document.getElementById('chart-tooltip').style.display = 'none';
+            let tt = document.getElementById('chart-tooltip');
+            if (tt) tt.style.display = 'none';
         }
 
         function formatStackedTechPills(techList, isFiller=false) {
@@ -2218,7 +6707,15 @@
                 let lvls = groups[name], minL = Math.min(...lvls), maxL = Math.max(...lvls);
                 let str = minL === maxL ? `${name} (Lvl ${minL})` : `${name} (Lvl ${minL}-${maxL})`;
                 let isTruck = name.includes('🚚');
-                let pillClass = isTruck ? 'tech-pill filler-truck' : (isFiller ? 'tech-pill filler-sf' : 'tech-pill');
+                let isSiege = name.includes('🏰');
+                let isDefFort = name.includes('🛡️');
+                
+                let pillClass = 'tech-pill';
+                if (isTruck) pillClass = 'tech-pill filler-truck';
+                else if (isSiege) pillClass = 'tech-pill filler-siege';
+                else if (isDefFort) pillClass = 'tech-pill filler-def';
+                else if (isFiller) pillClass = 'tech-pill filler-sf';
+
                 html += `<div class="${pillClass}">${str}</div>`;
             });
             html += '</div>';
@@ -2227,6 +6724,7 @@
 
         function renderTable(weeks) {
             let tbody = document.getElementById('table-body');
+            if (!tbody) return;
             let html = '';
             weeks.forEach(w => {
                 let isSave = w.isSaveWeek;
@@ -2268,6 +6766,7 @@
 
         function renderBaselineTree() {
             let grid = document.getElementById('baseline-tree-grid');
+            if (!grid) return;
             let treeData = SF_DATA;
             let html = '';
             treeData.rows.forEach(r => {
@@ -2293,6 +6792,7 @@
 
         function renderTruckBaselineTree() {
             let grid = document.getElementById('truck-baseline-tree-grid');
+            if (!grid) return;
             let html = '';
             TRUCK_DATA.rows.forEach(r => {
                 html += `<div class="tree-row-centered">`;
@@ -2307,6 +6807,58 @@
                             <button class="btn-step" onclick="adjustTruckBaseline('${e.id}', -1, ${maxLvl})">-</button>
                             <input type="number" class="input-lvl-number" id="truck-base-input-${e.id}" min="0" max="${maxLvl}" value="${curLvl}" onchange="typeTruckBaseline('${e.id}', this.value, ${maxLvl})">
                             <button class="btn-step" onclick="adjustTruckBaseline('${e.id}', 1, ${maxLvl})">+</button>
+                            <span class="lvl-max-label">/ ${maxLvl}</span>
+                        </div>
+                    </div>`;
+                });
+                html += `</div>`;
+            });
+            grid.innerHTML = html;
+        }
+
+        function renderSiegeBaselineTree() {
+            let grid = document.getElementById('siege-baseline-tree-grid');
+            if (!grid) return;
+            let html = '';
+            SIEGE_DATA.rows.forEach(r => {
+                html += `<div class="tree-row-centered">`;
+                r.elements.forEach(e => {
+                    let maxLvl = e.maxLevel;
+                    let curLvl = state.startingSiegeBaseline[e.id] || 0;
+                    let gfx = getTechGraphic(e.id, '🏰');
+                    html += `<div class="hedg-card">
+                        <div class="hedg-icon" style="background:${gfx.gradient}; box-shadow:${gfx.shadow}">${gfx.icon}</div>
+                        <div class="hedg-title">${e.name}</div>
+                        <div class="card-stepper">
+                            <button class="btn-step" onclick="adjustSiegeBaseline('${e.id}', -1, ${maxLvl})">-</button>
+                            <input type="number" class="input-lvl-number" id="siege-base-input-${e.id}" min="0" max="${maxLvl}" value="${curLvl}" onchange="typeSiegeBaseline('${e.id}', this.value, ${maxLvl})">
+                            <button class="btn-step" onclick="adjustSiegeBaseline('${e.id}', 1, ${maxLvl})">+</button>
+                            <span class="lvl-max-label">/ ${maxLvl}</span>
+                        </div>
+                    </div>`;
+                });
+                html += `</div>`;
+            });
+            grid.innerHTML = html;
+        }
+
+        function renderDefenseFortBaselineTree() {
+            let grid = document.getElementById('defense-fort-baseline-tree-grid');
+            if (!grid) return;
+            let html = '';
+            DEFENSE_FORT_DATA.rows.forEach(r => {
+                html += `<div class="tree-row-centered">`;
+                r.elements.forEach(e => {
+                    let maxLvl = e.maxLevel;
+                    let curLvl = state.startingDefenseFortBaseline[e.id] || 0;
+                    let gfx = getTechGraphic(e.id, '🛡️');
+                    html += `<div class="hedg-card">
+                        <div class="hedg-icon" style="background:${gfx.gradient}; box-shadow:${gfx.shadow}">${gfx.icon}</div>
+                        <div class="hedg-title">${e.name}</div>
+                        <div class="card-stepper">
+                            <button class="btn-step" onclick="adjustDefenseFortBaseline('${e.id}', -1, ${maxLvl})">-</button>
+                            <input type="number" class="input-lvl-number" id="def-fort-base-input-${e.id}" min="0" max="${maxLvl}" value="${curLvl}" onchange="typeDefenseFortBaseline('${e.id}', this.value, ${maxLvl})">
+                            <button class="btn-step" onclick="adjustDefenseFortBaseline('${e.id}', 1, ${maxLvl})">+</button>
                             <span class="lvl-max-label">/ ${maxLvl}</span>
                         </div>
                     </div>`;
@@ -2355,41 +6907,54 @@
             runSimulationAndRender();
         }
 
+        function adjustSiegeBaseline(techId, delta, maxLvl) {
+            let cur = state.startingSiegeBaseline[techId] || 0;
+            let nextLvl = Math.max(0, Math.min(maxLvl, cur + delta));
+            state.startingSiegeBaseline[techId] = nextLvl;
+            renderSiegeBaselineTree();
+            saveStateToLocalStorage();
+            runSimulationAndRender();
+        }
+
+        function typeSiegeBaseline(techId, valStr, maxLvl) {
+            let val = parseInt(valStr) || 0;
+            let nextLvl = Math.max(0, Math.min(maxLvl, val));
+            state.startingSiegeBaseline[techId] = nextLvl;
+            saveStateToLocalStorage();
+            runSimulationAndRender();
+        }
+
+        function adjustDefenseFortBaseline(techId, delta, maxLvl) {
+            let cur = state.startingDefenseFortBaseline[techId] || 0;
+            let nextLvl = Math.max(0, Math.min(maxLvl, cur + delta));
+            state.startingDefenseFortBaseline[techId] = nextLvl;
+            renderDefenseFortBaselineTree();
+            saveStateToLocalStorage();
+            runSimulationAndRender();
+        }
+
+        function typeDefenseFortBaseline(techId, valStr, maxLvl) {
+            let val = parseInt(valStr) || 0;
+            let nextLvl = Math.max(0, Math.min(maxLvl, val));
+            state.startingDefenseFortBaseline[techId] = nextLvl;
+            saveStateToLocalStorage();
+            runSimulationAndRender();
+        }
+
         function openModal(weekNum) {
             state.activeWeek = weekNum;
             let weekData = state.cachedWeeks.find(w => w.week === weekNum);
             if (!weekData) return;
 
             document.getElementById('modal-title').innerText = `🌳 Special Forces Tree — Week ${weekNum} Inspector`;
-            
-            state.modalDraftQueue = [];
-            let speedFactor = 1.0 + ((state.baseSpeed + getCapitolBoost()) / 100.0);
-            
-            let fullTechs = {};
-            SF_DATA.rows.forEach(r => r.elements.forEach(e => fullTechs[e.id] = e));
 
-            let allWeekTechs = [...(weekData.targetTechs || []), ...(weekData.fillerTechs || [])];
-            allWeekTechs.forEach(t => {
-                let cleanName = t.replace('🚚 ', '');
-                let parts = cleanName.split(' Lvl ');
-                let name = parts[0], lvl = parseInt(parts[1]);
-                
-                let matchId = null, matchLvlObj = null;
-                Object.keys(fullTechs).forEach(tid => {
-                    if (fullTechs[tid].name === name) {
-                        matchId = tid;
-                        matchLvlObj = fullTechs[tid].levels.find(l => l.level === lvl);
-                    }
-                });
-
-                if (matchId && matchLvlObj) {
-                    state.modalDraftQueue.push({
-                        tech_id: matchId, tech_name: name, level: lvl,
-                        valor: matchLvlObj.valor || 0, gold: matchLvlObj.gold || 0,
-                        actual_time_sec: parseTime(matchLvlObj.researchTime) / speedFactor
-                    });
-                }
-            });
+            if (state.weeklyOverrides[weekNum]) {
+                state.modalDraftQueue = JSON.parse(JSON.stringify(state.weeklyOverrides[weekNum]));
+            } else if (weekData.items) {
+                state.modalDraftQueue = JSON.parse(JSON.stringify(weekData.items));
+            } else {
+                state.modalDraftQueue = [];
+            }
 
             document.getElementById('tree-modal').classList.add('active');
             renderModalQueueAndTree();
@@ -2567,10 +7132,10 @@
         }
 
         window.onload = function() {
-            generateEmojiFavicon("🛡️");
             loadStateFromLocalStorage();
             syncUIFromState();
             setTheme(state.theme || 'light');
+            runSimulationAndRender();
         };
     </script>
 </body>
