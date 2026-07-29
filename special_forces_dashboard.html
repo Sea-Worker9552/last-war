@@ -1630,14 +1630,28 @@
 
             Object.keys(state.startingBaseline).forEach(t_id => {
                 let startLvl = state.startingBaseline[t_id] || 0;
-                for (let l=1; l<=startLvl; l++) {
+                let maxT10 = t10MaxMap[t_id] || 0;
+
+                for (let l = 1; l <= startLvl; l++) {
                     let key = t_id + ':' + l;
                     if (nodes[key]) {
                         completedSet.add(key);
-                        adj[key].forEach(c => {
-                            if (inDegree[c] !== undefined) inDegree[c]--;
-                            if (nonT10SfInDegree[c] !== undefined) nonT10SfInDegree[c]--;
-                        });
+                        if (adj[key]) {
+                            adj[key].forEach(c => {
+                                if (inDegree[c] !== undefined) inDegree[c]--;
+                                if (nonT10SfInDegree[c] !== undefined) nonT10SfInDegree[c]--;
+                            });
+                        }
+                    }
+
+                    let fillerKey = 'sf_filler:' + t_id + ':' + l;
+                    if (nonT10SfNodes[fillerKey]) {
+                        nonT10SfCompletedSet.add(fillerKey);
+                        if (nonT10SfAdj[fillerKey]) {
+                            nonT10SfAdj[fillerKey].forEach(c => {
+                                if (nonT10SfInDegree[c] !== undefined) nonT10SfInDegree[c]--;
+                            });
+                        }
                     }
                 }
             });
