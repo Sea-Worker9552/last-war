@@ -80,7 +80,7 @@
 
         .theme-btn.active { background: var(--bg-card); color: var(--text-primary); box-shadow: var(--shadow-sm); }
 
-        .preset-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+        .preset-buttons { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 
         .btn-preset {
             background: var(--bg-input); color: var(--text-primary); border: 1px solid var(--border-color);
@@ -95,17 +95,37 @@
             box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
         }
 
+        .btn-reset-data {
+            background: var(--bg-input); border: 1px solid var(--border-color); color: var(--text-secondary);
+            padding: 10px 14px; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 0.85rem;
+        }
+
+        .btn-reset-data:hover { border-color: var(--accent-red); color: var(--accent-red); }
+
         .control-panel {
             background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px;
             padding: 20px; margin-bottom: 20px; box-shadow: var(--shadow-sm);
             display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;
         }
 
-        .control-group { display: flex; flex-direction: column; gap: 8px; }
+        .control-group { display: flex; flex-direction: column; gap: 8px; position: relative; }
 
         .control-group label {
             font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
-            color: var(--text-secondary); display: flex; justify-content: space-between;
+            color: var(--text-secondary); display: flex; justify-content: space-between; align-items: center;
+        }
+
+        .info-tooltip-trigger {
+            cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+            width: 18px; height: 18px; border-radius: 50%; background: var(--bg-input);
+            border: 1px solid var(--border-color); color: var(--accent-blue); font-size: 0.75rem; font-weight: bold;
+        }
+
+        .tooltip-popup {
+            position: absolute; top: 28px; right: 0; left: 0; background: var(--bg-card);
+            border: 1px solid var(--border-color); border-radius: 12px; padding: 12px 14px;
+            font-size: 0.8rem; color: var(--text-primary); box-shadow: var(--shadow-md); z-index: 100;
+            display: none; text-transform: none; font-weight: normal; line-height: 1.4;
         }
 
         .control-group input[type="range"] {
@@ -140,6 +160,7 @@
 
         .collapsible-body {
             padding: 20px; display: none; flex-direction: column; align-items: center; gap: 16px;
+            width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch;
         }
 
         .collapsible-body.open { display: flex; }
@@ -173,7 +194,6 @@
         .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px; }
         .chart-header h3 { font-size: 1.1rem; color: var(--text-primary); }
 
-        /* Graphical Legend Styling */
         .chart-legend-graphical {
             display: flex; align-items: center; gap: 16px; background: var(--bg-input);
             border: 1px solid var(--border-color); padding: 6px 14px; border-radius: 20px;
@@ -181,22 +201,12 @@
         }
 
         .legend-item { display: flex; align-items: center; gap: 6px; }
-
-        .legend-badge {
-            display: inline-block; width: 16px; height: 12px; border-radius: 3px;
-        }
-
+        .legend-badge { display: inline-block; width: 16px; height: 12px; border-radius: 3px; }
         .legend-badge.gold-bar { background: var(--accent-gold); }
-        
-        .legend-badge.red-dashed {
-            background: transparent; border-bottom: 2px dashed var(--accent-red); height: 6px; width: 18px;
-        }
-
+        .legend-badge.red-dashed { background: transparent; border-bottom: 2px dashed var(--accent-red); height: 6px; width: 18px; }
         .legend-badge.cyan-line {
-            background: transparent; border-bottom: 2px solid var(--accent-cyan); height: 6px; width: 18px;
-            position: relative;
+            background: transparent; border-bottom: 2px solid var(--accent-cyan); height: 6px; width: 18px; position: relative;
         }
-
         .legend-badge.cyan-line::after {
             content: ''; position: absolute; width: 6px; height: 6px; background: var(--accent-cyan);
             border-radius: 50%; top: 3px; left: 6px;
@@ -232,13 +242,8 @@
             border-radius: 6px; font-weight: 600; font-size: 0.85rem; width: fit-content;
         }
 
-        .tech-pill.filler-sf {
-            border-color: #cbd5e1; background: var(--bg-input); color: var(--text-primary);
-        }
-
-        .tech-pill.filler-truck {
-            border-color: var(--accent-purple); background: rgba(168, 85, 247, 0.1); color: var(--accent-purple);
-        }
+        .tech-pill.filler-sf { border-color: #cbd5e1; background: var(--bg-input); color: var(--text-primary); }
+        .tech-pill.filler-truck { border-color: var(--accent-purple); background: rgba(168, 85, 247, 0.1); color: var(--accent-purple); }
 
         .badge-valor { background: rgba(22, 163, 74, 0.1); color: var(--accent-green); padding: 4px 8px; border-radius: 6px; font-weight: 600; }
         .badge-gold { background: rgba(217, 119, 6, 0.1); color: var(--accent-gold); padding: 4px 8px; border-radius: 6px; font-weight: 600; }
@@ -251,7 +256,6 @@
 
         .btn-edit-week:hover { background: var(--accent-gold); color: #fff; }
 
-        /* Centered Tree Modal */
         .modal-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.85);
             backdrop-filter: blur(8px); z-index: 1000; display: none; justify-content: center; align-items: center; padding: 20px;
@@ -262,30 +266,80 @@
         .modal-content {
             background: var(--bg-main); border: 1px solid var(--border-color); border-radius: 20px;
             width: 100%; max-width: 1350px; max-height: 94vh; display: flex; flex-direction: column;
-            overflow: hidden; box-shadow: var(--shadow-lg);
+            overflow: hidden; box-shadow: var(--shadow-lg); position: relative;
         }
 
         .modal-header {
             background: var(--bg-card); padding: 16px 24px; display: flex; justify-content: space-between;
-            align-items: center; border-bottom: 1px solid var(--border-color);
+            align-items: center; border-bottom: 1px solid var(--border-color); z-index: 110;
         }
 
-        .modal-inspector { display: flex; gap: 20px; font-size: 0.95rem; font-weight: 700; }
+        .sticky-queue-bar {
+            position: sticky; top: 0; background: var(--bg-card); border-bottom: 1px solid var(--border-color);
+            padding: 12px 24px; display: flex; flex-direction: column; gap: 10px; z-index: 100;
+            box-shadow: var(--shadow-sm);
+        }
 
-        .modal-body { padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 24px; align-items: center; }
+        .queue-metrics-bar {
+            display: flex; gap: 20px; font-size: 0.9rem; font-weight: 700; align-items: center;
+        }
 
-        .tree-grid-centered { display: flex; flex-direction: column; gap: 24px; width: 100%; align-items: center; }
+        .queue-items-list {
+            display: flex; gap: 8px; flex-wrap: wrap; align-items: center; min-height: 32px;
+        }
 
-        .tree-row-centered { display: flex; justify-content: center; align-items: center; gap: 24px; width: 100%; }
+        .queue-pill {
+            background: var(--accent-gold-light); border: 1px solid var(--accent-gold); color: var(--accent-gold);
+            padding: 4px 10px; border-radius: 8px; font-weight: 700; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        .queue-pill.non-t10 {
+            background: var(--bg-input); border-color: var(--text-secondary); color: var(--text-secondary);
+        }
+
+        .queue-pill .btn-remove-queue {
+            background: transparent; border: none; color: var(--accent-red); font-weight: bold; cursor: pointer;
+            font-size: 1rem; line-height: 1; padding: 0 2px;
+        }
+
+        .queue-pill .btn-remove-queue:hover { transform: scale(1.2); }
+
+        .modal-body {
+            padding: 24px; overflow-y: auto; overflow-x: auto; -webkit-overflow-scrolling: touch;
+            display: flex; flex-direction: column; gap: 24px; align-items: center; width: 100%;
+        }
+
+        .tree-grid-centered {
+            display: flex; flex-direction: column; gap: 24px; width: 100%; align-items: center;
+            overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 12px;
+        }
+
+        .tree-row-centered {
+            display: flex; justify-content: center; align-items: center; gap: 24px; width: max-content; min-width: 100%;
+        }
 
         .hedg-card {
             background: var(--bg-card); border: 2px solid var(--border-color); border-radius: 16px;
             width: 230px; padding: 16px 14px; display: flex; flex-direction: column; align-items: center;
-            justify-content: space-between; box-shadow: var(--shadow-sm); position: relative; min-height: 190px;
+            justify-content: space-between; box-shadow: var(--shadow-sm); position: relative; min-height: 210px;
+            flex-shrink: 0;
+        }
+
+        .hedg-card.non-t10-card {
+            opacity: 0.75; border-style: dashed; border-color: var(--text-secondary);
+        }
+
+        .hedg-card.non-t10-card:hover { opacity: 1.0; }
+
+        .tag-non-t10 {
+            background: var(--bg-input); border: 1px solid var(--border-color); color: var(--text-secondary);
+            font-size: 0.7rem; font-weight: 700; padding: 2px 6px; border-radius: 4px; margin-bottom: 4px;
+            text-transform: uppercase; letter-spacing: 0.5px;
         }
 
         .hedg-card.active-this-week {
-            border-color: var(--accent-gold); background: var(--accent-gold-light); box-shadow: 0 0 18px rgba(217, 119, 6, 0.35);
+            border-color: var(--accent-gold); background: var(--accent-gold-light); box-shadow: 0 0 18px rgba(217, 119, 6, 0.35); opacity: 1.0;
         }
 
         .hedg-card.completed-before {
@@ -293,8 +347,8 @@
         }
 
         .hedg-icon {
-            width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, #38bdf8, #0284c7);
-            display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 6px;
+            width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, #38bdf8, #0284c7);
+            display: flex; align-items: center; justify-content: center; font-size: 1.3rem; margin-bottom: 6px;
         }
 
         .hedg-title { font-size: 0.9rem; font-weight: 700; color: var(--text-primary); text-align: center; margin-bottom: 6px; line-height: 1.2; }
@@ -305,25 +359,52 @@
         .status-completed { color: var(--accent-green); }
         .status-blank { color: var(--text-secondary); }
 
-        .card-stepper { display: flex; align-items: center; gap: 6px; margin-top: 6px; }
+        .card-stepper {
+            display: flex; align-items: center; justify-content: center; gap: 4px; margin-top: 6px;
+        }
 
         .btn-step {
             background: var(--bg-input); border: 1px solid var(--border-color); color: var(--text-primary);
             width: 28px; height: 28px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 1.1rem;
-            display: flex; align-items: center; justify-content: center;
+            display: flex; align-items: center; justify-content: center; user-select: none;
         }
 
-        .btn-step:hover { background: var(--accent-gold); color: #fff; border-color: var(--accent-gold); }
+        .btn-step:hover {
+            background: var(--accent-gold); color: #ffffff; border-color: var(--accent-gold);
+        }
 
         .input-lvl-number {
-            width: 46px; background: var(--bg-input); border: 1px solid var(--border-color);
+            width: 44px; height: 28px; background: var(--bg-input); border: 1px solid var(--border-color);
             color: var(--text-primary); text-align: center; font-weight: 700; font-size: 0.9rem;
-            border-radius: 6px; padding: 4px 2px;
+            border-radius: 6px; padding: 2px;
+            -moz-appearance: textfield;
+        }
+
+        .input-lvl-number::-webkit-inner-spin-button,
+        .input-lvl-number::-webkit-outer-spin-button {
+            -webkit-appearance: none; margin: 0;
+        }
+
+        .lvl-max-label {
+            font-weight: 700; color: var(--text-secondary); font-size: 0.85rem; margin-left: 4px;
+        }
+
+        .select-level-dropdown {
+            width: 100%; background: var(--bg-input); border: 1px solid var(--border-color); color: var(--text-primary);
+            padding: 6px; border-radius: 8px; font-weight: 600; font-size: 0.82rem; cursor: pointer; margin-top: 6px;
+        }
+
+        .select-level-dropdown:hover { border-color: var(--accent-gold); }
+
+        .alert-toast {
+            position: absolute; top: 16px; left: 50%; transform: translateX(-50%);
+            background: var(--accent-red); color: #fff; padding: 10px 20px; border-radius: 10px;
+            font-weight: 700; font-size: 0.9rem; box-shadow: var(--shadow-lg); display: none; z-index: 200;
         }
 
         .modal-footer {
             background: var(--bg-card); padding: 16px 24px; display: flex; justify-content: flex-end; gap: 12px;
-            border-top: 1px solid var(--border-color);
+            border-top: 1px solid var(--border-color); z-index: 110;
         }
 
         .btn-close {
@@ -355,6 +436,7 @@
                     <button class="btn-preset active" id="btn-preset-t10-balanced" onclick="selectPreset('t10-balanced')">⚖️ Budget T10 Rush (600M Gold)</button>
                     <button class="btn-preset" id="btn-preset-t10-pure" onclick="selectPreset('t10-pure')">🚀 Pure T10 Rush (Uncapped)</button>
                     <button class="btn-preset" id="btn-preset-sf-full" onclick="selectPreset('sf-full')">⚔️ Full Special Forces Tree</button>
+                    <button class="btn-reset-data" onclick="resetAllSettings()" title="Reset all progress and custom week plans">↺ Reset Defaults</button>
                 </div>
             </div>
         </header>
@@ -377,11 +459,21 @@
             </div>
 
             <div class="control-group">
-                <label>Filler Strategy Preference</label>
+                <label>
+                    <span>Filler Strategy Preference</span>
+                    <span class="info-tooltip-trigger" onclick="toggleTooltip(event)" title="Click for strategy explanation">ℹ️</span>
+                </label>
+                <div class="tooltip-popup" id="tooltip-filler-info">
+                    <strong>💡 Filler Strategy Purpose:</strong><br>
+                    Maintains ~9,000 Valor Badges spent every Wednesday for maximum VS Day points while avoiding Gold limit bottlenecks.<br><br>
+                    • <strong>🚀 T10 Target Only:</strong> Disables filler padding (default).<br>
+                    • <strong>🚚 Truck First → SF:</strong> Uses Intercity Truck (0 Gold) first, then Non-T10 SF.<br>
+                    • <strong>⚔️ Non-T10 SF First:</strong> Uses cheaper Non-T10 SF levels (e.g. HP/Attack/Defense Boost Lvl 5-10) first.
+                </div>
                 <div class="radio-grid three-col">
-                    <div class="radio-card active" id="filler-truck-first" onclick="setFillerMode('truck-first')">🚚 Truck First → SF</div>
+                    <div class="radio-card active" id="filler-none" onclick="setFillerMode('none')">🚀 T10 Target Only</div>
+                    <div class="radio-card" id="filler-truck-first" onclick="setFillerMode('truck-first')">🚚 Truck First → SF</div>
                     <div class="radio-card" id="filler-sf-first" onclick="setFillerMode('sf-first')">⚔️ Non-T10 SF First</div>
-                    <div class="radio-card" id="filler-none" onclick="setFillerMode('none')">🚀 T10 Target Only</div>
                 </div>
             </div>
 
@@ -396,15 +488,15 @@
             </div>
         </div>
 
-        <!-- Collapsible Baseline Box -->
+        <!-- Collapsible Baseline Box with Touch Horizontal Scrolling -->
         <div class="collapsible-card">
             <div class="collapsible-header" onclick="toggleBaselineBox()">
-                <span>🎯 Initial Starting Progress (Key in or type your current levels for mid-way start)</span>
+                <span>🎯 Initial Special Forces Tech Progress</span>
                 <span id="baseline-arrow">▼ Expand</span>
             </div>
             <div class="collapsible-body" id="baseline-body">
                 <p style="font-size:0.85rem; color:var(--text-secondary); width:100%; text-align:center;">
-                    Type in or click +/- to set your current standing levels. Simulations begin from your exact mid-way research progress.
+                    Type in or click +/- to set your current standing levels up to full Special Forces limits (e.g. Lvl 10). Scroll left/right on mobile.
                 </p>
                 <div class="tree-grid-centered" id="baseline-tree-grid"></div>
             </div>
@@ -460,7 +552,7 @@
                         <th>Week</th>
                         <th>Valor Spent</th>
                         <th>Gold Spent</th>
-                        <th>Speedups Needed (VS Wed)</th>
+                        <th>Speedups Needed</th>
                         <th>T10 Target Techs Researched</th>
                         <th>Filler Tech Researched</th>
                         <th>Action</th>
@@ -474,18 +566,27 @@
     <!-- Centered Week Inspector Modal -->
     <div class="modal-overlay" id="tree-modal">
         <div class="modal-content">
+            <div class="alert-toast" id="alert-toast"></div>
+
             <div class="modal-header">
                 <h2 id="modal-title">🌳 Special Forces Tree — Week Inspector</h2>
-                <div class="modal-inspector">
-                    <span style="color:var(--accent-green)" id="modal-valor-spent">Valor: 0</span>
-                    <span style="color:var(--accent-gold)" id="modal-gold-spent">Gold: 0M</span>
-                    <span style="color:var(--accent-cyan)" id="modal-speed-spent">Speedups: 0d</span>
-                </div>
                 <button class="btn-close" onclick="closeModal()">✕</button>
             </div>
+
+            <!-- Sticky Top Queue Bar -->
+            <div class="sticky-queue-bar">
+                <div class="queue-metrics-bar">
+                    <span style="color:var(--accent-green)" id="modal-valor-spent">🛡️ Valor: 0</span>
+                    <span style="color:var(--accent-gold)" id="modal-gold-spent">💰 Gold: 0M</span>
+                    <span style="color:var(--accent-cyan)" id="modal-speed-spent">⚡ Speedups: 0d</span>
+                </div>
+                <div class="queue-items-list" id="modal-queue-items"></div>
+            </div>
+
             <div class="modal-body">
                 <div class="tree-grid-centered" id="modal-tree-grid"></div>
             </div>
+
             <div class="modal-footer">
                 <button class="btn-close" onclick="closeModal()">Cancel</button>
                 <button class="btn-save" onclick="saveModalOverrides()">Save Week Plan</button>
@@ -1147,25 +1248,99 @@
             preset: 't10-balanced',
             baseSpeed: 200,
             capitol: 'science',
-            fillerMode: 'truck-first',
+            fillerMode: 'none',
             valorTarget: 9000,
             goldCap: 600000000,
             activeWeek: 1,
             startingBaseline: {},
+            weeklyOverrides: {},
+            modalDraftQueue: [],
             cachedWeeks: []
         };
+
+        function saveStateToLocalStorage() {
+            try {
+                localStorage.setItem('lastwar_sf_state_v2', JSON.stringify({
+                    theme: state.theme,
+                    preset: state.preset,
+                    baseSpeed: state.baseSpeed,
+                    capitol: state.capitol,
+                    fillerMode: state.fillerMode,
+                    valorTarget: state.valorTarget,
+                    goldCap: state.goldCap,
+                    startingBaseline: state.startingBaseline,
+                    weeklyOverrides: state.weeklyOverrides
+                }));
+            } catch(e) {}
+        }
+
+        function loadStateFromLocalStorage() {
+            try {
+                let saved = localStorage.getItem('lastwar_sf_state_v2');
+                if (saved) {
+                    let parsed = JSON.parse(saved);
+                    state = Object.assign(state, parsed);
+                }
+            } catch(e) {}
+        }
+
+        function resetAllSettings() {
+            if (confirm("Reset all settings, starting baseline levels, and custom weekly plans to default?")) {
+                try { localStorage.removeItem('lastwar_sf_state_v2'); } catch(e) {}
+                location.reload();
+            }
+        }
+
+        function syncUIFromState() {
+            // Preset
+            document.querySelectorAll('.btn-preset').forEach(b => b.classList.remove('active'));
+            if (document.getElementById('btn-preset-' + state.preset)) {
+                document.getElementById('btn-preset-' + state.preset).classList.add('active');
+            }
+            // Sliders
+            document.getElementById('input-base-speed').value = state.baseSpeed;
+            document.getElementById('val-base-speed').innerText = state.baseSpeed + '%';
+            document.getElementById('input-valor-target').value = state.valorTarget;
+            document.getElementById('val-valor-target').innerText = '~' + state.valorTarget.toLocaleString() + '/wk';
+            document.getElementById('input-gold-cap').value = state.goldCap;
+            document.getElementById('val-gold-cap').innerText = (state.goldCap / 1e6).toFixed(0) + 'M Gold/wk';
+            // Capitol
+            document.querySelectorAll('.radio-grid .radio-card').forEach(r => r.classList.remove('active'));
+            if (document.getElementById('cap-' + state.capitol)) {
+                document.getElementById('cap-' + state.capitol).classList.add('active');
+            }
+            // Filler Mode
+            if (document.getElementById('filler-' + state.fillerMode)) {
+                document.querySelectorAll('#filler-truck-first, #filler-sf-first, #filler-none').forEach(r => r.classList.remove('active'));
+                document.getElementById('filler-' + state.fillerMode).classList.add('active');
+            }
+        }
 
         function setTheme(t) {
             state.theme = t;
             document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('btn-theme-' + t).classList.add('active');
+            if (document.getElementById('btn-theme-' + t)) {
+                document.getElementById('btn-theme-' + t).classList.add('active');
+            }
             let applyTheme = t;
             if (t === 'system') {
                 applyTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
             }
             document.documentElement.setAttribute('data-theme', applyTheme);
+            saveStateToLocalStorage();
             runSimulationAndRender();
         }
+
+        function toggleTooltip(evt) {
+            evt.stopPropagation();
+            let tt = document.getElementById('tooltip-filler-info');
+            tt.style.display = (tt.style.display === 'block') ? 'none' : 'block';
+        }
+
+        document.addEventListener('click', function() {
+            let tt = document.getElementById('tooltip-filler-info');
+            if (tt) tt.style.display = 'none';
+        });
 
         function parseTime(t_str) {
             if (!t_str) return 0;
@@ -1218,14 +1393,16 @@
         function setCapitol(cap) {
             state.capitol = cap;
             document.querySelectorAll('.radio-card').forEach(r => r.classList.remove('active'));
-            document.getElementById('cap-' + cap).classList.add('active');
+            if (document.getElementById('cap-' + cap)) document.getElementById('cap-' + cap).classList.add('active');
+            saveStateToLocalStorage();
             runSimulationAndRender();
         }
 
         function setFillerMode(mode) {
             state.fillerMode = mode;
             document.querySelectorAll('#filler-truck-first, #filler-sf-first, #filler-none').forEach(r => r.classList.remove('active'));
-            document.getElementById('filler-' + mode).classList.add('active');
+            if (document.getElementById('filler-' + mode)) document.getElementById('filler-' + mode).classList.add('active');
+            saveStateToLocalStorage();
             runSimulationAndRender();
         }
 
@@ -1238,15 +1415,24 @@
             document.getElementById('val-valor-target').innerText = '~' + state.valorTarget.toLocaleString() + '/wk';
             document.getElementById('val-gold-cap').innerText = (state.goldCap / 1e6).toFixed(0) + 'M Gold/wk';
 
+            saveStateToLocalStorage();
             runSimulationAndRender();
+        }
+
+        function showAlert(msg) {
+            let toast = document.getElementById('alert-toast');
+            toast.innerText = msg;
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 3500);
         }
 
         function runSimulationAndRender() {
             const treeData = (state.preset === 'sf-full') ? SF_DATA : T10_DATA;
             const fullSfTechs = {};
             SF_DATA.rows.forEach(r => r.elements.forEach(e => fullSfTechs[e.id] = e));
-            const t10TechIds = new Set();
-            T10_DATA.rows.forEach(r => r.elements.forEach(e => t10TechIds.add(e.id)));
+
+            let t10MaxMap = {};
+            T10_DATA.rows.forEach(r => r.elements.forEach(e => t10MaxMap[e.id] = e.maxLevel));
 
             const speedFactor = 1.0 + ((state.baseSpeed + getCapitolBoost()) / 100.0);
 
@@ -1284,37 +1470,45 @@
                 });
             });
 
-            // Build Non-T10 Special Forces Filler Nodes
+            // Build Comprehensive Non-T10 Special Forces Filler Nodes
             let nonT10SfNodes = {}, nonT10SfInDegree = {}, nonT10SfAdj = {};
             Object.keys(fullSfTechs).forEach(t_id => {
-                if (!t10TechIds.has(t_id)) {
-                    fullSfTechs[t_id].levels.forEach(lvl => {
+                let maxT10 = t10MaxMap[t_id] || 0;
+                fullSfTechs[t_id].levels.forEach(lvl => {
+                    if (lvl.level > maxT10) {
                         let key = 'sf_filler:' + t_id + ':' + lvl.level;
                         nonT10SfNodes[key] = {
                             key: key, tech_id: t_id, tech_name: fullSfTechs[t_id].name, level: lvl.level,
                             valor: lvl.valor || 0, gold: lvl.gold || 0, actual_time_sec: parseTime(lvl.researchTime) / speedFactor
                         };
                         nonT10SfInDegree[key] = 0; nonT10SfAdj[key] = [];
-                    });
-                }
+                    }
+                });
             });
+
             Object.keys(fullSfTechs).forEach(t_id => {
-                if (!t10TechIds.has(t_id)) {
-                    fullSfTechs[t_id].levels.forEach(lvl => {
+                let maxT10 = t10MaxMap[t_id] || 0;
+                fullSfTechs[t_id].levels.forEach(lvl => {
+                    if (lvl.level > maxT10) {
                         let key = 'sf_filler:' + t_id + ':' + lvl.level;
-                        if (lvl.level > 1) {
+                        if (lvl.level > maxT10 + 1) {
                             let parent = 'sf_filler:' + t_id + ':' + (lvl.level - 1);
                             if (nonT10SfNodes[parent]) { nonT10SfAdj[parent].push(key); nonT10SfInDegree[key]++; }
+                        } else if (maxT10 > 0 && lvl.level === maxT10 + 1) {
+                            let parentInT10 = t_id + ':' + maxT10;
+                            if (nodes[parentInT10]) {
+                                adj[parentInT10].push(key);
+                                nonT10SfInDegree[key]++;
+                            }
                         }
-                    });
-                }
+                    }
+                });
             });
 
             // Build Intercity Truck Nodes strictly for Extra Truck Rush
             let truckTechs = {};
             TRUCK_DATA.rows.forEach(r => r.elements.forEach(e => truckTechs[e.id] = e));
             let truckNodes = {}, truckInDegree = {}, truckAdj = {};
-            
             const extraTruckRushMax = {
                 'basic-goods': 5, 'attack-boost': 5, 'defense-boost': 5,
                 'rapid-transit': 5, 'plunder': 5, 'lucky': 5, 'extra-truck': 1
@@ -1373,7 +1567,10 @@
                     let key = t_id + ':' + l;
                     if (nodes[key]) {
                         completedSet.add(key);
-                        adj[key].forEach(c => { inDegree[c]--; });
+                        adj[key].forEach(c => {
+                            if (inDegree[c] !== undefined) inDegree[c]--;
+                            if (nonT10SfInDegree[c] !== undefined) nonT10SfInDegree[c]--;
+                        });
                     }
                 }
             });
@@ -1382,7 +1579,7 @@
             available.sort((a,b) => priority(a) - priority(b));
 
             let truckAvailable = Object.keys(truckInDegree).filter(k => truckInDegree[k] === 0);
-            let nonT10SfAvailable = Object.keys(nonT10SfInDegree).filter(k => nonT10SfInDegree[k] === 0);
+            let nonT10SfAvailable = Object.keys(nonT10SfInDegree).filter(k => nonT10SfInDegree[k] === 0 && !nonT10SfCompletedSet.has(k));
 
             let totalNodes = Object.keys(nodes).length;
             let weeks = [], currentWeek = 1, cumGold = 0, cumValor = 0, cumSpeedups = 0;
@@ -1401,107 +1598,139 @@
                 let wValor = 0, wGold = 0, wSpeedSec = 0;
                 let wTargetTechs = [], wFillerTechs = [];
 
-                while (available.length > 0) {
-                    let candIdx = -1;
-                    for (let i=0; i<available.length; i++) {
-                        let cand = nodes[available[i]];
-                        if ((wValor + cand.valor <= flexMaxValor) && (wGold + cand.gold <= state.goldCap)) {
-                            candIdx = i; break;
+                if (state.weeklyOverrides[currentWeek]) {
+                    let customItems = state.weeklyOverrides[currentWeek];
+                    customItems.forEach(item => {
+                        wValor += item.valor || 0;
+                        wGold += item.gold || 0;
+                        wSpeedSec += item.actual_time_sec || 0;
+                        let key = item.tech_id + ':' + item.level;
+                        if (item.tech_id.startsWith('truck:')) {
+                            wFillerTechs.push('🚚 ' + item.tech_name + ' Lvl ' + item.level);
+                            truckCompletedSet.add(key);
+                        } else if (state.preset === 'sf-full' || (t10MaxMap[item.tech_id] && item.level <= t10MaxMap[item.tech_id])) {
+                            wTargetTechs.push(item.tech_name + ' Lvl ' + item.level);
+                            completedSet.add(key);
+                            if (adj[key]) {
+                                adj[key].forEach(c => {
+                                    if (inDegree[c] !== undefined) { inDegree[c]--; if (inDegree[c] === 0) available.push(c); }
+                                    if (nonT10SfInDegree[c] !== undefined) { nonT10SfInDegree[c]--; if (nonT10SfInDegree[c] === 0) nonT10SfAvailable.push(c); }
+                                });
+                            }
+                        } else {
+                            wFillerTechs.push(item.tech_name + ' Lvl ' + item.level);
+                            nonT10SfCompletedSet.add(key);
                         }
-                    }
-                    if (candIdx === -1) break;
-
-                    let key = available.splice(candIdx, 1)[0];
-                    let n = nodes[key];
-                    wValor += n.valor; wGold += n.gold; wSpeedSec += n.actual_time_sec;
-                    
-                    if (state.preset === 'sf-full' || t10TechIds.has(n.tech_id)) {
-                        wTargetTechs.push(n.tech_name + ' Lvl ' + n.level);
-                    } else {
-                        wFillerTechs.push(n.tech_name + ' Lvl ' + n.level);
-                    }
-
-                    completedSet.add(key);
-                    adj[key].forEach(c => { inDegree[c]--; if (inDegree[c] === 0) available.push(c); });
+                    });
+                    available = Object.keys(inDegree).filter(k => inDegree[k] === 0 && !completedSet.has(k));
                     available.sort((a,b) => priority(a) - priority(b));
-                }
-
-                if (state.fillerMode !== 'none' && (wValor < 7000 || (wGold + 100000000 > state.goldCap && wValor < state.valorTarget))) {
-                    if (state.fillerMode === 'truck-first') {
-                        while (truckAvailable.length > 0 && wValor < state.valorTarget) {
-                            let candIdx = -1;
-                            for (let i=0; i<truckAvailable.length; i++) {
-                                let cand = truckNodes[truckAvailable[i]];
-                                if (wValor + cand.valor <= flexMaxValor) {
-                                    candIdx = i; break;
-                                }
+                    nonT10SfAvailable = Object.keys(nonT10SfInDegree).filter(k => nonT10SfInDegree[k] === 0 && !nonT10SfCompletedSet.has(k));
+                } else {
+                    while (available.length > 0) {
+                        let candIdx = -1;
+                        for (let i=0; i<available.length; i++) {
+                            let cand = nodes[available[i]];
+                            if ((wValor + cand.valor <= flexMaxValor) && (wGold + cand.gold <= state.goldCap)) {
+                                candIdx = i; break;
                             }
-                            if (candIdx === -1) break;
-
-                            let key = truckAvailable.splice(candIdx, 1)[0];
-                            let n = truckNodes[key];
-                            wValor += n.valor; wGold += n.gold; wSpeedSec += n.actual_time_sec;
-                            wFillerTechs.push('🚚 ' + n.tech_name + ' Lvl ' + n.level);
-                            truckCompletedSet.add(key);
-
-                            truckAdj[key].forEach(c => { truckInDegree[c]--; if (truckInDegree[c] === 0) truckAvailable.push(c); });
                         }
+                        if (candIdx === -1) break;
 
-                        while (nonT10SfAvailable.length > 0 && wValor < state.valorTarget) {
-                            let candIdx = -1;
-                            for (let i=0; i<nonT10SfAvailable.length; i++) {
-                                let cand = nonT10SfNodes[nonT10SfAvailable[i]];
-                                if ((wValor + cand.valor <= flexMaxValor) && (wGold + cand.gold <= state.goldCap)) {
-                                    candIdx = i; break;
-                                }
-                            }
-                            if (candIdx === -1) break;
-
-                            let key = nonT10SfAvailable.splice(candIdx, 1)[0];
-                            let n = nonT10SfNodes[key];
-                            wValor += n.valor; wGold += n.gold; wSpeedSec += n.actual_time_sec;
+                        let key = available.splice(candIdx, 1)[0];
+                        let n = nodes[key];
+                        wValor += n.valor; wGold += n.gold; wSpeedSec += n.actual_time_sec;
+                        
+                        if (state.preset === 'sf-full' || (t10MaxMap[n.tech_id] && n.level <= t10MaxMap[n.tech_id])) {
+                            wTargetTechs.push(n.tech_name + ' Lvl ' + n.level);
+                        } else {
                             wFillerTechs.push(n.tech_name + ' Lvl ' + n.level);
-                            nonT10SfCompletedSet.add(key);
-
-                            nonT10SfAdj[key].forEach(c => { nonT10SfInDegree[c]--; if (nonT10SfInDegree[c] === 0) nonT10SfAvailable.push(c); });
-                        }
-                    } else if (state.fillerMode === 'sf-first') {
-                        while (nonT10SfAvailable.length > 0 && wValor < state.valorTarget) {
-                            let candIdx = -1;
-                            for (let i=0; i<nonT10SfAvailable.length; i++) {
-                                let cand = nonT10SfNodes[nonT10SfAvailable[i]];
-                                if ((wValor + cand.valor <= flexMaxValor) && (wGold + cand.gold <= state.goldCap)) {
-                                    candIdx = i; break;
-                                }
-                            }
-                            if (candIdx === -1) break;
-
-                            let key = nonT10SfAvailable.splice(candIdx, 1)[0];
-                            let n = nonT10SfNodes[key];
-                            wValor += n.valor; wGold += n.gold; wSpeedSec += n.actual_time_sec;
-                            wFillerTechs.push(n.tech_name + ' Lvl ' + n.level);
-                            nonT10SfCompletedSet.add(key);
-
-                            nonT10SfAdj[key].forEach(c => { nonT10SfInDegree[c]--; if (nonT10SfInDegree[c] === 0) nonT10SfAvailable.push(c); });
                         }
 
-                        while (truckAvailable.length > 0 && wValor < state.valorTarget) {
-                            let candIdx = -1;
-                            for (let i=0; i<truckAvailable.length; i++) {
-                                let cand = truckNodes[truckAvailable[i]];
-                                if (wValor + cand.valor <= flexMaxValor) {
-                                    candIdx = i; break;
+                        completedSet.add(key);
+                        adj[key].forEach(c => {
+                            if (inDegree[c] !== undefined) { inDegree[c]--; if (inDegree[c] === 0) available.push(c); }
+                            if (nonT10SfInDegree[c] !== undefined) { nonT10SfInDegree[c]--; if (nonT10SfInDegree[c] === 0) nonT10SfAvailable.push(c); }
+                        });
+                        available.sort((a,b) => priority(a) - priority(b));
+                    }
+
+                    if (state.fillerMode !== 'none' && (wValor < 7000 || (wGold + 100000000 > state.goldCap && wValor < state.valorTarget))) {
+                        if (state.fillerMode === 'truck-first') {
+                            while (truckAvailable.length > 0 && wValor < state.valorTarget) {
+                                let candIdx = -1;
+                                for (let i=0; i<truckAvailable.length; i++) {
+                                    let cand = truckNodes[truckAvailable[i]];
+                                    if (wValor + cand.valor <= flexMaxValor) {
+                                        candIdx = i; break;
+                                    }
                                 }
+                                if (candIdx === -1) break;
+
+                                let key = truckAvailable.splice(candIdx, 1)[0];
+                                let n = truckNodes[key];
+                                wValor += n.valor; wGold += n.gold; wSpeedSec += n.actual_time_sec;
+                                wFillerTechs.push('🚚 ' + n.tech_name + ' Lvl ' + n.level);
+                                truckCompletedSet.add(key);
+
+                                truckAdj[key].forEach(c => { truckInDegree[c]--; if (truckInDegree[c] === 0) truckAvailable.push(c); });
                             }
-                            if (candIdx === -1) break;
 
-                            let key = truckAvailable.splice(candIdx, 1)[0];
-                            let n = truckNodes[key];
-                            wValor += n.valor; wGold += n.gold; wSpeedSec += n.actual_time_sec;
-                            wFillerTechs.push('🚚 ' + n.tech_name + ' Lvl ' + n.level);
-                            truckCompletedSet.add(key);
+                            while (nonT10SfAvailable.length > 0 && wValor < state.valorTarget) {
+                                let candIdx = -1;
+                                for (let i=0; i<nonT10SfAvailable.length; i++) {
+                                    let cand = nonT10SfNodes[nonT10SfAvailable[i]];
+                                    if ((wValor + cand.valor <= flexMaxValor) && (wGold + cand.gold <= state.goldCap)) {
+                                        candIdx = i; break;
+                                    }
+                                }
+                                if (candIdx === -1) break;
 
-                            truckAdj[key].forEach(c => { truckInDegree[c]--; if (truckInDegree[c] === 0) truckAvailable.push(c); });
+                                let key = nonT10SfAvailable.splice(candIdx, 1)[0];
+                                let n = nonT10SfNodes[key];
+                                wValor += n.valor; wGold += n.gold; wSpeedSec += n.actual_time_sec;
+                                wFillerTechs.push(n.tech_name + ' Lvl ' + n.level);
+                                nonT10SfCompletedSet.add(key);
+
+                                nonT10SfAdj[key].forEach(c => { nonT10SfInDegree[c]--; if (nonT10SfInDegree[c] === 0) nonT10SfAvailable.push(c); });
+                            }
+                        } else if (state.fillerMode === 'sf-first') {
+                            while (nonT10SfAvailable.length > 0 && wValor < state.valorTarget) {
+                                let candIdx = -1;
+                                for (let i=0; i<nonT10SfAvailable.length; i++) {
+                                    let cand = nonT10SfNodes[nonT10SfAvailable[i]];
+                                    if ((wValor + cand.valor <= flexMaxValor) && (wGold + cand.gold <= state.goldCap)) {
+                                        candIdx = i; break;
+                                    }
+                                }
+                                if (candIdx === -1) break;
+
+                                let key = nonT10SfAvailable.splice(candIdx, 1)[0];
+                                let n = nonT10SfNodes[key];
+                                wValor += n.valor; wGold += n.gold; wSpeedSec += n.actual_time_sec;
+                                wFillerTechs.push(n.tech_name + ' Lvl ' + n.level);
+                                nonT10SfCompletedSet.add(key);
+
+                                nonT10SfAdj[key].forEach(c => { nonT10SfInDegree[c]--; if (nonT10SfInDegree[c] === 0) nonT10SfAvailable.push(c); });
+                            }
+
+                            while (truckAvailable.length > 0 && wValor < state.valorTarget) {
+                                let candIdx = -1;
+                                for (let i=0; i<truckAvailable.length; i++) {
+                                    let cand = truckNodes[truckAvailable[i]];
+                                    if (wValor + cand.valor <= flexMaxValor) {
+                                        candIdx = i; break;
+                                    }
+                                }
+                                if (candIdx === -1) break;
+
+                                let key = truckAvailable.splice(candIdx, 1)[0];
+                                let n = truckNodes[key];
+                                wValor += n.valor; wGold += n.gold; wSpeedSec += n.actual_time_sec;
+                                wFillerTechs.push('🚚 ' + n.tech_name + ' Lvl ' + n.level);
+                                truckCompletedSet.add(key);
+
+                                truckAdj[key].forEach(c => { truckInDegree[c]--; if (truckInDegree[c] === 0) truckAvailable.push(c); });
+                            }
                         }
                     }
                 }
@@ -1630,7 +1859,6 @@
             let html = '';
             weeks.forEach(w => {
                 let goldStr = w.goldSpent >= 1e9 ? (w.goldSpent/1e9).toFixed(2) + 'B' : (w.goldSpent/1e6).toFixed(1) + 'M';
-                
                 let targetHtml = formatStackedTechPills(w.targetTechs, false) || '<em>None</em>';
                 let fillerColumnHtml = (w.fillerTechs && w.fillerTechs.length > 0) ? formatStackedTechPills(w.fillerTechs, true) : '<em>-</em>';
 
@@ -1649,7 +1877,7 @@
 
         function renderBaselineTree() {
             let grid = document.getElementById('baseline-tree-grid');
-            let treeData = (state.preset === 'sf-full') ? SF_DATA : T10_DATA;
+            let treeData = SF_DATA;
             let html = '';
             treeData.rows.forEach(r => {
                 html += `<div class="tree-row-centered">`;
@@ -1661,8 +1889,8 @@
                         <div class="card-stepper">
                             <button class="btn-step" onclick="adjustBaseline('${e.id}', -1)">-</button>
                             <input type="number" class="input-lvl-number" id="base-input-${e.id}" min="0" max="${e.maxLevel}" value="${curLvl}" onchange="typeBaseline('${e.id}', this.value, ${e.maxLevel})">
-                            <span style="font-weight:bold; color:var(--text-secondary)">/ ${e.maxLevel}</span>
                             <button class="btn-step" onclick="adjustBaseline('${e.id}', 1)">+</button>
+                            <span class="lvl-max-label">/ ${e.maxLevel}</span>
                         </div>
                     </div>`;
                 });
@@ -1673,20 +1901,23 @@
 
         function adjustBaseline(techId, delta) {
             let cur = state.startingBaseline[techId] || 0;
-            let treeData = (state.preset === 'sf-full') ? SF_DATA : T10_DATA;
             let maxLvl = 10;
-            treeData.rows.forEach(r => r.elements.forEach(e => { if (e.id === techId) maxLvl = e.maxLevel; }));
+            SF_DATA.rows.forEach(r => r.elements.forEach(e => { if (e.id === techId) maxLvl = e.maxLevel; }));
 
             let nextLvl = Math.max(0, Math.min(maxLvl, cur + delta));
             state.startingBaseline[techId] = nextLvl;
             renderBaselineTree();
+            saveStateToLocalStorage();
             runSimulationAndRender();
         }
 
         function typeBaseline(techId, valStr, maxLvl) {
             let val = parseInt(valStr) || 0;
-            let nextLvl = Math.max(0, Math.min(maxLvl, val));
+            let sfMax = maxLvl;
+            SF_DATA.rows.forEach(r => r.elements.forEach(e => { if (e.id === techId) sfMax = e.maxLevel; }));
+            let nextLvl = Math.max(0, Math.min(sfMax, val));
             state.startingBaseline[techId] = nextLvl;
+            saveStateToLocalStorage();
             runSimulationAndRender();
         }
 
@@ -1696,36 +1927,100 @@
             if (!weekData) return;
 
             document.getElementById('modal-title').innerText = `🌳 Special Forces Tree — Week ${weekNum} Inspector`;
-            document.getElementById('modal-valor-spent').innerText = `Valor: ${weekData.valorSpent.toLocaleString()}`;
-            document.getElementById('modal-gold-spent').innerText = `Gold: ${weekData.goldSpent >= 1e9 ? (weekData.goldSpent/1e9).toFixed(2) + 'B' : (weekData.goldSpent/1e6).toFixed(1) + 'M'}`;
-            document.getElementById('modal-speed-spent').innerText = `Speedups: ${weekData.speedupsDays.toFixed(1)}d (${(weekData.speedupsDays*24).toFixed(0)}h)`;
-
-            document.getElementById('tree-modal').classList.add('active');
-            let grid = document.getElementById('modal-tree-grid');
-            let treeData = (state.preset === 'sf-full') ? SF_DATA : T10_DATA;
+            
+            state.modalDraftQueue = [];
+            let speedFactor = 1.0 + ((state.baseSpeed + getCapitolBoost()) / 100.0);
+            
+            let fullTechs = {};
+            SF_DATA.rows.forEach(r => r.elements.forEach(e => fullTechs[e.id] = e));
 
             let allWeekTechs = [...(weekData.targetTechs || []), ...(weekData.fillerTechs || [])];
-            let thisWeekLevels = {};
             allWeekTechs.forEach(t => {
-                let parts = t.replace('🚚 ', '').split(' Lvl ');
+                let cleanName = t.replace('🚚 ', '');
+                let parts = cleanName.split(' Lvl ');
                 let name = parts[0], lvl = parseInt(parts[1]);
-                if (!thisWeekLevels[name]) thisWeekLevels[name] = [];
-                thisWeekLevels[name].push(lvl);
+                
+                let matchId = null, matchLvlObj = null;
+                Object.keys(fullTechs).forEach(tid => {
+                    if (fullTechs[tid].name === name) {
+                        matchId = tid;
+                        matchLvlObj = fullTechs[tid].levels.find(l => l.level === lvl);
+                    }
+                });
+
+                if (matchId && matchLvlObj) {
+                    state.modalDraftQueue.push({
+                        tech_id: matchId, tech_name: name, level: lvl,
+                        valor: matchLvlObj.valor || 0, gold: matchLvlObj.gold || 0,
+                        actual_time_sec: parseTime(matchLvlObj.researchTime) / speedFactor
+                    });
+                }
+            });
+
+            document.getElementById('tree-modal').classList.add('active');
+            renderModalQueueAndTree();
+        }
+
+        function renderModalQueueAndTree() {
+            let weekNum = state.activeWeek;
+            let weekData = state.cachedWeeks.find(w => w.week === weekNum);
+
+            let t10MaxMap = {};
+            T10_DATA.rows.forEach(r => r.elements.forEach(e => t10MaxMap[e.id] = e.maxLevel));
+
+            let dValor = 0, dGold = 0, dSpeedSec = 0;
+            state.modalDraftQueue.forEach(item => {
+                dValor += item.valor; dGold += item.gold; dSpeedSec += item.actual_time_sec;
+            });
+
+            document.getElementById('modal-valor-spent').innerText = `🛡️ Valor: ${dValor.toLocaleString()}`;
+            document.getElementById('modal-gold-spent').innerText = `💰 Gold: ${dGold >= 1e9 ? (dGold/1e9).toFixed(2) + 'B' : (dGold/1e6).toFixed(1) + 'M'}`;
+            let dDays = dSpeedSec / 86400;
+            document.getElementById('modal-speed-spent').innerText = `⚡ Speedups: ${dDays.toFixed(1)}d (${(dDays*24).toFixed(0)}h)`;
+
+            let queueContainer = document.getElementById('modal-queue-items');
+            if (state.modalDraftQueue.length === 0) {
+                queueContainer.innerHTML = '<span style="font-size:0.85rem; color:var(--text-secondary); font-style:italic;">No tech levels queued for Week ' + weekNum + '. Use dropdowns below to add levels.</span>';
+            } else {
+                let html = '';
+                state.modalDraftQueue.forEach((item, idx) => {
+                    let maxT10 = t10MaxMap[item.tech_id] || 0;
+                    let isT10Level = (item.level <= maxT10);
+                    let pillClass = isT10Level ? 'queue-pill' : 'queue-pill non-t10';
+                    let labelTag = isT10Level ? '' : ' <span style="font-size:0.75rem;opacity:0.85">(Non-T10 Required ⚙️)</span>';
+                    html += `<div class="${pillClass}">
+                        <span>${item.tech_name} Lvl ${item.level}${labelTag}</span>
+                        <button class="btn-remove-queue" onclick="removeFromModalQueue(${idx})">✕</button>
+                    </div>`;
+                });
+                queueContainer.innerHTML = html;
+            }
+
+            let grid = document.getElementById('modal-tree-grid');
+            let treeData = SF_DATA;
+
+            let queuedLevelsByTech = {};
+            state.modalDraftQueue.forEach(item => {
+                if (!queuedLevelsByTech[item.tech_id]) queuedLevelsByTech[item.tech_id] = [];
+                queuedLevelsByTech[item.tech_id].push(item.level);
             });
 
             let html = '';
             treeData.rows.forEach(r => {
                 html += `<div class="tree-row-centered">`;
                 r.elements.forEach(e => {
-                    let priorLvl = (weekData.priorTechState && weekData.priorTechState[e.id]) || 0;
-                    let researchedLvls = thisWeekLevels[e.name] || [];
+                    let maxT10Lvl = t10MaxMap[e.id] || 0;
+                    let priorLvl = (weekData && weekData.priorTechState && weekData.priorTechState[e.id]) || 0;
+                    let activeLvls = queuedLevelsByTech[e.id] || [];
 
                     let cardClass = 'hedg-card';
+                    if (maxT10Lvl === 0) cardClass += ' non-t10-card';
+
                     let statusHtml = '';
 
-                    if (researchedLvls.length > 0) {
+                    if (activeLvls.length > 0) {
                         cardClass += ' active-this-week';
-                        let minL = Math.min(...researchedLvls), maxL = Math.max(...researchedLvls);
+                        let minL = Math.min(...activeLvls), maxL = Math.max(...activeLvls);
                         let rangeStr = minL === maxL ? `Lvl ${minL}` : `Lvl ${minL} → ${maxL}`;
                         statusHtml = `<div class="hedg-status-text status-active">Researched Wk ${weekNum}:<br>${rangeStr}</div>`;
                     } else if (priorLvl >= e.maxLevel) {
@@ -1735,15 +2030,29 @@
                         statusHtml = `<div class="hedg-status-text status-blank">Level: ${priorLvl} / ${e.maxLevel}<br><span style="font-size:0.75rem;font-weight:normal">(Unchanged this wk)</span></div>`;
                     }
 
+                    let tagHtml = maxT10Lvl > 0 ? `<div style="font-size:0.7rem; font-weight:700; color:var(--accent-gold); margin-bottom:4px">T10 Target: Lvl 1-${maxT10Lvl}</div>` : `<div class="tag-non-t10">⚙️ Optional Non-T10 SF</div>`;
+
+                    let dropdownHtml = `<select class="select-level-dropdown" onchange="addLevelFromDropdown('${e.id}', this.value)">`;
+                    dropdownHtml += `<option value="">+ Add Level...</option>`;
+                    for (let l=1; l<=e.maxLevel; l++) {
+                        let isLevelT10Req = (l <= maxT10Lvl);
+                        if (l <= priorLvl) {
+                            dropdownHtml += `<option value="${l}" disabled>Lvl ${l} (Completed Wk <${weekNum})</option>`;
+                        } else if (activeLvls.includes(l)) {
+                            dropdownHtml += `<option value="${l}" disabled>Lvl ${l} (Queued Wk ${weekNum})</option>`;
+                        } else {
+                            let optLabel = isLevelT10Req ? `+ Add Level ${l} (T10 Target)` : `+ Add Level ${l} (Non-T10 Required ⚙️)`;
+                            dropdownHtml += `<option value="${l}">${optLabel}</option>`;
+                        }
+                    }
+                    dropdownHtml += `</select>`;
+
                     html += `<div class="${cardClass}">
+                        ${tagHtml}
                         <div class="hedg-icon">🛡️</div>
                         <div class="hedg-title">${e.name}</div>
                         ${statusHtml}
-                        <div class="card-stepper">
-                            <button class="btn-step" onclick="adjustWeekOverride('${e.id}', -1)">-</button>
-                            <span style="font-weight:bold">${priorLvl + researchedLvls.length} / ${e.maxLevel}</span>
-                            <button class="btn-step" onclick="adjustWeekOverride('${e.id}', 1)">+</button>
-                        </div>
+                        ${dropdownHtml}
                     </div>`;
                 });
                 html += `</div>`;
@@ -1751,9 +2060,63 @@
             grid.innerHTML = html;
         }
 
-        function adjustWeekOverride(techId, delta) {
-            runSimulationAndRender();
-            openModal(state.activeWeek);
+        function removeFromModalQueue(idx) {
+            state.modalDraftQueue.splice(idx, 1);
+            renderModalQueueAndTree();
+        }
+
+        function addLevelFromDropdown(techId, selectedLvlStr) {
+            if (!selectedLvlStr) return;
+            let targetLvl = parseInt(selectedLvlStr);
+            let techObj = null;
+            SF_DATA.rows.forEach(r => r.elements.forEach(e => { if (e.id === techId) techObj = e; }));
+            if (!techObj) return;
+
+            let lvlObj = techObj.levels.find(l => l.level === targetLvl);
+            if (!lvlObj) return;
+
+            let weekNum = state.activeWeek;
+            let weekData = state.cachedWeeks.find(w => w.week === weekNum);
+            let priorState = (weekData && weekData.priorTechState) || {};
+
+            if (targetLvl > 1) {
+                let currentMax = priorState[techId] || 0;
+                state.modalDraftQueue.forEach(item => {
+                    if (item.tech_id === techId && item.level > currentMax) currentMax = item.level;
+                });
+                if (currentMax < targetLvl - 1) {
+                    showAlert(`❌ Cannot add ${techObj.name} Lvl ${targetLvl}: Requires Lvl ${targetLvl - 1} first!`);
+                    renderModalQueueAndTree();
+                    return;
+                }
+            }
+
+            if (lvlObj.requirements) {
+                for (let req of lvlObj.requirements) {
+                    let reqTechId = req.elementId;
+                    let reqMinLvl = req.minLevel || 1;
+                    let currentReqMax = priorState[reqTechId] || 0;
+                    state.modalDraftQueue.forEach(item => {
+                        if (item.tech_id === reqTechId && item.level > currentReqMax) currentReqMax = item.level;
+                    });
+                    if (currentReqMax < reqMinLvl) {
+                        let reqTechName = reqTechId;
+                        SF_DATA.rows.forEach(r => r.elements.forEach(e => { if (e.id === reqTechId) reqTechName = e.name; }));
+                        showAlert(`❌ Cannot add ${techObj.name} Lvl ${targetLvl}: Requires ${reqTechName} Lvl ${reqMinLvl} (currently Lvl ${currentReqMax})!`);
+                        renderModalQueueAndTree();
+                        return;
+                    }
+                }
+            }
+
+            let speedFactor = 1.0 + ((state.baseSpeed + getCapitolBoost()) / 100.0);
+            state.modalDraftQueue.push({
+                tech_id: techId, tech_name: techObj.name, level: targetLvl,
+                valor: lvlObj.valor || 0, gold: lvlObj.gold || 0,
+                actual_time_sec: parseTime(lvlObj.researchTime) / speedFactor
+            });
+
+            renderModalQueueAndTree();
         }
 
         function closeModal() {
@@ -1761,12 +2124,16 @@
         }
 
         function saveModalOverrides() {
+            state.weeklyOverrides[state.activeWeek] = [...state.modalDraftQueue];
             closeModal();
+            saveStateToLocalStorage();
             runSimulationAndRender();
         }
 
         window.onload = function() {
-            setTheme('light');
+            loadStateFromLocalStorage();
+            syncUIFromState();
+            setTheme(state.theme || 'light');
         };
     </script>
 </body>
