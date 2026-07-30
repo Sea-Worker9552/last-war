@@ -554,6 +554,18 @@
             -webkit-appearance: none; margin: 0;
         }
 
+    
+        .badge-milestone-t10 {
+            background: rgba(217, 119, 6, 0.2); color: var(--accent-gold); border: 1.5px solid var(--accent-gold);
+            padding: 4px 10px; border-radius: 8px; font-weight: 700; font-size: 0.82rem;
+            display: inline-flex; align-items: center; gap: 4px; box-shadow: 0 2px 8px rgba(217, 119, 6, 0.25);
+        }
+        .badge-milestone-sf {
+            background: rgba(16, 185, 129, 0.2); color: var(--accent-green); border: 1.5px solid var(--accent-green);
+            padding: 4px 10px; border-radius: 8px; font-weight: 700; font-size: 0.82rem;
+            display: inline-flex; align-items: center; gap: 4px; box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+        }
+
     </style>
 </head>
 <body>
@@ -6489,6 +6501,17 @@
 
             let totalNodes = Object.keys(nodes).length;
             let weeks = [], currentWeek = 1, cumGold = 0, cumValor = 0, cumSpeedups = 0;
+            let t10UnlockedWeek = null, sfCompletedWeek = null;
+            
+            // Build set of required T10 target node keys
+            let requiredT10Keys = new Set();
+            Object.keys(t10MaxMap).forEach(tid => {
+                let maxLvl = t10MaxMap[tid];
+                for (let l = 1; l <= maxLvl; l++) {
+                    requiredT10Keys.add(tid + ':' + l);
+                }
+            });
+            let totalSfNodeCount = 221;
 
             while (completedSet.size < totalNodes && currentWeek <= 100) {
                 let saveConfig = state.saveWeeks[currentWeek] || { enabled: false };
@@ -6551,10 +6574,21 @@
                     // Primary Target Research Execution
                     while (available.length > 0) {
                         let candIdx = -1;
+                        // First pass: Prioritize T10 target techs first
                         for (let i=0; i<available.length; i++) {
                             let cand = nodes[available[i]];
-                            if ((wValor + cand.valor <= effectiveValorCap) && (wGold + cand.gold <= effectiveGoldCap)) {
+                            let isT10 = (t10MaxMap[cand.tech_id] && cand.level <= t10MaxMap[cand.tech_id]);
+                            if (isT10 && (wValor + cand.valor <= effectiveValorCap) && (wGold + cand.gold <= effectiveGoldCap)) {
                                 candIdx = i; break;
+                            }
+                        }
+                        // Second pass: If no T10 target fits budget, take any available candidate (non-T10 SF)
+                        if (candIdx === -1) {
+                            for (let i=0; i<available.length; i++) {
+                                let cand = nodes[available[i]];
+                                if ((wValor + cand.valor <= effectiveValorCap) && (wGold + cand.gold <= effectiveGoldCap)) {
+                                    candIdx = i; break;
+                                }
                             }
                         }
                         if (candIdx === -1) break;
@@ -6685,6 +6719,25 @@
 
                 cumGold += wGold; cumValor += wValor; cumSpeedups += (wSpeedSec / 86400);
 
+                // Check T10 unlock milestone
+                if (!t10UnlockedWeek) {
+                    let isT10Done = true;
+                    for (let reqKey of requiredT10Keys) {
+                        if (!completedSet.has(reqKey)) { isT10Done = false; break; }
+                    }
+                    if (isT10Done) t10UnlockedWeek = currentWeek;
+                }
+
+                // Check SF completion milestone
+                if (!sfCompletedWeek) {
+                    let totalDone = 0;
+                    if (state.startingBaseline) {
+                        Object.keys(state.startingBaseline).forEach(k => totalDone += state.startingBaseline[k] || 0);
+                    }
+                    totalDone += completedSet.size;
+                    if (totalDone >= totalSfNodeCount) sfCompletedWeek = currentWeek;
+                }
+
                 weeks.push({
                     week: currentWeek, valorSpent: wValor, targetValor: wTargetValor, fillerValor: wFillerValor, goldSpent: wGold, speedupsDays: wSpeedSec / 86400,
                     isFlexOvercap: (!isSaveWeek && wGold > state.goldCap),
@@ -6698,6 +6751,8 @@
             }
 
             state.cachedWeeks = weeks;
+            state.t10UnlockedWeek = t10UnlockedWeek;
+            state.sfCompletedWeek = sfCompletedWeek;
 
             document.getElementById('kpi-weeks').innerText = weeks.length + ' Weeks';
             document.getElementById('kpi-months').innerText = '~' + (weeks.length/4.33).toFixed(1) + ' Months';
@@ -6736,7 +6791,7 @@
 
             let barW = Math.max(8, (svgW - 120) / weeks.length - 4);
             
-            // Gold limit dashed line (Scaled to 65% Zone)
+            // Gold limit dashed line
             let capY = svgH - 35 - ((state.goldCap / maxGold) * 125);
             let goldCapLabel = (state.goldCap >= 1e9) ? (state.goldCap / 1e9).toFixed(1) + 'B' : (state.goldCap / 1e6).toFixed(0) + 'M';
             html += `<line x1="55" y1="${capY}" x2="${svgW-55}" y2="${capY}" stroke="#dc2626" stroke-width="2" stroke-dasharray="6" />`;
@@ -6745,8 +6800,6 @@
             let speedPoints = [];
             weeks.forEach((w, idx) => {
                 let x = 65 + idx * ((svgW - 120) / weeks.length);
-                
-                // Gold Bars: Scaled to 65% max height (125px) for clean headroom above bars
                 let barH = (w.goldSpent / maxGold) * 125;
                 let barY = svgH - 35 - barH;
 
@@ -6757,12 +6810,10 @@
                           onmouseover="showTooltip(event, ${w.week}, '${(w.goldSpent/1e6).toFixed(1)}M Gold', '${w.speedupsDays.toFixed(1)} Days (${(w.speedupsDays*24).toFixed(0)}h)', '${w.valorSpent.toLocaleString()} Badges')"
                           onmouseout="hideTooltip()"></rect>`;
 
-                // Gold Bar Text: Placed inside top of bar (or above if bar is very short)
                 let textY = barH > 22 ? barY + 14 : barY - 4;
                 let textFill = barH > 22 ? "#ffffff" : barColor;
                 html += `<text x="${x + barW/2}" y="${textY}" text-anchor="middle" fill="${textFill}" font-size="9" font-weight="bold">${goldStr}</text>`;
 
-                // Speedups Line: Scaled to 85% max height (163px) floating cleanly above bars
                 let speedY = svgH - 35 - ((w.speedupsDays / maxSpeed) * 163);
                 speedPoints.push({ x: x + barW/2, y: speedY, days: w.speedupsDays.toFixed(1) });
 
@@ -6775,13 +6826,30 @@
             let polyPts = speedPoints.map(p => `${p.x},${p.y}`).join(' ');
             html += `<polyline points="${polyPts}" fill="none" stroke="#0891b2" stroke-width="3" />`;
 
-            // Draw Speedup Node Dots and Headroom Labels (strictly above nodes)
             speedPoints.forEach(p => {
                 html += `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#0891b2" />`;
                 if (weeks.length <= 18) {
                     html += `<text x="${p.x}" y="${p.y - 8}" text-anchor="middle" fill="#0891b2" font-size="9" font-weight="bold">${p.days}d</text>`;
                 }
             });
+
+            // Draw Vertical Milestone Line & Badge for T10 Unlock
+            if (state.t10UnlockedWeek && state.t10UnlockedWeek <= weeks.length) {
+                let mIdx = state.t10UnlockedWeek - 1;
+                let mX = 65 + mIdx * ((svgW - 120) / weeks.length) + barW;
+                html += `<line x1="${mX}" y1="20" x2="${mX}" y2="${svgH-35}" stroke="#d97706" stroke-width="2.5" stroke-dasharray="4" />`;
+                html += `<rect x="${mX - 52}" y="4" width="104" height="20" fill="#d97706" rx="4" />`;
+                html += `<text x="${mX}" y="18" text-anchor="middle" fill="#ffffff" font-size="10" font-weight="bold">🎖️ T10 UNLOCKED!</text>`;
+            }
+
+            // Draw Vertical Milestone Line & Badge for SF Tree Completion (if full SF preset or different week)
+            if (state.preset === 'sf-full' && state.sfCompletedWeek && state.sfCompletedWeek <= weeks.length && state.sfCompletedWeek !== state.t10UnlockedWeek) {
+                let mIdx = state.sfCompletedWeek - 1;
+                let mX = 65 + mIdx * ((svgW - 120) / weeks.length) + barW;
+                html += `<line x1="${mX}" y1="20" x2="${mX}" y2="${svgH-35}" stroke="#10b981" stroke-width="2.5" stroke-dasharray="4" />`;
+                html += `<rect x="${mX - 52}" y="4" width="104" height="20" fill="#10b981" rx="4" />`;
+                html += `<text x="${mX}" y="18" text-anchor="middle" fill="#ffffff" font-size="10" font-weight="bold">⚔️ SF COMPLETE!</text>`;
+            }
 
             html += `</svg>`;
             container.innerHTML = html;
@@ -6807,7 +6875,7 @@
 
             let barW = Math.max(8, (svgW - 120) / weeks.length - 4);
             
-            // Draw Dashed Target Threshold Line with Attached Dynamic Label
+            // Draw Dashed Target Threshold Line
             let targetY = svgH - 35 - ((state.valorTarget / maxValor) * 176);
             let valorLineColor = '#a855f7';
             html += `<line x1="55" y1="${targetY}" x2="${svgW-55}" y2="${targetY}" stroke="${valorLineColor}" stroke-width="2" stroke-dasharray="6" />`;
@@ -6823,18 +6891,13 @@
                 let fillerYPos = targetYPos - fillerH;
 
                 let valorStr = w.valorSpent.toLocaleString();
-                let tooltipText = `Week ${w.week}: ${valorStr} Total Valor
-🎯 T10 Target: ${(w.targetValor||0).toLocaleString()}
-📦 Non-T10 / Filler: ${(w.fillerValor||0).toLocaleString()}`;
 
-                // Bottom Stack: T10 Target Valor (Vibrant Green)
                 if (targetH > 0) {
                     html += `<rect x="${x}" y="${targetYPos}" width="${barW}" height="${targetH}" fill="#16a34a" rx="${fillerH > 0 ? 0 : 3}" opacity="0.9"
                               onmouseover="showValorTooltip(event, ${w.week}, '${valorStr}', '${(w.targetValor||0).toLocaleString()}', '${(w.fillerValor||0).toLocaleString()}', '${(w.goldSpent/1e6).toFixed(1)}M', '${w.speedupsDays.toFixed(1)}d')"
                               onmouseout="hideValorTooltip()"></rect>`;
                 }
 
-                // Top Stack: Non-T10 / Filler Valor (Vibrant Cyan)
                 if (fillerH > 0) {
                     html += `<rect x="${x}" y="${fillerYPos}" width="${barW}" height="${fillerH}" fill="#0891b2" rx="3" opacity="0.9"
                               onmouseover="showValorTooltip(event, ${w.week}, '${valorStr}', '${(w.targetValor||0).toLocaleString()}', '${(w.fillerValor||0).toLocaleString()}', '${(w.goldSpent/1e6).toFixed(1)}M', '${w.speedupsDays.toFixed(1)}d')"
@@ -6849,6 +6912,24 @@
                     html += `<text x="${x + barW/2}" y="${svgH-12}" text-anchor="middle" fill="${textColor}" font-size="10">W${w.week}</text>`;
                 }
             });
+
+            // Draw Vertical Milestone Line & Badge for T10 Unlock
+            if (state.t10UnlockedWeek && state.t10UnlockedWeek <= weeks.length) {
+                let mIdx = state.t10UnlockedWeek - 1;
+                let mX = 65 + mIdx * ((svgW - 120) / weeks.length) + barW;
+                html += `<line x1="${mX}" y1="20" x2="${mX}" y2="${svgH-35}" stroke="#d97706" stroke-width="2.5" stroke-dasharray="4" />`;
+                html += `<rect x="${mX - 52}" y="4" width="104" height="20" fill="#d97706" rx="4" />`;
+                html += `<text x="${mX}" y="18" text-anchor="middle" fill="#ffffff" font-size="10" font-weight="bold">🎖️ T10 UNLOCKED!</text>`;
+            }
+
+            // Draw Vertical Milestone Line & Badge for SF Tree Completion
+            if (state.preset === 'sf-full' && state.sfCompletedWeek && state.sfCompletedWeek <= weeks.length && state.sfCompletedWeek !== state.t10UnlockedWeek) {
+                let mIdx = state.sfCompletedWeek - 1;
+                let mX = 65 + mIdx * ((svgW - 120) / weeks.length) + barW;
+                html += `<line x1="${mX}" y1="20" x2="${mX}" y2="${svgH-35}" stroke="#10b981" stroke-width="2.5" stroke-dasharray="4" />`;
+                html += `<rect x="${mX - 52}" y="4" width="104" height="20" fill="#10b981" rx="4" />`;
+                html += `<text x="${mX}" y="18" text-anchor="middle" fill="#ffffff" font-size="10" font-weight="bold">⚔️ SF COMPLETE!</text>`;
+            }
 
             html += `</svg>`;
             container.innerHTML = html;
@@ -6949,6 +7030,22 @@
                         ${saveIndicatorHtml}
                     </td>
                 </tr>`;
+                
+                if (w.week === state.t10UnlockedWeek) {
+                    html += `<tr style="background:rgba(217, 119, 6, 0.08); border-bottom:2px solid var(--accent-gold)">
+                        <td colspan="7" style="padding:8px 16px; text-align:center;">
+                            <span class="badge-milestone-t10">🎖️ MILESTONE REACHED IN WEEK ${w.week}: T10 TROOPS UNLOCKED! (UNIT X RESEARCH COMPLETE)</span>
+                        </td>
+                    </tr>`;
+                }
+                
+                if (state.preset === 'sf-full' && w.week === state.sfCompletedWeek && w.week !== state.t10UnlockedWeek) {
+                    html += `<tr style="background:rgba(16, 185, 129, 0.08); border-bottom:2px solid var(--accent-green)">
+                        <td colspan="7" style="padding:8px 16px; text-align:center;">
+                            <span class="badge-milestone-sf">⚔️ MILESTONE REACHED IN WEEK ${w.week}: 100% SPECIAL FORCES TECH TREE COMPLETED! (221/221)</span>
+                        </td>
+                    </tr>`;
+                }
             });
             tbody.innerHTML = html;
         }
