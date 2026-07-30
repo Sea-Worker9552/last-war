@@ -6544,7 +6544,46 @@
 
             let rowMap = {};
             treeData.rows.forEach((r, idx) => r.elements.forEach(e => rowMap[e.id] = idx + 1));
-            function priority(k) { return (rowMap[nodes[k].tech_id] || 99)*100 + nodes[k].level; }
+            function priority(k) {
+                let tid = nodes[k].tech_id;
+                let lvl = nodes[k].level;
+
+                // 3 Gateway Mapping: Gateway ID -> [Child IDs]
+                let gateways = {
+                    'advanced-protection-1': ['defense-training-7', 'weapon-training-7', 'advanced-armor-7'],
+                    'morale': ['defense-training-8', 'weapon-training-8', 'advanced-armor-8'],
+                    'advanced-protection': ['hp-boost-3', 'attack-boost-3', 'defense-boost-3']
+                };
+
+                let childMap = {
+                    'defense-training-7': ['advanced-protection-1', 1],
+                    'weapon-training-7': ['advanced-protection-1', 2],
+                    'advanced-armor-7': ['advanced-protection-1', 3],
+
+                    'defense-training-8': ['morale', 1],
+                    'weapon-training-8': ['morale', 2],
+                    'advanced-armor-8': ['morale', 3],
+
+                    'hp-boost-3': ['advanced-protection', 1],
+                    'attack-boost-3': ['advanced-protection', 2],
+                    'defense-boost-3': ['advanced-protection', 3]
+                };
+
+                // Gateway Node: Priority = (Gateway Row * 100000) + ((level - 1) * 10) + 0
+                if (gateways[tid]) {
+                    return (rowMap[tid] * 100000) + ((lvl - 1) * 10) + 0;
+                }
+
+                // Child Node: Priority = (Gateway Row * 100000) + (level * 10) + order
+                if (childMap[tid]) {
+                    let gId = childMap[tid][0];
+                    let order = childMap[tid][1];
+                    return (rowMap[gId] * 100000) + (lvl * 10) + order;
+                }
+
+                // Standard Node
+                return (rowMap[tid] || 99) * 100000 + (lvl * 10);
+            }
 
             let completedSet = new Set();
             let truckCompletedSet = new Set();
@@ -6756,15 +6795,15 @@
 
                     // Filler Research Execution: Dynamically evaluate 40% SF threshold per week
                     let fillerTargetValor = isSaveWeek ? effectiveValorCap : state.valorTarget;
-                    let currentSfDoneCount = completedSet.size;
-                    let isSf40DoneThisWeek = (currentSfDoneCount >= 89);
+                    let initialSfCount = (typeof getInitialSfCompletedCount === 'function') ? getInitialSfCompletedCount() : (state.initialSfProgress || 0);
+                    let checkSf40Unlocked = () => (initialSfCount + completedSet.size >= 89);
 
                     if (state.fillerMasterEnabled && (wValor < fillerTargetValor * 0.8 || (wGold + 100000000 > strictGoldCap && wValor < fillerTargetValor))) {
                         for (let opt of state.fillerOptions) {
                             if (!opt.enabled) continue;
                             
                             // If this option requires 40% SF research, check if 89+ levels are completed as of this week
-                            if (opt.requiresSf40 && !isSf40DoneThisWeek) continue;
+                            if (opt.requiresSf40 && !checkSf40Unlocked()) continue;
 
                             if (opt.id === 'truck') {
                                 while (truckAvailable.length > 0 && wValor < fillerTargetValor) {
