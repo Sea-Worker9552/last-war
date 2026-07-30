@@ -566,6 +566,31 @@
             display: inline-flex; align-items: center; gap: 4px; box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
         }
 
+    
+        .filler-item-row[draggable="true"] {
+            cursor: grab; user-select: none; transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .filler-item-row[draggable="true"]:active {
+            cursor: grabbing;
+        }
+
+        .filler-item-row.dragging {
+            opacity: 0.45; border: 2px dashed var(--accent-gold) !important; background: var(--bg-card) !important;
+        }
+
+        .filler-item-row.drag-over {
+            border: 2px solid var(--accent-gold) !important; background: var(--accent-gold-light) !important;
+            transform: scale(1.01);
+        }
+
+        .drag-grip-handle {
+            cursor: grab; font-size: 1.1rem; color: var(--text-secondary); margin-right: 8px;
+            display: inline-flex; align-items: center; user-select: none;
+        }
+
+        .drag-grip-handle:hover { color: var(--accent-gold); }
+
     </style>
 </head>
 <body>
@@ -618,7 +643,7 @@
                     </div>
                 </div>
 
-                <!-- Box 3: Weekly Valor Target -->
+                <!-- Box 3: Weekly Valor Target with Embedded Flex Buffer -->
                 <div class="control-box">
                     <label>
                         <span>🎯 Weekly Valor Target:</span>
@@ -628,18 +653,36 @@
                         </div>
                     </label>
                     <input type="range" id="input-valor-target" min="1000" max="25000" step="250" value="9000" oninput="syncValorFromSlider(this.value)">
+
+                    <!-- Embedded Valor Flex Buffer Sub-Control -->
+                    <div style="border-top:1px dashed var(--border-color); padding-top:8px; margin-top:4px;">
+                        <label style="font-size:0.75rem; margin-bottom:6px;">
+                            <span>⚡ Valor Target Flex Buffer (+10%)</span>
+                            <span class="info-tooltip-wrap">
+                                <span class="info-tooltip-trigger">ℹ️</span>
+                                <div class="tooltip-box">
+                                    <strong>💡 Smart Valor Flex Buffer (+10%):</strong><br>
+                                    Allows exceeding your weekly Valor target by up to 10% (e.g. 9,900 instead of 9,000) if doing so completes an extra prerequisite level or unlocks key tech for the following week!
+                                </div>
+                            </span>
+                        </label>
+                        <div class="radio-grid">
+                            <div class="radio-card" id="valorflex-strict" onclick="setValorFlex('strict')">🛑 Strict (0%)</div>
+                            <div class="radio-card active" id="valorflex-flex" onclick="setValorFlex('flex')">⚡ Flex (+10%)</div>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Box 4: Weekly Gold Limit (In Millions) with Embedded Flex Buffer -->
+                <!-- Box 4: Weekly Gold Limit (in Millions) with Embedded Flex Buffer -->
                 <div class="control-box">
                     <label>
                         <span>💰 Gold Limit (Millions):</span>
                         <div style="display:flex; align-items:center; gap:4px; white-space:nowrap;">
-                            <input type="number" class="control-num-input" id="input-num-gold-cap" min="50" max="3000" step="25" value="600" style="color:var(--accent-gold)" oninput="syncGoldFromNumber(this.value)">
+                            <input type="number" class="control-num-input" id="input-num-gold-cap" min="50" max="5000" step="25" value="600" style="color:var(--accent-gold)" oninput="syncGoldFromNumber(this.value)">
                             <span style="font-weight:700; color:var(--accent-gold); font-size:0.8rem; white-space:nowrap;">M Gold/wk</span>
                         </div>
                     </label>
-                    <input type="range" id="input-gold-cap" min="50" max="3000" step="25" value="600" oninput="syncGoldFromSlider(this.value)">
+                    <input type="range" id="input-gold-cap" min="50" max="5000" step="25" value="600" oninput="syncGoldFromSlider(this.value)">
 
                     <!-- Embedded Gold Flex Buffer Sub-Control -->
                     <div style="border-top:1px dashed var(--border-color); padding-top:8px; margin-top:4px;">
@@ -5649,6 +5692,7 @@
             baseSpeed: 200,
             capitol: 'science',
             goldFlex: 'strict',
+            valorFlex: 'flex',
             valorTarget: 9000,
             goldCap: 600000000,
             activeWeek: 1,
@@ -5767,6 +5811,7 @@
         }
 
         function saveStateToLocalStorage() {
+            saveCurrentToPresetMemory();
             try {
                 localStorage.setItem('lastwar_sf_state_v7', JSON.stringify({
                     theme: state.theme,
@@ -5889,10 +5934,17 @@
                     </div>`;
                 }
 
-                html += `<div class="filler-item-row" style="flex-wrap:wrap;">
-                    <div class="filler-item-left" style="flex:1;">
+                html += `<div class="filler-item-row" draggable="true"
+                        ondragstart="onFillerDragStart(event, ${idx})"
+                        ondragover="onFillerDragOver(event, ${idx})"
+                        ondragleave="onFillerDragLeave(event)"
+                        ondrop="onFillerDrop(event, ${idx})"
+                        ondragend="onFillerDragEnd(event)"
+                        style="flex-wrap:wrap;">
+                    <div class="filler-item-left" style="flex:1; display:flex; align-items:center;">
+                        <span class="drag-grip-handle" title="Drag to reorder priority">⣿</span>
                         <input type="checkbox" id="chk-filler-${opt.id}" ${isChecked} onchange="toggleFillerOption('${opt.id}', this.checked)">
-                        <label for="chk-filler-${opt.id}" style="cursor:pointer; display:flex; align-items:center; gap:8px; flex-wrap:wrap">
+                        <label for="chk-filler-${opt.id}" style="cursor:pointer; display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-left:6px;">
                             <span>Priority ${idx + 1}: <strong>${opt.label}</strong></span>
                             ${lockNote}
                         </label>
@@ -5912,6 +5964,46 @@
             if (opt) opt.enabled = isChecked;
             saveStateToLocalStorage();
             runSimulationAndRender();
+        }
+
+        
+        let draggedFillerIdx = null;
+
+        function onFillerDragStart(evt, idx) {
+            draggedFillerIdx = idx;
+            evt.dataTransfer.effectAllowed = 'move';
+            evt.dataTransfer.setData('text/plain', idx);
+            evt.currentTarget.classList.add('dragging');
+        }
+
+        function onFillerDragOver(evt, idx) {
+            evt.preventDefault();
+            evt.dataTransfer.dropEffect = 'move';
+            if (draggedFillerIdx !== null && draggedFillerIdx !== idx) {
+                evt.currentTarget.classList.add('drag-over');
+            }
+        }
+
+        function onFillerDragLeave(evt) {
+            evt.currentTarget.classList.remove('drag-over');
+        }
+
+        function onFillerDrop(evt, targetIdx) {
+            evt.preventDefault();
+            evt.currentTarget.classList.remove('drag-over');
+            if (draggedFillerIdx !== null && draggedFillerIdx !== targetIdx) {
+                let movedItem = state.fillerOptions.splice(draggedFillerIdx, 1)[0];
+                state.fillerOptions.splice(targetIdx, 0, movedItem);
+                saveStateToLocalStorage();
+                runSimulationAndRender();
+            }
+            draggedFillerIdx = null;
+        }
+
+        function onFillerDragEnd(evt) {
+            evt.currentTarget.classList.remove('dragging');
+            document.querySelectorAll('.filler-item-row').forEach(el => el.classList.remove('drag-over'));
+            draggedFillerIdx = null;
         }
 
         function moveFillerOption(idx, dir) {
@@ -5990,6 +6082,10 @@
             document.querySelectorAll('.radio-grid .radio-card').forEach(r => r.classList.remove('active'));
             if (document.getElementById('cap-' + state.capitol)) {
                 document.getElementById('cap-' + state.capitol).classList.add('active');
+            }
+            if (document.getElementById('valorflex-' + (state.valorFlex || 'flex'))) {
+                document.querySelectorAll('#valorflex-strict, #valorflex-flex').forEach(r => r.classList.remove('active'));
+                document.getElementById('valorflex-' + (state.valorFlex || 'flex')).classList.add('active');
             }
             if (document.getElementById('goldflex-' + state.goldFlex)) {
                 document.querySelectorAll('#goldflex-strict, #goldflex-flex').forEach(r => r.classList.remove('active'));
@@ -6105,17 +6201,46 @@
             }
         }
 
-        function selectPreset(preset) {
-            state.preset = preset;
-            document.querySelectorAll('.btn-preset').forEach(b => b.classList.remove('active'));
-            document.getElementById('btn-preset-' + preset).classList.add('active');
-            if (preset === 't10-balanced') {
-                state.goldCap = 600000000;
-            } else {
-                state.goldCap = 2000000000;
+        
+        function saveCurrentToPresetMemory() {
+            if (!state.presetSettings) state.presetSettings = {};
+            state.presetSettings[state.preset] = {
+                goldCap: state.goldCap,
+                valorTarget: state.valorTarget,
+                goldFlex: state.goldFlex,
+                valorFlex: state.valorFlex
+            };
+        }
+
+        function restorePresetMemory(preset) {
+            if (!state.presetSettings) state.presetSettings = {};
+            if (!state.presetSettings[preset]) {
+                if (preset === 't10-pure') {
+                    state.presetSettings[preset] = { goldCap: 5000000000, valorTarget: 25000, goldFlex: 'strict', valorFlex: 'flex' };
+                } else {
+                    state.presetSettings[preset] = { goldCap: 600000000, valorTarget: 9000, goldFlex: 'strict', valorFlex: 'flex' };
+                }
             }
-            document.getElementById('input-gold-cap').value = state.goldCap;
-            updateControls();
+            let mem = state.presetSettings[preset];
+            state.goldCap = mem.goldCap;
+            state.valorTarget = mem.valorTarget;
+            state.goldFlex = mem.goldFlex || 'strict';
+            state.valorFlex = mem.valorFlex || 'flex';
+        }
+
+        function selectPreset(preset) {
+            saveCurrentToPresetMemory();
+            state.preset = preset;
+            restorePresetMemory(preset);
+
+            document.querySelectorAll('.btn-preset').forEach(b => b.classList.remove('active'));
+            if (document.getElementById('btn-preset-' + preset)) {
+                document.getElementById('btn-preset-' + preset).classList.add('active');
+            }
+
+            syncUIFromState();
+            saveStateToLocalStorage();
+            runSimulationAndRender();
         }
 
         function setCapitol(cap) {
@@ -6530,7 +6655,7 @@
                 let saveConfig = state.saveWeeks[currentWeek] || { enabled: false };
                 let isSaveWeek = saveConfig.enabled;
 
-                let effectiveValorCap = isSaveWeek ? (saveConfig.valorCap !== undefined ? saveConfig.valorCap : Math.round(state.valorTarget * 0.5)) : Math.min(11000, state.valorTarget + 2000);
+                let effectiveValorCap = isSaveWeek ? (saveConfig.valorCap !== undefined ? saveConfig.valorCap : Math.round(state.valorTarget * 0.5)) : ((state.valorFlex === 'flex') ? state.valorTarget * 1.10 : state.valorTarget);
                 let effectiveGoldCap = isSaveWeek ? (saveConfig.goldCap !== undefined ? saveConfig.goldCap : state.goldCap * 0.5) : ((state.goldFlex === 'flex') ? state.goldCap * 1.10 : state.goldCap);
                 let strictGoldCap = isSaveWeek ? effectiveGoldCap : state.goldCap;
 
