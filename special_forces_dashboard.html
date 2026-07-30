@@ -5659,6 +5659,7 @@
             weeklyOverrides: {},
             saveWeeks: {},
             fillerMasterEnabled: false,
+            stopAtExtraTruck: true,
             fillerOptions: JSON.parse(JSON.stringify(DEFAULT_FILLER_OPTIONS)),
             modalDraftQueue: [],
             cachedWeeks: []
@@ -5877,8 +5878,19 @@
                 let upDisabled = (idx === 0) ? 'disabled' : '';
                 let downDisabled = (idx === state.fillerOptions.length - 1) ? 'disabled' : '';
 
-                html += `<div class="filler-item-row">
-                    <div class="filler-item-left">
+                let extraSubControl = '';
+                if (opt.id === 'truck' && opt.enabled) {
+                    let isStopChecked = state.stopAtExtraTruck !== false;
+                    extraSubControl = `<div style="width:100%; margin-top:6px; padding-left:26px; font-size:0.8rem; font-weight:600; color:var(--text-primary); border-top:1px dashed var(--border-color); padding-top:6px;">
+                        <label style="cursor:pointer; display:inline-flex; align-items:center; gap:8px;">
+                            <input type="checkbox" ${isStopChecked ? 'checked' : ''} onchange="toggleStopAtExtraTruck(this.checked)" style="width:15px; height:15px; accent-color:var(--accent-gold); cursor:pointer;">
+                            <span>🛑 Stop at Extra Truck (Lvl 1)</span>
+                        </label>
+                    </div>`;
+                }
+
+                html += `<div class="filler-item-row" style="flex-wrap:wrap;">
+                    <div class="filler-item-left" style="flex:1;">
                         <input type="checkbox" id="chk-filler-${opt.id}" ${isChecked} onchange="toggleFillerOption('${opt.id}', this.checked)">
                         <label for="chk-filler-${opt.id}" style="cursor:pointer; display:flex; align-items:center; gap:8px; flex-wrap:wrap">
                             <span>Priority ${idx + 1}: <strong>${opt.label}</strong></span>
@@ -5889,6 +5901,7 @@
                         <button class="btn-reorder" ${upDisabled} onclick="moveFillerOption(${idx}, -1)" title="Move Up Priority">▲</button>
                         <button class="btn-reorder" ${downDisabled} onclick="moveFillerOption(${idx}, 1)" title="Move Down Priority">▼</button>
                     </div>
+                    ${extraSubControl}
                 </div>`;
             });
             container.innerHTML = html;
@@ -6631,16 +6644,51 @@
                             if (opt.id === 'truck') {
                                 while (truckAvailable.length > 0 && wValor < fillerTargetValor) {
                                     let candIdx = -1;
-                                    for (let i=0; i<truckAvailable.length; i++) {
+
+                                    // Helper function to check if node is a strict prerequisite for Extra Truck Lvl 1
+                                    let isExtraTruckPrereq = (n) => {
+                                        if (n.tech_id === 'basic-goods' || n.tech_id === 'rapid-transit' || n.tech_id === 'plunder' || n.tech_id === 'lucky' || n.tech_id === 'extra-truck') return true;
+                                        if ((n.tech_id === 'attack-boost' || n.tech_id === 'defense-boost') && n.level <= 5) return true;
+                                        return false;
+                                    };
+
+                                    // Pass 1: Look for available candidate that is a strict Extra Truck prerequisite (Rush Extra Truck!)
+                                    for (let i = 0; i < truckAvailable.length; i++) {
                                         let cand = truckNodes[truckAvailable[i]];
-                                        if (wValor + cand.valor <= effectiveValorCap) {
+                                        if (isExtraTruckPrereq(cand) && (wValor + cand.valor <= effectiveValorCap)) {
                                             candIdx = i; break;
                                         }
                                     }
+
+                                    // Pass 2: If no prereq is available/budgeted AND stopAtExtraTruck is FALSE, look for non-prereq candidates
+                                    if (candIdx === -1 && state.stopAtExtraTruck === false) {
+                                        // Prioritize Reindeer Sleigh Ride first, then Ultimate Guard, then Attack/Defense Boost 6-10
+                                        let getContinuationRank = (n) => {
+                                            if (n.tech_id === 'reindeer-sleigh-ride') return 1;
+                                            if (n.tech_id === 'ultimate-guard') return 2;
+                                            return 3;
+                                        };
+
+                                        let bestRank = 999;
+                                        for (let i = 0; i < truckAvailable.length; i++) {
+                                            let cand = truckNodes[truckAvailable[i]];
+                                            if (wValor + cand.valor <= effectiveValorCap) {
+                                                let r = getContinuationRank(cand);
+                                                if (r < bestRank) { bestRank = r; candIdx = i; }
+                                            }
+                                        }
+                                    }
+
                                     if (candIdx === -1) break;
 
                                     let key = truckAvailable.splice(candIdx, 1)[0];
                                     let n = truckNodes[key];
+
+                                    // If stopAtExtraTruck is TRUE and this candidate is NOT a prereq, stop!
+                                    if (state.stopAtExtraTruck !== false && !isExtraTruckPrereq(n)) {
+                                        break;
+                                    }
+
                                     wValor += n.valor; wGold += n.gold; wSpeedSec += n.actual_time_sec;
                                     wFillerValor += n.valor;
                                     wFillerTechs.push('🚚 ' + n.tech_name + ' Lvl ' + n.level);
@@ -6648,6 +6696,11 @@
                                     truckCompletedSet.add(key);
 
                                     truckAdj[key].forEach(c => { truckInDegree[c]--; if (truckInDegree[c] === 0) truckAvailable.push(c); });
+
+                                    // If Extra Truck Lvl 1 is finished and stopAtExtraTruck is TRUE, stop immediately
+                                    if (key === 'extra-truck:1' && state.stopAtExtraTruck !== false) {
+                                        break;
+                                    }
                                 }
                             } else if (opt.id === 'non-t10-sf') {
                                 while (nonT10SfAvailable.length > 0 && wValor < fillerTargetValor) {
