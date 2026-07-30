@@ -6722,6 +6722,8 @@
             let textColor = isDark ? '#94a3b8' : '#64748b';
 
             let html = `<svg viewBox="0 0 ${svgW} ${svgH}" style="width:100%; height:100%;">`;
+            
+            // Background Grid Lines & Y-Axis Labels
             for (let i=0; i<=4; i++) {
                 let y = svgH - 35 - (i * 48);
                 let goldLabel = ((maxGold * (i/4)) / 1e6).toFixed(0) + 'M';
@@ -6733,15 +6735,19 @@
             }
 
             let barW = Math.max(8, (svgW - 120) / weeks.length - 4);
-            let capY = svgH - 35 - ((state.goldCap / maxGold) * 192);
+            
+            // Gold limit dashed line (Scaled to 65% Zone)
+            let capY = svgH - 35 - ((state.goldCap / maxGold) * 125);
             let goldCapLabel = (state.goldCap >= 1e9) ? (state.goldCap / 1e9).toFixed(1) + 'B' : (state.goldCap / 1e6).toFixed(0) + 'M';
             html += `<line x1="55" y1="${capY}" x2="${svgW-55}" y2="${capY}" stroke="#dc2626" stroke-width="2" stroke-dasharray="6" />`;
-            html += `<text x="${svgW-60}" y="${capY - 6}" text-anchor="end" fill="#dc2626" font-size="11" font-weight="bold">Weekly Gold Limit: ${goldCapLabel}</text>`;
+            html += `<text x="60" y="${capY - 6}" text-anchor="start" fill="#dc2626" font-size="11" font-weight="bold">Weekly Gold Limit: ${goldCapLabel}</text>`;
 
             let speedPoints = [];
             weeks.forEach((w, idx) => {
                 let x = 65 + idx * ((svgW - 120) / weeks.length);
-                let barH = (w.goldSpent / maxGold) * 192;
+                
+                // Gold Bars: Scaled to 65% max height (125px) for clean headroom above bars
+                let barH = (w.goldSpent / maxGold) * 125;
                 let barY = svgH - 35 - barH;
 
                 let goldStr = w.goldSpent >= 1e9 ? (w.goldSpent/1e9).toFixed(1) + 'B' : (w.goldSpent/1e6).toFixed(0) + 'M';
@@ -6751,11 +6757,13 @@
                           onmouseover="showTooltip(event, ${w.week}, '${(w.goldSpent/1e6).toFixed(1)}M Gold', '${w.speedupsDays.toFixed(1)} Days (${(w.speedupsDays*24).toFixed(0)}h)', '${w.valorSpent.toLocaleString()} Badges')"
                           onmouseout="hideTooltip()"></rect>`;
 
-                let textY = barH > 22 ? barY + 13 : barY - 4;
+                // Gold Bar Text: Placed inside top of bar (or above if bar is very short)
+                let textY = barH > 22 ? barY + 14 : barY - 4;
                 let textFill = barH > 22 ? "#ffffff" : barColor;
                 html += `<text x="${x + barW/2}" y="${textY}" text-anchor="middle" fill="${textFill}" font-size="9" font-weight="bold">${goldStr}</text>`;
 
-                let speedY = svgH - 35 - ((w.speedupsDays / maxSpeed) * 192);
+                // Speedups Line: Scaled to 85% max height (163px) floating cleanly above bars
+                let speedY = svgH - 35 - ((w.speedupsDays / maxSpeed) * 163);
                 speedPoints.push({ x: x + barW/2, y: speedY, days: w.speedupsDays.toFixed(1) });
 
                 if (weeks.length <= 15 || idx % 2 === 0) {
@@ -6763,9 +6771,11 @@
                 }
             });
 
+            // Draw Speedups Line Graph
             let polyPts = speedPoints.map(p => `${p.x},${p.y}`).join(' ');
             html += `<polyline points="${polyPts}" fill="none" stroke="#0891b2" stroke-width="3" />`;
 
+            // Draw Speedup Node Dots and Headroom Labels (strictly above nodes)
             speedPoints.forEach(p => {
                 html += `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#0891b2" />`;
                 if (weeks.length <= 18) {
