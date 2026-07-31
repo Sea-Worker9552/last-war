@@ -679,7 +679,7 @@
     .badge-combo { background: var(--red-accent); color: #fff; }
     .badge-none { background: #475569; color: #fff; }
 
-    /* Table Full Fit Layout - Fits without horizontal scrollbar! */
+    /* Table Full Fit Layout - Clean multiline parenthetical formatting */
     .table-wrapper {
       width: 100%;
       overflow-x: visible;
@@ -723,6 +723,24 @@
       border-left: 4px solid var(--cyan-primary);
     }
 
+    .sub-note {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      white-space: nowrap;
+      margin-top: 2px;
+    }
+
+    .sub-note.caution {
+      color: var(--red-accent);
+      font-weight: 700;
+    }
+
+    .sub-note.green {
+      color: var(--green-accent);
+    }
+
     .badge-yes { color: var(--green-accent); font-weight: 700; }
     .badge-no { color: var(--red-accent); font-weight: 700; }
 
@@ -736,6 +754,7 @@
       color: var(--cyan-primary);
       border: 1px solid rgba(6, 182, 212, 0.3);
       white-space: nowrap;
+      margin-left: 8px;
     }
 
     .range-pill.gold {
@@ -748,6 +767,7 @@
       background: rgba(249, 115, 22, 0.15);
       color: var(--orange-primary);
       border-color: rgba(249, 115, 22, 0.3);
+      margin-left: 0;
     }
 
     .tips-grid {
@@ -1152,9 +1172,9 @@
       const scenariosConfig = [
         {
           id: "double_dip",
-          owner: "MY BOSS",
-          role: "👑 Rally Leader",
-          rulesBadge: '<span class="badge-yes" style="color:var(--red-accent);">Rule 1 + Rule 2 (Fast-Track)</span>',
+          ownerHtml: "<strong>MY BOSS</strong>",
+          roleHtml: "👑 Rally Leader",
+          rulesBadge: "Rule 1 + Rule 2<br><span class='sub-note caution'>(Fast-Track)</span>",
           calc: function(L, B) {
             if (B > L) {
               var newLvl = B + 5;
@@ -1169,9 +1189,9 @@
         },
         {
           id: "join_own_boss",
-          owner: "MY BOSS",
-          role: "🛡️ Rally Member (Joined)",
-          rulesBadge: '<span class="badge-yes">Rule 1 Only (Set Boss Level)</span>',
+          ownerHtml: "<strong>MY BOSS</strong>",
+          roleHtml: "🛡️ Rally Member<br><span class='sub-note'>(Joined)</span>",
+          rulesBadge: "Rule 1 Only<br><span class='sub-note green'>(Set Boss Level)</span>",
           calc: function(L, B) {
             if (B > L) {
               var newLvl = B;
@@ -1186,9 +1206,9 @@
         },
         {
           id: "offline_own_boss",
-          owner: "MY BOSS",
-          role: "💤 Offline / Missed",
-          rulesBadge: '<span class="badge-yes">Rule 1 Only (Set Boss Level)</span>',
+          ownerHtml: "<strong>MY BOSS</strong>",
+          roleHtml: "💤 Offline / Missed",
+          rulesBadge: "Rule 1 Only<br><span class='sub-note green'>(Set Boss Level)</span>",
           calc: function(L, B) {
             if (B > L) {
               var newLvl = B;
@@ -1203,9 +1223,9 @@
         },
         {
           id: "lead_other_boss",
-          owner: "SOMEONE ELSE'S (Ally/Snipe)",
-          role: "⚔️ Rally Leader",
-          rulesBadge: '<span class="badge-yes">Rule 2 Only (+5 Boost)</span>',
+          ownerHtml: "<strong>SOMEONE ELSE&#39;S</strong><br><span class='sub-note'>(Ally / Snipe)</span>",
+          roleHtml: "⚔️ Rally Leader",
+          rulesBadge: "Rule 2 Only<br><span class='sub-note green'>(+5 Boost)</span>",
           calc: function(L, B) {
             if (B > L) {
               var newLvl = L + 5;
@@ -1220,9 +1240,9 @@
         },
         {
           id: "join_other_boss",
-          owner: "SOMEONE ELSE'S (Ally/Snipe)",
-          role: "👥 Rally Member (Joined)",
-          rulesBadge: '<span class="badge-no">No Rules Apply (+0)</span>',
+          ownerHtml: "<strong>SOMEONE ELSE&#39;S</strong><br><span class='sub-note'>(Ally / Snipe)</span>",
+          roleHtml: "👥 Rally Member<br><span class='sub-note'>(Joined)</span>",
+          rulesBadge: "No Rules Apply<br><span class='sub-note'>(+0)</span>",
           calc: function(L, B) {
             return {
               newLevel: L,
@@ -1249,10 +1269,10 @@
           var lvlClass = res.newLevel > L ? "text-gold" : "";
 
           tr.innerHTML = 
-            "<td><strong>" + sc.owner + "</strong></td>" +
-            "<td>" + sc.role + "</td>" +
+            "<td>" + sc.ownerHtml + "</td>" +
+            "<td>" + sc.roleHtml + "</td>" +
             "<td>" + sc.rulesBadge + "</td>" +
-            "<td>Lvl " + L + ' <span class="range-pill gold">' + beforeRangeStr + "</span></td>" +
+            "<td>Lvl " + L + '&nbsp;&nbsp;<span class="range-pill gold">' + beforeRangeStr + "</span></td>" +
             '<td><span class="range-pill orange">Lvl ' + B + "</span></td>" +
             '<td><strong class="' + lvlClass + '">Lvl ' + res.newLevel + "</strong></td>" +
             '<td><span class="range-pill">' + afterRangeStr + "</span></td>";
