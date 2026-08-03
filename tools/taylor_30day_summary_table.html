@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Last War: Survivor Taylor Master Dashboard & Simulator</title>
+  <style>
+    :root {
+      --bg-dark: #0b0f19;
+      --bg-card: rgba(18, 24, 38, 0.85);
+      --bg-card-alt: #161e2e;
+      --border-color: rgba(255, 255, 255, 0.1);
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --text-dim: #6b7280;
+      --accent-gold: #f59e0b;
+      --accent-cyan: #06b6d4;
+      --accent-green: #10b981;
+      --accent-purple: #a855f7;
+      --accent-orange: #f97316;
+      --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(6, 182, 212, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 85% 75%, rgba(245, 158, 11, 0.06) 0%, transparent 40%);
+      background-attachment: fixed;
+      color: var(--text-main);
+      min-height: 100vh;
+      padding: 2rem 1.25rem 4rem 1.25rem;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    /* Common Glass Card Styling */
+    .card-glass {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+      overflow: hidden;
+    }
+
+    /* Header */
+    .hero-header {
+      text-align: center;
+      margin-bottom: 1.75rem;
+    }
+
+    .header-badge {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--accent-gold);
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      padding: 0.35rem 0.85rem;
+      border-radius: 999px;
+      margin-bottom: 0.75rem;
+    }
+
+    h1 {
+      font-size: 2.3rem;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 0.5rem;
+    }
+
+    p.subtitle {
+      color: var(--text-muted);
+      font-size: 1rem;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    /* Floating Sticky Timeframe Controls Panel */
+    .controls-card-sticky {
+      position: sticky;
+      top: 0.85rem;
+      z-index: 200;
+      background: rgba(18, 24, 38, 0.95);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(6, 182, 212, 0.35);
+      border-radius: var(--radius-lg);
+      padding: 1rem 1.25rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 10px 30px 0 rgba(0, 0, 0, 0.5);
+    }
+
+    .control-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .control-header label {
+      font-size: 1.05rem;
+      font-weight: 600;
+    }
+
+    .timeframe-presets {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .preset-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .preset-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+    }
+
+    .preset-btn.active {
+      background: var(--accent-cyan);
+      border-color: var(--accent-cyan);
+      color: #0b0f19;
+      font-weight: 700;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent-cyan);
+      height: 8px;
+      cursor: pointer;
+    }
+
+    /* Drop Probability Reference Cards */
+    .prob-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .prob-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 1.35rem;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+
+    .prob-card h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 0.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .prob-sub-badge {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+    }
+
+    .prob-list {
+      list-style: none;
+    }
+
+    .prob-list li {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      padding: 0.4rem 0;
+      border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      white-space: nowrap;
+    }
+
+    .prob-list li:last-child {
+      border-bottom: none;
+    }
+
+    .prob-val {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: #fff;
+    }
+
+    /* Main Table Container */
+    .table-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 1.25rem;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.88rem;
+    }
+
+    th {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: var(--text-muted);
+      background: rgba(15, 23, 42, 0.8);
+      padding: 0.85rem 0.65rem;
+      border-bottom: 2px solid var(--border-color);
+      white-space: nowrap;
+      vertical-align: bottom;
+      line-height: 1.3;
+    }
+
+    th .sub-paren {
+      font-size: 0.88em;
+      opacity: 0.75;
+      font-weight: 500;
+    }
+
+    td {
+      padding: 0.9rem 0.65rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      white-space: nowrap;
+      vertical-align: middle;
+    }
+
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    tr.row-best-value {
+      background: rgba(245, 158, 11, 0.08);
+    }
+
+    tr.row-best-value td {
+      border-color: rgba(245, 158, 11, 0.25);
+    }
+
+    .lvl-badge {
+      font-family: var(--font-mono);
+      font-weight: 800;
+      font-size: 1rem;
+      color: #fff;
+    }
+
+    .cost-val {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: var(--accent-cyan);
+      background: rgba(6, 182, 212, 0.1);
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      border: 1px solid rgba(6, 182, 212, 0.25);
+    }
+
+    .chest-total-val {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: #f8fafc;
+    }
+
+    .shard-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: var(--accent-gold);
+      background: rgba(245, 158, 11, 0.12);
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .statue-wrap {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: #e2e8f0;
+    }
+
+    .chest-res-wrap {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+    }
+
+    .chest-res-norm {
+      font-weight: 700;
+      color: var(--accent-orange);
+      background: rgba(249, 115, 22, 0.12);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      border: 1px solid rgba(249, 115, 22, 0.25);
+      margin-left: 0.3rem;
+    }
+
+    .ore-wrap {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: #60a5fa;
+    }
+
+    .stamina-val {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: var(--accent-green);
+    }
+
+    .speedup-val {
+      font-family: var(--font-mono);
+      color: #cbd5e1;
+    }
+
+    .token-val {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: var(--accent-purple);
+    }
+
+    .tag-breakpoint {
+      display: inline-block;
+      font-size: 0.62rem;
+      font-weight: 800;
+      background: var(--accent-gold);
+      color: #0b0f19;
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      margin-left: 0.3rem;
+      vertical-align: middle;
+    }
+
+    .note-box {
+      margin-top: 1rem;
+      padding: 0.85rem 1rem;
+      background: rgba(249, 115, 22, 0.08);
+      border: 1px solid rgba(249, 115, 22, 0.3);
+      border-radius: var(--radius-md);
+      font-size: 0.88rem;
+      color: #cbd5e1;
+    }
+
+    .note-box strong {
+      color: var(--accent-orange);
+    }
+
+    /* Half-Width Row Grid for Shard Efficiency Graph & Insights */
+    .two-col-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .chart-box-wrap {
+      position: relative;
+      width: 100%;
+      height: 220px;
+      overflow: hidden;
+    }
+
+    #cost-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* Simulator Section */
+    .sim-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+      color: #fff;
+    }
+
+    .sim-sub {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .sim-controls {
+      display: flex;
+      align-items: flex-end;
+      gap: 1rem;
+      flex-wrap: wrap;
+      background: rgba(15, 23, 42, 0.6);
+      padding: 1rem 1.25rem;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+      margin-bottom: 1.25rem;
+    }
+
+    .sim-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .sim-group label {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .sim-select, .sim-input {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      color: #fff;
+      padding: 0.55rem 0.85rem;
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    .sim-select:focus, .sim-input:focus {
+      border-color: var(--accent-cyan);
+    }
+
+    .btn {
+      background: var(--accent-cyan);
+      color: #0b0f19;
+      font-weight: 700;
+      font-size: 0.9rem;
+      padding: 0.6rem 1.25rem;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn:hover {
+      background: #38bdf8;
+    }
+
+    .btn-sec {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-sec:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .sim-results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .sim-res-box {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .sim-res-val {
+      font-family: var(--font-mono);
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--accent-gold);
+    }
+
+    .sim-res-lbl {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-top: 0.15rem;
+    }
+
+    .sim-res-diff {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+      margin-top: 0.2rem;
+    }
+
+    .sim-log-box {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: #a7f3d0;
+      background: rgba(10, 14, 23, 0.9);
+      border: 1px solid var(--border-color);
+      padding: 0.85rem 1rem;
+      border-radius: var(--radius-md);
+      max-height: 120px;
+      overflow-y: auto;
+    }
+
+    /* Recommendations Grid */
+    .rec-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .rec-card {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+    }
+
+    .rec-card.rec-best {
+      border-color: rgba(245, 158, 11, 0.4);
+      background: rgba(245, 158, 11, 0.08);
+    }
+
+    .rec-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .rec-body {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 0.85rem;
+      margin-top: 2.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header class="hero-header">
+      <div class="header-badge">LAST WAR: SURVIVOR TAYLOR SUMMARY</div>
+      <h1>SURVIVOR TAYLOR: EXPECTED PAYOUT DASHBOARD</h1>
+      <p class="subtitle">Interactive timeframe matrix with drop probabilities, UR Statues, and 3x Normalized Resource Choice Chests.</p>
+    </header>
+
+    <!-- Floating Sticky Timeframe Controls Panel -->
+    <section class="controls-card-sticky">
+      <div class="control-header">
+        <label for="timeframe-slider">Calculated Timeframe: <span id="tf-display" style="color: var(--accent-cyan); font-weight: 700;">30 Days</span></label>
+        <div class="timeframe-presets">
+          <button class="preset-btn" onclick="setTimeframe(7)">7 Days</button>
+          <button class="preset-btn active" id="btn-preset-30" onclick="setTimeframe(30)">30 Days</button>
+          <button class="preset-btn" onclick="setTimeframe(60)">60 Days</button>
+          <button class="preset-btn" onclick="setTimeframe(90)">90 Days</button>
+          <button class="preset-btn" onclick="setTimeframe(365)">1 Year (365d)</button>
+        </div>
+      </div>
+      <input type="range" id="timeframe-slider" min="1" max="365" value="30" oninput="onSliderInput(this.value)" />
+    </section>
+
+    <!-- Drop Probabilities Reference Cards -->
+    <div class="prob-grid">
+      <div class="prob-card">
+        <h3 style="color: var(--accent-cyan);">📦 Rare Explorer Chest Drop Rates</h3>
+        <div class="prob-sub-badge">(Per Single Chest &bull; LVL 0–3)</div>
+        <ul class="prob-list">
+          <li><span>🗿 Monument Statue</span> <span class="prob-val">2.0% (1 Statue)</span></li>
+          <li><span>🧩 Universal Shard (UR)</span> <span class="prob-val">3.0% (1 Shard)</span></li>
+          <li><span>🧰 SSR Choice Resource Chest</span> <span class="prob-val">20.0% (1 Chest)</span></li>
+          <li><span>⚡ Stamina</span> <span class="prob-val">20.0% (10 Stamina)</span></li>
+          <li><span>⏱️ Speedups</span> <span class="prob-val">25.0% (15m Speedups)</span></li>
+          <li><span>💎 Building Ore</span> <span class="prob-val">30.0% (30 Ore)</span></li>
+        </ul>
+      </div>
+
+      <div class="prob-card">
+        <h3 style="color: var(--accent-gold);">✨ Deluxe Adventurer Chest Drop Rates</h3>
+        <div class="prob-sub-badge">(Per Single Chest &bull; LVL 4–5)</div>
+        <ul class="prob-list">
+          <li><span>🗿 Monument Statue</span> <span class="prob-val">2.0% (1 Statue)</span></li>
+          <li><span>🧩 Universal Shard (UR)</span> <span class="prob-val">4.5% total (1.5% for 2x, 3% for 1x = 0.06 avg/chest)</span></li>
+          <li><span>🎁 UR Choice Resource Chest</span> <span class="prob-val">20.0% (1 Chest = 3x SSR Value)</span></li>
+          <li><span>⚡ Stamina</span> <span class="prob-val">10.0% (50 Stamina)</span></li>
+          <li><span>⏱️ Speedups</span> <span class="prob-val">35.0% (25m Speedups)</span></li>
+          <li><span>💎 Building Ore</span> <span class="prob-val">28.5% (50 Ore)</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Table Section -->
+    <section class="card-glass">
+      <div class="table-title">📊 Survivor Taylor: <span id="table-tf-title" style="color: var(--accent-cyan);">30-Day</span> Expected Payout Matrix</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Taylor Level</th>
+              <th>👑 VIP<br>PACKAGES</th>
+              <th>💲 Cost<br><span class="sub-paren">(CUMULATIVE)</span></th>
+              <th>🪙 Tokens<br><span class="sub-paren">(CUMULATIVE)</span></th>
+              <th>🎁 Total Chests<br><span class="sub-paren">(DAILY RATE)</span></th>
+              <th>🧩 Expected<br>UR SHARDS</th>
+              <th>🗿 Monument<br>STATUES</th>
+              <th>🧰 Resource Chests<br><span class="sub-paren">(SSR NORMALIZED)</span></th>
+              <th>⚡ Expected<br>STAMINA</th>
+              <th>⏱️ Expected<br>SPEEDUPS</th>
+              <th>💎 Expected<br>BUILDING ORE</th>
+            </tr>
+          </thead>
+          <tbody id="payout-table-body">
+            <!-- Populated by JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <div class="note-box">
+        <strong>* SSR Normalization Note:</strong> Deluxe Chests (LVL 4–5) drop <i>UR Choice Resource Chests</i> instead of <i>SSR Choice Resource Chests</i>. Since 1 UR Resource Chest contains 3x the resources of an SSR Chest, the normalized resource payout for LVL 4 and LVL 5 is scaled by 3x (e.g. 150 UR = 450 SSR eq* over 30 days).
+      </div>
+    </section>
+
+    <!-- Two Column Grid: Cost Per UR Shard Bar Chart & Timeframe ROI Takeaways -->
+    <div class="two-col-grid">
+      <!-- Left Card: Interactive Bar Chart ($ / Shard) -->
+      <div class="card-glass" style="margin-bottom: 0;">
+        <div class="table-title" style="font-size: 1.1rem; margin-bottom: 0.5rem;">
+          📊 Cost per UR Shard ($ / Shard) Graph
+          <span style="font-size: 0.8rem; font-weight: 500; color: var(--text-muted);">(Dynamic Scaling)</span>
+        </div>
+        <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.5rem;">
+          Visual comparison of cost-per-shard efficiency across levels for the active timeframe:
+        </p>
+        <div class="chart-box-wrap">
+          <canvas id="cost-canvas"></canvas>
+        </div>
+      </div>
+
+      <!-- Right Card: Timeframe ROI Takeaways -->
+      <div class="card-glass" style="margin-bottom: 0;">
+        <div class="table-title" style="font-size: 1.1rem;">
+          💡 Timeframe ROI Takeaways
+          <span id="takeaway-tf-badge" style="font-size: 0.8rem; font-weight: 500; color: var(--accent-cyan);">(30-Day Analysis)</span>
+        </div>
+        <div style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.6;">
+          <p style="margin-bottom: 0.75rem;">
+            • <strong>Fixed Cost, Compounding Yield:</strong> Since upgrade cost is paid once, holding Taylor for <span id="tk-days-text" style="color:#fff; font-weight:700;">30 days</span> lowers your overall cost per shard dramatically compared to short term.
+          </p>
+          <p style="margin-bottom: 0.75rem;">
+            • <strong>LVL 4 Efficiency Breakpoint:</strong> At <span id="tk-days-text-2" style="color:#fff; font-weight:700;">30 days</span>, LVL 4 delivers <strong style="color:var(--accent-gold);" id="tk-lvl4-shards">45.0 UR Shards</strong> at <strong style="color:var(--accent-gold);" id="tk-lvl4-cps">$3.33 / Shard</strong>, outperforming both LVL 3 ($4.44/shard) and LVL 5 ($4.72/shard) on cost-efficiency.
+          </p>
+          <p>
+            • <strong>Long-Term Horizon (1 Year):</strong> Over 365 days, LVL 4 yields <strong>547.5 UR Shards</strong> at an unbelievable cost of just <strong>$0.27 per shard</strong>!
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chest Opener & Variance Simulator -->
+    <section class="card-glass">
+      <div class="sim-title">🎲 Chest Opener & RNG Variance Simulator</div>
+      <div class="sim-sub">Simulate opening N chests in real-time to compare actual RNG drop results against theoretical expectation.</div>
+
+      <div class="sim-controls">
+        <div class="sim-group">
+          <label for="sim-type">Chest Tier</label>
+          <select id="sim-type" class="sim-select">
+            <option value="rare">Rare Explorer Chest (LVL 0-3)</option>
+            <option value="deluxe" selected>Deluxe Adventurer Chest (LVL 4-5)</option>
+          </select>
+        </div>
+        <div class="sim-group">
+          <label for="sim-count">Chests to Open</label>
+          <input type="number" id="sim-count" value="100" min="1" max="10000" class="sim-input">
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+          <button class="btn" onclick="runSim()">🎁 Open Chests</button>
+          <button class="btn btn-sec" onclick="runSimTimeframe()">Simulate Selected Timeframe</button>
+        </div>
+      </div>
+
+      <div class="sim-results-grid">
+        <div class="sim-res-box">
+          <div style="font-size: 1.35rem;">🧩</div>
+          <div class="sim-res-val" id="sim-res-shards">0</div>
+          <div class="sim-res-lbl">UR Shards</div>
+          <div class="sim-res-diff" id="sim-exp-shards">Exp: 0</div>
+        </div>
+        <div class="sim-res-box">
+          <div style="font-size: 1.35rem;">🗿</div>
+          <div class="sim-res-val" id="sim-res-statues" style="color: #e2e8f0;">0</div>
+          <div class="sim-res-lbl">Statues</div>
+          <div class="sim-res-diff" id="sim-exp-statues">Exp: 0</div>
+        </div>
+        <div class="sim-res-box">
+          <div style="font-size: 1.35rem;">🧰</div>
+          <div class="sim-res-val" id="sim-res-chests" style="color: var(--accent-orange);">0</div>
+          <div class="sim-res-lbl">Res Chests (SSR eq)</div>
+          <div class="sim-res-diff" id="sim-exp-chests">Exp: 0</div>
+        </div>
+        <div class="sim-res-box">
+          <div style="font-size: 1.35rem;">⚡</div>
+          <div class="sim-res-val" id="sim-res-stamina" style="color: var(--accent-green);">0</div>
+          <div class="sim-res-lbl">Stamina</div>
+          <div class="sim-res-diff" id="sim-exp-stamina">Exp: 0</div>
+        </div>
+        <div class="sim-res-box">
+          <div style="font-size: 1.35rem;">⏱️</div>
+          <div class="sim-res-val" id="sim-res-speedups" style="color: #cbd5e1;">0h 0m</div>
+          <div class="sim-res-lbl">Speedups</div>
+          <div class="sim-res-diff" id="sim-exp-speedups">Exp: 0h</div>
+        </div>
+        <div class="sim-res-box">
+          <div style="font-size: 1.35rem;">💎</div>
+          <div class="sim-res-val" id="sim-res-ore" style="color: #60a5fa;">0</div>
+          <div class="sim-res-lbl">Building Ore</div>
+          <div class="sim-res-diff" id="sim-exp-ore">Exp: 0</div>
+        </div>
+      </div>
+
+      <div class="sim-log-box" id="sim-log">Click "Open Chests" to simulate RNG drop rates...</div>
+    </section>
+
+    <!-- Strategic Investment Recommendations -->
+    <section class="card-glass">
+      <div class="sim-title" style="margin-bottom: 0.5rem;">🎯 Strategic Investment Recommendations</div>
+      <div class="sim-sub" style="margin-bottom: 1.25rem;">Key takeaways for spending efficiency based on your budget and game progression goals.</div>
+
+      <div class="rec-grid">
+        <div class="rec-card rec-best">
+          <div class="rec-title" style="color: var(--accent-gold);">★ BEST VALUE TARGET: Level 4 ($150)</div>
+          <div class="rec-body">
+            Level 4 is the definitive sweet spot for spenders. Upgrading from LVL 3 ($80) to LVL 4 ($150) triggers the tier shift from <i>Rare</i> to <i>Deluxe</i> chests, boosting UR shards by <strong>+150%</strong> and resource payouts by <strong>+275%</strong> (3x UR chests). Most importantly, it lowers your overall cost per shard back down to <strong>$3.33/shard</strong> (over 30 days).
+          </div>
+        </div>
+
+        <div class="rec-card">
+          <div class="rec-title" style="color: var(--accent-cyan);">⚡ ENTRY TARGET: Level 0 ($5)</div>
+          <div class="rec-body">
+            Unlocks Survivor Taylor permanently for just $5 (VIP1 package). Provides 5 Rare Explorer Chests daily, yielding 4.5 UR Shards, 3 Statues, 30 SSR Resource Chests, and 1,350 Building Ore per month. Extremely high initial return for minimal investment ($1.11 / shard).
+          </div>
+        </div>
+
+        <div class="rec-card">
+          <div class="rec-title" style="color: var(--accent-purple);">👑 MAX WHALE TARGET: Level 5 ($255)</div>
+          <div class="rec-body">
+            Unlocks maximum daily volume (30 Deluxe Chests / day). Delivers 54 UR Shards, 18 Statues, 540 SSR-equivalent Resource Chests, and 12,825 Ore per month. Ideal for high-budget players seeking maximum daily acceleration, though cost per shard increases slightly to $4.72 / shard.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <p>Last War: Survivor Taylor Master Dashboard &bull; Complete Reference & Simulator</p>
+    </footer>
+  </div>
+
+  <script>
+    const CHEST_RATES = {
+      rare: { statueAvg: 0.02, shardsAvg: 0.03, chestResType: 'SSR', chestResNormAvg: 0.20, staminaAvg: 2.0, speedupAvg: 3.75, oreAvg: 9.0 },
+      deluxe: { statueAvg: 0.02, shardsAvg: 0.06, chestResType: 'UR', chestResNormAvg: 0.60, staminaAvg: 5.0, speedupAvg: 8.75, oreAvg: 14.25 }
+    };
+
+    const TAYLOR_LEVELS = [
+      { level: 0, vip: 'VIP1', cost: 5, tokens: 10, chestsDaily: 5, chestType: 'rare', isBestValue: false },
+      { level: 1, vip: 'VIP1+2', cost: 15, tokens: 35, chestsDaily: 10, chestType: 'rare', isBestValue: false },
+      { level: 2, vip: 'VIP1+2+3', cost: 35, tokens: 85, chestsDaily: 15, chestType: 'rare', isBestValue: false },
+      { level: 3, vip: 'VIP2+3+5', cost: 80, tokens: 185, chestsDaily: 20, chestType: 'rare', isBestValue: false },
+      { level: 4, vip: 'VIP6+7', cost: 150, tokens: 335, chestsDaily: 25, chestType: 'deluxe', isBestValue: true },
+      { level: 5, vip: 'VIP1–7', cost: 255, tokens: 585, chestsDaily: 30, chestType: 'deluxe', isBestValue: false }
+    ];
+
+    let currentDays = 30;
+
+    function formatMinutes(totalMins) {
+      const hours = Math.floor(totalMins / 60);
+      const mins = (totalMins % 60).toFixed(1).replace(/\.0$/, '');
+      if (hours >= 24) {
+        const days = Math.floor(hours / 24);
+        const remH = hours % 24;
+        return `${days}d ${remH}h ${mins}m`;
+      }
+      return `${hours}h ${mins}m`;
+    }
+
+    function setTimeframe(days) {
+      currentDays = days;
+      document.getElementById('timeframe-slider').value = days;
+      document.getElementById('tf-display').textContent = `${days} Days`;
+      document.getElementById('table-tf-title').textContent = `${days}-Day`;
+      document.getElementById('takeaway-tf-badge').textContent = `(${days}-Day Analysis)`;
+
+      document.querySelectorAll('.preset-btn').forEach(btn => {
+        btn.classList.toggle('active', parseInt(btn.getAttribute('onclick').match(/\d+/)[0]) === days);
+      });
+
+      renderTable();
+      drawCostChart();
+    }
+
+    function onSliderInput(val) {
+      currentDays = parseInt(val, 10);
+      document.getElementById('tf-display').textContent = `${currentDays} Days`;
+      document.getElementById('table-tf-title').textContent = `${currentDays}-Day`;
+      document.getElementById('takeaway-tf-badge').textContent = `(${currentDays}-Day Analysis)`;
+      document.querySelectorAll('.preset-btn').forEach(btn => btn.classList.remove('active'));
+      renderTable();
+      drawCostChart();
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('payout-table-body');
+      tbody.innerHTML = TAYLOR_LEVELS.map(lvl => {
+        const rates = CHEST_RATES[lvl.chestType];
+        const totalChests = lvl.chestsDaily * currentDays;
+        
+        const shards = (totalChests * rates.shardsAvg).toFixed(1).replace(/\.0$/, '');
+        const statues = Math.round(totalChests * rates.statueAvg);
+        const rawRes = Math.round(totalChests * 0.20);
+        const normRes = Math.round(totalChests * rates.chestResNormAvg);
+        const stamina = Math.round(totalChests * rates.staminaAvg);
+        const speedupFormatted = formatMinutes(totalChests * rates.speedupAvg);
+        const ore = Math.round(totalChests * rates.oreAvg).toLocaleString();
+
+        const isDeluxe = lvl.chestType === 'deluxe';
+        const isBestValue = lvl.isBestValue;
+        const trClass = isBestValue ? 'class="row-best-value"' : '';
+
+        const resChestHTML = isDeluxe 
+          ? `${rawRes} UR <span class="chest-res-norm">(${normRes} SSR eq*)</span>` 
+          : `${rawRes} SSR`;
+
+        return `
+          <tr ${trClass}>
+            <td>
+              <span class="lvl-badge" ${isBestValue ? 'style="color: var(--accent-gold);"' : ''}>LVL ${lvl.level}</span>
+              ${isBestValue ? '<span class="tag-breakpoint">BEST VALUE ★</span>' : ''}
+            </td>
+            <td>${lvl.vip}</td>
+            <td><span class="cost-val" ${isBestValue ? 'style="color: var(--accent-gold); border-color: rgba(245,158,11,0.4);"' : ''}>$${lvl.cost}</span></td>
+            <td><span class="token-val" ${isBestValue ? 'style="color: var(--accent-gold);"' : ''}>${lvl.tokens}</span></td>
+            <td>
+              <span class="chest-total-val">${totalChests.toLocaleString()}</span>
+              <span style="color: var(--text-muted); font-size: 0.78rem;">(${lvl.chestsDaily}/d ${isDeluxe ? '✨ Deluxe' : '📦 Rare'})</span>
+            </td>
+            <td><span class="shard-wrap">🧩 ${shards}</span></td>
+            <td><span class="statue-wrap" ${isBestValue ? 'style="color: var(--accent-gold);"' : ''}>🗿 ${statues}</span></td>
+            <td>
+              <span class="chest-res-wrap">
+                ${resChestHTML}
+              </span>
+            </td>
+            <td><span class="stamina-val">⚡ ${stamina.toLocaleString()}</span></td>
+            <td><span class="speedup-val">⏱️ ${speedupFormatted}</span></td>
+            <td><span class="ore-wrap" ${isBestValue ? 'style="font-weight: 800;"' : ''}>💎 ${ore}</span></td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // --- HTML5 CANVAS BAR CHART DRAWING ---
+    function drawCostChart() {
+      const canvas = document.getElementById('cost-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+
+      const container = canvas.parentElement;
+      const rect = container.getBoundingClientRect();
+      const width = rect.width || 400;
+      const height = rect.height || 220;
+
+      // Handle retina resolution
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      ctx.scale(dpr, dpr);
+
+      ctx.clearRect(0, 0, width, height);
+
+      // Data preparation
+      const data = TAYLOR_LEVELS.map(lvl => {
+        const rates = CHEST_RATES[lvl.chestType];
+        const totalShards = lvl.chestsDaily * currentDays * rates.shardsAvg;
+        const cps = lvl.cost / totalShards;
+        return {
+          level: lvl.level,
+          cps: cps,
+          isBestValue: lvl.isBestValue,
+          shards: totalShards
+        };
+      });
+
+      // Update right-hand takeaway card
+      const lvl4Data = data.find(d => d.level === 4);
+      if (lvl4Data) {
+        document.getElementById('tk-days-text').textContent = `${currentDays} Days`;
+        document.getElementById('tk-days-text-2').textContent = `${currentDays} Days`;
+        document.getElementById('tk-lvl4-shards').textContent = `${lvl4Data.shards.toFixed(1)} UR Shards`;
+        document.getElementById('tk-lvl4-cps').textContent = `$${lvl4Data.cps.toFixed(2)} / Shard`;
+      }
+
+      const maxCps = Math.max(...data.map(d => d.cps)) * 1.25; // 25% headroom so text never overflows top
+      const paddingBottom = 28;
+      const paddingTop = 32;
+      const availableHeight = height - paddingBottom - paddingTop;
+
+      const barWidth = Math.min(38, (width / data.length) * 0.52);
+      const gap = (width - (barWidth * data.length)) / (data.length + 1);
+
+      data.forEach((item, index) => {
+        const x = gap + index * (barWidth + gap);
+        const barH = Math.max(4, (item.cps / maxCps) * availableHeight);
+        const y = height - paddingBottom - barH;
+
+        // Draw Bar
+        ctx.beginPath();
+        if (ctx.roundRect) {
+          ctx.roundRect(x, y, barWidth, barH, [4, 4, 0, 0]);
+        } else {
+          ctx.rect(x, y, barWidth, barH);
+        }
+
+        if (item.isBestValue) {
+          const grad = ctx.createLinearGradient(0, y, 0, height - paddingBottom);
+          grad.addColorStop(0, '#f59e0b');
+          grad.addColorStop(1, '#d97706');
+          ctx.fillStyle = grad;
+        } else {
+          const grad = ctx.createLinearGradient(0, y, 0, height - paddingBottom);
+          grad.addColorStop(0, '#06b6d4');
+          grad.addColorStop(1, '#0284c7');
+          ctx.fillStyle = grad;
+        }
+        ctx.fill();
+
+        // Draw Value above Bar
+        ctx.font = '700 11px system-ui, -apple-system, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillStyle = item.isBestValue ? '#f59e0b' : '#38bdf8';
+        ctx.fillText(`$${item.cps.toFixed(2)}`, x + barWidth / 2, y - 6);
+
+        // Draw Label below Bar
+        ctx.font = '600 11px system-ui, -apple-system, sans-serif';
+        ctx.fillStyle = item.isBestValue ? '#f59e0b' : '#9ca3af';
+        ctx.fillText(`LVL ${item.level}${item.isBestValue ? '★' : ''}`, x + barWidth / 2, height - 8);
+      });
+    }
+
+    // --- CHEST OPENER SIMULATOR LOGIC ---
+    function runSim() {
+      const type = document.getElementById('sim-type').value;
+      const count = parseInt(document.getElementById('sim-count').value, 10) || 100;
+      executeSimulation(type, count);
+    }
+
+    function runSimTimeframe() {
+      const count = 25 * currentDays;
+      document.getElementById('sim-type').value = 'deluxe';
+      document.getElementById('sim-count').value = count;
+      executeSimulation('deluxe', count);
+    }
+
+    function executeSimulation(typeKey, count) {
+      const chest = CHEST_RATES[typeKey];
+      let shards = 0, statues = 0, rawResChests = 0, stamina = 0, speedupMins = 0, ore = 0;
+
+      for (let i = 0; i < count; i++) {
+        const r = Math.random();
+        if (typeKey === 'rare') {
+          if (r < 0.02) statues += 1;
+          else if (r < 0.05) shards += 1;
+          else if (r < 0.25) rawResChests += 1; // 20% SSR
+          else if (r < 0.45) stamina += 10;
+          else if (r < 0.70) speedupMins += 15;
+          else if (r < 1.00) ore += 30;
+        } else {
+          // Deluxe
+          if (r < 0.02) statues += 1;
+          else if (r < 0.035) shards += 2; // 1.5% for 2x
+          else if (r < 0.065) shards += 1; // 3.0% for 1x
+          else if (r < 0.265) rawResChests += 1; // 20.0% UR
+          else if (r < 0.365) stamina += 50;
+          else if (r < 0.715) speedupMins += 25;
+          else if (r < 1.000) ore += 50;
+        }
+      }
+
+      shards = Math.round(shards * 10) / 10;
+      // Multiplier logic: 1 UR chest = 3 SSR eq (MULTIPLIED BY 3!)
+      const normResChests = typeKey === 'rare' ? rawResChests : rawResChests * 3;
+
+      const expShards = (count * chest.shardsAvg).toFixed(1);
+      const expStatues = Math.round(count * chest.statueAvg);
+      const expNormChests = Math.round(count * chest.chestResNormAvg);
+      const expStamina = Math.round(count * chest.staminaAvg);
+      const expSpeedups = count * chest.speedupAvg;
+      const expOre = Math.round(count * chest.oreAvg);
+
+      document.getElementById('sim-res-shards').textContent = shards;
+      document.getElementById('sim-res-statues').textContent = statues;
+      document.getElementById('sim-res-chests').textContent = `${normResChests} (${rawResChests})`;
+      document.getElementById('sim-res-stamina').textContent = Math.round(stamina).toLocaleString();
+      document.getElementById('sim-res-speedups').textContent = formatMinutes(speedupMins);
+      document.getElementById('sim-res-ore').textContent = Math.round(ore).toLocaleString();
+
+      document.getElementById('sim-exp-shards').textContent = `Exp: ${expShards}`;
+      document.getElementById('sim-exp-statues').textContent = `Exp: ${expStatues}`;
+      document.getElementById('sim-exp-chests').textContent = `Exp: ${expNormChests}`;
+      document.getElementById('sim-exp-stamina').textContent = `Exp: ${expStamina.toLocaleString()}`;
+      document.getElementById('sim-exp-speedups').textContent = `Exp: ${formatMinutes(expSpeedups)}`;
+      document.getElementById('sim-exp-ore').textContent = `Exp: ${expOre.toLocaleString()}`;
+
+      document.getElementById('sim-log').innerHTML = 
+        `Opened <strong>${count}</strong> x ${typeKey === 'deluxe' ? 'Deluxe Adventurer' : 'Rare Explorer'} Chests.<br>` +
+        `Received: ${shards} UR Shards, ${statues} Statues, ${rawResChests} x ${chest.chestResType} Chests (${normResChests} SSR eq*), ${Math.round(stamina)} Stamina, ${formatMinutes(speedupMins)} Speedups, ${Math.round(ore)} Ore.`;
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      renderTable();
+      drawCostChart();
+    });
+
+    window.addEventListener('resize', drawCostChart);
+  </script>
+</body>
+</html>
