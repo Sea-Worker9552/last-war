@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Last War: Survival • Alliance Command Center</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0b1120;
+      --panel-bg: rgba(30, 41, 59, 0.75);
+      --panel-border: rgba(255, 255, 255, 0.1);
+      --gold-primary: #eab308;
+      --gold-light: #fef08a;
+      --cyan-primary: #06b6d4;
+      --cyan-light: #cffaff;
+      --orange-primary: #f97316;
+      --red-accent: #ef4444;
+      --green-accent: #22c55e;
+      --purple-accent: #a855f7;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-family);
+      line-height: 1.6;
+      padding: 32px 16px;
+      min-height: 100vh;
+    }
+
+    .tactical-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: 
+        radial-gradient(circle at 20% 15%, rgba(234, 179, 8, 0.07) 0%, transparent 50%),
+        radial-gradient(circle at 80% 75%, rgba(6, 182, 212, 0.08) 0%, transparent 50%),
+        linear-gradient(180deg, #070b14 0%, #0b1120 100%);
+      z-index: -1;
+    }
+
+    .app-container {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    /* Hero Header Banner */
+    .hero-header {
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95));
+      border: 1px solid rgba(234, 179, 8, 0.35);
+      border-radius: 16px;
+      padding: 36px 32px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -10%;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(234, 179, 8, 0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .hub-badge {
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 1.8px;
+      color: var(--gold-primary);
+      background: rgba(234, 179, 8, 0.12);
+      border: 1px solid rgba(234, 179, 8, 0.4);
+      padding: 5px 16px;
+      border-radius: 20px;
+      text-transform: uppercase;
+    }
+
+    .system-status {
+      font-size: 0.8rem;
+      color: var(--green-accent);
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(34, 197, 94, 0.1);
+      padding: 4px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(34, 197, 94, 0.25);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background-color: var(--green-accent);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--green-accent);
+    }
+
+    .hero-header h1 {
+      font-size: 2.3rem;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.5px;
+      margin-bottom: 6px;
+    }
+
+    .hero-header p.subtitle {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      max-width: 800px;
+    }
+
+    /* Quick Stats Metrics Row */
+    .metrics-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+
+    .metric-card {
+      background: var(--panel-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--panel-border);
+      border-radius: 12px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .metric-icon {
+      font-size: 1.8rem;
+      background: rgba(255, 255, 255, 0.05);
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .metric-info .val {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #ffffff;
+    }
+
+    .metric-info .lbl {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    /* Filter & Search Bar */
+    .controls-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      background: rgba(30, 41, 59, 0.6);
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: 1px solid var(--panel-border);
+    }
+
+    .filter-tags {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--text-muted);
+      font-family: var(--font-family);
+      font-size: 0.85rem;
+      font-weight: 700;
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .filter-btn:hover {
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .filter-btn.active {
+      background: var(--gold-primary);
+      color: #000000;
+      border-color: var(--gold-primary);
+      box-shadow: 0 4px 12px rgba(234, 179, 8, 0.25);
+    }
+
+    .search-box {
+      position: relative;
+      min-width: 240px;
+      flex: 1;
+      max-width: 320px;
+    }
+
+    .search-box input {
+      width: 100%;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      color: #ffffff;
+      font-family: var(--font-family);
+      font-size: 0.88rem;
+      padding: 9px 12px 9px 36px;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+
+    .search-box input:focus {
+      border-color: var(--cyan-primary);
+      box-shadow: 0 0 10px rgba(6, 182, 212, 0.2);
+    }
+
+    .search-box::before {
+      content: '🔍';
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.85rem;
+      opacity: 0.7;
+    }
+
+    /* Tools Grid Layout */
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 24px;
+    }
+
+    .tool-card {
+      background: var(--panel-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--panel-border);
+      border-radius: 14px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tool-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(234, 179, 8, 0.5);
+      box-shadow: 0 16px 35px rgba(0, 0, 0, 0.4), 0 0 20px rgba(234, 179, 8, 0.1);
+    }
+
+    .tool-card.card-cyan:hover {
+      border-color: rgba(6, 182, 212, 0.6);
+      box-shadow: 0 16px 35px rgba(0, 0, 0, 0.4), 0 0 20px rgba(6, 182, 212, 0.15);
+    }
+
+    .tool-card.card-purple:hover {
+      border-color: rgba(168, 85, 247, 0.6);
+      box-shadow: 0 16px 35px rgba(0, 0, 0, 0.4), 0 0 20px rgba(168, 85, 247, 0.15);
+    }
+
+    .tool-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+
+    .tool-icon-wrapper {
+      font-size: 2rem;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      width: 54px;
+      height: 54px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .tool-category-badge {
+      font-size: 0.7rem;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      text-transform: uppercase;
+    }
+
+    .badge-tech {
+      background: rgba(234, 179, 8, 0.15);
+      color: var(--gold-primary);
+      border: 1px solid rgba(234, 179, 8, 0.4);
+    }
+
+    .badge-duel {
+      background: rgba(6, 182, 212, 0.15);
+      color: var(--cyan-primary);
+      border: 1px solid rgba(6, 182, 212, 0.4);
+    }
+
+    .badge-events {
+      background: rgba(249, 115, 22, 0.15);
+      color: var(--orange-primary);
+      border: 1px solid rgba(249, 115, 22, 0.4);
+    }
+
+    .badge-heroes {
+      background: rgba(168, 85, 247, 0.15);
+      color: var(--purple-accent);
+      border: 1px solid rgba(168, 85, 247, 0.4);
+    }
+
+    .tool-card h2 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 8px;
+    }
+
+    .tool-card p.description {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 18px;
+      line-height: 1.5;
+    }
+
+    .features-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 22px;
+    }
+
+    .feature-tag {
+      font-size: 0.76rem;
+      font-weight: 600;
+      color: #cbd5e1;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 16px;
+      margin-top: auto;
+    }
+
+    .btn-launch {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--gold-primary);
+      color: #000000;
+      font-family: var(--font-family);
+      font-weight: 800;
+      font-size: 0.9rem;
+      padding: 10px 18px;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(234, 179, 8, 0.25);
+    }
+
+    .btn-launch:hover {
+      background: var(--gold-light);
+      transform: translateX(2px);
+      box-shadow: 0 6px 16px rgba(234, 179, 8, 0.4);
+    }
+
+    .btn-launch.cyan {
+      background: var(--cyan-primary);
+      color: #000000;
+      box-shadow: 0 4px 12px rgba(6, 182, 212, 0.25);
+    }
+
+    .btn-launch.cyan:hover {
+      background: var(--cyan-light);
+      box-shadow: 0 6px 16px rgba(6, 182, 212, 0.4);
+    }
+
+    .btn-launch.purple {
+      background: var(--purple-accent);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(168, 85, 247, 0.25);
+    }
+
+    .btn-launch.purple:hover {
+      background: #c084fc;
+      box-shadow: 0 6px 16px rgba(168, 85, 247, 0.4);
+    }
+
+    .btn-launch.orange {
+      background: var(--orange-primary);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(249, 115, 22, 0.25);
+    }
+
+    .btn-launch.orange:hover {
+      background: #fb923c;
+      box-shadow: 0 6px 16px rgba(249, 115, 22, 0.4);
+    }
+
+    .status-text {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    /* Footer */
+    .hub-footer {
+      text-align: center;
+      padding: 24px 0 12px;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="tactical-bg"></div>
+
+  <div class="app-container">
+    <!-- Hero Header -->
+    <header class="hero-header">
+      <div class="header-top">
+        <span class="hub-badge">LAST WAR: SURVIVAL • ALLIANCE COMMAND CENTER</span>
+        <div class="system-status">
+          <span class="status-dot"></span>
+          <span>4 Offline Tools Active</span>
+        </div>
+      </div>
+      <h1>ANALYTICAL DASHBOARDS & CALCULATOR SUITE</h1>
+      <p class="subtitle">Central portal for Last War: Survival command suite — T10 Special Forces, Alliance Duel Training, Zombie Boss Spawning Rules, and Taylor Hero ROI & Daily Yield Payout Simulator.</p>
+    </header>
+
+    <!-- Metrics Summary -->
+    <div class="metrics-row">
+      <div class="metric-card">
+        <div class="metric-icon">🛡️</div>
+        <div class="metric-info">
+          <div class="val">T10 Tech</div>
+          <div class="lbl">Special Forces Tree</div>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon">⚡</div>
+        <div class="metric-info">
+          <div class="val">VS Friday</div>
+          <div class="lbl">Troop Training Points</div>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon">🧟</div>
+        <div class="metric-info">
+          <div class="val">Level 5 ~ 100</div>
+          <div class="lbl">Zombie Boss Spawns</div>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon">💎</div>
+        <div class="metric-info">
+          <div class="val">1 ~ 365 Days</div>
+          <div class="lbl">Taylor ROI & Payouts</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter & Search Bar -->
+    <div class="controls-bar">
+      <div class="filter-tags">
+        <button class="filter-btn active" onclick="filterCategory('all', this)">All Dashboards</button>
+        <button class="filter-btn" onclick="filterCategory('tech', this)">Tech & Research</button>
+        <button class="filter-btn" onclick="filterCategory('duel', this)">Alliance Duel</button>
+        <button class="filter-btn" onclick="filterCategory('events', this)">Events</button>
+        <button class="filter-btn" onclick="filterCategory('heroes', this)">Heroes</button>
+      </div>
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Search dashboards or features..." oninput="searchTools()">
+      </div>
+    </div>
+
+    <!-- Tools Grid -->
+    <div class="tools-grid" id="toolsGrid">
+
+      <!-- 1. Special Forces Cost Dashboard -->
+      <div class="tool-card" data-category="tech" data-title="special forces cost dashboard t10 medals rss speedup">
+        <div>
+          <div class="tool-header">
+            <div class="tool-icon-wrapper">🛡️</div>
+            <span class="tool-category-badge badge-tech">Tech & Research</span>
+          </div>
+          <h2>Special Forces Cost Dashboard</h2>
+          <p class="description">Interactive T10 Special Forces research tree calculator. Calculate total medals, RSS requirements, badge costs, and speedup optimization for T10 troops.</p>
+          <div class="features-list">
+            <span class="feature-tag">T10 Research Tree</span>
+            <span class="feature-tag">Medals & Badges</span>
+            <span class="feature-tag">RSS Breakdown</span>
+            <span class="feature-tag">Speedup ROI</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <span class="status-text">✅ Interactive Tool</span>
+          <a href="t10-special-forces/special_forces_dashboard.html" class="btn-launch">Launch Tool ➔</a>
+        </div>
+      </div>
+
+      <!-- 2. Last War Training Dashboard -->
+      <div class="tool-card card-cyan" data-category="duel" data-title="last war training dashboard vs friday troop promotion speedup points">
+        <div>
+          <div class="tool-header">
+            <div class="tool-icon-wrapper">⚡</div>
+            <span class="tool-category-badge badge-duel">Alliance Duel</span>
+          </div>
+          <h2>VS Friday Troop Training Dashboard</h2>
+          <p class="description">Alliance Duel Friday training & promotion points calculator. Compare troop tier promotion vs direct training to maximize points per speedup minute.</p>
+          <div class="features-list">
+            <span class="feature-tag">VS Friday Points</span>
+            <span class="feature-tag">Promotion vs Direct</span>
+            <span class="feature-tag">Tier 1 ~ 10 Efficiency</span>
+            <span class="feature-tag">Speedup Optimizer</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <span class="status-text">✅ Interactive Tool</span>
+          <a href="alliance-troop-training-dashboard/vs-friday-calculator.html" class="btn-launch cyan">Launch Tool ➔</a>
+        </div>
+      </div>
+
+      <!-- 3. Gold Zombie Boss Spawning Guide -->
+      <div class="tool-card" data-category="events" data-title="gold zombie boss spawning rules guide simulator level freeze">
+        <div>
+          <div class="tool-header">
+            <div class="tool-icon-wrapper">🧟</div>
+            <span class="tool-category-badge badge-events">Events & Bosses</span>
+          </div>
+          <h2>Gold Zombie Boss Spawning Guide</h2>
+          <p class="description">Official Support Rules visualizer and live simulator. Models Rule 1 (Summon & Slay) and Rule 2 (+5 Rally Leader) escalation combos with Level Freeze tactics.</p>
+          <div class="features-list">
+            <span class="feature-tag">2-Tab Guide & Calc</span>
+            <span class="feature-tag">Rule 1 + 2 Combo</span>
+            <span class="feature-tag">Live Spawning Matrix</span>
+            <span class="feature-tag">Level Freeze Secret</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <span class="status-text">✅ 2-Tab Visual Tool</span>
+          <a href="Gold_Zombie_Boss_Infographic/gold_zombie_boss_level_tool.html" class="btn-launch orange">Launch Tool ➔</a>
+        </div>
+      </div>
+
+      <!-- 4. Taylor ROI & Daily Yield Payout Simulator -->
+      <div class="tool-card card-purple" data-category="heroes" data-title="taylor roi daily yield payout simulator hero survivor investment chest drops 365 days">
+        <div>
+          <div class="tool-header">
+            <div class="tool-icon-wrapper">💎</div>
+            <span class="tool-category-badge badge-heroes">Hero Development</span>
+          </div>
+          <h2>Taylor ROI & Daily Yield Simulator</h2>
+          <p class="description">Interactive UR Taylor investment & payout calculator. Adjust timeframe sliders (1~365 days) to model star upgrade costs vs expected RSS, speedup, and shard yield ROI.</p>
+          <div class="features-list">
+            <span class="feature-tag">Dynamic Timeframe (1~365d)</span>
+            <span class="feature-tag">Daily Chest Payouts</span>
+            <span class="feature-tag">Upgrade Cost vs Yield</span>
+            <span class="feature-tag">Payback & ROI Period</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <span class="status-text">✅ Interactive Simulator</span>
+          <a href="taylor-upgrade-cost/taylor_30day_summary_table.html" class="btn-launch purple">Launch Tool ➔</a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="hub-footer">
+      <p>Last War: Survival • Alliance Command Center Hub • Standalone Offline Edition</p>
+    </footer>
+  </div>
+
+  <script>
+    let currentCategory = 'all';
+
+    function filterCategory(cat, btn) {
+      currentCategory = cat;
+      const buttons = document.querySelectorAll('.filter-btn');
+      buttons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      applyFilters();
+    }
+
+    function searchTools() {
+      applyFilters();
+    }
+
+    function applyFilters() {
+      const query = document.getElementById('searchInput').value.toLowerCase().trim();
+      const cards = document.querySelectorAll('.tool-card');
+
+      cards.forEach(card => {
+        const cat = card.getAttribute('data-category');
+        const title = card.getAttribute('data-title');
+
+        const matchesCat = (currentCategory === 'all' || cat === currentCategory);
+        const matchesQuery = (query === '' || title.includes(query) || card.textContent.toLowerCase().includes(query));
+
+        if (matchesCat && matchesQuery) {
+          card.style.display = 'flex';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+  </script>
+</body>
+</html>
