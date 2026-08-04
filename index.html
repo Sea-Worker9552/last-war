@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,9 +9,38 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
+      /* Dark Theme Default */
       --bg-dark: #0b1120;
+      --bg-tactical: radial-gradient(circle at 20% 15%, rgba(234, 179, 8, 0.07) 0%, transparent 50%),
+                      radial-gradient(circle at 80% 75%, rgba(6, 182, 212, 0.08) 0%, transparent 50%),
+                      linear-gradient(180deg, #070b14 0%, #0b1120 100%);
+      --hero-bg: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95));
+      --hero-border: rgba(234, 179, 8, 0.35);
+      --hero-title-color: #ffffff;
       --panel-bg: rgba(30, 41, 59, 0.75);
       --panel-border: rgba(255, 255, 255, 0.1);
+      --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      --card-hover-shadow: 0 16px 35px rgba(0, 0, 0, 0.4);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      
+      --controls-bg: rgba(30, 41, 59, 0.6);
+      --filter-btn-bg: rgba(15, 23, 42, 0.6);
+      --filter-btn-border: rgba(255, 255, 255, 0.12);
+      
+      --input-bg: rgba(15, 23, 42, 0.8);
+      --input-border: rgba(255, 255, 255, 0.15);
+      --input-color: #ffffff;
+      
+      --icon-bg: rgba(15, 23, 42, 0.6);
+      --icon-border: rgba(255, 255, 255, 0.1);
+      
+      --feature-tag-bg: rgba(15, 23, 42, 0.7);
+      --feature-tag-text: #cbd5e1;
+      --feature-tag-border: rgba(255, 255, 255, 0.08);
+      
+      --footer-border: rgba(255, 255, 255, 0.08);
+
       --gold-primary: #eab308;
       --gold-light: #fef08a;
       --cyan-primary: #06b6d4;
@@ -20,9 +49,41 @@
       --red-accent: #ef4444;
       --green-accent: #22c55e;
       --purple-accent: #a855f7;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
       --font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    /* Light Theme Custom Properties */
+    html[data-theme="light"] {
+      --bg-dark: #f1f5f9;
+      --bg-tactical: radial-gradient(circle at 20% 15%, rgba(234, 179, 8, 0.12) 0%, transparent 50%),
+                      radial-gradient(circle at 80% 75%, rgba(6, 182, 212, 0.12) 0%, transparent 50%),
+                      linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
+      --hero-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(241, 245, 249, 0.98));
+      --hero-border: rgba(234, 179, 8, 0.5);
+      --hero-title-color: #0f172a;
+      --panel-bg: rgba(255, 255, 255, 0.88);
+      --panel-border: rgba(148, 163, 184, 0.3);
+      --card-shadow: 0 10px 25px rgba(148, 163, 184, 0.15);
+      --card-hover-shadow: 0 16px 35px rgba(148, 163, 184, 0.25);
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      
+      --controls-bg: rgba(255, 255, 255, 0.75);
+      --filter-btn-bg: rgba(241, 245, 249, 0.9);
+      --filter-btn-border: rgba(203, 213, 225, 0.8);
+      
+      --input-bg: #ffffff;
+      --input-border: #cbd5e1;
+      --input-color: #0f172a;
+      
+      --icon-bg: rgba(241, 245, 249, 0.9);
+      --icon-border: rgba(203, 213, 225, 0.7);
+      
+      --feature-tag-bg: #e2e8f0;
+      --feature-tag-text: #334155;
+      --feature-tag-border: rgba(203, 213, 225, 0.8);
+      
+      --footer-border: rgba(203, 213, 225, 0.6);
     }
 
     * {
@@ -38,6 +99,7 @@
       line-height: 1.6;
       padding: 32px 16px;
       min-height: 100vh;
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
 
     .tactical-bg {
@@ -46,11 +108,9 @@
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: 
-        radial-gradient(circle at 20% 15%, rgba(234, 179, 8, 0.07) 0%, transparent 50%),
-        radial-gradient(circle at 80% 75%, rgba(6, 182, 212, 0.08) 0%, transparent 50%),
-        linear-gradient(180deg, #070b14 0%, #0b1120 100%);
+      background: var(--bg-tactical);
       z-index: -1;
+      transition: background 0.3s ease;
     }
 
     .app-container {
@@ -63,13 +123,14 @@
 
     /* Hero Header Banner */
     .hero-header {
-      background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95));
-      border: 1px solid rgba(234, 179, 8, 0.35);
+      background: var(--hero-bg);
+      border: 1px solid var(--hero-border);
       border-radius: 16px;
       padding: 36px 32px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      box-shadow: var(--card-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.1);
       position: relative;
       overflow: hidden;
+      transition: background 0.3s ease, border-color 0.3s ease;
     }
 
     .hero-header::before {
@@ -104,6 +165,51 @@
       text-transform: uppercase;
     }
 
+    .header-right-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    /* Theme Switcher Controls */
+    .theme-switcher {
+      display: inline-flex;
+      background: var(--icon-bg);
+      border: 1px solid var(--icon-border);
+      padding: 3px;
+      border-radius: 10px;
+      gap: 2px;
+      align-items: center;
+    }
+
+    .theme-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      font-family: var(--font-family);
+      font-size: 0.76rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 7px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .theme-btn:hover {
+      color: var(--text-main);
+    }
+
+    .theme-btn.active {
+      background: var(--panel-bg);
+      color: var(--text-main);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      border-color: var(--panel-border);
+    }
+
     .system-status {
       font-size: 0.8rem;
       color: var(--green-accent);
@@ -128,7 +234,7 @@
     .hero-header h1 {
       font-size: 2.3rem;
       font-weight: 800;
-      color: #ffffff;
+      color: var(--hero-title-color);
       letter-spacing: -0.5px;
       margin-bottom: 6px;
     }
@@ -142,7 +248,7 @@
     /* Quick Stats Metrics Row */
     .metrics-row {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 16px;
     }
 
@@ -155,24 +261,25 @@
       display: flex;
       align-items: center;
       gap: 16px;
+      transition: background 0.3s ease, border-color 0.3s ease;
     }
 
     .metric-icon {
       font-size: 1.8rem;
-      background: rgba(255, 255, 255, 0.05);
+      background: var(--icon-bg);
       width: 48px;
       height: 48px;
       border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--icon-border);
     }
 
     .metric-info .val {
       font-size: 1.25rem;
       font-weight: 800;
-      color: #ffffff;
+      color: var(--text-main);
     }
 
     .metric-info .lbl {
@@ -188,10 +295,11 @@
       align-items: center;
       gap: 16px;
       flex-wrap: wrap;
-      background: rgba(30, 41, 59, 0.6);
+      background: var(--controls-bg);
       padding: 12px 16px;
       border-radius: 12px;
       border: 1px solid var(--panel-border);
+      transition: background 0.3s ease, border-color 0.3s ease;
     }
 
     .filter-tags {
@@ -201,8 +309,8 @@
     }
 
     .filter-btn {
-      background: rgba(15, 23, 42, 0.6);
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: var(--filter-btn-bg);
+      border: 1px solid var(--filter-btn-border);
       color: var(--text-muted);
       font-family: var(--font-family);
       font-size: 0.85rem;
@@ -214,9 +322,8 @@
     }
 
     .filter-btn:hover {
-      color: #ffffff;
-      border-color: rgba(255, 255, 255, 0.3);
-      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-main);
+      border-color: var(--panel-border);
     }
 
     .filter-btn.active {
@@ -235,15 +342,15 @@
 
     .search-box input {
       width: 100%;
-      background: rgba(15, 23, 42, 0.8);
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
       border-radius: 8px;
-      color: #ffffff;
+      color: var(--input-color);
       font-family: var(--font-family);
       font-size: 0.88rem;
       padding: 9px 12px 9px 36px;
       outline: none;
-      transition: border-color 0.2s ease;
+      transition: border-color 0.2s ease, background 0.3s ease;
     }
 
     .search-box input:focus {
@@ -277,8 +384,8 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: var(--card-shadow);
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, background 0.3s ease;
       position: relative;
       overflow: hidden;
     }
@@ -286,17 +393,17 @@
     .tool-card:hover {
       transform: translateY(-4px);
       border-color: rgba(234, 179, 8, 0.5);
-      box-shadow: 0 16px 35px rgba(0, 0, 0, 0.4), 0 0 20px rgba(234, 179, 8, 0.1);
+      box-shadow: var(--card-hover-shadow), 0 0 20px rgba(234, 179, 8, 0.1);
     }
 
     .tool-card.card-cyan:hover {
       border-color: rgba(6, 182, 212, 0.6);
-      box-shadow: 0 16px 35px rgba(0, 0, 0, 0.4), 0 0 20px rgba(6, 182, 212, 0.15);
+      box-shadow: var(--card-hover-shadow), 0 0 20px rgba(6, 182, 212, 0.15);
     }
 
     .tool-card.card-purple:hover {
       border-color: rgba(168, 85, 247, 0.6);
-      box-shadow: 0 16px 35px rgba(0, 0, 0, 0.4), 0 0 20px rgba(168, 85, 247, 0.15);
+      box-shadow: var(--card-hover-shadow), 0 0 20px rgba(168, 85, 247, 0.15);
     }
 
     .tool-header {
@@ -308,8 +415,8 @@
 
     .tool-icon-wrapper {
       font-size: 2rem;
-      background: rgba(15, 23, 42, 0.6);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: var(--icon-bg);
+      border: 1px solid var(--icon-border);
       width: 54px;
       height: 54px;
       border-radius: 12px;
@@ -354,7 +461,7 @@
     .tool-card h2 {
       font-size: 1.25rem;
       font-weight: 800;
-      color: #ffffff;
+      color: var(--text-main);
       margin-bottom: 8px;
     }
 
@@ -375,9 +482,9 @@
     .feature-tag {
       font-size: 0.76rem;
       font-weight: 600;
-      color: #cbd5e1;
-      background: rgba(15, 23, 42, 0.7);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--feature-tag-text);
+      background: var(--feature-tag-bg);
+      border: 1px solid var(--feature-tag-border);
       padding: 3px 8px;
       border-radius: 4px;
     }
@@ -386,7 +493,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      border-top: 1px solid var(--footer-border);
       padding-top: 16px;
       margin-top: auto;
     }
@@ -458,7 +565,7 @@
       padding: 24px 0 12px;
       color: var(--text-muted);
       font-size: 0.85rem;
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      border-top: 1px solid var(--footer-border);
       margin-top: 20px;
     }
   </style>
@@ -471,13 +578,23 @@
     <header class="hero-header">
       <div class="header-top">
         <span class="hub-badge">LAST WAR: SURVIVAL • ALLIANCE COMMAND CENTER</span>
-        <div class="system-status">
-          <span class="status-dot"></span>
-          <span>4 Offline Tools Active</span>
+        
+        <div class="header-right-controls">
+          <!-- Theme Switcher -->
+          <div class="theme-switcher" role="radiogroup" aria-label="Color Theme Switcher">
+            <button class="theme-btn" data-theme-val="light" onclick="setTheme('light')" title="Light Mode">☀️ Light</button>
+            <button class="theme-btn" data-theme-val="dark" onclick="setTheme('dark')" title="Dark Mode">🌙 Dark</button>
+            <button class="theme-btn" data-theme-val="system" onclick="setTheme('system')" title="System Preference">💻 System</button>
+          </div>
+
+          <div class="system-status">
+            <span class="status-dot"></span>
+            <span>5 Offline Tools Active</span>
+          </div>
         </div>
       </div>
       <h1>ANALYTICAL DASHBOARDS & CALCULATOR SUITE</h1>
-      <p class="subtitle">Central portal for Last War: Survival command suite — T10 Special Forces, Alliance Duel Training, Zombie Boss Spawning Rules, and Taylor Hero ROI & Daily Yield Payout Simulator.</p>
+      <p class="subtitle">Central portal for Last War: Survival command suite — T10 Special Forces, Alliance Help Breakeven, VS Friday Troop Training, Zombie Boss Spawning Rules, and Taylor Hero ROI & Daily Yield Simulator.</p>
     </header>
 
     <!-- Metrics Summary -->
@@ -487,6 +604,14 @@
         <div class="metric-info">
           <div class="val">T10 Tech</div>
           <div class="lbl">Special Forces Tree</div>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon">🏛️</div>
+        <div class="metric-info">
+          <div class="val">Alliance Help</div>
+          <div class="lbl">Survivor Breakeven</div>
         </div>
       </div>
 
@@ -550,11 +675,33 @@
         </div>
         <div class="card-footer">
           <span class="status-text">✅ Interactive Tool</span>
-          <a href="tools/special_forces_dashboard.html" class="btn-launch">Launch Tool ➔</a>
+          <a href="t10-special-forces/special_forces_dashboard.html" class="btn-launch">Launch Tool ➔</a>
         </div>
       </div>
 
-      <!-- 2. Last War Training Dashboard -->
+      <!-- 2. Alliance Center Help Breakeven Dashboard -->
+      <div class="tool-card" data-category="tech" data-title="alliance help breakeven dashboard survivor ur ssr 0.5% flat build time construction research">
+        <div>
+          <div class="tool-header">
+            <div class="tool-icon-wrapper">🏛️</div>
+            <span class="tool-category-badge badge-tech">Tech & Research</span>
+          </div>
+          <h2>Alliance Help Breakeven Dashboard</h2>
+          <p class="description">Compare Survivor setups (UR vs SSR) to optimize construction and research speedups. Model 0.5% vs flat time reductions and calculate exact build breakeven curves.</p>
+          <div class="features-list">
+            <span class="feature-tag">Survivor Setup</span>
+            <span class="feature-tag">0.5% vs Flat Time</span>
+            <span class="feature-tag">Breakeven Curve</span>
+            <span class="feature-tag">Speedup Optimizer</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <span class="status-text">✅ Interactive Tool</span>
+          <a href="alliance-center-dashboard/alliance_help_survivor_calculator.html" class="btn-launch">Launch Tool ➔</a>
+        </div>
+      </div>
+
+      <!-- 3. Last War Training Dashboard -->
       <div class="tool-card card-cyan" data-category="duel" data-title="last war training dashboard vs friday troop promotion speedup points">
         <div>
           <div class="tool-header">
@@ -572,11 +719,11 @@
         </div>
         <div class="card-footer">
           <span class="status-text">✅ Interactive Tool</span>
-          <a href="vs-tools/vs-friday-calculator.html" class="btn-launch cyan">Launch Tool ➔</a>
+          <a href="alliance-troop-training-dashboard/vs-friday-calculator.html" class="btn-launch cyan">Launch Tool ➔</a>
         </div>
       </div>
 
-      <!-- 3. Gold Zombie Boss Spawning Guide -->
+      <!-- 4. Gold Zombie Boss Spawning Guide -->
       <div class="tool-card" data-category="events" data-title="gold zombie boss spawning rules guide simulator level freeze">
         <div>
           <div class="tool-header">
@@ -594,11 +741,11 @@
         </div>
         <div class="card-footer">
           <span class="status-text">✅ 2-Tab Visual Tool</span>
-          <a href="tools/gold_zombie_boss_level_tool.html" class="btn-launch orange">Launch Tool ➔</a>
+          <a href="Gold_Zombie_Boss_Infographic/gold_zombie_boss_level_tool.html" class="btn-launch orange">Launch Tool ➔</a>
         </div>
       </div>
 
-      <!-- 4. Taylor ROI & Daily Yield Payout Simulator -->
+      <!-- 5. Taylor ROI & Daily Yield Payout Simulator -->
       <div class="tool-card card-purple" data-category="heroes" data-title="taylor roi daily yield payout simulator hero survivor investment chest drops 365 days">
         <div>
           <div class="tool-header">
@@ -616,7 +763,7 @@
         </div>
         <div class="card-footer">
           <span class="status-text">✅ Interactive Simulator</span>
-          <a href="tools/taylor_30day_summary_table.html" class="btn-launch purple">Launch Tool ➔</a>
+          <a href="taylor-upgrade-cost/taylor_30day_summary_table.html" class="btn-launch purple">Launch Tool ➔</a>
         </div>
       </div>
 
@@ -624,13 +771,52 @@
 
     <!-- Footer -->
     <footer class="hub-footer">
-      <p>Last War: Survival • Alliance Command Center Hub • Standalone Offline Edition</p>
+      <p>Last War: Survival • Alliance Command Center Hub • powered by bananas 🍌 • Last Updated: 8/3/26</p>
     </footer>
   </div>
 
   <script>
     let currentCategory = 'all';
+    let currentThemeMode = localStorage.getItem('theme-mode') || 'system';
 
+    /* Theme Switcher Logic */
+    function setTheme(mode) {
+      currentThemeMode = mode;
+      localStorage.setItem('theme-mode', mode);
+      applyTheme();
+    }
+
+    function applyTheme() {
+      const root = document.documentElement;
+      const buttons = document.querySelectorAll('.theme-btn');
+
+      buttons.forEach(btn => {
+        const val = btn.getAttribute('data-theme-val');
+        if (val === currentThemeMode) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+
+      if (currentThemeMode === 'system') {
+        const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        root.setAttribute('data-theme', systemDark ? 'dark' : 'light');
+      } else {
+        root.setAttribute('data-theme', currentThemeMode);
+      }
+    }
+
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+      if (currentThemeMode === 'system') {
+        applyTheme();
+      }
+    });
+
+    // Initialize Theme
+    applyTheme();
+
+    /* Filter & Search Logic */
     function filterCategory(cat, btn) {
       currentCategory = cat;
       const buttons = document.querySelectorAll('.filter-btn');
