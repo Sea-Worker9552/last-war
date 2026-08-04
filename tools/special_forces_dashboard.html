@@ -176,20 +176,20 @@
         }
 
         .btn-reorder {
-            background: var(--bg-input); border: 1px solid var(--border-color); color: var(--text-primary);
-            width: 26px; height: 26px; border-radius: 6px; cursor: pointer; font-weight: bold;
-            display: flex; align-items: center; justify-content: center; font-size: 0.8rem;
+            background: transparent; border: 1px solid transparent;
+            color: var(--text-secondary); width: 24px; height: 24px;
+            border-radius: 6px; cursor: pointer; font-size: 0.75rem;
+            display: inline-flex; align-items: center; justify-content: center;
+            transition: all 0.15s ease;
         }
-
         .btn-reorder:hover:not(:disabled) {
-            background: var(--accent-blue); color: #fff; border-color: var(--accent-blue);
+            background: var(--bg-input); border-color: var(--border-color); color: var(--text-primary);
         }
-
         .btn-reorder:disabled { opacity: 0.3; cursor: not-allowed; }
 
         .lock-note-tag {
-            font-size: 0.72rem; color: var(--accent-gold); font-weight: 600; background: rgba(217,119,6,0.12);
-            padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(217,119,6,0.4); margin-left: 4px;
+            font-size: 0.72rem; color: var(--accent-gold); font-weight: 600;
+            padding: 0; margin-left: 6px; display: inline-flex; align-items: center; gap: 3px;
         }
 
         .sf-progress-indicator {
@@ -728,7 +728,7 @@
                     <span>Filler Tech Strategy & Priority
                     <span class="info-tooltip-wrap">
                         <span class="info-tooltip-trigger">ℹ️</span>
-                        <div class="tooltip-box">
+                        <div class="tooltip-box" id="filler-strategy-tooltip-box">
                             <strong>💡 Filler Strategy Purpose:</strong><br>
                             Maintains ~9,000 Valor Badges spent every Wednesday for maximum VS Day points while avoiding Gold limit bottlenecks.<br><br>
                             • Check options to enable tech types as filler.<br>
@@ -5893,6 +5893,15 @@
         }
 
         function renderFillerPriorityUI() {
+            let tooltipValorBox = document.getElementById('filler-strategy-tooltip-box');
+            if (tooltipValorBox) {
+                let targetValorStr = (state.valorTarget || 9000).toLocaleString();
+                tooltipValorBox.innerHTML = `<strong>💡 Filler Strategy Purpose:</strong><br>
+Maintains ~${targetValorStr} Valor Badges spent every Wednesday for maximum VS Day points while avoiding Gold limit bottlenecks.<br><br>
+• Check options to enable tech types as filler.<br>
+• Use ▲ / ▼ to reorder descending priority.<br>
+• <strong>Siege to Seize</strong> &amp; <strong>Defense Fortifications</strong> can be checked anytime! In the weekly schedule, their filler introduction will automatically activate once Special Forces reaches 40% completion (89/221 levels).`;
+            }
             if (!Array.isArray(state.fillerOptions) || state.fillerOptions.length !== 4) {
                 state.fillerOptions = JSON.parse(JSON.stringify(DEFAULT_FILLER_OPTIONS));
             }
@@ -5900,8 +5909,10 @@
             let stats = getSfCompletionStats();
             let statusContainer = document.getElementById('sf-completion-status');
             if (statusContainer) {
-                statusContainer.innerHTML = `<span>🛡️ Initial Special Forces Progress: <strong>${stats.currentDone} / 221 levels (${stats.pct.toFixed(1)}% Complete)</strong></span> ` +
-                    (stats.is40Unlocked ? `<span class="lock-note-tag" style="background:rgba(22,163,74,0.15);color:var(--accent-green);border-color:var(--accent-green)">🔓 40% Threshold Unlocked in Baseline!</span>` : `<span class="lock-note-tag">⏳ 40% Threshold (89 levels) will activate dynamically in schedule</span>`);
+                statusContainer.innerHTML = `<div style="font-size:0.78rem; color:var(--text-secondary); margin-bottom:10px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:6px; background:var(--bg-input); padding:8px 12px; border-radius:8px; border:1px solid var(--border-color); width:100%;">
+                    <span>🛡️ SF Progress: <strong style="color:var(--text-primary)">${stats.currentDone}/221 levels</strong> (${stats.pct.toFixed(1)}%)</span>
+                    <span>${stats.is40Unlocked ? '🔓 <strong style="color:var(--accent-green)">40% Threshold Reached (Siege &amp; Fortifications Active)</strong>' : '⏳ <span style="color:var(--accent-gold); font-weight:600">Unlocks Siege &amp; Fortifications at 40% SF (89 levels)</span>'}</span>
+                </div>`;
             }
 
             let headerToggleContainer = document.getElementById('filler-master-toggle-box');
@@ -5936,7 +5947,9 @@
 
             let html = '';
             state.fillerOptions.forEach((opt, idx) => {
-                let lockNote = opt.requiresSf40 ? `<span class="lock-note-tag">🔒 Unlocks at 40% SF Research (89 levels)</span>` : '';
+                let lockNote = opt.requiresSf40 ? (stats.is40Unlocked ? 
+                    `<span class="lock-note-tag" style="color:var(--accent-green)" title="Unlocks once overall SF tech reaches 40% completion">🔓 40% SF Unlocked</span>` : 
+                    `<span class="lock-note-tag" title="Unlocks once overall SF tech reaches 40% completion (89/221 levels)">🔒 Requires 40% overall SF</span>`) : '';
                 let isChecked = opt.enabled ? 'checked' : '';
 
                 let upDisabled = (idx === 0) ? 'disabled' : '';
@@ -5945,7 +5958,7 @@
                 let extraSubControl = '';
                 if (opt.id === 'truck' && opt.enabled) {
                     let isStopChecked = state.stopAtExtraTruck !== false;
-                    extraSubControl = `<div style="width:100%; margin-top:6px; padding-left:26px; font-size:0.8rem; font-weight:600; color:var(--text-primary); border-top:1px dashed var(--border-color); padding-top:6px;">
+                    extraSubControl = `<div style="width:100%; margin-top:4px; padding-left:26px; font-size:0.76rem; font-weight:600; color:var(--text-secondary);">
                         <label style="cursor:pointer; display:inline-flex; align-items:center; gap:8px;">
                             <input type="checkbox" ${isStopChecked ? 'checked' : ''} onchange="toggleStopAtExtraTruck(this.checked)" style="width:15px; height:15px; accent-color:var(--accent-gold); cursor:pointer;">
                             <span>🛑 Stop at Extra Truck (Lvl 1)</span>
@@ -5964,7 +5977,7 @@
                         <span class="drag-grip-handle" title="Drag to reorder priority">⣿</span>
                         <input type="checkbox" id="chk-filler-${opt.id}" ${isChecked} onchange="toggleFillerOption('${opt.id}', this.checked)">
                         <label for="chk-filler-${opt.id}" style="cursor:pointer; display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-left:6px;">
-                            <span>Priority ${idx + 1}: <strong>${opt.label}</strong></span>
+                            <span>P${idx + 1}: <strong>${opt.label}</strong></span>
                             ${lockNote}
                         </label>
                     </div>
@@ -6125,6 +6138,7 @@
             }
             document.documentElement.setAttribute('data-theme', applyTheme);
             saveStateToLocalStorage();
+            if (state.cachedWeeks) renderCharts(state.cachedWeeks);
         }
 
         function toggleTooltip(evt) {
@@ -7035,7 +7049,7 @@
             let maxSpeed = Math.max(...weeks.map(w => w.speedupsDays), 1);
             let svgW = 1000, svgH = 260;
             let isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-            let strokeGrid = isDark ? '#334155' : '#e2e8f0';
+            let strokeGrid = isDark ? 'rgba(255, 255, 255, 0.08)' : '#e2e8f0';
             let textColor = isDark ? '#94a3b8' : '#64748b';
 
             let html = `<svg viewBox="0 0 ${svgW} ${svgH}" style="width:100%; height:100%;">`;
@@ -7123,7 +7137,7 @@
             let maxValor = Math.max(...weeks.map(w => w.valorSpent), state.valorTarget, 10000);
             let svgW = 1000, svgH = 240;
             let isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-            let strokeGrid = isDark ? '#334155' : '#e2e8f0';
+            let strokeGrid = isDark ? 'rgba(255, 255, 255, 0.08)' : '#e2e8f0';
             let textColor = isDark ? '#94a3b8' : '#64748b';
 
             let html = `<svg viewBox="0 0 ${svgW} ${svgH}" style="width:100%; height:100%;">`;
