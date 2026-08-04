@@ -163,16 +163,39 @@
 
         .filler-item-row {
             background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px;
-            padding: 8px 12px; display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 12px; display: flex; justify-content: space-between; align-items: flex-start;
             font-size: 0.85rem; font-weight: 600; user-select: none;
         }
 
         .filler-item-left {
-            display: flex; align-items: center; gap: 10px;
+            display: flex; align-items: flex-start; gap: 8px; flex: 1;
         }
 
+        .custom-filler-checkbox {
+            width: 18px !important;
+            height: 18px !important;
+            min-width: 18px !important;
+            min-height: 18px !important;
+            max-width: 18px !important;
+            max-height: 18px !important;
+            flex-shrink: 0 !important;
+            accent-color: var(--accent-gold);
+            cursor: pointer;
+            margin-top: 2px !important;
+            align-self: flex-start !important;
+            -webkit-appearance: checkbox;
+            appearance: checkbox;
+            box-sizing: border-box;
+        }
+
+        .drag-grip-handle {
+            cursor: grab; color: var(--text-secondary); opacity: 0.6; font-size: 0.9rem;
+            margin-top: 2px; flex-shrink: 0; user-select: none;
+        }
+        .drag-grip-handle:hover { opacity: 1; }
+
         .filler-item-controls {
-            display: flex; align-items: center; gap: 4px;
+            display: flex; align-items: center; gap: 4px; align-self: flex-start; margin-top: 2px;
         }
 
         .btn-reorder {
@@ -6031,10 +6054,10 @@ Automatically queues secondary filler research to reach your targeted weekly Val
                 let extraSubControl = '';
                 if (opt.id === 'truck' && opt.enabled) {
                     let isStopChecked = state.stopAtExtraTruck !== false;
-                    extraSubControl = `<div style="width:100%; margin-top:6px; padding-left:58px;">
-                        <label style="cursor:pointer; display:inline-flex; align-items:center; gap:6px; font-size:0.72rem; font-weight:600; color:var(--accent-gold);">
-                            <input type="checkbox" ${isStopChecked ? 'checked' : ''} onchange="toggleStopAtExtraTruck(this.checked)" style="width:14px; height:14px; accent-color:var(--accent-gold); cursor:pointer;">
-                            <span>🛑 Stop at Extra Truck (Lvl 1)</span>
+                    extraSubControl = `<div style="margin-top:4px; width:100%;">
+                        <label style="cursor:pointer; display:inline-flex; align-items:center; gap:8px; font-size:0.72rem; font-weight:600; color:var(--accent-gold);">
+                            <input type="checkbox" ${isStopChecked ? 'checked' : ''} onchange="toggleStopAtExtraTruck(this.checked)" class="custom-filler-checkbox" style="width:14px !important; height:14px !important; min-width:14px !important; min-height:14px !important; margin-top:0 !important;">
+                            <span style="display:inline-flex; align-items:center; gap:4px;">🛑 STOP AT EXTRA TRUCK (LVL 1)</span>
                         </label>
                     </div>`;
                 }
@@ -6046,19 +6069,19 @@ Automatically queues secondary filler research to reach your targeted weekly Val
                         ondrop="onFillerDrop(event, ${idx})"
                         ondragend="onFillerDragEnd(event)"
                         style="flex-wrap:wrap;">
-                    <div class="filler-item-left" style="flex:1; display:flex; align-items:center;">
+                    <div class="filler-item-left" style="display:flex; align-items:flex-start; justify-content:flex-start; gap:8px; flex:1;">
                         <span class="drag-grip-handle" title="Drag to reorder priority">⣿</span>
-                        <input type="checkbox" id="chk-filler-${opt.id}" ${isChecked} onchange="toggleFillerOption('${opt.id}', this.checked)" style="width:18px; height:18px; accent-color:var(--accent-gold); cursor:pointer;">
-                        <label for="chk-filler-${opt.id}" style="cursor:pointer; display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-left:6px;">
-                            <span>P${idx + 1}: <strong>${opt.label}</strong></span>
-                            ${lockNote}
+                        <input type="checkbox" id="chk-filler-${opt.id}" ${isChecked} onchange="toggleFillerOption('${opt.id}', this.checked)" class="custom-filler-checkbox">
+                        <label for="chk-filler-${opt.id}" style="cursor:pointer; display:flex; flex-direction:column; align-items:flex-start; justify-content:flex-start; text-align:left; gap:2px; margin-left:4px; flex:1;">
+                            <span style="font-size:0.85rem; font-weight:700; display:inline-flex; align-items:center; justify-content:flex-start; text-align:left; gap:6px; line-height:1.3; width:100%;">P${idx + 1}: <strong>${opt.label}</strong></span>
+                            ${extraSubControl}
+                            ${lockNote ? `<div style="margin-top:2px; text-align:left; width:100%;">${lockNote}</div>` : ''}
                         </label>
                     </div>
                     <div class="filler-item-controls">
                         <button class="btn-reorder" ${upDisabled} onclick="moveFillerOption(${idx}, -1)" title="Move Up Priority">▲</button>
                         <button class="btn-reorder" ${downDisabled} onclick="moveFillerOption(${idx}, 1)" title="Move Down Priority">▼</button>
                     </div>
-                    ${extraSubControl}
                 </div>`;
             });
             container.innerHTML = html;
