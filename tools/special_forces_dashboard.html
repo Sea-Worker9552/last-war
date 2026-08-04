@@ -299,7 +299,7 @@
             padding: 20px; box-shadow: var(--shadow-sm); overflow-x: auto;
         }
 
-        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem; }
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem; table-layout: fixed; }
 
         th {
             background: var(--bg-input); color: var(--text-secondary); padding: 12px 16px;
@@ -329,11 +329,28 @@
         .tech-pill.filler-siege { border-color: var(--accent-gold); background: rgba(217, 119, 6, 0.1); color: var(--accent-gold); }
         .tech-pill.filler-def { border-color: var(--accent-blue); background: rgba(2, 132, 199, 0.1); color: var(--accent-blue); }
 
-        .badge-valor { background: rgba(22, 163, 74, 0.1); color: var(--accent-green); padding: 4px 8px; border-radius: 6px; font-weight: 600; }
-        .badge-gold { background: rgba(217, 119, 6, 0.1); color: var(--accent-gold); padding: 4px 8px; border-radius: 6px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; }
+        .badge-valor { background: rgba(22, 163, 74, 0.1); color: var(--accent-green); border: 1px solid var(--accent-green); padding: 4px 8px; border-radius: 6px; font-weight: 600; white-space: nowrap; }
+        .badge-gold { background: rgba(217, 119, 6, 0.1); color: var(--accent-gold); border: 1px solid var(--accent-gold); padding: 4px 8px; border-radius: 6px; font-weight: 600; display: inline-flex; flex-direction: column; align-items: flex-start; gap: 1px; }
         .badge-gold.flex-overcap { background: rgba(220, 38, 38, 0.15); color: var(--accent-red); border: 1px solid var(--accent-red); }
-        .badge-speedup { background: rgba(8, 145, 178, 0.1); color: var(--accent-cyan); padding: 4px 8px; border-radius: 6px; font-weight: 600; }
-        .badge-save-week { background: rgba(168, 85, 247, 0.15); color: var(--accent-purple); border: 1px solid var(--accent-purple); padding: 4px 8px; border-radius: 6px; font-weight: 700; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 4px; width: fit-content; }
+        .badge-speedup { background: rgba(8, 145, 178, 0.1); color: var(--accent-cyan); border: 1px solid var(--accent-cyan); padding: 4px 8px; border-radius: 6px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+        .badge-save-week {
+            background: rgba(168, 85, 247, 0.12);
+            color: var(--accent-purple);
+            border: 1px solid rgba(168, 85, 247, 0.4);
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 0.76rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            text-align: left;
+            width: fit-content;
+            line-height: 1.35;
+        }
+        .badge-save-week .save-title { font-weight: 800; color: var(--accent-purple); display: flex; align-items: center; gap: 4px; }
+        .badge-save-week .save-row { color: var(--text-primary); font-weight: 600; padding-left: 2px; }
+        .badge-save-week .save-val-valor { color: var(--accent-green); font-weight: 700; }
+        .badge-save-week .save-val-gold { color: var(--accent-gold); font-weight: 700; }
 
         .btn-action-group { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
 
@@ -734,9 +751,9 @@
                 <div class="control-box">
                     <label>
                         <span>🎯 Weekly Valor Target:</span>
-                        <div style="display:flex; align-items:center; gap:4px;">
-                            <input type="number" class="control-num-input" id="input-num-valor-target" min="1000" max="25000" step="250" value="9000" style="color:var(--accent-green)" oninput="syncValorFromNumber(this.value)">
-                            <span style="font-weight:700; color:var(--accent-green); font-size:0.8rem"> / week</span>
+                        <div style="display:flex; align-items:center; gap:6px;">
+                            <input type="text" class="control-num-input" id="input-num-valor-target" value="9,000" style="color:var(--accent-green)" oninput="syncValorFromNumber(this.value)" onblur="formatValorInputOnBlur()">
+                            <span style="font-weight:700; color:var(--accent-green); font-size:0.8rem; white-space:nowrap;"> / WEEK</span>
                         </div>
                     </label>
                     <input type="range" id="input-valor-target" min="1000" max="25000" step="250" value="9000" oninput="syncValorFromSlider(this.value)">
@@ -764,9 +781,9 @@
                 <div class="control-box">
                     <label>
                         <span>💰 Gold Limit (Millions):</span>
-                        <div style="display:flex; align-items:center; gap:4px; white-space:nowrap;">
+                        <div style="display:flex; align-items:center; gap:6px; white-space:nowrap;">
                             <input type="number" class="control-num-input" id="input-num-gold-cap" min="50" max="5000" step="25" value="600" style="color:var(--accent-gold)" oninput="syncGoldFromNumber(this.value)">
-                            <span style="font-weight:700; color:var(--accent-gold); font-size:0.8rem; white-space:nowrap;">M Gold / week</span>
+                            <span style="font-weight:700; color:var(--accent-gold); font-size:0.8rem; white-space:nowrap;">M Gold / WEEK</span>
                         </div>
                     </label>
                     <input type="range" id="input-gold-cap" min="50" max="5000" step="25" value="600" oninput="syncGoldFromSlider(this.value)">
@@ -937,13 +954,13 @@
             <table>
                 <thead>
                     <tr>
-                        <th>Week</th>
-                        <th>Valor Spent</th>
-                        <th>Gold Spent</th>
-                        <th>Speedups Needed</th>
-                        <th>T10 Target Techs Researched</th>
-                        <th>Filler Tech Researched</th>
-                        <th>Actions</th>
+                        <th style="width:85px;">Week</th>
+                        <th style="width:105px;">Valor Spent</th>
+                        <th style="width:125px;">Gold Spent</th>
+                        <th style="width:145px;">Speedups Needed</th>
+                        <th style="width:28%;">T10 Target Techs Researched</th>
+                        <th style="width:20%;">Filler Tech Researched</th>
+                        <th style="width:175px;">Actions</th>
                     </tr>
                 </thead>
                 <tbody id="table-body"></tbody>
@@ -6162,17 +6179,23 @@ Automatically queues secondary filler research to reach your targeted weekly Val
 
         function syncValorFromSlider(val) {
             state.valorTarget = parseInt(val) || 0;
-            document.getElementById('input-num-valor-target').value = state.valorTarget;
+            document.getElementById('input-num-valor-target').value = state.valorTarget.toLocaleString();
             saveStateToLocalStorage();
             runSimulationAndRender();
         }
 
         function syncValorFromNumber(valStr) {
-            let val = parseInt(valStr) || 0;
+            let cleanStr = (valStr || '').replace(/[^0-9]/g, '');
+            let val = parseInt(cleanStr) || 0;
             state.valorTarget = val;
             document.getElementById('input-valor-target').value = val;
             saveStateToLocalStorage();
             runSimulationAndRender();
+        }
+
+        function formatValorInputOnBlur() {
+            let val = state.valorTarget || 0;
+            document.getElementById('input-num-valor-target').value = val.toLocaleString();
         }
 
         function syncGoldFromSlider(valInMillions) {
@@ -6201,7 +6224,7 @@ Automatically queues secondary filler research to reach your targeted weekly Val
             document.getElementById('input-num-base-speed').value = state.baseSpeed;
 
             document.getElementById('input-valor-target').value = state.valorTarget;
-            document.getElementById('input-num-valor-target').value = state.valorTarget;
+            document.getElementById('input-num-valor-target').value = (state.valorTarget || 0).toLocaleString();
 
             let goldInMillions = Math.round(state.goldCap / 1000000);
             document.getElementById('input-gold-cap').value = goldInMillions;
@@ -6416,7 +6439,7 @@ Automatically queues secondary filler research to reach your targeted weekly Val
             state.goldCap = goldInMillions * 1000000;
 
             document.getElementById('input-num-base-speed').value = state.baseSpeed;
-            document.getElementById('input-num-valor-target').value = state.valorTarget;
+            document.getElementById('input-num-valor-target').value = (state.valorTarget || 0).toLocaleString();
             document.getElementById('input-num-gold-cap').value = goldInMillions;
 
             saveStateToLocalStorage();
@@ -7180,12 +7203,17 @@ Automatically queues secondary filler research to reach your targeted weekly Val
                           onmouseover="showTooltip(event, ${w.week}, '${(w.goldSpent/1e6).toFixed(1)}M Gold', '${w.speedupsDays.toFixed(1)} Days (${(w.speedupsDays*24).toFixed(0)}h)', '${w.valorSpent.toLocaleString()} Badges')"
                           onmouseout="hideTooltip()"></rect>`;
 
-                let textY = barH > 22 ? barY + 14 : barY - 4;
-                let textFill = barH > 22 ? "#ffffff" : barColor;
-                html += `<text x="${x + barW/2}" y="${textY}" text-anchor="middle" fill="${textFill}" font-size="9" font-weight="bold">${goldStr}</text>`;
-
                 let speedY = svgH - 35 - ((w.speedupsDays / maxSpeed) * 163);
                 speedPoints.push({ x: x + barW/2, y: speedY, days: w.speedupsDays.toFixed(1) });
+
+                let textY = barH > 22 ? barY + 14 : barY - 4;
+                // If cyan speedup line graph passes near default gold text position (within 14px), scoot gold text lower inside bar!
+                if (barH > 35 && Math.abs(speedY - textY) < 14) {
+                    textY = barY + 28;
+                }
+
+                let textFill = barH > 22 ? "#ffffff" : barColor;
+                html += `<text x="${x + barW/2}" y="${textY}" text-anchor="middle" fill="${textFill}" font-size="9" font-weight="bold">${goldStr}</text>`;
 
                 if (weeks.length <= 15 || idx % 2 === 0) {
                     html += `<text x="${x + barW/2}" y="${svgH-12}" text-anchor="middle" fill="${textColor}" font-size="10">W${w.week}</text>`;
@@ -7196,10 +7224,22 @@ Automatically queues secondary filler research to reach your targeted weekly Val
             let polyPts = speedPoints.map(p => `${p.x},${p.y}`).join(' ');
             html += `<polyline points="${polyPts}" fill="none" stroke="#0891b2" stroke-width="3" />`;
 
-            speedPoints.forEach(p => {
+            speedPoints.forEach((p, idx) => {
                 html += `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#0891b2" />`;
                 if (weeks.length <= 18) {
-                    html += `<text x="${p.x}" y="${p.y - 8}" text-anchor="middle" fill="#0891b2" font-size="9" font-weight="bold">${p.days}d</text>`;
+                    let w = weeks[idx];
+                    let barH = (w.goldSpent / maxGold) * 125;
+                    let barY = svgH - 35 - barH;
+                    let goldTextY = barH > 22 ? barY + 14 : barY - 4;
+
+                    // Dynamic collision detection: shift speedup label above bar if colliding with gold text or bar top
+                    let labelY = p.y - 8;
+                    if (Math.abs(labelY - goldTextY) < 14 || (p.y >= barY && p.y <= barY + 24)) {
+                        labelY = Math.min(p.y, barY) - 10;
+                    }
+
+                    let outlineColor = isDark ? '#151c2e' : '#ffffff';
+                    html += `<text x="${p.x}" y="${labelY}" text-anchor="middle" fill="#0891b2" font-size="9.5" font-weight="bold" stroke="${outlineColor}" stroke-width="3.5" paint-order="stroke fill">${p.days}d</text>`;
                 }
             });
 
@@ -7372,17 +7412,23 @@ Automatically queues secondary filler research to reach your targeted weekly Val
                 
                 let goldStr = w.goldSpent >= 1e9 ? (w.goldSpent/1e9).toFixed(2) + 'B' : (w.goldSpent/1e6).toFixed(1) + 'M';
                 let goldClass = w.isFlexOvercap ? 'badge-gold flex-overcap' : 'badge-gold';
-                let flexTag = w.isFlexOvercap ? ' ⚡ Flex +10%' : '';
+                let flexTag = w.isFlexOvercap ? '<span style="white-space:nowrap; font-size:0.72rem; opacity:0.9; font-weight:700;">⚡ Flex +10%</span>' : '';
                 
                 let targetHtml = formatStackedTechPills(w.targetTechs, false) || '<em>None</em>';
                 let fillerColumnHtml = (w.fillerTechs && w.fillerTechs.length > 0) ? formatStackedTechPills(w.fillerTechs, true) : '<em>-</em>';
 
                 let saveBtnClass = isSave ? 'btn-save-toggle active' : 'btn-save-toggle';
-                let saveBtnLabel = isSave ? '💼 Custom Budget Active' : '💼 Custom Budget';
+                let saveBtnLabel = isSave ? '💼 Custom Active' : '💼 Custom Budget';
 
                 let capsBtnHtml = isSave ? `<button class="btn-caps-settings" onclick="openSaveCapsModal(${w.week})" title="Adjust Custom Budget Caps">⚙️ Caps</button>` : '';
 
-                let saveIndicatorHtml = isSave ? `<div style="margin-top:3px; margin-bottom:4px;"><span class="badge-save-week">💼 Custom Budget (Valor: ${w.saveValorCap.toLocaleString()}, Gold: ${(w.saveGoldCap/1e6).toFixed(0)}M)</span></div>` : '';
+                let saveIndicatorHtml = isSave ? `<div style="margin-top:3px; margin-bottom:4px;">
+                    <div class="badge-save-week">
+                        <div class="save-title">💼 Custom Budget:</div>
+                        <div class="save-row">Valor: <span class="save-val-valor">${w.saveValorCap.toLocaleString()}</span></div>
+                        <div class="save-row">Gold: <span class="save-val-gold">${(w.saveGoldCap/1e6).toFixed(0)}M</span></div>
+                    </div>
+                </div>` : '';
 
                 html += `<tr class="${rowClass}">
                     <td><strong>Week ${w.week}</strong></td>
