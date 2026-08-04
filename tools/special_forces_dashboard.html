@@ -106,7 +106,7 @@
         .control-panel {
             background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px;
             padding: 20px 24px; margin-bottom: 20px; box-shadow: var(--shadow-sm);
-            display: grid; grid-template-columns: 1fr 420px; gap: 20px; align-items: start;
+            display: grid; grid-template-columns: 1fr 480px; gap: 20px; align-items: start;
         }
 
         @media (max-width: 1100px) {
@@ -114,7 +114,7 @@
         }
 
         .control-boxes-grid {
-            display: grid; grid-template-columns: 0.85fr 1.15fr; gap: 16px;
+            display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 16px;
         }
 
         @media (max-width: 640px) {
@@ -314,6 +314,16 @@
 
         .btn-action-group { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
 
+        .btn-reset-schedule {
+            background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #ef4444; font-size: 0.82rem; font-weight: 600; padding: 6px 14px;
+            border-radius: 8px; cursor: pointer; transition: all 0.15s ease;
+            display: inline-flex; align-items: center; gap: 6px;
+        }
+        .btn-reset-schedule:hover {
+            background: rgba(239, 68, 68, 0.25); border-color: #ef4444; color: #ef4444;
+        }
+
         .btn-save-toggle {
             background: var(--bg-input); border: 1px solid var(--border-color); color: var(--text-secondary);
             padding: 6px 10px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600;
@@ -373,9 +383,36 @@
         }
 
         .queue-pill {
-            background: var(--accent-gold-light); border: 1px solid var(--accent-gold); color: var(--accent-gold);
-            padding: 4px 10px; border-radius: 8px; font-weight: 700; font-size: 0.85rem;
-            display: flex; align-items: center; gap: 8px;
+            background: rgba(22,163,74,0.15); border: 1px solid var(--accent-green);
+            color: var(--text-primary); font-size: 0.82rem; padding: 4px 10px;
+            border-radius: 14px; display: inline-flex; align-items: center; gap: 6px;
+        }
+        .queue-pill.non-t10 {
+            background: var(--bg-input); border-color: var(--border-color); color: var(--text-secondary);
+        }
+        .queue-pill.truck {
+            background: rgba(8,145,178,0.15); border-color: #0891b2; color: var(--text-primary);
+        }
+        .queue-pill.siege {
+            background: rgba(168,85,247,0.15); border-color: #a855f7; color: var(--text-primary);
+        }
+        .queue-pill.def_fort {
+            background: rgba(217,119,6,0.15); border-color: var(--accent-gold); color: var(--text-primary);
+        }
+        .modal-tab-bar {
+            display: flex; gap: 8px; margin-bottom: 16px; border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px; flex-wrap: wrap;
+        }
+        .modal-tab-btn {
+            background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-secondary);
+            padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600;
+            transition: all 0.15s ease; display: inline-flex; align-items: center; gap: 6px;
+        }
+        .modal-tab-btn:hover {
+            background: var(--bg-input); color: var(--text-primary);
+        }
+        .modal-tab-btn.active {
+            background: rgba(217,119,6,0.15); border-color: var(--accent-gold); color: var(--accent-gold);
         }
 
         .queue-pill.non-t10 {
@@ -521,6 +558,7 @@
     
         .info-tooltip-wrap {
             position: relative; display: inline-flex; align-items: center;
+            margin-left: 8px;
         }
 
         .info-tooltip-trigger {
@@ -643,8 +681,8 @@
                     </div>
 
                     <!-- Embedded Conqueror Buff Sub-Control -->
-                    <div style="border-top:1px dashed var(--border-color); padding-top:8px; margin-top:8px;">
-                        <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:0.75rem; font-weight:600; text-transform:none;">
+                    <div style="border-top:1px dashed var(--border-color); padding-top:8px; margin-top:8px; display:flex; justify-content:flex-start; align-items:center;">
+                        <label style="display:inline-flex; align-items:center; gap:8px; cursor:pointer; font-size:0.75rem; font-weight:600; text-transform:none; margin:0;">
                             <input type="checkbox" id="chk-conqueror-buff" onchange="toggleConquerorBuff(this.checked)" style="width:15px; height:15px; accent-color:var(--accent-gold); cursor:pointer;">
                             <span>🏆 Conqueror Bonus</span>
                             <span class="info-tooltip-wrap">
@@ -674,7 +712,7 @@
 
                     <!-- Embedded Valor Flex Buffer Sub-Control -->
                     <div style="border-top:1px dashed var(--border-color); padding-top:8px; margin-top:4px;">
-                        <label style="font-size:0.75rem; margin-bottom:6px;">
+                        <label style="display:inline-flex; align-items:center; gap:6px; font-size:0.75rem; font-weight:600; text-transform:none; margin-bottom:6px;">
                             <span>⚡ Valor Target Flex Buffer (+10%)</span>
                             <span class="info-tooltip-wrap">
                                 <span class="info-tooltip-trigger">ℹ️</span>
@@ -704,7 +742,7 @@
 
                     <!-- Embedded Gold Flex Buffer Sub-Control -->
                     <div style="border-top:1px dashed var(--border-color); padding-top:8px; margin-top:4px;">
-                        <label style="font-size:0.75rem; margin-bottom:6px;">
+                        <label style="display:inline-flex; align-items:center; gap:6px; font-size:0.75rem; font-weight:600; text-transform:none; margin-bottom:6px;">
                             <span>⚡ Gold Limit Flex Buffer (+10%)</span>
                             <span class="info-tooltip-wrap">
                                 <span class="info-tooltip-trigger">ℹ️</span>
@@ -856,9 +894,14 @@
 
         <!-- Table -->
         <div class="table-card">
-            <div class="chart-header">
-                <h3>🗓️ Week-by-Week Research Schedule & Custom Planner</h3>
-                <span style="font-size:0.85rem; color:var(--text-secondary)">Toggle "🐖 Save Week" to conserve resources during off-weeks</span>
+            <div class="chart-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+                <div>
+                    <h3 style="margin:0;">🗓️ Week-by-Week Research Schedule & Custom Planner</h3>
+                    <span style="font-size:0.82rem; color:var(--text-secondary);">Toggle "💼 Custom Budget" to set custom limits or "✏️ Custom Research" to edit weekly queue</span>
+                </div>
+                <button class="btn-reset-schedule" onclick="resetCustomSchedule()" title="Clear all custom research queues, custom budgets, and manual week overrides">
+                    🔄 Reset Custom Schedule
+                </button>
             </div>
             <table>
                 <thead>
@@ -900,6 +943,12 @@
             </div>
 
             <div class="modal-body">
+                <div class="modal-tab-bar" style="display:flex; gap:8px; margin-bottom:16px; border-bottom:1px solid var(--border-color); padding-bottom:10px; flex-wrap:wrap; justify-content:center;">
+                    <button class="modal-tab-btn active" id="modal-tab-sf" onclick="switchModalTab('sf')">🛡️ Special Forces</button>
+                    <button class="modal-tab-btn" id="modal-tab-truck" onclick="switchModalTab('truck')">🚚 Intercity Truck</button>
+                    <button class="modal-tab-btn" id="modal-tab-siege" onclick="switchModalTab('siege')">🏰 Siege to Seize</button>
+                    <button class="modal-tab-btn" id="modal-tab-def_fort" onclick="switchModalTab('def_fort')">🛡️ Defense Fortifications</button>
+                </div>
                 <div class="tree-grid-centered" id="modal-tree-grid"></div>
             </div>
 
@@ -913,16 +962,16 @@
     <!-- Save Caps Adjuster Mini Modal -->
     <div class="modal-overlay" id="caps-modal">
         <div class="caps-modal-content">
-            <h3 id="caps-modal-title" style="color:var(--accent-purple)">🐖 Save Week Limits Adjuster</h3>
+            <h3 id="caps-modal-title" style="color:var(--accent-purple)">💼 Custom Budget Limits Adjuster</h3>
             <p style="font-size:0.85rem; color:var(--text-secondary)">
                 Set custom reduced resource caps for this alliance conservation week.
             </p>
             <div class="control-group">
-                <label>Save Week Valor Cap: <span id="val-save-valor-cap" style="color:var(--accent-green)">4,500</span></label>
+                <label>Custom Budget Valor Cap: <span id="val-save-valor-cap" style="color:var(--accent-green)">4,500</span></label>
                 <input type="range" id="input-save-valor-cap" min="0" max="15000" step="250" value="4500" oninput="updateSaveCapsValues()">
             </div>
             <div class="control-group">
-                <label>Save Week Gold Cap: <span id="val-save-gold-cap" style="color:var(--accent-gold)">300M</span></label>
+                <label>Custom Budget Gold Cap: <span id="val-save-gold-cap" style="color:var(--accent-gold)">300M</span></label>
                 <input type="range" id="input-save-gold-cap" min="0" max="2000000000" step="25000000" value="300000000" oninput="updateSaveCapsValues()">
             </div>
             <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:10px;">
@@ -5866,12 +5915,28 @@
                     state = Object.assign(state, parsed);
                 }
             } catch(e) {}
-            
+
+            if (Array.isArray(state.fillerOptions)) {
+                state.fillerOptions.forEach(opt => {
+                    if (opt.id === 'def_fort') opt.id = 'defense-fort';
+                });
+            }
+
             if (!state.startingSiegeBaseline) state.startingSiegeBaseline = {};
             if (!state.startingDefenseFortBaseline) state.startingDefenseFortBaseline = {};
 
             if (!Array.isArray(state.fillerOptions) || state.fillerOptions.length !== 4 || !state.fillerOptions[0].id) {
                 state.fillerOptions = JSON.parse(JSON.stringify(DEFAULT_FILLER_OPTIONS));
+            }
+        }
+
+        function resetCustomSchedule() {
+            if (confirm("Reset all custom week research overrides, custom budgets, and manual modifications? This will re-plan the schedule using your global target settings.")) {
+                state.weeklyOverrides = {};
+                state.saveWeeks = {};
+                saveStateToLocalStorage();
+                runSimulationAndRender();
+                showAlert("🔄 Custom schedule reset! Restored auto-generated schedule based on your global settings.");
             }
         }
 
@@ -5958,9 +6023,9 @@ Maintains ~${targetValorStr} Valor Badges spent every Wednesday for maximum VS D
                 let extraSubControl = '';
                 if (opt.id === 'truck' && opt.enabled) {
                     let isStopChecked = state.stopAtExtraTruck !== false;
-                    extraSubControl = `<div style="width:100%; margin-top:4px; padding-left:26px; font-size:0.76rem; font-weight:600; color:var(--text-secondary);">
-                        <label style="cursor:pointer; display:inline-flex; align-items:center; gap:8px;">
-                            <input type="checkbox" ${isStopChecked ? 'checked' : ''} onchange="toggleStopAtExtraTruck(this.checked)" style="width:15px; height:15px; accent-color:var(--accent-gold); cursor:pointer;">
+                    extraSubControl = `<div style="width:100%; margin-top:6px; padding-left:48px;">
+                        <label style="cursor:pointer; display:inline-flex; align-items:center; gap:6px; font-size:0.72rem; font-weight:600; color:var(--accent-gold);">
+                            <input type="checkbox" ${isStopChecked ? 'checked' : ''} onchange="toggleStopAtExtraTruck(this.checked)" style="width:14px; height:14px; accent-color:var(--accent-gold); cursor:pointer;">
                             <span>🛑 Stop at Extra Truck (Lvl 1)</span>
                         </label>
                     </div>`;
@@ -5975,7 +6040,7 @@ Maintains ~${targetValorStr} Valor Badges spent every Wednesday for maximum VS D
                         style="flex-wrap:wrap;">
                     <div class="filler-item-left" style="flex:1; display:flex; align-items:center;">
                         <span class="drag-grip-handle" title="Drag to reorder priority">⣿</span>
-                        <input type="checkbox" id="chk-filler-${opt.id}" ${isChecked} onchange="toggleFillerOption('${opt.id}', this.checked)">
+                        <input type="checkbox" id="chk-filler-${opt.id}" ${isChecked} onchange="toggleFillerOption('${opt.id}', this.checked)" style="width:18px; height:18px; accent-color:var(--accent-gold); cursor:pointer;">
                         <label for="chk-filler-${opt.id}" style="cursor:pointer; display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-left:6px;">
                             <span>P${idx + 1}: <strong>${opt.label}</strong></span>
                             ${lockNote}
@@ -6138,7 +6203,7 @@ Maintains ~${targetValorStr} Valor Badges spent every Wednesday for maximum VS D
             }
             document.documentElement.setAttribute('data-theme', applyTheme);
             saveStateToLocalStorage();
-            if (state.cachedWeeks) renderCharts(state.cachedWeeks);
+            if (state.cachedWeeks && typeof renderCharts === 'function') renderCharts(state.cachedWeeks);
         }
 
         function toggleTooltip(evt) {
@@ -6356,7 +6421,7 @@ Maintains ~${targetValorStr} Valor Badges spent every Wednesday for maximum VS D
                 goldCap: state.goldCap * 0.5
             };
 
-            document.getElementById('caps-modal-title').innerText = `🐖 Save Week ${weekNum} Limits Adjuster`;
+            document.getElementById('caps-modal-title').innerText = `💼 Custom Budget Week ${weekNum} Limits Adjuster`;
             document.getElementById('input-save-valor-cap').value = sw.valorCap;
             document.getElementById('input-save-gold-cap').value = sw.goldCap;
 
@@ -6833,9 +6898,7 @@ Maintains ~${targetValorStr} Valor Badges spent every Wednesday for maximum VS D
                             wTargetTechs.push(n.tech_name + ' Lvl ' + n.level);
                         } else {
                             wFillerValor += n.valor;
-                            wFillerValor += n.valor;
-                                    wFillerTechs.push(n.tech_name + ' Lvl ' + n.level);
-                                    wItems.push({ tech_id: n.tech_id, tech_name: n.tech_name, level: n.level, valor: n.valor, gold: n.gold, actual_time_sec: n.actual_time_sec });
+                            wFillerTechs.push(n.tech_name + ' Lvl ' + n.level);
                         }
                         wItems.push({ tech_id: n.tech_id, tech_name: n.tech_name, level: n.level, valor: n.valor, gold: n.gold, actual_time_sec: n.actual_time_sec });
 
@@ -7284,11 +7347,11 @@ Maintains ~${targetValorStr} Valor Badges spent every Wednesday for maximum VS D
                 let fillerColumnHtml = (w.fillerTechs && w.fillerTechs.length > 0) ? formatStackedTechPills(w.fillerTechs, true) : '<em>-</em>';
 
                 let saveBtnClass = isSave ? 'btn-save-toggle active' : 'btn-save-toggle';
-                let saveBtnLabel = isSave ? '🐖 Save Active' : '🐖 Save Week';
+                let saveBtnLabel = isSave ? '💼 Custom Budget Active' : '💼 Custom Budget';
 
-                let capsBtnHtml = isSave ? `<button class="btn-caps-settings" onclick="openSaveCapsModal(${w.week})" title="Adjust Save Caps">⚙️ Caps</button>` : '';
+                let capsBtnHtml = isSave ? `<button class="btn-caps-settings" onclick="openSaveCapsModal(${w.week})" title="Adjust Custom Budget Caps">⚙️ Caps</button>` : '';
 
-                let saveIndicatorHtml = isSave ? `<div style="margin-top:8px;"><span class="badge-save-week">🐖 Save Wk (Valor: ${w.saveValorCap.toLocaleString()}, Gold: ${(w.saveGoldCap/1e6).toFixed(0)}M)</span></div>` : '';
+                let saveIndicatorHtml = isSave ? `<div style="margin-top:3px; margin-bottom:4px;"><span class="badge-save-week">💼 Custom Budget (Valor: ${w.saveValorCap.toLocaleString()}, Gold: ${(w.saveGoldCap/1e6).toFixed(0)}M)</span></div>` : '';
 
                 html += `<tr class="${rowClass}">
                     <td><strong>Week ${w.week}</strong></td>
@@ -7297,13 +7360,17 @@ Maintains ~${targetValorStr} Valor Badges spent every Wednesday for maximum VS D
                     <td><span class="badge-speedup">${w.speedupsDays.toFixed(1)}d (${(w.speedupsDays*24).toFixed(0)}h)</span></td>
                     <td>${targetHtml}</td>
                     <td>${fillerColumnHtml}</td>
-                    <td>
-                        <div class="btn-action-group">
-                            <button class="${saveBtnClass}" onclick="toggleSaveWeek(${w.week})">${saveBtnLabel}</button>
-                            ${capsBtnHtml}
-                            <button class="btn-edit-week" onclick="openModal(${w.week})">✏️ Edit Tree</button>
+                    <td style="vertical-align: top;">
+                        <div style="display: flex; flex-direction: column; gap: 8px; align-items: flex-start;">
+                            <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                                <button class="${saveBtnClass}" onclick="toggleSaveWeek(${w.week})">${saveBtnLabel}</button>
+                                ${capsBtnHtml}
+                            </div>
+                            ${saveIndicatorHtml}
+                            <div style="margin-top: 6px;">
+                                <button class="btn-edit-week" onclick="openModal(${w.week})">✏️ Custom Research</button>
+                            </div>
                         </div>
-                        ${saveIndicatorHtml}
                     </td>
                 </tr>`;
                 
@@ -7503,12 +7570,50 @@ Maintains ~${targetValorStr} Valor Badges spent every Wednesday for maximum VS D
             runSimulationAndRender();
         }
 
+        state.activeModalTab = 'sf';
+
+        function switchModalTab(tabKey) {
+            state.activeModalTab = tabKey;
+            document.querySelectorAll('.modal-tab-btn').forEach(b => b.classList.remove('active'));
+            let btn = document.getElementById('modal-tab-' + tabKey);
+            if (btn) btn.classList.add('active');
+            renderModalQueueAndTree();
+        }
+
+        function getSfCompletedCountForWeek(weekNum) {
+            let weekData = state.cachedWeeks ? state.cachedWeeks.find(w => w.week === weekNum) : null;
+            let priorSfDone = 0;
+
+            if (weekData && weekData.priorTechState) {
+                Object.keys(weekData.priorTechState).forEach(tid => {
+                    if (!tid.includes(':')) {
+                        priorSfDone += (weekData.priorTechState[tid] || 0);
+                    }
+                });
+            } else if (state.startingBaseline) {
+                Object.values(state.startingBaseline).forEach(v => {
+                    priorSfDone += (v || 0);
+                });
+            }
+
+            let draftSfDone = 0;
+            if (Array.isArray(state.modalDraftQueue)) {
+                state.modalDraftQueue.forEach(item => {
+                    if (item && item.tech_id && !item.tech_id.includes(':')) {
+                        draftSfDone++;
+                    }
+                });
+            }
+            return priorSfDone + draftSfDone;
+        }
+
         function openModal(weekNum) {
             state.activeWeek = weekNum;
+            state.activeModalTab = 'sf';
             let weekData = state.cachedWeeks.find(w => w.week === weekNum);
             if (!weekData) return;
 
-            document.getElementById('modal-title').innerText = `🌳 Special Forces Tree — Week ${weekNum} Inspector`;
+            document.getElementById('modal-title').innerText = `✏️ Custom Research — Week ${weekNum} Inspector`;
 
             if (state.weeklyOverrides[weekNum]) {
                 state.modalDraftQueue = JSON.parse(JSON.stringify(state.weeklyOverrides[weekNum]));
@@ -7518,6 +7623,10 @@ Maintains ~${targetValorStr} Valor Badges spent every Wednesday for maximum VS D
                 state.modalDraftQueue = [];
             }
 
+            document.querySelectorAll('.modal-tab-btn').forEach(b => b.classList.remove('active'));
+            let btn = document.getElementById('modal-tab-sf');
+            if (btn) btn.classList.add('active');
+
             document.getElementById('tree-modal').classList.add('active');
             renderModalQueueAndTree();
         }
@@ -7525,13 +7634,14 @@ Maintains ~${targetValorStr} Valor Badges spent every Wednesday for maximum VS D
         function renderModalQueueAndTree() {
             let weekNum = state.activeWeek;
             let weekData = state.cachedWeeks.find(w => w.week === weekNum);
+            let currentTab = state.activeModalTab || 'sf';
 
             let t10MaxMap = {};
             T10_DATA.rows.forEach(r => r.elements.forEach(e => t10MaxMap[e.id] = e.maxLevel));
 
             let dValor = 0, dGold = 0, dSpeedSec = 0;
             state.modalDraftQueue.forEach(item => {
-                dValor += item.valor; dGold += item.gold; dSpeedSec += item.actual_time_sec;
+                dValor += (item.valor || 0); dGold += (item.gold || 0); dSpeedSec += (item.actual_time_sec || 0);
             });
 
             document.getElementById('modal-valor-spent').innerText = `🛡️ Valor: ${dValor.toLocaleString()}`;
@@ -7541,16 +7651,38 @@ Maintains ~${targetValorStr} Valor Badges spent every Wednesday for maximum VS D
 
             let queueContainer = document.getElementById('modal-queue-items');
             if (state.modalDraftQueue.length === 0) {
-                queueContainer.innerHTML = '<span style="font-size:0.85rem; color:var(--text-secondary); font-style:italic;">No tech levels queued for Week ' + weekNum + '. Use dropdowns below to add levels.</span>';
+                queueContainer.innerHTML = '<span style="font-size:0.85rem; color:var(--text-secondary); font-style:italic;">No tech levels queued for Week ' + weekNum + '. Select a tab below and use dropdowns to add research levels.</span>';
             } else {
                 let html = '';
                 state.modalDraftQueue.forEach((item, idx) => {
-                    let maxT10 = t10MaxMap[item.tech_id] || 0;
-                    let isT10Level = (item.level <= maxT10);
-                    let pillClass = isT10Level ? 'queue-pill' : 'queue-pill non-t10';
-                    let labelTag = isT10Level ? '' : ' <span style="font-size:0.75rem;opacity:0.85">(Non-T10 Required ⚙️)</span>';
+                    let pillClass = 'queue-pill';
+                    let labelText = `${item.tech_name} Lvl ${item.level}`;
+                    let isItemLocked = false;
+
+                    let sfDoneNow = getSfCompletedCountForWeek(weekNum);
+
+                    if (item.tech_id.startsWith('truck:')) {
+                        pillClass = 'queue-pill truck';
+                        labelText = `🚚 Intercity Truck: ${item.tech_name} Lvl ${item.level}`;
+                    } else if (item.tech_id.startsWith('siege:')) {
+                        pillClass = 'queue-pill siege';
+                        if (sfDoneNow < 89) { isItemLocked = true; pillClass += ' non-t10'; }
+                        labelText = `🏰 Siege to Seize: ${item.tech_name} Lvl ${item.level}` + (isItemLocked ? ' <span style="font-size:0.75rem;color:#ef4444;font-weight:700">(🔒 Requires 40% SF)</span>' : '');
+                    } else if (item.tech_id.startsWith('def_fort:')) {
+                        pillClass = 'queue-pill def_fort';
+                        if (sfDoneNow < 89) { isItemLocked = true; pillClass += ' non-t10'; }
+                        labelText = `🛡️ Defense Fortification: ${item.tech_name} Lvl ${item.level}` + (isItemLocked ? ' <span style="font-size:0.75rem;color:#ef4444;font-weight:700">(🔒 Requires 40% SF)</span>' : '');
+                    } else {
+                        let maxT10 = t10MaxMap[item.tech_id] || 0;
+                        let isT10Level = (item.level <= maxT10);
+                        if (!isT10Level) {
+                            pillClass = 'queue-pill non-t10';
+                            labelText += ' <span style="font-size:0.75rem;opacity:0.85">(Non-T10 Required ⚙️)</span>';
+                        }
+                    }
+
                     html += `<div class="${pillClass}">
-                        <span>${item.tech_name} Lvl ${item.level}${labelTag}</span>
+                        <span>${labelText}</span>
                         <button class="btn-remove-queue" onclick="removeFromModalQueue(${idx})">✕</button>
                     </div>`;
                 });
@@ -7559,6 +7691,22 @@ Maintains ~${targetValorStr} Valor Badges spent every Wednesday for maximum VS D
 
             let grid = document.getElementById('modal-tree-grid');
             let treeData = SF_DATA;
+            let idPrefix = '';
+            let priorStateObj = (weekData && weekData.priorTechState) || {};
+            let priorBaseline = {};
+
+            if (currentTab === 'truck') {
+                treeData = TRUCK_DATA; idPrefix = 'truck:'; priorBaseline = state.startingTruckBaseline || {};
+            } else if (currentTab === 'siege') {
+                treeData = SIEGE_DATA; idPrefix = 'siege:'; priorBaseline = state.startingSiegeBaseline || {};
+            } else if (currentTab === 'def_fort') {
+                treeData = DEFENSE_FORT_DATA; idPrefix = 'def_fort:'; priorBaseline = state.startingDefenseFortBaseline || {};
+            } else {
+                treeData = SF_DATA; idPrefix = ''; priorBaseline = state.startingBaseline || {};
+            }
+
+            let sfDoneCount = getSfCompletedCountForWeek(weekNum);
+            let is40Unlocked = (sfDoneCount >= 89);
 
             let queuedLevelsByTech = {};
             state.modalDraftQueue.forEach(item => {
@@ -7567,15 +7715,27 @@ Maintains ~${targetValorStr} Valor Badges spent every Wednesday for maximum VS D
             });
 
             let html = '';
+
+            if ((currentTab === 'siege' || currentTab === 'def_fort') && !is40Unlocked) {
+                html += `<div style="grid-column: 1/-1; background: rgba(217,119,6,0.12); border: 1px solid var(--accent-gold); color: var(--accent-gold); padding: 12px 16px; border-radius: 10px; margin-bottom: 16px; text-align: center; font-size: 0.88rem; font-weight: 600;">
+                    🔒 40% Special Forces Threshold Not Reached (Current: ${sfDoneCount}/221 levels, 89 required). Research in ${treeData.name} is locked until Special Forces reaches 40%.
+                </div>`;
+            }
+
             treeData.rows.forEach(r => {
                 html += `<div class="tree-row-centered">`;
                 r.elements.forEach(e => {
-                    let maxT10Lvl = t10MaxMap[e.id] || 0;
-                    let priorLvl = (weekData && weekData.priorTechState && weekData.priorTechState[e.id]) || 0;
-                    let activeLvls = queuedLevelsByTech[e.id] || [];
+                    let prefixedTechId = idPrefix + e.id;
+                    let maxT10Lvl = (currentTab === 'sf') ? (t10MaxMap[e.id] || 0) : 0;
+                    
+                    let priorLvl = priorBaseline[e.id] || 0;
+                    if (priorStateObj[prefixedTechId]) priorLvl = Math.max(priorLvl, priorStateObj[prefixedTechId]);
+
+                    let activeLvls = queuedLevelsByTech[prefixedTechId] || [];
 
                     let cardClass = 'hedg-card';
-                    if (maxT10Lvl === 0) cardClass += ' non-t10-card';
+                    if (currentTab === 'sf' && maxT10Lvl === 0) cardClass += ' non-t10-card';
+                    if ((currentTab === 'siege' || currentTab === 'def_fort') && !is40Unlocked) cardClass += ' locked-card';
 
                     let statusHtml = '';
 
@@ -7591,24 +7751,37 @@ Maintains ~${targetValorStr} Valor Badges spent every Wednesday for maximum VS D
                         statusHtml = `<div class="hedg-status-text status-blank">Level: ${priorLvl} / ${e.maxLevel}<br><span style="font-size:0.75rem;font-weight:normal">(Unchanged this wk)</span></div>`;
                     }
 
-                    let tagHtml = maxT10Lvl > 0 ? `<div style="font-size:0.7rem; font-weight:700; color:var(--accent-gold); margin-bottom:4px">T10 Target: Lvl 1-${maxT10Lvl}</div>` : `<div class="tag-non-t10">⚙️ Optional Non-T10 SF</div>`;
+                    let tagHtml = '';
+                    if (currentTab === 'sf') {
+                        tagHtml = maxT10Lvl > 0 ? `<div style="font-size:0.7rem; font-weight:700; color:var(--accent-gold); margin-bottom:4px">T10 Target: Lvl 1-${maxT10Lvl}</div>` : `<div class="tag-non-t10">⚙️ Optional Non-T10 SF</div>`;
+                    } else if (currentTab === 'siege') {
+                        tagHtml = `<div style="font-size:0.7rem; font-weight:700; color:#a855f7; margin-bottom:4px">🏰 Siege to Seize</div>`;
+                    } else if (currentTab === 'def_fort') {
+                        tagHtml = `<div style="font-size:0.7rem; font-weight:700; color:var(--accent-gold); margin-bottom:4px">🛡️ Defense Fortification</div>`;
+                    } else if (currentTab === 'truck') {
+                        tagHtml = `<div style="font-size:0.7rem; font-weight:700; color:#0891b2; margin-bottom:4px">🚚 Intercity Truck</div>`;
+                    }
 
-                    let dropdownHtml = `<select class="select-level-dropdown" onchange="addLevelFromDropdown('${e.id}', this.value)">`;
+                    let dropdownHtml = `<select class="select-level-dropdown" onchange="addLevelFromDropdown('${e.id}', this.value, '${currentTab}')">`;
                     dropdownHtml += `<option value="">+ Add Level...</option>`;
                     for (let l=1; l<=e.maxLevel; l++) {
-                        let isLevelT10Req = (l <= maxT10Lvl);
+                        let isLevelT10Req = (currentTab === 'sf') ? (l <= maxT10Lvl) : true;
                         if (l <= priorLvl) {
                             dropdownHtml += `<option value="${l}" disabled>Lvl ${l} (Completed Wk <${weekNum})</option>`;
                         } else if (activeLvls.includes(l)) {
                             dropdownHtml += `<option value="${l}" disabled>Lvl ${l} (Queued Wk ${weekNum})</option>`;
                         } else {
-                            let optLabel = isLevelT10Req ? `+ Add Level ${l} (T10 Target)` : `+ Add Level ${l} (Non-T10 Required ⚙️)`;
+                            let optLabel = `+ Add Level ${l}`;
+                            if (currentTab === 'sf') {
+                                optLabel = isLevelT10Req ? `+ Add Level ${l} (T10 Target)` : `+ Add Level ${l} (Non-T10 Required ⚙️)`;
+                            }
                             dropdownHtml += `<option value="${l}">${optLabel}</option>`;
                         }
                     }
                     dropdownHtml += `</select>`;
 
-                    let gfx = getTechGraphic(e.id, '🛡️');
+                    let defaultIcon = currentTab === 'truck' ? '🚚' : (currentTab === 'siege' ? '🏰' : (currentTab === 'def_fort' ? '🛡️' : '🛡️'));
+                    let gfx = getTechGraphic(e.id, defaultIcon);
 
                     html += `<div class="${cardClass}">
                         ${tagHtml}
@@ -7628,43 +7801,79 @@ Maintains ~${targetValorStr} Valor Badges spent every Wednesday for maximum VS D
             renderModalQueueAndTree();
         }
 
-        function addLevelFromDropdown(techId, selectedLvlStr) {
+        function addLevelFromDropdown(techId, selectedLvlStr, tabKey) {
             if (!selectedLvlStr) return;
             let targetLvl = parseInt(selectedLvlStr);
-            let techObj = null;
-            SF_DATA.rows.forEach(r => r.elements.forEach(e => { if (e.id === techId) techObj = e; }));
-            if (!techObj) return;
-
-            let lvlObj = techObj.levels.find(l => l.level === targetLvl);
-            if (!lvlObj) return;
+            tabKey = tabKey || state.activeModalTab || 'sf';
 
             let weekNum = state.activeWeek;
             let weekData = state.cachedWeeks.find(w => w.week === weekNum);
-            let priorState = (weekData && weekData.priorTechState) || {};
 
-            if (targetLvl > 1) {
-                let currentMax = priorState[techId] || 0;
-                state.modalDraftQueue.forEach(item => {
-                    if (item.tech_id === techId && item.level > currentMax) currentMax = item.level;
-                });
-                if (currentMax < targetLvl - 1) {
-                    showAlert(`❌ Cannot add ${techObj.name} Lvl ${targetLvl}: Requires Lvl ${targetLvl - 1} first!`);
+            let treeData = SF_DATA;
+            let idPrefix = '';
+            let priorBaseline = {};
+
+            if (tabKey === 'truck') {
+                treeData = TRUCK_DATA; idPrefix = 'truck:'; priorBaseline = state.startingTruckBaseline || {};
+            } else if (tabKey === 'siege') {
+                treeData = SIEGE_DATA; idPrefix = 'siege:'; priorBaseline = state.startingSiegeBaseline || {};
+            } else if (tabKey === 'def_fort') {
+                treeData = DEFENSE_FORT_DATA; idPrefix = 'def_fort:'; priorBaseline = state.startingDefenseFortBaseline || {};
+            } else {
+                treeData = SF_DATA; idPrefix = ''; priorBaseline = state.startingBaseline || {};
+            }
+
+            let prefixedTechId = idPrefix + techId;
+
+            // 1. Enforce 40% SF completion rule for Siege & Defense Fortifications
+            if (tabKey === 'siege' || tabKey === 'def_fort') {
+                let sfCount = getSfCompletedCountForWeek(weekNum);
+                if (sfCount < 89) {
+                    let treeTitle = tabKey === 'siege' ? 'Siege to Seize' : 'Defense Fortifications';
+                    showAlert(`🔒 Cannot research ${treeTitle}: Requires 40% Special Forces completion (89/221 levels)! Current progress: ${sfCount}/221 (${((sfCount/221)*100).toFixed(1)}%).`);
                     renderModalQueueAndTree();
                     return;
                 }
             }
 
+            let techObj = null;
+            treeData.rows.forEach(r => r.elements.forEach(e => { if (e.id === techId) techObj = e; }));
+            if (!techObj) return;
+
+            let lvlObj = techObj.levels.find(l => l.level === targetLvl);
+            if (!lvlObj) return;
+
+            let priorStateObj = (weekData && weekData.priorTechState) || {};
+
+            // 2. Sequential level prerequisite check
+            let currentMax = priorBaseline[techId] || 0;
+            if (priorStateObj[prefixedTechId]) currentMax = Math.max(currentMax, priorStateObj[prefixedTechId]);
+            state.modalDraftQueue.forEach(item => {
+                if (item.tech_id === prefixedTechId && item.level > currentMax) currentMax = item.level;
+            });
+
+            if (targetLvl > 1 && currentMax < targetLvl - 1) {
+                showAlert(`❌ Cannot add ${techObj.name} Lvl ${targetLvl}: Requires Lvl ${targetLvl - 1} first!`);
+                renderModalQueueAndTree();
+                return;
+            }
+
+            // 3. Node-to-node requirement check
             if (lvlObj.requirements) {
                 for (let req of lvlObj.requirements) {
-                    let reqTechId = req.elementId;
+                    let reqRawId = req.elementId;
+                    let reqPrefixedId = idPrefix + reqRawId;
                     let reqMinLvl = req.minLevel || 1;
-                    let currentReqMax = priorState[reqTechId] || 0;
+
+                    let currentReqMax = priorBaseline[reqRawId] || 0;
+                    if (priorStateObj[reqPrefixedId]) currentReqMax = Math.max(currentReqMax, priorStateObj[reqPrefixedId]);
                     state.modalDraftQueue.forEach(item => {
-                        if (item.tech_id === reqTechId && item.level > currentReqMax) currentReqMax = item.level;
+                        if (item.tech_id === reqPrefixedId && item.level > currentReqMax) currentReqMax = item.level;
                     });
+
                     if (currentReqMax < reqMinLvl) {
-                        let reqTechName = reqTechId;
-                        SF_DATA.rows.forEach(r => r.elements.forEach(e => { if (e.id === reqTechId) reqTechName = e.name; }));
+                        let reqTechName = reqRawId;
+                        treeData.rows.forEach(r => r.elements.forEach(e => { if (e.id === reqRawId) reqTechName = e.name; }));
                         showAlert(`❌ Cannot add ${techObj.name} Lvl ${targetLvl}: Requires ${reqTechName} Lvl ${reqMinLvl} (currently Lvl ${currentReqMax})!`);
                         renderModalQueueAndTree();
                         return;
@@ -7674,7 +7883,7 @@ Maintains ~${targetValorStr} Valor Badges spent every Wednesday for maximum VS D
 
             let speedFactor = 1.0 + ((state.baseSpeed + getCapitolBoost()) / 100.0);
             state.modalDraftQueue.push({
-                tech_id: techId, tech_name: techObj.name, level: targetLvl,
+                tech_id: prefixedTechId, tech_name: techObj.name, level: targetLvl,
                 valor: lvlObj.valor || 0, gold: lvlObj.gold || 0,
                 actual_time_sec: parseTime(lvlObj.researchTime) / speedFactor
             });
@@ -7687,18 +7896,42 @@ Maintains ~${targetValorStr} Valor Badges spent every Wednesday for maximum VS D
         }
 
         function saveModalOverrides() {
+            let weekNum = state.activeWeek;
+            let sfCount = getSfCompletedCountForWeek(weekNum);
+            let hasLockedTech = state.modalDraftQueue.some(item => item.tech_id.startsWith('siege:') || item.tech_id.startsWith('def_fort:'));
+            
+            if (hasLockedTech && sfCount < 89) {
+                showAlert(`🔒 Cannot save plan: Custom queue contains Siege or Defense Fortification research, but overall Special Forces is below 40% (${sfCount}/221 levels)! Add SF research to reach 89 levels or remove locked research first.`);
+                renderModalQueueAndTree();
+                return;
+            }
+
             state.weeklyOverrides[state.activeWeek] = [...state.modalDraftQueue];
             closeModal();
             saveStateToLocalStorage();
             runSimulationAndRender();
         }
 
-        window.onload = function() {
-            loadStateFromLocalStorage();
-            syncUIFromState();
-            setTheme(state.theme || 'light');
-            runSimulationAndRender();
-        };
+        function initApp() {
+            try {
+                loadStateFromLocalStorage();
+                syncUIFromState();
+                setTheme(state.theme || 'light');
+                runSimulationAndRender();
+            } catch(err) {
+                console.error("Init Error, auto-healing:", err);
+                try {
+                    localStorage.removeItem('lastwar_sf_state_v7');
+                } catch(e) {}
+                runSimulationAndRender();
+            }
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initApp);
+        } else {
+            initApp();
+        }
     </script>
 </body>
 </html>
