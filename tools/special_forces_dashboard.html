@@ -632,14 +632,32 @@
                     <input type="range" id="input-base-speed" min="0" max="400" step="5" value="200" oninput="syncSpeedFromSlider(this.value)">
                 </div>
 
-                <!-- Box 2: Capitol Position Buff -->
+                <!-- Box 2: Capitol Position Buff with Conqueror Bonus Checkbox -->
                 <div class="control-box">
                     <label>🏛️ Capitol Position Buff</label>
                     <div class="radio-grid">
                         <div class="radio-card active" id="cap-science" onclick="setCapitol('science')">🔬 Sec. Science (+50%)</div>
-                        <div class="radio-card" id="cap-dev" onclick="setCapitol('dev')">🛠️ Sec. Dev (+25%)</div>
-                        <div class="radio-card" id="cap-vp" onclick="setCapitol('vp')">🎖️ Vice Pres (+20%)</div>
+                        <div class="radio-card" id="cap-dev" onclick="setCapitol('dev')">🛠️ Sec. Development (+25%)</div>
+                        <div class="radio-card" id="cap-vp" onclick="setCapitol('vp')">🎖️ Vice President (+20%)</div>
                         <div class="radio-card" id="cap-none" onclick="setCapitol('none')">🚫 None (+0%)</div>
+                    </div>
+
+                    <!-- Embedded Conqueror Buff Sub-Control -->
+                    <div style="border-top:1px dashed var(--border-color); padding-top:8px; margin-top:8px;">
+                        <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:0.75rem; font-weight:600; text-transform:none;">
+                            <input type="checkbox" id="chk-conqueror-buff" onchange="toggleConquerorBuff(this.checked)" style="width:15px; height:15px; accent-color:var(--accent-gold); cursor:pointer;">
+                            <span>🏆 Conqueror Bonus</span>
+                            <span class="info-tooltip-wrap">
+                                <span class="info-tooltip-trigger">ℹ️</span>
+                                <div class="tooltip-box">
+                                    <strong>💡 Conqueror Bonus Buffs:</strong><br>
+                                    Increases Capitol position buffs:<br>
+                                    • Sec. Science: 50% ➔ <strong>60%</strong><br>
+                                    • Sec. Development: 25% ➔ <strong>30%</strong><br>
+                                    • Vice President: 20% ➔ <strong>25%</strong>
+                                </div>
+                            </span>
+                        </label>
                     </div>
                 </div>
 
@@ -5691,6 +5709,7 @@
             preset: 't10-balanced',
             baseSpeed: 200,
             capitol: 'science',
+            conquerorBuff: false,
             goldFlex: 'strict',
             valorFlex: 'flex',
             valorTarget: 9000,
@@ -6143,10 +6162,31 @@
         }
 
         function getCapitolBoost() {
-            if (state.capitol === 'science') return 50;
-            if (state.capitol === 'dev') return 25;
-            if (state.capitol === 'vp') return 20;
+            let isConq = !!state.conquerorBuff;
+            if (state.capitol === 'science') return isConq ? 60 : 50;
+            if (state.capitol === 'dev') return isConq ? 30 : 25;
+            if (state.capitol === 'vp') return isConq ? 25 : 20;
             return 0;
+        }
+
+        function toggleConquerorBuff(checked) {
+            state.conquerorBuff = checked;
+            updateCapitolCardLabels();
+            saveStateToLocalStorage();
+            runSimulationAndRender();
+        }
+
+        function updateCapitolCardLabels() {
+            let isConq = !!state.conquerorBuff;
+            let elSci = document.getElementById('cap-science');
+            let elDev = document.getElementById('cap-dev');
+            let elVp = document.getElementById('cap-vp');
+            let chk = document.getElementById('chk-conqueror-buff');
+
+            if (elSci) elSci.innerHTML = `🔬 Sec. Science (${isConq ? '+60%' : '+50%'})`;
+            if (elDev) elDev.innerHTML = `🛠️ Sec. Development (${isConq ? '+30%' : '+25%'})`;
+            if (elVp) elVp.innerHTML = `🎖️ Vice President (${isConq ? '+25%' : '+20%'})`;
+            if (chk) chk.checked = isConq;
         }
 
         function toggleBaselineBox() {
@@ -6795,7 +6835,12 @@
 
                     // Filler Research Execution: Dynamically evaluate 40% SF threshold per week
                     let fillerTargetValor = isSaveWeek ? effectiveValorCap : state.valorTarget;
-                    let initialSfCount = (typeof getInitialSfCompletedCount === 'function') ? getInitialSfCompletedCount() : (state.initialSfProgress || 0);
+                    let initialSfCount = 0;
+                    if (state.startingBaseline) {
+                        Object.keys(state.startingBaseline).forEach(tid => {
+                            initialSfCount += state.startingBaseline[tid] || 0;
+                        });
+                    }
                     let checkSf40Unlocked = () => (initialSfCount + completedSet.size >= 89);
 
                     if (state.fillerMasterEnabled && (wValor < fillerTargetValor * 0.8 || (wGold + 100000000 > strictGoldCap && wValor < fillerTargetValor))) {
