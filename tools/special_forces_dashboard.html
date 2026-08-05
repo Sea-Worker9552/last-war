@@ -6296,14 +6296,20 @@ Automatically queues secondary filler research to reach your targeted weekly Val
             if (state.cachedWeeks && typeof renderCharts === 'function') renderCharts(state.cachedWeeks);
         }
 
+        function toggleStopAtExtraTruck(checked) {
+            state.stopAtExtraTruck = !!checked;
+            saveStateToLocalStorage();
+            runSimulationAndRender();
+        }
+
         function toggleTooltip(evt) {
-            evt.stopPropagation();
+            if (evt && evt.stopPropagation) evt.stopPropagation();
             let tt = document.getElementById('tooltip-filler-info');
-            tt.style.display = (tt.style.display === 'block') ? 'none' : 'block';
+            if (tt) tt.style.display = (tt.style.display === 'block') ? 'none' : 'block';
         }
 
         function toggleGoldFlexTooltip(evt) {
-            evt.stopPropagation();
+            if (evt && evt.stopPropagation) evt.stopPropagation();
             let tt = document.getElementById('tooltip-goldflex-info');
             tt.style.display = (tt.style.display === 'block') ? 'none' : 'block';
         }
@@ -6464,6 +6470,14 @@ Automatically queues secondary filler research to reach your targeted weekly Val
             state.goldFlex = mode;
             document.querySelectorAll('#goldflex-strict, #goldflex-flex').forEach(r => r.classList.remove('active'));
             if (document.getElementById('goldflex-' + mode)) document.getElementById('goldflex-' + mode).classList.add('active');
+            saveStateToLocalStorage();
+            runSimulationAndRender();
+        }
+
+        function setValorFlex(mode) {
+            state.valorFlex = mode;
+            document.querySelectorAll('#valorflex-strict, #valorflex-flex').forEach(r => r.classList.remove('active'));
+            if (document.getElementById('valorflex-' + mode)) document.getElementById('valorflex-' + mode).classList.add('active');
             saveStateToLocalStorage();
             runSimulationAndRender();
         }
