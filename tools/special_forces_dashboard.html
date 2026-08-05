@@ -322,6 +322,13 @@
         .tech-pill {
             background: var(--bg-input); border: 1px solid var(--border-color); padding: 3px 8px;
             border-radius: 6px; font-weight: 600; font-size: 0.85rem; width: fit-content;
+            cursor: pointer; transition: all 0.15s ease;
+        }
+
+        .tech-pill:hover {
+            filter: brightness(0.92);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.12);
         }
 
         .tech-pill.filler-sf { border-color: #cbd5e1; background: var(--bg-input); color: var(--text-primary); }
@@ -329,7 +336,35 @@
         .tech-pill.filler-siege { border-color: var(--accent-gold); background: rgba(217, 119, 6, 0.1); color: var(--accent-gold); }
         .tech-pill.filler-def { border-color: var(--accent-blue); background: rgba(2, 132, 199, 0.1); color: var(--accent-blue); }
 
-        .badge-valor { background: rgba(22, 163, 74, 0.1); color: var(--accent-green); border: 1px solid var(--accent-green); padding: 4px 8px; border-radius: 6px; font-weight: 600; white-space: nowrap; }
+        /* Floating Tech Pill Tooltip */
+        #tech-pill-tooltip {
+            position: fixed;
+            display: none;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+            z-index: 99999;
+            pointer-events: none;
+            font-size: 0.82rem;
+            color: var(--text-primary);
+            min-width: 230px;
+            max-width: 360px;
+            line-height: 1.45;
+            backdrop-filter: blur(8px);
+        }
+
+        .pill-tt-header { font-size: 0.92rem; font-weight: 700; color: var(--text-primary); margin-bottom: 2px; }
+        .pill-tt-range { font-size: 0.76rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px dashed var(--border-color); }
+        .pill-tt-costs { display: flex; flex-direction: column; gap: 4px; }
+        .pill-tt-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem; }
+        .pill-tt-divider { font-size: 0.74rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 8px; margin-bottom: 4px; padding-top: 6px; border-top: 1px solid var(--border-color); }
+        .pill-tt-breakdown { display: flex; flex-direction: column; gap: 3px; font-size: 0.76rem; }
+        .pill-tt-subrow { color: var(--text-secondary); background: var(--bg-input); padding: 3px 6px; border-radius: 4px; }
+        .pill-tt-subrow strong { color: var(--text-primary); }
+
+        .badge-valor { background: rgba(22, 163, 74, 0.1); color: var(--accent-green); border: 1px solid var(--accent-green); padding: 4px 8px; border-radius: 6px; font-weight: 600; white-space: nowrap; display: inline-flex; align-items: center; }
         .badge-gold { background: rgba(217, 119, 6, 0.1); color: var(--accent-gold); border: 1px solid var(--accent-gold); padding: 4px 8px; border-radius: 6px; font-weight: 600; display: inline-flex; flex-direction: column; align-items: flex-start; gap: 1px; }
         .badge-gold.flex-overcap { background: rgba(220, 38, 38, 0.15); color: var(--accent-red); border: 1px solid var(--accent-red); }
         .badge-speedup { background: rgba(8, 145, 178, 0.1); color: var(--accent-cyan); border: 1px solid var(--accent-cyan); padding: 4px 8px; border-radius: 6px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
@@ -938,6 +973,7 @@
             </div>
             <div class="chart-svg-container" id="valor-chart-container"></div>
             <div class="chart-tooltip" id="valor-chart-tooltip"></div>
+            <div id="tech-pill-tooltip"></div>
         </div>
 
         <!-- Table -->
@@ -7373,7 +7409,59 @@ Automatically queues secondary filler research to reach your targeted weekly Val
             if (tt) tt.style.display = 'none';
         }
 
-        function formatStackedTechPills(techList, isFiller=false) {
+        function showPillTooltip(evt, el) {
+            let tt = document.getElementById('tech-pill-tooltip');
+            if (!tt) return;
+            let html = el.getAttribute('data-pill-tooltip');
+            if (!html) return;
+            tt.innerHTML = html;
+            tt.style.display = 'block';
+            positionPillTooltip(evt);
+        }
+
+        function movePillTooltip(evt) {
+            positionPillTooltip(evt);
+        }
+
+        function positionPillTooltip(evt) {
+            let tt = document.getElementById('tech-pill-tooltip');
+            if (!tt || tt.style.display === 'none') return;
+            let x = evt.clientX + 14;
+            let y = evt.clientY + 14;
+            let rect = tt.getBoundingClientRect();
+            if (x + rect.width > window.innerWidth - 12) {
+                x = evt.clientX - rect.width - 12;
+            }
+            if (y + rect.height > window.innerHeight - 12) {
+                y = evt.clientY - rect.height - 12;
+            }
+            tt.style.left = Math.max(10, x) + 'px';
+            tt.style.top = Math.max(10, y) + 'px';
+        }
+
+        function hidePillTooltip() {
+            let tt = document.getElementById('tech-pill-tooltip');
+            if (tt) tt.style.display = 'none';
+        }
+
+        function formatResearchTime(totalSec) {
+            if (!totalSec || totalSec <= 0) return '0h';
+            let days = Math.floor(totalSec / 86400);
+            let remSec = totalSec % 86400;
+            let hours = Math.floor(remSec / 3600);
+            let mins = Math.round((remSec % 3600) / 60);
+
+            let parts = [];
+            if (days > 0) parts.push(days + 'd');
+            if (hours > 0 || (days > 0 && mins > 0)) parts.push(hours + 'h');
+            if (mins > 0 && days === 0) parts.push(mins + 'm');
+            
+            let concise = parts.join(' ') || '0h';
+            let totalDays = (totalSec / 86400).toFixed(1) + 'd';
+            return days > 0 ? `${concise} (${totalDays})` : concise;
+        }
+
+        function formatStackedTechPills(techList, isFiller=false, weekItems=[]) {
             if (!techList || techList.length === 0) return '';
             let groups = {};
             techList.forEach(item => {
@@ -7382,10 +7470,12 @@ Automatically queues secondary filler research to reach your targeted weekly Val
                 if (!groups[name]) groups[name] = [];
                 groups[name].push(lvl);
             });
+
             let html = '<div class="tech-stack-list">';
             Object.keys(groups).forEach(name => {
                 let lvls = groups[name], minL = Math.min(...lvls), maxL = Math.max(...lvls);
-                let str = minL === maxL ? `${name} (Lvl ${minL})` : `${name} (Lvl ${minL}-${maxL})`;
+                let rangeStr = minL === maxL ? `Lvl ${minL}` : `Lvl ${minL}-${maxL}`;
+                let str = `${name} (${rangeStr})`;
                 let isTruck = name.includes('🚚');
                 let isSiege = name.includes('🏰');
                 let isDefFort = name.includes('🛡️');
@@ -7396,7 +7486,51 @@ Automatically queues secondary filler research to reach your targeted weekly Val
                 else if (isDefFort) pillClass = 'tech-pill filler-def';
                 else if (isFiller) pillClass = 'tech-pill filler-sf';
 
-                html += `<div class="${pillClass}">${str}</div>`;
+                // Find matching items from weekItems
+                let cleanName = name.replace(/^[🚚🏰🛡️]\s*/, '');
+                let matchedItems = [];
+                let totalValor = 0, totalGold = 0, totalTimeSec = 0;
+
+                lvls.sort((a,b) => a - b).forEach(lvl => {
+                    let itemObj = (weekItems || []).find(it => {
+                        let itCleanName = (it.tech_name || '').replace(/^[🚚🏰🛡️]\s*/, '');
+                        return itCleanName === cleanName && it.level === lvl;
+                    });
+                    if (itemObj) {
+                        matchedItems.push(itemObj);
+                        totalValor += itemObj.valor || 0;
+                        totalGold += itemObj.gold || 0;
+                        totalTimeSec += itemObj.actual_time_sec || 0;
+                    }
+                });
+
+                let goldFormatted = totalGold >= 1e9 ? (totalGold/1e9).toFixed(2) + 'B' : (totalGold/1e6).toFixed(1) + 'M';
+                let timeFormatted = formatResearchTime(totalTimeSec);
+
+                // Build rich tooltip HTML content
+                let tooltipHtml = `<div class="pill-tt-header">${name}</div>`;
+                tooltipHtml += `<div class="pill-tt-range">${rangeStr} (${matchedItems.length} level${matchedItems.length > 1 ? 's' : ''})</div>`;
+                tooltipHtml += `<div class="pill-tt-costs">`;
+                tooltipHtml += `<div class="pill-tt-row"><span>🛡️ Valor Badges:</span> <strong style="color:var(--accent-green)">${totalValor.toLocaleString()}</strong></div>`;
+                tooltipHtml += `<div class="pill-tt-row"><span>💰 Gold Cost:</span> <strong style="color:var(--accent-gold)">${goldFormatted}</strong></div>`;
+                tooltipHtml += `<div class="pill-tt-row"><span>⚡ Research Time:</span> <strong style="color:var(--accent-cyan)">${timeFormatted}</strong></div>`;
+                tooltipHtml += `</div>`;
+
+                if (matchedItems.length > 1) {
+                    tooltipHtml += `<div class="pill-tt-divider">Level Breakdown:</div>`;
+                    tooltipHtml += `<div class="pill-tt-breakdown">`;
+                    matchedItems.forEach(it => {
+                        let gStr = it.gold >= 1e9 ? (it.gold/1e9).toFixed(2) + 'B' : (it.gold/1e6).toFixed(1) + 'M';
+                        let tStr = formatResearchTime(it.actual_time_sec);
+                        tooltipHtml += `<div class="pill-tt-subrow"><strong>Lvl ${it.level}:</strong> 🛡️ ${it.valor ? it.valor.toLocaleString() : 0} | 💰 ${gStr} | ⚡ ${tStr}</div>`;
+                    });
+                    tooltipHtml += `</div>`;
+                }
+
+                // Escape double quotes for attribute insertion
+                let safeTooltipAttr = tooltipHtml.replace(/"/g, '&quot;');
+
+                html += `<div class="${pillClass}" data-pill-tooltip="${safeTooltipAttr}" onmouseenter="showPillTooltip(event, this)" onmousemove="movePillTooltip(event)" onmouseleave="hidePillTooltip()">${str}</div>`;
             });
             html += '</div>';
             return html;
@@ -7414,8 +7548,8 @@ Automatically queues secondary filler research to reach your targeted weekly Val
                 let goldClass = w.isFlexOvercap ? 'badge-gold flex-overcap' : 'badge-gold';
                 let flexTag = w.isFlexOvercap ? '<span style="white-space:nowrap; font-size:0.72rem; opacity:0.9; font-weight:700;">⚡ Flex +10%</span>' : '';
                 
-                let targetHtml = formatStackedTechPills(w.targetTechs, false) || '<em>None</em>';
-                let fillerColumnHtml = (w.fillerTechs && w.fillerTechs.length > 0) ? formatStackedTechPills(w.fillerTechs, true) : '<em>-</em>';
+                let targetHtml = formatStackedTechPills(w.targetTechs, false, w.items) || '<em>None</em>';
+                let fillerColumnHtml = (w.fillerTechs && w.fillerTechs.length > 0) ? formatStackedTechPills(w.fillerTechs, true, w.items) : '<em>-</em>';
 
                 let saveBtnClass = isSave ? 'btn-save-toggle active' : 'btn-save-toggle';
                 let saveBtnLabel = isSave ? '💼 Custom Active' : '💼 Custom Budget';
