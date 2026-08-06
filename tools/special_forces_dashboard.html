@@ -257,6 +257,63 @@
         .kpi-value { font-size: 1.6rem; font-weight: 700; margin-top: 6px; color: var(--text-primary); }
         .kpi-subtext { font-size: 0.8rem; color: var(--text-secondary); margin-top: 4px; }
 
+        /* Floating Top-Right Mini-KPI Bar */
+        .floating-mini-kpi {
+            position: fixed;
+            top: 18px;
+            right: 24px;
+            z-index: 9999;
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+            padding: 8px 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .mini-kpi-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .mini-kpi-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+        }
+        .mini-kpi-divider {
+            width: 1px;
+            height: 14px;
+            background: var(--border-color);
+        }
+        .btn-mini-kpi-toggle {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            border-radius: 6px;
+            width: 24px;
+            height: 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 700;
+            transition: all 0.2s ease;
+        }
+        .btn-mini-kpi-toggle:hover {
+            color: var(--text-primary);
+            border-color: var(--accent-gold);
+        }
+
         .chart-card {
             background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px;
             padding: 20px; margin-bottom: 20px; box-shadow: var(--shadow-sm); position: relative;
@@ -364,10 +421,43 @@
         .pill-tt-subrow { color: var(--text-secondary); background: var(--bg-input); padding: 3px 6px; border-radius: 4px; }
         .pill-tt-subrow strong { color: var(--text-primary); }
 
+        /* Bottleneck Alert Banner */
+        .bottleneck-alert-banner {
+            display: none;
+            background: rgba(220, 38, 38, 0.1);
+            border: 1.5px solid var(--accent-red);
+            border-radius: 14px;
+            padding: 14px 18px;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+            box-shadow: 0 4px 14px rgba(220, 38, 38, 0.18);
+        }
+        .bottleneck-alert-title {
+            font-size: 0.98rem;
+            font-weight: 800;
+            color: var(--accent-red);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+        .bottleneck-alert-body {
+            font-size: 0.88rem;
+            line-height: 1.45;
+            color: var(--text-primary);
+        }
+        .bottleneck-alert-body strong {
+            color: var(--accent-red);
+            font-weight: 700;
+        }
+
         .badge-valor { background: rgba(22, 163, 74, 0.1); color: var(--accent-green); border: 1px solid var(--accent-green); padding: 4px 8px; border-radius: 6px; font-weight: 600; white-space: nowrap; display: inline-flex; align-items: center; }
         .badge-gold { background: rgba(217, 119, 6, 0.1); color: var(--accent-gold); border: 1px solid var(--accent-gold); padding: 4px 8px; border-radius: 6px; font-weight: 600; display: inline-flex; flex-direction: column; align-items: flex-start; gap: 1px; }
         .badge-gold.flex-overcap { background: rgba(220, 38, 38, 0.15); color: var(--accent-red); border: 1px solid var(--accent-red); }
         .badge-speedup { background: rgba(8, 145, 178, 0.1); color: var(--accent-cyan); border: 1px solid var(--accent-cyan); padding: 4px 8px; border-radius: 6px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+
+        .badge-gold-preserved { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; background: rgba(217, 119, 6, 0.12); color: var(--accent-gold); border: 1px solid rgba(217, 119, 6, 0.3); white-space: nowrap; }
+        .badge-valor-preserved { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; background: rgba(16, 185, 129, 0.12); color: var(--accent-green); border: 1px solid rgba(16, 185, 129, 0.3); white-space: nowrap; }
         .badge-save-week {
             background: rgba(168, 85, 247, 0.12);
             color: var(--accent-purple);
@@ -923,8 +1013,11 @@
             </div>
         </div>
 
+        <!-- Bottleneck Alert Banner -->
+        <div id="bottleneck-alert-banner" class="bottleneck-alert-banner"></div>
+
         <!-- KPI Cards -->
-        <div class="kpi-grid">
+        <div class="kpi-grid" id="kpi-summary-cards">
             <div class="kpi-card gold">
                 <div class="kpi-title">Remaining Weeks to Goal</div>
                 <div class="kpi-value" id="kpi-weeks">14 Weeks</div>
@@ -936,7 +1029,7 @@
                 <div class="kpi-subtext">Cumulative Gold</div>
             </div>
             <div class="kpi-card cyan">
-                <div class="kpi-title">Remaining Speedups (VS Wed)</div>
+                <div class="kpi-title">Research Time</div>
                 <div class="kpi-value" id="kpi-speedups">258.7 Days</div>
                 <div class="kpi-subtext" id="kpi-speedup-hours">6,208 Hours</div>
             </div>
@@ -945,6 +1038,11 @@
                 <div class="kpi-value" id="kpi-valor">111,400</div>
                 <div class="kpi-subtext">Valor Badges</div>
             </div>
+        </div>
+
+        <!-- Floating Top-Right Mini-KPI Bar -->
+        <div id="floating-mini-kpi" class="floating-mini-kpi">
+            <div id="floating-mini-content" class="mini-kpi-content"></div>
         </div>
 
         <!-- Top Chart: Gold Spent & Speedup Days -->
@@ -5856,6 +5954,7 @@
             saveWeeks: {},
             fillerMasterEnabled: false,
             stopAtExtraTruck: true,
+            smartFillerAllowancePct: 12,
             fillerOptions: JSON.parse(JSON.stringify(DEFAULT_FILLER_OPTIONS)),
             modalDraftQueue: [],
             cachedWeeks: []
@@ -5980,6 +6079,8 @@
                     weeklyOverrides: state.weeklyOverrides,
                     saveWeeks: state.saveWeeks,
                     fillerMasterEnabled: state.fillerMasterEnabled,
+                    stopAtExtraTruck: state.stopAtExtraTruck,
+                    smartFillerAllowancePct: state.smartFillerAllowancePct,
                     fillerOptions: state.fillerOptions
                 }));
             } catch(e) {}
@@ -6137,7 +6238,57 @@ Automatically queues secondary filler research to reach your targeted weekly Val
                     </div>
                 </div>`;
             });
+
+            let allowancePct = state.smartFillerAllowancePct !== undefined ? state.smartFillerAllowancePct : 12;
+
+            html += `<div draggable="false" ondragstart="event.preventDefault(); event.stopPropagation();" style="margin-top:14px; padding:12px 14px; background:var(--bg-input); border-radius:10px; border:1px solid var(--border-color); display:flex; flex-direction:column; gap:8px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
+                    <span style="font-size:0.84rem; font-weight:700; color:var(--text-primary); display:inline-flex; align-items:center; gap:6px;">
+                        🛡️ Smart Filler Allowance
+                    </span>
+                    <button class="btn-preset" style="font-size:0.72rem; padding:3px 8px; font-weight:600;" onclick="resetSmartFillerAllowance()" title="Reset to default 12% allowance">Reset</button>
+                </div>
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <input type="range" id="input-smart-filler-slider" min="0" max="100" value="${allowancePct}" oninput="syncSmartFillerFromSlider(this.value)" onchange="commitSmartFillerAllowance()" style="flex:1; accent-color:var(--accent-gold); cursor:pointer;">
+                    <div style="display:inline-flex; align-items:center; gap:4px; background:var(--bg-card); padding:2px 6px; border-radius:6px; border:1px solid var(--border-color);">
+                        <input type="number" id="input-smart-filler-number" min="0" max="100" value="${allowancePct}" onchange="syncSmartFillerFromNumber(this.value)" style="width:42px; text-align:center; font-weight:700; border:none; background:transparent; color:var(--text-primary); font-size:0.85rem;">
+                        <span style="font-size:0.8rem; font-weight:700; color:var(--text-secondary);">%</span>
+                    </div>
+                </div>
+                <div style="font-size:0.74rem; color:var(--text-secondary); line-height:1.35;">
+                    Cap on filler tech spending when T10 target research is cut off by Gold/Valor (0% = save all remaining budget for targets, 12% = balanced default, 100% = no cap).
+                </div>
+            </div>`;
             container.innerHTML = html;
+        }
+
+        function syncSmartFillerFromSlider(val) {
+            let num = Math.max(0, Math.min(100, parseInt(val) || 0));
+            state.smartFillerAllowancePct = num;
+            let numInput = document.getElementById('input-smart-filler-number');
+            if (numInput) numInput.value = num;
+        }
+
+        function commitSmartFillerAllowance() {
+            saveStateToLocalStorage();
+            runSimulationAndRender();
+        }
+
+        function syncSmartFillerFromNumber(valStr) {
+            let num = Math.max(0, Math.min(100, parseInt(valStr) || 0));
+            state.smartFillerAllowancePct = num;
+            let slider = document.getElementById('input-smart-filler-slider');
+            if (slider) slider.value = num;
+            commitSmartFillerAllowance();
+        }
+
+        function resetSmartFillerAllowance() {
+            state.smartFillerAllowancePct = 12;
+            let slider = document.getElementById('input-smart-filler-slider');
+            let numInput = document.getElementById('input-smart-filler-number');
+            if (slider) slider.value = 12;
+            if (numInput) numInput.value = 12;
+            commitSmartFillerAllowance();
         }
 
         function toggleFillerOption(id, isChecked) {
@@ -6912,8 +7063,9 @@ Automatically queues secondary filler research to reach your targeted weekly Val
                 }
             });
             let totalSfNodeCount = 221;
+            let bottleneckState = { isGoldBottleneck: false, blockedTechName: '', blockedLevel: 0, requiredGold: 0, currentGoldCap: 0, bottleneckWeek: null };
 
-            while (completedSet.size < totalNodes && currentWeek <= 100) {
+            while (completedSet.size < totalNodes && currentWeek <= 260) {
                 let saveConfig = state.saveWeeks[currentWeek] || { enabled: false };
                 let isSaveWeek = saveConfig.enabled;
 
@@ -6932,6 +7084,7 @@ Automatically queues secondary filler research to reach your targeted weekly Val
 
                 let wValor = 0, wTargetValor = 0, wFillerValor = 0, wGold = 0, wSpeedSec = 0;
                 let wTargetTechs = [], wFillerTechs = [], wItems = [];
+                let isGoldBottleneckedThisWeek = false, isValorBottleneckedThisWeek = false;
 
                 if (state.weeklyOverrides[currentWeek]) {
                     let customItems = state.weeklyOverrides[currentWeek];
@@ -6991,7 +7144,25 @@ Automatically queues secondary filler research to reach your targeted weekly Val
                                 }
                             }
                         }
-                        if (candIdx === -1) break;
+                        if (candIdx === -1) {
+                            if (wTargetTechs.length === 0 && !bottleneckState.isGoldBottleneck) {
+                                for (let i=0; i<available.length; i++) {
+                                    let cand = nodes[available[i]];
+                                    if (cand.gold > effectiveGoldCap) {
+                                        bottleneckState = {
+                                            isGoldBottleneck: true,
+                                            blockedTechName: cand.tech_name,
+                                            blockedLevel: cand.level,
+                                            requiredGold: cand.gold,
+                                            currentGoldCap: effectiveGoldCap,
+                                            bottleneckWeek: currentWeek
+                                        };
+                                        break;
+                                    }
+                                }
+                            }
+                            break;
+                        }
 
                         let key = available.splice(candIdx, 1)[0];
                         let n = nodes[key];
@@ -7024,6 +7195,27 @@ Automatically queues secondary filler research to reach your targeted weekly Val
                     }
                     let checkSf40Unlocked = () => (initialSfCount + completedSet.size >= 89);
 
+                    // Dual Resource Bottleneck Auditor for Filler Allocation
+                    if (available.length > 0) {
+                        for (let i = 0; i < available.length; i++) {
+                            let cand = nodes[available[i]];
+                            let goldShort = (wGold + cand.gold > effectiveGoldCap);
+                            let valorShort = (wValor + cand.valor > effectiveValorCap);
+
+                            if (goldShort || valorShort) {
+                                if (goldShort) isGoldBottleneckedThisWeek = true;
+                                if (valorShort) isValorBottleneckedThisWeek = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    let allowanceRatio = (state.smartFillerAllowancePct !== undefined ? state.smartFillerAllowancePct : 12) / 100.0;
+                    let fillerGoldSpent = 0;
+                    let fillerValorSpent = 0;
+                    let fillerGoldCap = Math.round(effectiveGoldCap * allowanceRatio);
+                    let fillerValorCap = Math.round(effectiveValorCap * allowanceRatio);
+
                     if (state.fillerMasterEnabled && (wValor < fillerTargetValor * 0.8 || (wGold + 100000000 > strictGoldCap && wValor < fillerTargetValor))) {
                         for (let opt of state.fillerOptions) {
                             if (!opt.enabled) continue;
@@ -7035,24 +7227,20 @@ Automatically queues secondary filler research to reach your targeted weekly Val
                                 while (truckAvailable.length > 0 && wValor < fillerTargetValor) {
                                     let candIdx = -1;
 
-                                    // Helper function to check if node is a strict prerequisite for Extra Truck Lvl 1
                                     let isExtraTruckPrereq = (n) => {
                                         if (n.tech_id === 'basic-goods' || n.tech_id === 'rapid-transit' || n.tech_id === 'plunder' || n.tech_id === 'lucky' || n.tech_id === 'extra-truck') return true;
                                         if ((n.tech_id === 'attack-boost' || n.tech_id === 'defense-boost') && n.level <= 5) return true;
                                         return false;
                                     };
 
-                                    // Pass 1: Look for available candidate that is a strict Extra Truck prerequisite (Rush Extra Truck!)
                                     for (let i = 0; i < truckAvailable.length; i++) {
                                         let cand = truckNodes[truckAvailable[i]];
-                                        if (isExtraTruckPrereq(cand) && (wValor + cand.valor <= effectiveValorCap)) {
+                                        if (isExtraTruckPrereq(cand) && (wValor + cand.valor <= effectiveValorCap) && (fillerValorSpent + cand.valor <= fillerValorCap)) {
                                             candIdx = i; break;
                                         }
                                     }
 
-                                    // Pass 2: If no prereq is available/budgeted AND stopAtExtraTruck is FALSE, look for non-prereq candidates
                                     if (candIdx === -1 && state.stopAtExtraTruck === false) {
-                                        // Prioritize Reindeer Sleigh Ride first, then Ultimate Guard, then Attack/Defense Boost 6-10
                                         let getContinuationRank = (n) => {
                                             if (n.tech_id === 'reindeer-sleigh-ride') return 1;
                                             if (n.tech_id === 'ultimate-guard') return 2;
@@ -7062,7 +7250,7 @@ Automatically queues secondary filler research to reach your targeted weekly Val
                                         let bestRank = 999;
                                         for (let i = 0; i < truckAvailable.length; i++) {
                                             let cand = truckNodes[truckAvailable[i]];
-                                            if (wValor + cand.valor <= effectiveValorCap) {
+                                            if ((wValor + cand.valor <= effectiveValorCap) && (fillerValorSpent + cand.valor <= fillerValorCap)) {
                                                 let r = getContinuationRank(cand);
                                                 if (r < bestRank) { bestRank = r; candIdx = i; }
                                             }
@@ -7074,20 +7262,19 @@ Automatically queues secondary filler research to reach your targeted weekly Val
                                     let key = truckAvailable.splice(candIdx, 1)[0];
                                     let n = truckNodes[key];
 
-                                    // If stopAtExtraTruck is TRUE and this candidate is NOT a prereq, stop!
                                     if (state.stopAtExtraTruck !== false && !isExtraTruckPrereq(n)) {
                                         break;
                                     }
 
                                     wValor += n.valor; wGold += n.gold; wSpeedSec += n.actual_time_sec;
                                     wFillerValor += n.valor;
+                                    fillerGoldSpent += n.gold; fillerValorSpent += n.valor;
                                     wFillerTechs.push('🚚 ' + n.tech_name + ' Lvl ' + n.level);
                                     wItems.push({ tech_id: 'truck:' + n.tech_id, tech_name: '🚚 ' + n.tech_name, level: n.level, valor: n.valor, gold: n.gold, actual_time_sec: n.actual_time_sec });
                                     truckCompletedSet.add(key);
 
                                     truckAdj[key].forEach(c => { truckInDegree[c]--; if (truckInDegree[c] === 0) truckAvailable.push(c); });
 
-                                    // If Extra Truck Lvl 1 is finished and stopAtExtraTruck is TRUE, stop immediately
                                     if (key === 'extra-truck:1' && state.stopAtExtraTruck !== false) {
                                         break;
                                     }
@@ -7097,7 +7284,7 @@ Automatically queues secondary filler research to reach your targeted weekly Val
                                     let candIdx = -1;
                                     for (let i=0; i<nonT10SfAvailable.length; i++) {
                                         let cand = nonT10SfNodes[nonT10SfAvailable[i]];
-                                        if ((wValor + cand.valor <= effectiveValorCap) && (wGold + cand.gold <= effectiveGoldCap)) {
+                                        if ((wValor + cand.valor <= effectiveValorCap) && (wGold + cand.gold <= effectiveGoldCap) && (fillerGoldSpent + cand.gold <= fillerGoldCap) && (fillerValorSpent + cand.valor <= fillerValorCap)) {
                                             candIdx = i; break;
                                         }
                                     }
@@ -7107,6 +7294,7 @@ Automatically queues secondary filler research to reach your targeted weekly Val
                                     let n = nonT10SfNodes[key];
                                     wValor += n.valor; wGold += n.gold; wSpeedSec += n.actual_time_sec;
                                     wFillerValor += n.valor;
+                                    fillerGoldSpent += n.gold; fillerValorSpent += n.valor;
                                     wFillerTechs.push(n.tech_name + ' Lvl ' + n.level);
                                     wItems.push({ tech_id: n.tech_id, tech_name: n.tech_name, level: n.level, valor: n.valor, gold: n.gold, actual_time_sec: n.actual_time_sec });
                                     nonT10SfCompletedSet.add(key);
@@ -7118,7 +7306,7 @@ Automatically queues secondary filler research to reach your targeted weekly Val
                                     let candIdx = -1;
                                     for (let i=0; i<siegeAvailable.length; i++) {
                                         let cand = siegeNodes[siegeAvailable[i]];
-                                        if ((wValor + cand.valor <= effectiveValorCap) && (wGold + cand.gold <= effectiveGoldCap)) {
+                                        if ((wValor + cand.valor <= effectiveValorCap) && (wGold + cand.gold <= effectiveGoldCap) && (fillerGoldSpent + cand.gold <= fillerGoldCap) && (fillerValorSpent + cand.valor <= fillerValorCap)) {
                                             candIdx = i; break;
                                         }
                                     }
@@ -7128,6 +7316,7 @@ Automatically queues secondary filler research to reach your targeted weekly Val
                                     let n = siegeNodes[key];
                                     wValor += n.valor; wGold += n.gold; wSpeedSec += n.actual_time_sec;
                                     wFillerValor += n.valor;
+                                    fillerGoldSpent += n.gold; fillerValorSpent += n.valor;
                                     wFillerTechs.push('🏰 ' + n.tech_name + ' Lvl ' + n.level);
                                     wItems.push({ tech_id: 'siege:' + n.tech_id, tech_name: '🏰 ' + n.tech_name, level: n.level, valor: n.valor, gold: n.gold, actual_time_sec: n.actual_time_sec });
                                     siegeCompletedSet.add(key);
@@ -7139,7 +7328,7 @@ Automatically queues secondary filler research to reach your targeted weekly Val
                                     let candIdx = -1;
                                     for (let i=0; i<defenseFortAvailable.length; i++) {
                                         let cand = defenseFortNodes[defenseFortAvailable[i]];
-                                        if ((wValor + cand.valor <= effectiveValorCap) && (wGold + cand.gold <= effectiveGoldCap)) {
+                                        if ((wValor + cand.valor <= effectiveValorCap) && (wGold + cand.gold <= effectiveGoldCap) && (fillerGoldSpent + cand.gold <= fillerGoldCap) && (fillerValorSpent + cand.valor <= fillerValorCap)) {
                                             candIdx = i; break;
                                         }
                                     }
@@ -7149,6 +7338,7 @@ Automatically queues secondary filler research to reach your targeted weekly Val
                                     let n = defenseFortNodes[key];
                                     wValor += n.valor; wGold += n.gold; wSpeedSec += n.actual_time_sec;
                                     wFillerValor += n.valor;
+                                    fillerGoldSpent += n.gold; fillerValorSpent += n.valor;
                                     wFillerTechs.push('🛡️ ' + n.tech_name + ' Lvl ' + n.level);
                                     wItems.push({ tech_id: 'def_fort:' + n.tech_id, tech_name: '🛡️ ' + n.tech_name, level: n.level, valor: n.valor, gold: n.gold, actual_time_sec: n.actual_time_sec });
                                     defenseFortCompletedSet.add(key);
@@ -7160,42 +7350,99 @@ Automatically queues secondary filler research to reach your targeted weekly Val
                     }
                 }
 
-                cumGold += wGold; cumValor += wValor; cumSpeedups += (wSpeedSec / 86400);
+                    let goldPreserved = (isGoldBottleneckedThisWeek && effectiveGoldCap > wGold) ? (effectiveGoldCap - wGold) : 0;
+                    let valorPreserved = (isValorBottleneckedThisWeek && effectiveValorCap > wValor) ? (effectiveValorCap - wValor) : 0;
 
-                // Check T10 unlock milestone
-                if (!t10UnlockedWeek) {
-                    let isT10Done = true;
-                    for (let reqKey of requiredT10Keys) {
-                        if (!completedSet.has(reqKey)) { isT10Done = false; break; }
+                    cumGold += wGold; cumValor += wValor; cumSpeedups += (wSpeedSec / 86400);
+
+                    // Check T10 unlock milestone
+                    if (!t10UnlockedWeek) {
+                        let isT10Done = true;
+                        for (let reqKey of requiredT10Keys) {
+                            if (!completedSet.has(reqKey)) { isT10Done = false; break; }
+                        }
+                        if (isT10Done) t10UnlockedWeek = currentWeek;
                     }
-                    if (isT10Done) t10UnlockedWeek = currentWeek;
-                }
 
-                // Check SF completion milestone
-                if (!sfCompletedWeek) {
-                    let totalDone = 0;
-                    if (state.startingBaseline) {
-                        Object.keys(state.startingBaseline).forEach(k => totalDone += state.startingBaseline[k] || 0);
+                    // Check SF completion milestone
+                    if (!sfCompletedWeek) {
+                        let totalDone = 0;
+                        if (state.startingBaseline) {
+                            Object.keys(state.startingBaseline).forEach(k => totalDone += state.startingBaseline[k] || 0);
+                        }
+                        totalDone += completedSet.size;
+                        if (totalDone >= totalSfNodeCount) sfCompletedWeek = currentWeek;
                     }
-                    totalDone += completedSet.size;
-                    if (totalDone >= totalSfNodeCount) sfCompletedWeek = currentWeek;
-                }
 
-                weeks.push({
-                    week: currentWeek, valorSpent: wValor, targetValor: wTargetValor, fillerValor: wFillerValor, goldSpent: wGold, speedupsDays: wSpeedSec / 86400,
-                    isFlexOvercap: (!isSaveWeek && wGold > state.goldCap),
-                    isSaveWeek: isSaveWeek, saveValorCap: effectiveValorCap, saveGoldCap: effectiveGoldCap,
-                    targetTechs: wTargetTechs, fillerTechs: wFillerTechs,
-                    items: wItems,
-                    cumGold: cumGold, cumValor: cumValor, cumSpeedups: cumSpeedups,
-                    priorTechState: weekCompletedState
-                });
+                    weeks.push({
+                        week: currentWeek, valorSpent: wValor, targetValor: wTargetValor, fillerValor: wFillerValor, goldSpent: wGold, speedupsDays: wSpeedSec / 86400,
+                        isFlexOvercap: (!isSaveWeek && wGold > state.goldCap),
+                        isSaveWeek: isSaveWeek, saveValorCap: effectiveValorCap, saveGoldCap: effectiveGoldCap,
+                        targetTechs: wTargetTechs, fillerTechs: wFillerTechs,
+                        items: wItems,
+                        goldPreserved: goldPreserved,
+                        isGoldPreserved: (goldPreserved >= 50000000),
+                        valorPreserved: valorPreserved,
+                        isValorPreserved: (valorPreserved >= 500),
+                        cumGold: cumGold, cumValor: cumValor, cumSpeedups: cumSpeedups,
+                        priorTechState: weekCompletedState
+                    });
+
+                if (wTargetTechs.length === 0 && wFillerTechs.length === 0 && bottleneckState.isGoldBottleneck) {
+                    break;
+                }
                 currentWeek++;
+            }
+
+            let t10Diagnostic = null;
+            if (!t10UnlockedWeek) {
+                let blockedKey = null;
+                for (let reqKey of requiredT10Keys) {
+                    if (!completedSet.has(reqKey)) {
+                        blockedKey = reqKey;
+                        break;
+                    }
+                }
+
+                if (blockedKey) {
+                    let nodeObj = nodes[blockedKey];
+                    let techName = nodeObj ? nodeObj.tech_name : blockedKey;
+                    let lvlNum = nodeObj ? nodeObj.level : 1;
+
+                    let isPrereqBlocked = (inDegree[blockedKey] > 0);
+                    let missingParentName = '';
+                    let missingParentId = '';
+                    let missingParentLevel = 1;
+
+                    if (isPrereqBlocked) {
+                        Object.keys(nodes).forEach(pKey => {
+                            if (!completedSet.has(pKey) && adj[pKey] && adj[pKey].includes(blockedKey)) {
+                                let pNode = nodes[pKey];
+                                missingParentName = pNode ? pNode.tech_name : pKey;
+                                missingParentId = pNode ? pNode.tech_id : pKey.split(':')[0];
+                                missingParentLevel = pNode ? pNode.level : (parseInt(pKey.split(':')[1]) || 1);
+                            }
+                        });
+                    }
+
+                    t10Diagnostic = {
+                        isBlocked: true,
+                        blockedKey: blockedKey,
+                        blockedTechName: techName,
+                        blockedLevel: lvlNum,
+                        isPrereqBlocked: isPrereqBlocked,
+                        missingParentId: missingParentId,
+                        missingParentName: missingParentName,
+                        missingParentLevel: missingParentLevel
+                    };
+                }
             }
 
             state.cachedWeeks = weeks;
             state.t10UnlockedWeek = t10UnlockedWeek;
             state.sfCompletedWeek = sfCompletedWeek;
+            state.bottleneckState = bottleneckState;
+            state.t10Diagnostic = t10Diagnostic;
 
             document.getElementById('kpi-weeks').innerText = weeks.length + ' Weeks';
             document.getElementById('kpi-months').innerText = '~' + (weeks.length/4.33).toFixed(1) + ' Months';
@@ -7204,9 +7451,65 @@ Automatically queues secondary filler research to reach your targeted weekly Val
             document.getElementById('kpi-speedup-hours').innerText = (cumSpeedups*24).toFixed(0) + ' Hours';
             document.getElementById('kpi-valor').innerText = cumValor.toLocaleString();
 
+            renderBottleneckAlert();
             renderGoldChart(weeks);
             renderValorChart(weeks);
             renderTable(weeks);
+            updateFloatingMiniKpi();
+        }
+
+        function updateFloatingMiniKpi() {
+            let container = document.getElementById('floating-mini-content');
+            if (!container) return;
+
+            let weeksStr = document.getElementById('kpi-weeks') ? document.getElementById('kpi-weeks').innerText : '0 Weeks';
+            let monthsStr = document.getElementById('kpi-months') ? document.getElementById('kpi-months').innerText : '';
+            let goldStr = document.getElementById('kpi-gold') ? document.getElementById('kpi-gold').innerText : '0B';
+            let speedStr = document.getElementById('kpi-speedups') ? document.getElementById('kpi-speedups').innerText : '0 Days';
+            let hoursStr = document.getElementById('kpi-speedup-hours') ? document.getElementById('kpi-speedup-hours').innerText : '';
+            let valorStr = document.getElementById('kpi-valor') ? document.getElementById('kpi-valor').innerText : '0';
+
+            let isMinimized = !!state.floatingMiniKpiMinimized;
+
+            if (isMinimized) {
+                container.innerHTML = `
+                    <div class="mini-kpi-item" style="cursor:pointer;" onclick="toggleFloatingMiniKpi()" title="Goal Tracker: Click to expand full summary">
+                        <span>📊</span>
+                        <span style="font-weight:700; color:var(--text-primary);">Goal Tracker</span>
+                    </div>
+                    <button class="btn-mini-kpi-toggle" onclick="toggleFloatingMiniKpi()" title="Expand Goal Tracker summary">➕</button>
+                `;
+            } else {
+                container.innerHTML = `
+                    <span style="font-size:0.72rem; font-weight:800; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.4px; margin-right:2px;">Goal Tracking:</span>
+                    <div class="mini-kpi-item" title="${weeksStr} Remaining to Goal ${monthsStr ? '('+monthsStr+')' : ''}">
+                        <span>📅</span>
+                        <span style="color:var(--accent-gold)">${weeksStr}</span>
+                    </div>
+                    <div class="mini-kpi-divider"></div>
+                    <div class="mini-kpi-item" title="${goldStr} Remaining Gold Required (Cumulative Gold)">
+                        <span>💰</span>
+                        <span style="color:var(--accent-blue)">${goldStr}</span>
+                    </div>
+                    <div class="mini-kpi-divider"></div>
+                    <div class="mini-kpi-item" title="${speedStr} Research Time ${hoursStr ? '('+hoursStr+')' : ''}">
+                        <span>⏱️</span>
+                        <span style="color:var(--accent-cyan)">${speedStr}</span>
+                    </div>
+                    <div class="mini-kpi-divider"></div>
+                    <div class="mini-kpi-item" title="${valorStr} Remaining Valor Badges">
+                        <span>🛡️</span>
+                        <span style="color:var(--accent-green)">${valorStr}</span>
+                    </div>
+                    <button class="btn-mini-kpi-toggle" onclick="toggleFloatingMiniKpi()" title="Minimize Goal Tracking summary">➖</button>
+                `;
+            }
+        }
+
+        function toggleFloatingMiniKpi() {
+            state.floatingMiniKpiMinimized = !state.floatingMiniKpiMinimized;
+            saveStateToLocalStorage();
+            updateFloatingMiniKpi();
         }
 
         function renderGoldChart(weeks) {
@@ -7393,6 +7696,42 @@ Automatically queues secondary filler research to reach your targeted weekly Val
 
             html += `</svg>`;
             container.innerHTML = html;
+        }
+
+        function renderBottleneckAlert() {
+            let el = document.getElementById('bottleneck-alert-banner');
+            if (!el) return;
+            let b = state.bottleneckState;
+            let d = state.t10Diagnostic;
+
+            if (b && b.isGoldBottleneck) {
+                let goldReqM = (b.requiredGold / 1e6).toFixed(0) + 'M';
+                let goldCapM = (b.currentGoldCap / 1e6).toFixed(0) + 'M';
+                el.style.display = 'block';
+                el.innerHTML = `<div class="bottleneck-alert-title">⚠️ T10 Progression Stalled (Gold Limit Bottleneck)</div>
+                <div class="bottleneck-alert-body">
+                    Target research for <strong>${b.blockedTechName} (Lvl ${b.blockedLevel})</strong> requires <strong>${goldReqM} Gold</strong>, which exceeds your Weekly Gold Limit of <strong>${goldCapM} Gold/week</strong>.<br>
+                    <em>Increase your Weekly Gold Limit to at least <strong>${goldReqM} Gold</strong> to resume progression.</em>
+                </div>`;
+            } else if (d && d.isBlocked) {
+                el.style.display = 'block';
+                if (d.isPrereqBlocked && d.missingParentName) {
+                    el.innerHTML = `<div class="bottleneck-alert-title">⚠️ T10 Troops Unlocked Failed: Baseline Dependency Missing</div>
+                    <div class="bottleneck-alert-body">
+                        Target research for <strong>${d.blockedTechName} (Lvl ${d.blockedLevel})</strong> is waiting on prerequisite <strong>${d.missingParentName} (Lvl ${d.missingParentLevel})</strong>, which was unfulfilled in your starting baseline.<br>
+                        <div style="margin-top:8px;">
+                            <button class="btn-preset active" style="font-size:0.82rem; padding:6px 12px;" onclick="autoFixT10Baseline()">🔧 Auto-Fix Baseline &amp; Resume T10</button>
+                        </div>
+                    </div>`;
+                } else {
+                    el.innerHTML = `<div class="bottleneck-alert-title">⚠️ T10 Troops Unlocked Failed</div>
+                    <div class="bottleneck-alert-body">
+                        Target research stopped at <strong>${d.blockedTechName} (Lvl ${d.blockedLevel})</strong>. Check your weekly Valor targets or custom budget caps.
+                    </div>`;
+                }
+            } else {
+                el.style.display = 'none';
+            }
         }
 
         function showTooltip(evt, week, gold, speed, valor) {
@@ -7614,6 +7953,19 @@ Automatically queues secondary filler research to reach your targeted weekly Val
                         </td>
                     </tr>`;
                 }
+
+                if (state.bottleneckState && state.bottleneckState.isGoldBottleneck && w.week === state.bottleneckState.bottleneckWeek) {
+                    let b = state.bottleneckState;
+                    let goldReqM = (b.requiredGold / 1e6).toFixed(0) + 'M';
+                    let goldCapM = (b.currentGoldCap / 1e6).toFixed(0) + 'M';
+                    html += `<tr style="background:rgba(220, 38, 38, 0.08); border-bottom:2px solid var(--accent-red)">
+                        <td colspan="7" style="padding:8px 16px; text-align:center;">
+                            <span class="badge-milestone-sf" style="background:rgba(220,38,38,0.15); color:var(--accent-red); border-color:var(--accent-red)">
+                                ⚠️ PROGRESSION STALLED IN WEEK ${w.week}: ${b.blockedTechName} (Lvl ${b.blockedLevel}) REQUIRES ${goldReqM} GOLD (CURRENT LIMIT: ${goldCapM}/WEEK)
+                            </span>
+                        </td>
+                    </tr>`;
+                }
             });
             tbody.innerHTML = html;
         }
@@ -7722,6 +8074,42 @@ Automatically queues secondary filler research to reach your targeted weekly Val
             grid.innerHTML = html;
         }
 
+        function autoHealBaselinePrerequisites(techId, level) {
+            if (!level || level <= 0) return;
+            let fullSfTechs = {};
+            SF_DATA.rows.forEach(r => r.elements.forEach(e => fullSfTechs[e.id] = e));
+            let targetElement = fullSfTechs[techId];
+            if (!targetElement) return;
+
+            for (let l = 1; l <= level; l++) {
+                let lvlObj = targetElement.levels.find(lv => lv.level === l);
+                if (lvlObj && lvlObj.requirements) {
+                    lvlObj.requirements.forEach(req => {
+                        let reqId = req.elementId;
+                        let minLvl = req.minLevel || 1;
+                        if (fullSfTechs[reqId]) {
+                            let currentReqLvl = state.startingBaseline[reqId] || 0;
+                            if (currentReqLvl < minLvl) {
+                                state.startingBaseline[reqId] = minLvl;
+                                autoHealBaselinePrerequisites(reqId, minLvl);
+                            }
+                        }
+                    });
+                }
+            }
+        }
+
+        function autoFixT10Baseline() {
+            let diag = state.t10Diagnostic;
+            if (diag && diag.missingParentId && diag.missingParentLevel) {
+                state.startingBaseline[diag.missingParentId] = diag.missingParentLevel;
+                autoHealBaselinePrerequisites(diag.missingParentId, diag.missingParentLevel);
+                renderBaselineTree();
+                saveStateToLocalStorage();
+                runSimulationAndRender();
+            }
+        }
+
         function adjustBaseline(techId, delta) {
             let cur = state.startingBaseline[techId] || 0;
             let maxLvl = 10;
@@ -7729,6 +8117,7 @@ Automatically queues secondary filler research to reach your targeted weekly Val
 
             let nextLvl = Math.max(0, Math.min(maxLvl, cur + delta));
             state.startingBaseline[techId] = nextLvl;
+            if (delta > 0) autoHealBaselinePrerequisites(techId, nextLvl);
             renderBaselineTree();
             saveStateToLocalStorage();
             runSimulationAndRender();
@@ -7740,6 +8129,8 @@ Automatically queues secondary filler research to reach your targeted weekly Val
             SF_DATA.rows.forEach(r => r.elements.forEach(e => { if (e.id === techId) sfMax = e.maxLevel; }));
             let nextLvl = Math.max(0, Math.min(sfMax, val));
             state.startingBaseline[techId] = nextLvl;
+            if (nextLvl > 0) autoHealBaselinePrerequisites(techId, nextLvl);
+            renderBaselineTree();
             saveStateToLocalStorage();
             runSimulationAndRender();
         }
