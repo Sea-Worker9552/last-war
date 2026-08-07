@@ -86,6 +86,8 @@
     html, body {
       max-width: 100%;
       overflow-x: hidden;
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
     }
 
     body {
@@ -100,6 +102,11 @@
       min-height: 100vh;
       padding: calc(1rem + env(safe-area-inset-top)) calc(1rem + env(safe-area-inset-right)) calc(1.5rem + env(safe-area-inset-bottom)) calc(1rem + env(safe-area-inset-left));
       transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .app-container, .card, .sub-panel-box, .round-control-box, .solver-option-card, .stat-card, .table-card, .table-responsive {
+      min-width: 0;
+      max-width: 100%;
     }
 
     .app-container {
@@ -566,6 +573,113 @@
       margin: 0.4rem 0;
     }
 
+    /* Live Progress Bar Section */
+    .progress-section {
+      margin-top: 1.25rem;
+      padding-top: 1rem;
+      border-top: 1px dashed var(--border-card);
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .progress-labels {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .progress-labels strong {
+      color: var(--primary-cyan);
+      font-weight: 800;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.05rem;
+    }
+
+    .badge-status {
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .badge-status.success {
+      background: rgba(5, 150, 105, 0.12);
+      color: var(--accent-green);
+      border: 1px solid rgba(5, 150, 105, 0.3);
+    }
+
+    .badge-status.warning {
+      background: rgba(217, 119, 6, 0.12);
+      color: var(--accent-gold);
+      border: 1px solid rgba(217, 119, 6, 0.3);
+    }
+
+    .progress-bar-container {
+      display: flex;
+      height: 18px;
+      background: var(--input-bg);
+      border: 1px solid var(--border-card);
+      border-radius: 999px;
+      overflow: hidden;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .progress-segment {
+      height: 100%;
+      transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      cursor: pointer;
+    }
+
+    .progress-segment:not(:last-child) {
+      border-right: 1px solid rgba(255, 255, 255, 0.4);
+    }
+
+    .progress-segment:hover {
+      filter: brightness(1.15);
+    }
+
+    .seg-radar { background: var(--accent-gold); }
+    .seg-secdef { background: var(--primary-cyan); }
+    .seg-nonsecdef { background: var(--accent-purple); }
+    .seg-speedups { background: var(--accent-green); }
+
+
+    .progress-legend {
+      display: flex;
+      gap: 1.25rem;
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      margin-top: 0.2rem;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .legend-item::before {
+      content: '';
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .legend-radar::before { background: var(--accent-gold); }
+    .legend-secdef::before { background: var(--primary-cyan); }
+    .legend-nonsecdef::before { background: var(--accent-purple); }
+    .legend-speedups::before { background: var(--accent-green); }
+
+
     /* Player Base Training Inputs Panel Grid (3 Equal Columns in 1 Row) */
     .base-inputs-panel-grid {
       display: grid;
@@ -582,7 +696,7 @@
     /* Form Controls */
     .form-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
       gap: 1rem;
     }
 
@@ -765,7 +879,7 @@
 
     .rounds-config-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       gap: 1rem;
     }
 
@@ -987,7 +1101,7 @@
 
     .solver-options-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       gap: 1rem;
     }
 
@@ -1124,12 +1238,28 @@
       }
 
       .header-content h1 {
-        font-size: 1.6rem;
+        font-size: 1.5rem;
       }
 
       .header-actions {
         width: 100%;
         justify-content: space-between;
+      }
+
+      .rounds-config-grid, .solver-options-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stepper-sm .btn-step {
+        width: 32px;
+        height: 32px;
+        font-size: 0.9rem;
+      }
+
+      .stepper-sm input {
+        padding: 0.1rem 0.2rem;
+        width: 38px;
+        min-height: 32px;
       }
 
       .stats-cards-grid {
@@ -1455,14 +1585,16 @@
           <span id="projPercentText" class="badge-status success">105.9% Goal Reached</span>
         </div>
         <div class="progress-bar-container">
-          <div class="progress-bar-fill" id="progressBarFill" style="width: 100%;"></div>
-          <div class="progress-marker-radar" id="progressRadarMarker" style="left: 27.7%;" title="Radar Baseline"></div>
+          <div class="progress-segment seg-radar" id="segRadar" title="Radar Base: 2,000,000 PTS"></div>
+          <div class="progress-segment seg-secdef" id="segSecDef" title="SecDef Training: 0 PTS"></div>
+          <div class="progress-segment seg-nonsecdef" id="segNonSecDef" title="Standard Training: 0 PTS"></div>
+          <div class="progress-segment seg-speedups" id="segSpeedups" title="Speedup Points: 0 PTS"></div>
         </div>
         <div class="progress-legend">
-          <span class="legend-item legend-radar">Radar Base (2.0M)</span>
-          <span class="legend-item legend-secdef">SecDef Training Rounds</span>
-          <span class="legend-item legend-nonsecdef">Standard Training Rounds</span>
-          <span class="legend-item legend-speedups">Speedup Points</span>
+          <span class="legend-item legend-radar" id="legRadar">Radar Base (2.0M)</span>
+          <span class="legend-item legend-secdef" id="legSecDef">SecDef Training Rounds</span>
+          <span class="legend-item legend-nonsecdef" id="legNonSecDef">Standard Training Rounds</span>
+          <span class="legend-item legend-speedups" id="legSpeedups">Speedup Points</span>
         </div>
       </div>
     </section>
@@ -1988,8 +2120,14 @@
         
         projPointsText: document.getElementById('projPointsText'),
         projPercentText: document.getElementById('projPercentText'),
-        progressBarFill: document.getElementById('progressBarFill'),
-        progressRadarMarker: document.getElementById('progressRadarMarker'),
+        segRadar: document.getElementById('segRadar'),
+        segSecDef: document.getElementById('segSecDef'),
+        segNonSecDef: document.getElementById('segNonSecDef'),
+        segSpeedups: document.getElementById('segSpeedups'),
+        legRadar: document.getElementById('legRadar'),
+        legSecDef: document.getElementById('legSecDef'),
+        legNonSecDef: document.getElementById('legNonSecDef'),
+        legSpeedups: document.getElementById('legSpeedups'),
         
         solverTargetText: document.getElementById('solverTargetText'),
         solverOpt1Title: document.getElementById('solverOpt1Title'),
@@ -2575,10 +2713,39 @@
       elements.projPointsText.textContent = `${formatNumber(grandTotalPts)} PTS`;
       const pct = targetGoal > 0 ? (grandTotalPts / targetGoal) * 100 : 0;
       elements.projPercentText.textContent = `${pct.toFixed(1)}% Goal Reached`;
-      elements.progressBarFill.style.width = `${Math.min(100, pct)}%`;
       
-      const radarPct = targetGoal > 0 ? (radarPts / targetGoal) * 100 : 0;
-      elements.progressRadarMarker.style.left = `${Math.min(100, radarPct)}%`;
+      // Calculate stacked multi-segment point breakdown
+      const maxDenom = Math.max(targetGoal, grandTotalPts, 1);
+      const pctRadar = (radarPts / maxDenom) * 100;
+      const pctSecDef = (totalSecDefTrainPts / maxDenom) * 100;
+      const pctNonSecDef = (totalNonSecDefTrainPts / maxDenom) * 100;
+      const pctSpeedup = (grandSpeedupPts / maxDenom) * 100;
+
+      if (elements.segRadar) {
+        elements.segRadar.style.width = `${pctRadar.toFixed(2)}%`;
+        const rGoalPct = targetGoal > 0 ? ((radarPts / targetGoal) * 100).toFixed(1) : 0;
+        elements.segRadar.title = `🟠 Radar Base: ${formatNumber(radarPts)} PTS (${rGoalPct}% of Goal)`;
+      }
+      if (elements.segSecDef) {
+        elements.segSecDef.style.width = `${pctSecDef.toFixed(2)}%`;
+        const sGoalPct = targetGoal > 0 ? ((totalSecDefTrainPts / targetGoal) * 100).toFixed(1) : 0;
+        elements.segSecDef.title = `🔵 SecDef Training: ${formatNumber(totalSecDefTrainPts)} PTS (${sGoalPct}% of Goal)`;
+      }
+      if (elements.segNonSecDef) {
+        elements.segNonSecDef.style.width = `${pctNonSecDef.toFixed(2)}%`;
+        const nsGoalPct = targetGoal > 0 ? ((totalNonSecDefTrainPts / targetGoal) * 100).toFixed(1) : 0;
+        elements.segNonSecDef.title = `🟣 Standard Training: ${formatNumber(totalNonSecDefTrainPts)} PTS (${nsGoalPct}% of Goal)`;
+      }
+      if (elements.segSpeedups) {
+        elements.segSpeedups.style.width = `${pctSpeedup.toFixed(2)}%`;
+        const spGoalPct = targetGoal > 0 ? ((grandSpeedupPts / targetGoal) * 100).toFixed(1) : 0;
+        elements.segSpeedups.title = `🟢 Speedup Points: ${formatNumber(grandSpeedupPts)} PTS (${spGoalPct}% of Goal)`;
+      }
+
+      if (elements.legRadar) elements.legRadar.textContent = `Radar Base (${formatNumber(radarPts)} PTS)`;
+      if (elements.legSecDef) elements.legSecDef.textContent = `SecDef Training (${formatNumber(totalSecDefTrainPts)} PTS)`;
+      if (elements.legNonSecDef) elements.legNonSecDef.textContent = `Standard Training (${formatNumber(totalNonSecDefTrainPts)} PTS)`;
+      if (elements.legSpeedups) elements.legSpeedups.textContent = `Speedup Points (${formatNumber(grandSpeedupPts)} PTS)`;
 
       // Live Update Sticky Floating HUD Tracker
       if (elements.hudNeededPts && elements.hudProjPts && elements.hudDeltaPts) {
