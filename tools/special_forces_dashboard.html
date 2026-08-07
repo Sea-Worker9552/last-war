@@ -7650,7 +7650,15 @@ Automatically queues secondary filler research to reach your targeted weekly Val
             let capY = svgH - 35 - ((state.goldCap / maxGold) * 125);
             let goldCapLabel = (state.goldCap >= 1e9) ? (state.goldCap / 1e9).toFixed(1) + 'B' : (state.goldCap / 1e6).toFixed(0) + 'M';
             html += `<line x1="55" y1="${capY}" x2="${svgW-55}" y2="${capY}" stroke="#dc2626" stroke-width="2" stroke-dasharray="6" />`;
-            html += `<text x="60" y="${capY - 6}" text-anchor="start" fill="#dc2626" font-size="11" font-weight="bold">Weekly Gold Limit: ${goldCapLabel}</text>`;
+
+            let goldLabelY = capY - 6;
+            if (state.t10UnlockedWeek && state.t10UnlockedWeek <= weeks.length) {
+                let mX = 65 + (state.t10UnlockedWeek - 1) * ((svgW - 120) / weeks.length) + barW;
+                if (mX > svgW - 190 && Math.abs(capY - 14) < 24) {
+                    goldLabelY = capY + 14;
+                }
+            }
+            html += `<text x="${svgW-60}" y="${goldLabelY}" text-anchor="end" fill="#dc2626" font-size="11" font-weight="bold">Weekly Gold Limit: ${goldCapLabel}</text>`;
 
             let speedPoints = [];
             weeks.forEach((w, idx) => {
@@ -7739,7 +7747,7 @@ Automatically queues secondary filler research to reach your targeted weekly Val
             let html = `<svg viewBox="0 0 ${svgW} ${svgH}" style="width:100%; height:100%;">`;
             for (let i=0; i<=4; i++) {
                 let y = svgH - 35 - (i * 44);
-                let valorLabel = ((maxValor * (i/4))).toFixed(0);
+                let valorLabel = Math.round(maxValor * (i/4)).toLocaleString();
 
                 html += `<line x1="55" y1="${y}" x2="${svgW-55}" y2="${y}" stroke="${strokeGrid}" stroke-dasharray="4" />`;
                 html += `<text x="50" y="${y+4}" text-anchor="end" fill="${textColor}" font-size="10">${valorLabel}</text>`;
@@ -7751,7 +7759,15 @@ Automatically queues secondary filler research to reach your targeted weekly Val
             let targetY = svgH - 35 - ((state.valorTarget / maxValor) * 176);
             let valorLineColor = '#a855f7';
             html += `<line x1="55" y1="${targetY}" x2="${svgW-55}" y2="${targetY}" stroke="${valorLineColor}" stroke-width="2" stroke-dasharray="6" />`;
-            html += `<text x="${svgW-60}" y="${targetY - 6}" text-anchor="end" fill="${valorLineColor}" font-size="11" font-weight="bold">Weekly Valor Target: ~${state.valorTarget.toLocaleString()}</text>`;
+
+            let valorLabelY = targetY - 6;
+            if (state.t10UnlockedWeek && state.t10UnlockedWeek <= weeks.length) {
+                let mX = 65 + (state.t10UnlockedWeek - 1) * ((svgW - 120) / weeks.length) + barW;
+                if (mX > svgW - 190 && Math.abs(targetY - 14) < 24) {
+                    valorLabelY = targetY + 14;
+                }
+            }
+            html += `<text x="${svgW-60}" y="${valorLabelY}" text-anchor="end" fill="${valorLineColor}" font-size="11" font-weight="bold">Weekly Valor Target: ~${state.valorTarget.toLocaleString()}</text>`;
 
             weeks.forEach((w, idx) => {
                 let x = 65 + idx * ((svgW - 120) / weeks.length);
