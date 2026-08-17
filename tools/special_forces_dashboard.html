@@ -547,8 +547,17 @@
             text-align: left;
             width: fit-content;
             line-height: 1.35;
+            cursor: pointer;
+            transition: all 0.15s ease;
         }
-        .badge-save-week .save-title { font-weight: 800; color: var(--accent-purple); display: flex; align-items: center; gap: 4px; }
+        .badge-save-week:hover {
+            background: rgba(168, 85, 247, 0.2);
+            border-color: var(--accent-purple);
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(168, 85, 247, 0.25);
+        }
+        .badge-save-week .save-title { font-weight: 800; color: var(--accent-purple); display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+        .badge-save-week .save-edit-hint { font-size: 0.7rem; font-weight: 600; opacity: 0.85; }
         .badge-save-week .save-row { color: var(--text-primary); font-weight: 600; padding-left: 2px; }
         .badge-save-week .save-val-valor { color: var(--accent-green); font-weight: 700; }
         .badge-save-week .save-val-gold { color: var(--accent-gold); font-weight: 700; }
@@ -1233,14 +1242,26 @@
                 Set custom reduced resource caps for this alliance conservation week.
             </p>
             <div class="control-group">
-                <label>Custom Budget Valor Cap: <span id="val-save-valor-cap" style="color:var(--accent-green)">4,500</span></label>
-                <input type="range" id="input-save-valor-cap" min="0" max="15000" step="250" value="4500" oninput="updateSaveCapsValues()">
+                <label style="display:flex; justify-content:space-between; align-items:center;">
+                    <span>Custom Budget Valor Cap:</span>
+                    <div style="width:160px; display:flex; align-items:center; justify-content:flex-start; gap:6px;">
+                        <input type="text" class="control-num-input" id="input-num-save-valor-cap" value="4,500" style="color:var(--accent-green)" oninput="syncSaveValorFromNumber(this.value)" onblur="formatSaveValorInputOnBlur()">
+                        <span style="font-weight:700; color:var(--accent-green); font-size:0.8rem; white-space:nowrap;"> / WEEK</span>
+                    </div>
+                </label>
+                <input type="range" id="input-save-valor-cap" min="0" max="15000" step="250" value="4500" oninput="syncSaveValorFromSlider(this.value)">
             </div>
             <div class="control-group">
-                <label>Custom Budget Gold Cap: <span id="val-save-gold-cap" style="color:var(--accent-gold)">300M</span></label>
-                <input type="range" id="input-save-gold-cap" min="0" max="2000000000" step="25000000" value="300000000" oninput="updateSaveCapsValues()">
+                <label style="display:flex; justify-content:space-between; align-items:center;">
+                    <span>Custom Budget Gold Cap:</span>
+                    <div style="width:160px; display:flex; align-items:center; justify-content:flex-start; gap:6px;">
+                        <input type="number" class="control-num-input" id="input-num-save-gold-cap" min="0" max="2000" step="25" value="300" style="color:var(--accent-gold)" oninput="syncSaveGoldFromNumber(this.value)">
+                        <span style="font-weight:700; color:var(--accent-gold)">M</span>
+                    </div>
+                </label>
+                <input type="range" id="input-save-gold-cap" min="0" max="2000000000" step="25000000" value="300000000" oninput="syncSaveGoldFromSlider(this.value)">
             </div>
-            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:10px;">
+            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:14px;">
                 <button class="btn-close" onclick="closeSaveCapsModal()">Cancel</button>
                 <button class="btn-save" style="background:var(--accent-purple)" onclick="applySaveCaps()">Save Caps</button>
             </div>
@@ -6761,18 +6782,59 @@ Automatically queues secondary filler research to reach your targeted weekly Val
             };
 
             document.getElementById('caps-modal-title').innerText = `💼 Custom Budget Week ${weekNum} Limits Adjuster`;
-            document.getElementById('input-save-valor-cap').value = sw.valorCap;
-            document.getElementById('input-save-gold-cap').value = sw.goldCap;
 
-            updateSaveCapsValues();
+            let v = sw.valorCap !== undefined ? sw.valorCap : Math.round(state.valorTarget * 0.5);
+            let sliderV = document.getElementById('input-save-valor-cap');
+            if (sliderV) sliderV.value = v;
+            let numV = document.getElementById('input-num-save-valor-cap');
+            if (numV) numV.value = Number(v).toLocaleString();
+
+            let g = sw.goldCap !== undefined ? sw.goldCap : state.goldCap * 0.5;
+            let sliderG = document.getElementById('input-save-gold-cap');
+            if (sliderG) sliderG.value = g;
+            let numG = document.getElementById('input-num-save-gold-cap');
+            if (numG) numG.value = Math.round(g / 1e6);
+
             document.getElementById('caps-modal').classList.add('active');
         }
 
-        function updateSaveCapsValues() {
-            let v = parseInt(document.getElementById('input-save-valor-cap').value);
-            let g = parseFloat(document.getElementById('input-save-gold-cap').value);
-            document.getElementById('val-save-valor-cap').innerText = v.toLocaleString();
-            document.getElementById('val-save-gold-cap').innerText = (g / 1e6).toFixed(0) + 'M';
+        function syncSaveValorFromSlider(val) {
+            let num = parseInt(val) || 0;
+            let el = document.getElementById('input-num-save-valor-cap');
+            if (el) el.value = num.toLocaleString();
+        }
+
+        function syncSaveValorFromNumber(val) {
+            let clean = String(val).replace(/,/g, '').trim();
+            let num = parseInt(clean);
+            if (!isNaN(num)) {
+                let slider = document.getElementById('input-save-valor-cap');
+                if (slider) slider.value = Math.max(0, Math.min(15000, num));
+            }
+        }
+
+        function formatSaveValorInputOnBlur() {
+            let el = document.getElementById('input-num-save-valor-cap');
+            if (!el) return;
+            let clean = el.value.replace(/,/g, '').trim();
+            let num = parseInt(clean);
+            if (!isNaN(num)) {
+                el.value = Math.max(0, Math.min(15000, num)).toLocaleString();
+            }
+        }
+
+        function syncSaveGoldFromSlider(val) {
+            let num = parseFloat(val) || 0;
+            let el = document.getElementById('input-num-save-gold-cap');
+            if (el) el.value = Math.round(num / 1e6);
+        }
+
+        function syncSaveGoldFromNumber(val) {
+            let num = parseFloat(val);
+            if (!isNaN(num)) {
+                let slider = document.getElementById('input-save-gold-cap');
+                if (slider) slider.value = Math.max(0, Math.min(2000, num)) * 1e6;
+            }
         }
 
         function closeSaveCapsModal() {
@@ -6781,8 +6843,13 @@ Automatically queues secondary filler research to reach your targeted weekly Val
 
         function applySaveCaps() {
             let weekNum = state.activeWeek;
-            let v = parseInt(document.getElementById('input-save-valor-cap').value);
-            let g = parseFloat(document.getElementById('input-save-gold-cap').value);
+            let vText = document.getElementById('input-num-save-valor-cap') ? document.getElementById('input-num-save-valor-cap').value : '';
+            let v = parseInt(vText.replace(/,/g, ''));
+            if (isNaN(v)) v = parseInt(document.getElementById('input-save-valor-cap').value) || 4500;
+
+            let gText = document.getElementById('input-num-save-gold-cap') ? document.getElementById('input-num-save-gold-cap').value : '';
+            let gNum = parseFloat(gText);
+            let g = !isNaN(gNum) ? (gNum * 1e6) : (parseFloat(document.getElementById('input-save-gold-cap').value) || 300000000);
 
             state.saveWeeks[weekNum] = {
                 enabled: true,
@@ -8032,11 +8099,12 @@ Automatically queues secondary filler research to reach your targeted weekly Val
                 let saveBtnClass = isSave ? 'btn-save-toggle active' : 'btn-save-toggle';
                 let saveBtnLabel = isSave ? '💼 Custom Active' : '💼 Custom Budget';
 
-                let capsBtnHtml = isSave ? `<button class="btn-caps-settings" onclick="openSaveCapsModal(${w.week})" title="Adjust Custom Budget Caps">⚙️ Caps</button>` : '';
-
                 let saveIndicatorHtml = isSave ? `<div style="margin-top:3px; margin-bottom:4px;">
-                    <div class="badge-save-week">
-                        <div class="save-title">💼 Custom Budget:</div>
+                    <div class="badge-save-week" onclick="openSaveCapsModal(${w.week})" title="Click to edit Custom Budget Caps (Valor & Gold)">
+                        <div class="save-title">
+                            <span>💼 Custom Budget:</span>
+                            <span class="save-edit-hint">✏️ Edit</span>
+                        </div>
                         <div class="save-row">Valor: <span class="save-val-valor">${w.saveValorCap.toLocaleString()}</span></div>
                         <div class="save-row">Gold: <span class="save-val-gold">${(w.saveGoldCap/1e6).toFixed(0)}M</span></div>
                     </div>
@@ -8050,13 +8118,10 @@ Automatically queues secondary filler research to reach your targeted weekly Val
                     <td>${targetHtml}</td>
                     <td>${fillerColumnHtml}</td>
                     <td style="vertical-align: top;">
-                        <div style="display: flex; flex-direction: column; gap: 8px; align-items: flex-start;">
-                            <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-                                <button class="${saveBtnClass}" onclick="toggleSaveWeek(${w.week})">${saveBtnLabel}</button>
-                                ${capsBtnHtml}
-                            </div>
+                        <div style="display: flex; flex-direction: column; gap: 6px; align-items: flex-start;">
+                            <button class="${saveBtnClass}" onclick="toggleSaveWeek(${w.week})" title="${isSave ? 'Click to disable custom budget for this week' : 'Click to enable custom budget limits for this week'}">${saveBtnLabel}</button>
                             ${saveIndicatorHtml}
-                            <div style="margin-top: 6px;">
+                            <div style="margin-top: 2px;">
                                 <button class="btn-edit-week" onclick="openModal(${w.week})">✏️ Custom Research</button>
                             </div>
                         </div>
