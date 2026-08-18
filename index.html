@@ -261,7 +261,46 @@
       display: flex;
       align-items: center;
       gap: 16px;
-      transition: background 0.3s ease, border-color 0.3s ease;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .metric-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--gold-primary);
+      box-shadow: 0 8px 24px rgba(234, 179, 8, 0.18);
+    }
+
+    .metric-card:active {
+      transform: translateY(-1px);
+    }
+
+    @keyframes cardPulseHighlight {
+      0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(234, 179, 8, 0.7);
+        border-color: var(--gold-primary);
+      }
+      35% {
+        transform: scale(1.02);
+        box-shadow: 0 0 30px 6px rgba(234, 179, 8, 0.45);
+        border-color: var(--gold-primary);
+      }
+      70% {
+        transform: scale(1.01);
+        box-shadow: 0 0 20px 3px rgba(234, 179, 8, 0.3);
+        border-color: var(--gold-primary);
+      }
+      100% {
+        transform: scale(1);
+        box-shadow: var(--card-shadow);
+        border-color: var(--panel-border);
+      }
+    }
+
+    .card-highlight-pulse {
+      animation: cardPulseHighlight 1.6s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .metric-icon {
@@ -458,6 +497,18 @@
       border: 1px solid rgba(168, 85, 247, 0.4);
     }
 
+    .badge-mechanics {
+      background: rgba(249, 115, 22, 0.15);
+      color: var(--orange-primary);
+      border: 1px solid rgba(249, 115, 22, 0.4);
+    }
+
+    .badge-survivors {
+      background: rgba(168, 85, 247, 0.15);
+      color: var(--purple-accent);
+      border: 1px solid rgba(168, 85, 247, 0.4);
+    }
+
     .tool-card h2 {
       font-size: 1.25rem;
       font-weight: 800;
@@ -589,17 +640,33 @@
 
           <div class="system-status">
             <span class="status-dot"></span>
-            <span>5 Offline Tools Active</span>
+            <span>7 Offline Tools Active</span>
           </div>
         </div>
       </div>
       <h1>LAST WAR: SURVIVAL TOOLS & CALCULATORS</h1>
-      <p class="subtitle">Your central portal for Last War: Survival tools & calculators — featuring T10 Special Forces, Alliance Help Breakeven, VS Friday Troop Training, Gold Zombie Spawner, and Taylor Hero Yield Simulator.</p>
+      <p class="subtitle">Your central portal for Last War: Survival tools & calculators — featuring Secretary Buff & Arms Race Optimizer, Special Forces T10 Research, Season 1 Start Date Projection, Alliance Help Breakeven, VS Friday Troop Training, Gold Zombie Spawner, and Taylor Hero Yield Simulator.</p>
     </header>
 
     <!-- Metrics Summary -->
     <div class="metrics-row">
-      <div class="metric-card">
+      <div class="metric-card" onclick="scrollToTool('card-season1')" title="Jump to Season 1 Start Date Projection">
+        <div class="metric-icon">🎯</div>
+        <div class="metric-info">
+          <div class="val">Aug 17 / Sept 14</div>
+          <div class="lbl">Season 1 Start (S#2258)</div>
+        </div>
+      </div>
+
+      <div class="metric-card" onclick="scrollToTool('card-secretary')" title="Jump to Secretary Buff & Schedule Optimizer">
+        <div class="metric-icon">🎖️</div>
+        <div class="metric-info">
+          <div class="val">Secretary Buff</div>
+          <div class="lbl">Arms Race & VS Sync</div>
+        </div>
+      </div>
+
+      <div class="metric-card" onclick="scrollToTool('card-specialforces')" title="Jump to Special Forces & T10 Research Dashboard">
         <div class="metric-icon">🛡️</div>
         <div class="metric-info">
           <div class="val">T10 Tech</div>
@@ -607,7 +674,7 @@
         </div>
       </div>
 
-      <div class="metric-card">
+      <div class="metric-card" onclick="scrollToTool('card-alliancehelp')" title="Jump to Alliance Help Breakeven Dashboard">
         <div class="metric-icon">🏛️</div>
         <div class="metric-info">
           <div class="val">Alliance Help</div>
@@ -615,7 +682,7 @@
         </div>
       </div>
 
-      <div class="metric-card">
+      <div class="metric-card" onclick="scrollToTool('card-vsfriday')" title="Jump to VS Friday Troop Training Dashboard">
         <div class="metric-icon">⚡</div>
         <div class="metric-info">
           <div class="val">VS Friday</div>
@@ -623,7 +690,7 @@
         </div>
       </div>
 
-      <div class="metric-card">
+      <div class="metric-card" onclick="scrollToTool('card-goldzombie')" title="Jump to Gold Zombie Boss Spawning Guide">
         <div class="metric-icon">🧟</div>
         <div class="metric-info">
           <div class="val">Level 5 ~ 100</div>
@@ -631,7 +698,7 @@
         </div>
       </div>
 
-      <div class="metric-card">
+      <div class="metric-card" onclick="scrollToTool('card-taylor')" title="Jump to Taylor ROI & Daily Yield Simulator">
         <div class="metric-icon">💎</div>
         <div class="metric-info">
           <div class="val">1 ~ 365 Days</div>
@@ -645,9 +712,10 @@
       <div class="filter-tags">
         <button class="filter-btn active" onclick="filterCategory('all', this)">All Dashboards</button>
         <button class="filter-btn" onclick="filterCategory('tech', this)">Tech & Research</button>
+        <button class="filter-btn" onclick="filterCategory('survivors', this)">Survivors</button>
         <button class="filter-btn" onclick="filterCategory('duel', this)">Alliance Duel</button>
-        <button class="filter-btn" onclick="filterCategory('events', this)">Events</button>
-        <button class="filter-btn" onclick="filterCategory('heroes', this)">Heroes</button>
+        <button class="filter-btn" onclick="filterCategory('events', this)">Events & Strategy</button>
+        <button class="filter-btn" onclick="filterCategory('mechanics', this)">Game Mechanics</button>
       </div>
       <div class="search-box">
         <input type="text" id="searchInput" placeholder="Search dashboards or features..." oninput="searchTools()">
@@ -657,8 +725,33 @@
     <!-- Tools Grid -->
     <div class="tools-grid" id="toolsGrid">
 
+      <!-- 0. Secretary Buff Time & Schedule Optimizer -->
+      <div class="tool-card" id="card-secretary" data-category="events duel" data-title="secretary buff time schedule optimizer arms race vs alliance duel queue waitlist 5 minutes development science defense">
+        <div>
+          <div class="tool-header">
+            <div class="tool-icon-wrapper">🎖️</div>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <span class="tool-category-badge badge-events">Events & Timing</span>
+              <span class="tool-category-badge badge-duel">Alliance Duel</span>
+            </div>
+          </div>
+          <h2>Secretary Buff Time & Schedule Optimizer</h2>
+          <p class="description">Calculate exact Secretary turn times across active slots (0–50) and waitlist applications (0–50). Features live dual clocks (Server UTC & Local), 7-day Arms Race event sync, and reverse planners.</p>
+          <div class="features-list">
+            <span class="feature-tag">Dual Clocks (UTC & Local)</span>
+            <span class="feature-tag">5-Min Slot Turnover</span>
+            <span class="feature-tag">Arms Race & VS Synergy</span>
+            <span class="feature-tag">Reverse Target Planner</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <span class="status-text">✅ Live Interactive Tool</span>
+          <a href="secretary-buff-calculator/secretary_buff_calculator.html" class="btn-launch">Launch Tool ➔</a>
+        </div>
+      </div>
+
       <!-- 1. Special Forces & T10 Research Dashboard -->
-      <div class="tool-card" data-category="tech" data-title="special forces t10 research dashboard valor badges rss speedup budgeting rush">
+      <div class="tool-card" id="card-specialforces" data-category="tech" data-title="special forces t10 research dashboard valor badges rss speedup budgeting rush">
         <div>
           <div class="tool-header">
             <div class="tool-icon-wrapper">🛡️</div>
@@ -675,16 +768,16 @@
         </div>
         <div class="card-footer">
           <span class="status-text">✅ Interactive Tool</span>
-          <a href="tools/special_forces_dashboard.html" class="btn-launch">Launch Tool ➔</a>
+          <a href="t10-special-forces/special_forces_dashboard.html" class="btn-launch">Launch Tool ➔</a>
         </div>
       </div>
 
       <!-- 2. Alliance Center Help Breakeven Dashboard -->
-      <div class="tool-card" data-category="tech" data-title="alliance help breakeven dashboard survivor ur ssr 0.5% flat build time construction research">
+      <div class="tool-card" id="card-alliancehelp" data-category="survivors tech" data-title="alliance help breakeven dashboard survivor ur ssr 0.5% flat build time construction research survivors">
         <div>
           <div class="tool-header">
             <div class="tool-icon-wrapper">🏛️</div>
-            <span class="tool-category-badge badge-tech">Tech & Research</span>
+            <span class="tool-category-badge badge-survivors">Survivors</span>
           </div>
           <h2>Alliance Help Breakeven Dashboard</h2>
           <p class="description">Compare Survivor setups (UR vs SSR) to optimize construction and research speedups. Model 0.5% vs flat time reductions and calculate exact build breakeven curves.</p>
@@ -697,12 +790,12 @@
         </div>
         <div class="card-footer">
           <span class="status-text">✅ Interactive Tool</span>
-          <a href="tools/alliance_help_survivor_calculator.html" class="btn-launch">Launch Tool ➔</a>
+          <a href="alliance-center-dashboard/alliance_help_survivor_calculator.html" class="btn-launch">Launch Tool ➔</a>
         </div>
       </div>
 
       <!-- 3. Last War Training Dashboard -->
-      <div class="tool-card card-cyan" data-category="duel" data-title="last war training dashboard vs friday troop promotion speedup points">
+      <div class="tool-card card-cyan" id="card-vsfriday" data-category="duel" data-title="last war training dashboard vs friday troop promotion speedup points">
         <div>
           <div class="tool-header">
             <div class="tool-icon-wrapper">⚡</div>
@@ -719,16 +812,16 @@
         </div>
         <div class="card-footer">
           <span class="status-text">✅ Interactive Tool</span>
-          <a href="vs-tools/vs-friday-calculator.html" class="btn-launch cyan">Launch Tool ➔</a>
+          <a href="alliance-troop-training-dashboard/vs-friday-calculator.html" class="btn-launch cyan">Launch Tool ➔</a>
         </div>
       </div>
 
       <!-- 4. Gold Zombie Boss Spawning Guide -->
-      <div class="tool-card" data-category="events" data-title="gold zombie boss spawning rules guide simulator level freeze">
+      <div class="tool-card" id="card-goldzombie" data-category="mechanics events" data-title="gold zombie boss spawning rules guide simulator level freeze game mechanics">
         <div>
           <div class="tool-header">
             <div class="tool-icon-wrapper">🧟</div>
-            <span class="tool-category-badge badge-events">Events & Bosses</span>
+            <span class="tool-category-badge badge-mechanics">Game Mechanics</span>
           </div>
           <h2>Gold Zombie Boss Spawning Guide</h2>
           <p class="description">Official Support Rules visualizer and live simulator. Models Rule 1 (Summon & Slay) and Rule 2 (+5 Rally Leader) escalation combos with Level Freeze tactics.</p>
@@ -741,16 +834,16 @@
         </div>
         <div class="card-footer">
           <span class="status-text">✅ 2-Tab Visual Tool</span>
-          <a href="tools/gold_zombie_boss_level_tool.html" class="btn-launch orange">Launch Tool ➔</a>
+          <a href="Gold_Zombie_Boss_Infographic/gold_zombie_boss_level_tool.html" class="btn-launch orange">Launch Tool ➔</a>
         </div>
       </div>
 
       <!-- 5. Taylor ROI & Daily Yield Payout Simulator -->
-      <div class="tool-card card-purple" data-category="heroes" data-title="taylor roi daily yield payout simulator hero survivor investment chest drops 365 days">
+      <div class="tool-card card-purple" id="card-taylor" data-category="survivors" data-title="taylor roi daily yield payout simulator hero survivor investment chest drops 365 days survivors">
         <div>
           <div class="tool-header">
             <div class="tool-icon-wrapper">💎</div>
-            <span class="tool-category-badge badge-heroes">Hero Development</span>
+            <span class="tool-category-badge badge-survivors">Survivors</span>
           </div>
           <h2>Taylor ROI & Daily Yield Simulator</h2>
           <p class="description">Interactive UR Taylor investment & payout calculator. Adjust timeframe sliders (1~365 days) to model star upgrade costs vs expected RSS, speedup, and shard yield ROI.</p>
@@ -763,7 +856,30 @@
         </div>
         <div class="card-footer">
           <span class="status-text">✅ Interactive Simulator</span>
-          <a href="tools/taylor_30day_summary_table.html" class="btn-launch purple">Launch Tool ➔</a>
+          <a href="taylor-upgrade-cost/taylor_30day_summary_table.html" class="btn-launch purple">Launch Tool ➔</a>
+        </div>
+      </div>
+
+      <!-- 6. Season 1 Start Date & Group Projection Dossier -->
+      <div class="tool-card" id="card-season1" data-category="events" data-title="season 1 start date projection server 2258 cohort 16 32 64 group transition cadence cpt hedge raw database deceleration svg chart crimson plague">
+        <div>
+          <div class="tool-header">
+            <div class="tool-icon-wrapper">🎯</div>
+            <span class="tool-category-badge badge-events">Season 1 Strategy</span>
+          </div>
+          <h2>Season 1 Start Date & Group Projection</h2>
+          <p class="description">Empirical group transition forecast for Server #2258. Analyzes server release deceleration across 2,304 servers, historical 16 vs 32 cohort dynamics (#2213 case study), and Day 114–120 age ceiling triggers.</p>
+          <div class="features-list">
+            <span class="feature-tag">55% 16-Server (Aug 17)</span>
+            <span class="feature-tag">35% 32-Server (Sept 14)</span>
+            <span class="feature-tag">Deceleration SVG Chart</span>
+            <span class="feature-tag">2,304 Server Index</span>
+            <span class="feature-tag">Day 114–120 Limits</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <span class="status-text">✅ 6-Tab Empirical Dossier</span>
+          <a href="Season 1 Start Date/lastwar_season1_analysis.html" class="btn-launch">Launch Dossier ➔</a>
         </div>
       </div>
 
@@ -771,7 +887,7 @@
 
     <!-- Footer -->
     <footer class="hub-footer">
-      <p>Last War: Survival • Tools & Calculators Hub • powered by bananas 🍌 • Last Updated: 8/3/26</p>
+      <p>Last War: Survival • Tools & Calculators Hub • powered by bananas 🍌 • Last Updated: 8/18/26</p>
     </footer>
   </div>
 
@@ -837,7 +953,7 @@
         const cat = card.getAttribute('data-category');
         const title = card.getAttribute('data-title');
 
-        const matchesCat = (currentCategory === 'all' || cat === currentCategory);
+        const matchesCat = (currentCategory === 'all' || cat.split(' ').includes(currentCategory));
         const matchesQuery = (query === '' || title.includes(query) || card.textContent.toLowerCase().includes(query));
 
         if (matchesCat && matchesQuery) {
@@ -846,6 +962,41 @@
           card.style.display = 'none';
         }
       });
+    }
+
+    /* Quick Jump from Metric Cards */
+    function scrollToTool(cardId) {
+      const targetCard = document.getElementById(cardId);
+      if (!targetCard) return;
+
+      // Auto-reset search query if active
+      const searchInput = document.getElementById('searchInput');
+      if (searchInput && searchInput.value.trim() !== '') {
+        searchInput.value = '';
+      }
+
+      // Auto-reset filter to 'all' if the card is currently hidden by an active category filter
+      const cardCat = targetCard.getAttribute('data-category') || '';
+      if (currentCategory !== 'all' && !cardCat.split(' ').includes(currentCategory)) {
+        currentCategory = 'all';
+        const buttons = document.querySelectorAll('.filter-btn');
+        buttons.forEach(b => b.classList.remove('active'));
+        if (buttons[0]) buttons[0].classList.add('active');
+      }
+
+      applyFilters();
+
+      // Smooth scroll target card into view
+      targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+      // Trigger high-visibility pulse highlight animation
+      targetCard.classList.remove('card-highlight-pulse');
+      void targetCard.offsetWidth; // Force CSS reflow
+      targetCard.classList.add('card-highlight-pulse');
+
+      setTimeout(() => {
+        targetCard.classList.remove('card-highlight-pulse');
+      }, 1700);
     }
   </script>
 </body>
