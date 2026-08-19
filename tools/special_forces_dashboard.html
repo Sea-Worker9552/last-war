@@ -1239,7 +1239,7 @@
         <div class="caps-modal-content">
             <h3 id="caps-modal-title" style="color:var(--accent-purple)">💼 Custom Budget Limits Adjuster</h3>
             <p style="font-size:0.85rem; color:var(--text-secondary)">
-                Set custom reduced resource caps for this alliance conservation week.
+                Set custom resource budget limits for this specific week.
             </p>
             <div class="control-group">
                 <label style="display:flex; justify-content:space-between; align-items:center;">
@@ -6763,8 +6763,8 @@ Automatically queues secondary filler research to reach your targeted weekly Val
             if (!state.saveWeeks[weekNum]) {
                 state.saveWeeks[weekNum] = {
                     enabled: true,
-                    valorCap: Math.round(state.valorTarget * 0.5),
-                    goldCap: state.goldCap * 0.5
+                    valorCap: state.valorTarget,
+                    goldCap: state.goldCap
                 };
             } else {
                 state.saveWeeks[weekNum].enabled = !state.saveWeeks[weekNum].enabled;
@@ -6777,19 +6777,19 @@ Automatically queues secondary filler research to reach your targeted weekly Val
             state.activeWeek = weekNum;
             let sw = state.saveWeeks[weekNum] || {
                 enabled: true,
-                valorCap: Math.round(state.valorTarget * 0.5),
-                goldCap: state.goldCap * 0.5
+                valorCap: state.valorTarget,
+                goldCap: state.goldCap
             };
 
             document.getElementById('caps-modal-title').innerText = `💼 Custom Budget Week ${weekNum} Limits Adjuster`;
 
-            let v = sw.valorCap !== undefined ? sw.valorCap : Math.round(state.valorTarget * 0.5);
+            let v = sw.valorCap !== undefined ? sw.valorCap : state.valorTarget;
             let sliderV = document.getElementById('input-save-valor-cap');
             if (sliderV) sliderV.value = v;
             let numV = document.getElementById('input-num-save-valor-cap');
             if (numV) numV.value = Number(v).toLocaleString();
 
-            let g = sw.goldCap !== undefined ? sw.goldCap : state.goldCap * 0.5;
+            let g = sw.goldCap !== undefined ? sw.goldCap : state.goldCap;
             let sliderG = document.getElementById('input-save-gold-cap');
             if (sliderG) sliderG.value = g;
             let numG = document.getElementById('input-num-save-gold-cap');
@@ -6845,11 +6845,11 @@ Automatically queues secondary filler research to reach your targeted weekly Val
             let weekNum = state.activeWeek;
             let vText = document.getElementById('input-num-save-valor-cap') ? document.getElementById('input-num-save-valor-cap').value : '';
             let v = parseInt(vText.replace(/,/g, ''));
-            if (isNaN(v)) v = parseInt(document.getElementById('input-save-valor-cap').value) || 4500;
+            if (isNaN(v)) v = parseInt(document.getElementById('input-save-valor-cap').value) || state.valorTarget;
 
             let gText = document.getElementById('input-num-save-gold-cap') ? document.getElementById('input-num-save-gold-cap').value : '';
             let gNum = parseFloat(gText);
-            let g = !isNaN(gNum) ? (gNum * 1e6) : (parseFloat(document.getElementById('input-save-gold-cap').value) || 300000000);
+            let g = !isNaN(gNum) ? (gNum * 1e6) : (parseFloat(document.getElementById('input-save-gold-cap').value) || state.goldCap);
 
             state.saveWeeks[weekNum] = {
                 enabled: true,
@@ -7220,8 +7220,8 @@ Automatically queues secondary filler research to reach your targeted weekly Val
                 let saveConfig = state.saveWeeks[currentWeek] || { enabled: false };
                 let isSaveWeek = saveConfig.enabled;
 
-                let effectiveValorCap = isSaveWeek ? (saveConfig.valorCap !== undefined ? saveConfig.valorCap : Math.round(state.valorTarget * 0.5)) : ((state.valorFlex === 'flex') ? state.valorTarget * 1.10 : state.valorTarget);
-                let effectiveGoldCap = isSaveWeek ? (saveConfig.goldCap !== undefined ? saveConfig.goldCap : state.goldCap * 0.5) : ((state.goldFlex === 'flex') ? state.goldCap * 1.10 : state.goldCap);
+                let effectiveValorCap = isSaveWeek ? (saveConfig.valorCap !== undefined ? saveConfig.valorCap : state.valorTarget) : ((state.valorFlex === 'flex') ? state.valorTarget * 1.10 : state.valorTarget);
+                let effectiveGoldCap = isSaveWeek ? (saveConfig.goldCap !== undefined ? saveConfig.goldCap : state.goldCap) : ((state.goldFlex === 'flex') ? state.goldCap * 1.10 : state.goldCap);
                 let strictGoldCap = isSaveWeek ? effectiveGoldCap : state.goldCap;
 
                 let weekCompletedState = {};
@@ -7247,12 +7247,15 @@ Automatically queues secondary filler research to reach your targeted weekly Val
 
                         let key = item.tech_id + ':' + item.level;
                         if (item.tech_id.startsWith('truck:')) {
+                            wFillerValor += item.valor || 0;
                             wFillerTechs.push('🚚 ' + item.tech_name + ' Lvl ' + item.level);
                             truckCompletedSet.add(key);
                         } else if (item.tech_id.startsWith('siege:')) {
+                            wFillerValor += item.valor || 0;
                             wFillerTechs.push('🏰 ' + item.tech_name + ' Lvl ' + item.level);
                             siegeCompletedSet.add(key);
                         } else if (item.tech_id.startsWith('def_fort:')) {
+                            wFillerValor += item.valor || 0;
                             wFillerTechs.push('🛡️ ' + item.tech_name + ' Lvl ' + item.level);
                             defenseFortCompletedSet.add(key);
                         } else if (state.preset === 'sf-full' || (t10MaxMap[item.tech_id] && item.level <= t10MaxMap[item.tech_id])) {
