@@ -593,6 +593,11 @@
 
         .btn-edit-week:hover { background: var(--accent-gold); color: #fff; }
 
+        .btn-edit-week.active {
+            background: var(--accent-gold); color: #ffffff; border-color: var(--accent-gold);
+            box-shadow: 0 2px 8px rgba(217, 119, 6, 0.3);
+        }
+
         .btn-caps-settings {
             background: var(--bg-input); border: 1px solid var(--accent-purple); color: var(--accent-purple);
             padding: 6px 10px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600;
@@ -7247,40 +7252,72 @@ Automatically queues secondary filler research to reach your targeted weekly Val
                         wValor += item.valor || 0;
                         wGold += item.gold || 0;
                         wSpeedSec += item.actual_time_sec || 0;
-                        wItems.push(Object.assign({}, item));
+                        
+                        let cleanTechName = (item.tech_name || '').replace(/^[🚚🏰🛡️]\s*/, '');
+                        wItems.push(Object.assign({}, item, { tech_name: cleanTechName }));
 
-                        let key = item.tech_id + ':' + item.level;
-                        if (item.tech_id.startsWith('truck:')) {
+                        let rawTechId = item.tech_id;
+                        if (rawTechId.startsWith('truck:')) {
                             wFillerValor += item.valor || 0;
-                            wFillerTechs.push('🚚 ' + item.tech_name + ' Lvl ' + item.level);
-                            truckCompletedSet.add(key);
-                        } else if (item.tech_id.startsWith('siege:')) {
+                            wFillerTechs.push('🚚 ' + cleanTechName + ' Lvl ' + item.level);
+                            let tKey = rawTechId + ':' + item.level;
+                            truckCompletedSet.add(tKey);
+                            if (truckAdj[tKey]) {
+                                truckAdj[tKey].forEach(c => {
+                                    if (truckInDegree[c] !== undefined) truckInDegree[c]--;
+                                });
+                            }
+                        } else if (rawTechId.startsWith('siege:')) {
                             wFillerValor += item.valor || 0;
-                            wFillerTechs.push('🏰 ' + item.tech_name + ' Lvl ' + item.level);
-                            siegeCompletedSet.add(key);
-                        } else if (item.tech_id.startsWith('def_fort:')) {
+                            wFillerTechs.push('🏰 ' + cleanTechName + ' Lvl ' + item.level);
+                            let sKey = rawTechId + ':' + item.level;
+                            siegeCompletedSet.add(sKey);
+                            if (siegeAdj[sKey]) {
+                                siegeAdj[sKey].forEach(c => {
+                                    if (siegeInDegree[c] !== undefined) siegeInDegree[c]--;
+                                });
+                            }
+                        } else if (rawTechId.startsWith('def_fort:')) {
                             wFillerValor += item.valor || 0;
-                            wFillerTechs.push('🛡️ ' + item.tech_name + ' Lvl ' + item.level);
-                            defenseFortCompletedSet.add(key);
-                        } else if (state.preset === 'sf-full' || (t10MaxMap[item.tech_id] && item.level <= t10MaxMap[item.tech_id])) {
+                            wFillerTechs.push('🛡️ ' + cleanTechName + ' Lvl ' + item.level);
+                            let dKey = rawTechId + ':' + item.level;
+                            defenseFortCompletedSet.add(dKey);
+                            if (defenseFortAdj[dKey]) {
+                                defenseFortAdj[dKey].forEach(c => {
+                                    if (defenseFortInDegree[c] !== undefined) defenseFortInDegree[c]--;
+                                });
+                            }
+                        } else if (state.preset === 'sf-full' || (t10MaxMap[rawTechId] && item.level <= t10MaxMap[rawTechId])) {
                             wTargetValor += item.valor || 0;
-                            wTargetTechs.push(item.tech_name + ' Lvl ' + item.level);
-                            completedSet.add(key);
-                            if (adj[key]) {
-                                adj[key].forEach(c => {
-                                    if (inDegree[c] !== undefined) { inDegree[c]--; if (inDegree[c] === 0) available.push(c); }
-                                    if (nonT10SfInDegree[c] !== undefined) { nonT10SfInDegree[c]--; if (nonT10SfInDegree[c] === 0) nonT10SfAvailable.push(c); }
+                            wTargetTechs.push(cleanTechName + ' Lvl ' + item.level);
+                            let sfKey = rawTechId + ':' + item.level;
+                            completedSet.add(sfKey);
+                            if (adj[sfKey]) {
+                                adj[sfKey].forEach(c => {
+                                    if (inDegree[c] !== undefined) inDegree[c]--;
+                                    if (nonT10SfInDegree[c] !== undefined) nonT10SfInDegree[c]--;
                                 });
                             }
                         } else {
                             wFillerValor += item.valor || 0;
-                            wFillerTechs.push(item.tech_name + ' Lvl ' + item.level);
-                            nonT10SfCompletedSet.add(key);
+                            wFillerTechs.push(cleanTechName + ' Lvl ' + item.level);
+                            let sfKey = rawTechId + ':' + item.level;
+                            let fKey = 'sf_filler:' + rawTechId + ':' + item.level;
+                            nonT10SfCompletedSet.add(fKey);
+                            nonT10SfCompletedSet.add(sfKey);
+                            if (nonT10SfAdj[fKey]) {
+                                nonT10SfAdj[fKey].forEach(c => {
+                                    if (nonT10SfInDegree[c] !== undefined) nonT10SfInDegree[c]--;
+                                });
+                            }
                         }
                     });
                     available = Object.keys(inDegree).filter(k => inDegree[k] === 0 && !completedSet.has(k));
                     available.sort((a,b) => priority(a) - priority(b));
                     nonT10SfAvailable = Object.keys(nonT10SfInDegree).filter(k => nonT10SfInDegree[k] === 0 && !nonT10SfCompletedSet.has(k));
+                    truckAvailable = Object.keys(truckInDegree).filter(k => truckInDegree[k] === 0 && !truckCompletedSet.has(k));
+                    siegeAvailable = Object.keys(siegeInDegree).filter(k => siegeInDegree[k] === 0 && !siegeCompletedSet.has(k));
+                    defenseFortAvailable = Object.keys(defenseFortInDegree).filter(k => defenseFortInDegree[k] === 0 && !defenseFortCompletedSet.has(k));
                 } else {
                     // Primary Target Research Execution
                     while (available.length > 0) {
@@ -7428,7 +7465,7 @@ Automatically queues secondary filler research to reach your targeted weekly Val
                                     wFillerValor += n.valor;
                                     fillerGoldSpent += n.gold; fillerValorSpent += n.valor;
                                     wFillerTechs.push('🚚 ' + n.tech_name + ' Lvl ' + n.level);
-                                    wItems.push({ tech_id: 'truck:' + n.tech_id, tech_name: '🚚 ' + n.tech_name, level: n.level, valor: n.valor, gold: n.gold, actual_time_sec: n.actual_time_sec });
+                                    wItems.push({ tech_id: 'truck:' + n.tech_id, tech_name: n.tech_name, level: n.level, valor: n.valor, gold: n.gold, actual_time_sec: n.actual_time_sec });
                                     truckCompletedSet.add(key);
 
                                     truckAdj[key].forEach(c => { truckInDegree[c]--; if (truckInDegree[c] === 0) truckAvailable.push(c); });
@@ -7476,7 +7513,7 @@ Automatically queues secondary filler research to reach your targeted weekly Val
                                     wFillerValor += n.valor;
                                     fillerGoldSpent += n.gold; fillerValorSpent += n.valor;
                                     wFillerTechs.push('🏰 ' + n.tech_name + ' Lvl ' + n.level);
-                                    wItems.push({ tech_id: 'siege:' + n.tech_id, tech_name: '🏰 ' + n.tech_name, level: n.level, valor: n.valor, gold: n.gold, actual_time_sec: n.actual_time_sec });
+                                    wItems.push({ tech_id: 'siege:' + n.tech_id, tech_name: n.tech_name, level: n.level, valor: n.valor, gold: n.gold, actual_time_sec: n.actual_time_sec });
                                     siegeCompletedSet.add(key);
 
                                     siegeAdj[key].forEach(c => { siegeInDegree[c]--; if (siegeInDegree[c] === 0) siegeAvailable.push(c); });
@@ -7498,7 +7535,7 @@ Automatically queues secondary filler research to reach your targeted weekly Val
                                     wFillerValor += n.valor;
                                     fillerGoldSpent += n.gold; fillerValorSpent += n.valor;
                                     wFillerTechs.push('🛡️ ' + n.tech_name + ' Lvl ' + n.level);
-                                    wItems.push({ tech_id: 'def_fort:' + n.tech_id, tech_name: '🛡️ ' + n.tech_name, level: n.level, valor: n.valor, gold: n.gold, actual_time_sec: n.actual_time_sec });
+                                    wItems.push({ tech_id: 'def_fort:' + n.tech_id, tech_name: n.tech_name, level: n.level, valor: n.valor, gold: n.gold, actual_time_sec: n.actual_time_sec });
                                     defenseFortCompletedSet.add(key);
 
                                     defenseFortAdj[key].forEach(c => { defenseFortInDegree[c]--; if (defenseFortInDegree[c] === 0) defenseFortAvailable.push(c); });
@@ -8106,6 +8143,10 @@ Automatically queues secondary filler research to reach your targeted weekly Val
                 let saveBtnClass = isSave ? 'btn-save-toggle active' : 'btn-save-toggle';
                 let saveBtnLabel = isSave ? '💼 Custom Active' : '💼 Custom Budget';
 
+                let isCustomResearch = (state.weeklyOverrides && state.weeklyOverrides[w.week] && state.weeklyOverrides[w.week].length > 0);
+                let customEditBtnClass = isCustomResearch ? 'btn-edit-week active' : 'btn-edit-week';
+                let customEditBtnLabel = isCustomResearch ? '✏️ Custom Research Active' : '✏️ Custom Research';
+
                 let saveIndicatorHtml = isSave ? `<div style="margin-top:3px; margin-bottom:4px;">
                     <div class="badge-save-week" onclick="openSaveCapsModal(${w.week})" title="Click to edit Custom Budget Caps (Valor & Gold)">
                         <div class="save-title">
@@ -8129,7 +8170,7 @@ Automatically queues secondary filler research to reach your targeted weekly Val
                             <button class="${saveBtnClass}" onclick="toggleSaveWeek(${w.week})" title="${isSave ? 'Click to disable custom budget for this week' : 'Click to enable custom budget limits for this week'}">${saveBtnLabel}</button>
                             ${saveIndicatorHtml}
                             <div style="margin-top: 2px;">
-                                <button class="btn-edit-week" onclick="openModal(${w.week})">✏️ Custom Research</button>
+                                <button class="${customEditBtnClass}" onclick="openModal(${w.week})" title="${isCustomResearch ? 'Custom research queue active for this week. Click to edit.' : 'Click to customize research queue for this week'}">${customEditBtnLabel}</button>
                             </div>
                         </div>
                     </td>
