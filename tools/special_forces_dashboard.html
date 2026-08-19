@@ -654,6 +654,43 @@
         .queue-pill.def_fort {
             background: rgba(217,119,6,0.15); border-color: var(--accent-gold); color: var(--text-primary);
         }
+        .queue-pill.broken-prereq {
+            background: rgba(239, 68, 68, 0.2) !important;
+            border: 1.5px solid #ef4444 !important;
+            color: #ef4444 !important;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
+        }
+        .pill-prereq-error {
+            font-size: 0.72rem;
+            font-weight: 700;
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            padding: 2px 6px;
+            border-radius: 6px;
+            border: 1px solid rgba(239, 68, 68, 0.5);
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+        }
+        .modal-prereq-warning-banner {
+            background: rgba(239, 68, 68, 0.12);
+            border: 1px solid #ef4444;
+            color: #ef4444;
+            padding: 10px 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 0.86rem;
+            line-height: 1.4;
+            text-align: center;
+            grid-column: 1 / -1;
+        }
+        .hedg-card.broken-prereq-card {
+            border-color: #ef4444 !important;
+            box-shadow: 0 0 12px rgba(239, 68, 68, 0.3) !important;
+        }
+        .status-broken {
+            color: #ef4444 !important;
+        }
         .modal-tab-bar {
             display: flex; gap: 8px; margin-bottom: 16px; border-bottom: 1px solid var(--border-color);
             padding-bottom: 10px; flex-wrap: wrap;
@@ -8485,6 +8522,101 @@ Automatically queues secondary filler research to reach your targeted weekly Val
             renderModalQueueAndTree();
         }
 
+        function validateModalDraftQueue(queue, weekNum) {
+            let weekData = state.cachedWeeks ? state.cachedWeeks.find(w => w.week === weekNum) : null;
+            let priorStateObj = (weekData && weekData.priorTechState) || {};
+            
+            let queueMap = {};
+            (queue || []).forEach(item => {
+                if (!queueMap[item.tech_id]) queueMap[item.tech_id] = new Set();
+                queueMap[item.tech_id].add(item.level);
+            });
+
+            let brokenItems = [];
+            let sfDoneCount = getSfCompletedCountForWeek(weekNum);
+            let is40Unlocked = (sfDoneCount >= 89);
+
+            (queue || []).forEach((item, idx) => {
+                let reasons = [];
+                let rawTechId = item.tech_id;
+                let tabKey = 'sf';
+                let idPrefix = '';
+                let treeData = SF_DATA;
+                let priorBaseline = state.startingBaseline || {};
+
+                if (rawTechId.startsWith('truck:')) {
+                    tabKey = 'truck';
+                    idPrefix = 'truck:';
+                    treeData = TRUCK_DATA;
+                    priorBaseline = state.startingTruckBaseline || {};
+                } else if (rawTechId.startsWith('siege:')) {
+                    tabKey = 'siege';
+                    idPrefix = 'siege:';
+                    treeData = SIEGE_DATA;
+                    priorBaseline = state.startingSiegeBaseline || {};
+                } else if (rawTechId.startsWith('def_fort:')) {
+                    tabKey = 'def_fort';
+                    idPrefix = 'def_fort:';
+                    treeData = DEFENSE_FORT_DATA;
+                    priorBaseline = state.startingDefenseFortBaseline || {};
+                }
+
+                let cleanTechId = rawTechId.replace(/^(truck|siege|def_fort):/, '');
+                let targetLvl = item.level;
+
+                if ((tabKey === 'siege' || tabKey === 'def_fort') && !is40Unlocked) {
+                    reasons.push(`Requires 40% SF (${sfDoneCount}/221, 89 needed)`);
+                }
+
+                let priorLvl = priorBaseline[cleanTechId] || 0;
+                if (priorStateObj[rawTechId]) priorLvl = Math.max(priorLvl, priorStateObj[rawTechId]);
+
+                if (targetLvl > 1) {
+                    let hasPrevLevel = (targetLvl - 1 <= priorLvl) || (queueMap[rawTechId] && queueMap[rawTechId].has(targetLvl - 1));
+                    if (!hasPrevLevel) {
+                        reasons.push(`Requires Lvl ${targetLvl - 1}`);
+                    }
+                }
+
+                let techObj = null;
+                treeData.rows.forEach(r => r.elements.forEach(e => { if (e.id === cleanTechId) techObj = e; }));
+                if (techObj) {
+                    let lvlObj = techObj.levels.find(l => l.level === targetLvl);
+                    if (lvlObj && lvlObj.requirements) {
+                        lvlObj.requirements.forEach(req => {
+                            if (!req.external) {
+                                let reqRawId = req.elementId;
+                                let reqPrefixedId = idPrefix + reqRawId;
+                                let reqMinLvl = req.minLevel || 1;
+
+                                let priorReqLvl = priorBaseline[reqRawId] || 0;
+                                if (priorStateObj[reqPrefixedId]) priorReqLvl = Math.max(priorReqLvl, priorStateObj[reqPrefixedId]);
+
+                                let queueHasReq = false;
+                                if (queueMap[reqPrefixedId]) {
+                                    for (let qLvl of queueMap[reqPrefixedId]) {
+                                        if (qLvl >= reqMinLvl) { queueHasReq = true; break; }
+                                    }
+                                }
+
+                                if (priorReqLvl < reqMinLvl && !queueHasReq) {
+                                    let reqTechName = reqRawId;
+                                    treeData.rows.forEach(r => r.elements.forEach(e => { if (e.id === reqRawId) reqTechName = e.name; }));
+                                    reasons.push(`Requires ${reqTechName} Lvl ${reqMinLvl}`);
+                                }
+                            }
+                        });
+                    }
+                }
+
+                if (reasons.length > 0) {
+                    brokenItems.push({ index: idx, item: item, reasons: reasons });
+                }
+            });
+
+            return brokenItems;
+        }
+
         function renderModalQueueAndTree() {
             let weekNum = state.activeWeek;
             let weekData = state.cachedWeeks.find(w => w.week === weekNum);
@@ -8503,12 +8635,17 @@ Automatically queues secondary filler research to reach your targeted weekly Val
             let dDays = dSpeedSec / 86400;
             document.getElementById('modal-speed-spent').innerText = `⚡ Speedups: ${dDays.toFixed(1)}d (${(dDays*24).toFixed(0)}h)`;
 
+            let brokenList = validateModalDraftQueue(state.modalDraftQueue, weekNum);
+            let brokenMap = {};
+            brokenList.forEach(b => { brokenMap[b.index] = b.reasons; });
+
             let queueContainer = document.getElementById('modal-queue-items');
             if (state.modalDraftQueue.length === 0) {
                 queueContainer.innerHTML = '<span style="font-size:0.85rem; color:var(--text-secondary); font-style:italic;">No tech levels queued for Week ' + weekNum + '. Select a tab below and use dropdowns to add research levels.</span>';
             } else {
                 let html = '';
                 state.modalDraftQueue.forEach((item, idx) => {
+                    let isBroken = !!brokenMap[idx];
                     let pillClass = 'queue-pill';
                     let labelText = `${item.tech_name} Lvl ${item.level}`;
                     let isItemLocked = false;
@@ -8535,9 +8672,16 @@ Automatically queues secondary filler research to reach your targeted weekly Val
                         }
                     }
 
-                    html += `<div class="${pillClass}">
+                    if (isBroken) {
+                        pillClass += ' broken-prereq';
+                        labelText += ` <span class="pill-prereq-error">⚠️ Missing: ${brokenMap[idx].join('; ')}</span>`;
+                    }
+
+                    let pillTitle = isBroken ? `⚠️ Prerequisite Missing: ${brokenMap[idx].join('; ')}` : '';
+
+                    html += `<div class="${pillClass}" ${pillTitle ? `title="${pillTitle}"` : ''}>
                         <span>${labelText}</span>
-                        <button class="btn-remove-queue" onclick="removeFromModalQueue(${idx})">✕</button>
+                        <button class="btn-remove-queue" onclick="removeFromModalQueue(${idx})" title="Remove from queue">✕</button>
                     </div>`;
                 });
                 queueContainer.innerHTML = html;
@@ -8570,6 +8714,12 @@ Automatically queues secondary filler research to reach your targeted weekly Val
 
             let html = '';
 
+            if (brokenList.length > 0) {
+                html += `<div class="modal-prereq-warning-banner">
+                    ⚠️ <strong>Prerequisite Warning:</strong> ${brokenList.length} queued item${brokenList.length > 1 ? 's have' : ' has'} missing prerequisites (highlighted in red in the queue above). Please add the required prerequisites or remove the affected items before saving.
+                </div>`;
+            }
+
             if ((currentTab === 'siege' || currentTab === 'def_fort') && !is40Unlocked) {
                 html += `<div style="grid-column: 1/-1; background: rgba(217,119,6,0.12); border: 1px solid var(--accent-gold); color: var(--accent-gold); padding: 12px 16px; border-radius: 10px; margin-bottom: 16px; text-align: center; font-size: 0.88rem; font-weight: 600;">
                     🔒 40% Special Forces Threshold Not Reached (Current: ${sfDoneCount}/221 levels, 89 required). Research in ${treeData.name} is locked until Special Forces reaches 40%.
@@ -8593,7 +8743,17 @@ Automatically queues secondary filler research to reach your targeted weekly Val
 
                     let statusHtml = '';
 
-                    if (activeLvls.length > 0) {
+                    let cardBrokenReasons = [];
+                    state.modalDraftQueue.forEach((it, idx) => {
+                        if (it.tech_id === prefixedTechId && brokenMap[idx]) {
+                            cardBrokenReasons.push(...brokenMap[idx]);
+                        }
+                    });
+
+                    if (cardBrokenReasons.length > 0) {
+                        cardClass += ' broken-prereq-card';
+                        statusHtml = `<div class="hedg-status-text status-broken">⚠️ Prereq Missing:<br>${cardBrokenReasons.join('<br>')}</div>`;
+                    } else if (activeLvls.length > 0) {
                         cardClass += ' active-this-week';
                         let maxL = Math.max(...activeLvls);
                         let rangeStr = `Level ${priorLvl} → ${maxL}`;
@@ -8651,7 +8811,23 @@ Automatically queues secondary filler research to reach your targeted weekly Val
         }
 
         function removeFromModalQueue(idx) {
+            let removedItem = state.modalDraftQueue[idx];
+            if (!removedItem) return;
+
+            let brokenBefore = validateModalDraftQueue(state.modalDraftQueue, state.activeWeek);
+            let brokenKeysBefore = new Set(brokenBefore.map(b => b.item.tech_id + ':' + b.item.level));
+
             state.modalDraftQueue.splice(idx, 1);
+
+            let brokenAfter = validateModalDraftQueue(state.modalDraftQueue, state.activeWeek);
+            let newlyBroken = brokenAfter.filter(b => !brokenKeysBefore.has(b.item.tech_id + ':' + b.item.level));
+
+            if (newlyBroken.length > 0) {
+                let affectedNames = newlyBroken.map(b => b.item.tech_name + ' Lvl ' + b.item.level);
+                let cleanRemovedName = (removedItem.tech_name || '').replace(/^[🚚🏰🛡️]\s*/, '');
+                showAlert(`⚠️ Warning: Removing ${cleanRemovedName} Lvl ${removedItem.level} broke prerequisites for: ${affectedNames.join(', ')}!`);
+            }
+
             renderModalQueueAndTree();
         }
 
@@ -8751,11 +8927,11 @@ Automatically queues secondary filler research to reach your targeted weekly Val
 
         function saveModalOverrides() {
             let weekNum = state.activeWeek;
-            let sfCount = getSfCompletedCountForWeek(weekNum);
-            let hasLockedTech = state.modalDraftQueue.some(item => item.tech_id.startsWith('siege:') || item.tech_id.startsWith('def_fort:'));
-            
-            if (hasLockedTech && sfCount < 89) {
-                showAlert(`🔒 Cannot save plan: Custom queue contains Siege or Defense Fortification research, but overall Special Forces is below 40% (${sfCount}/221 levels)! Add SF research to reach 89 levels or remove locked research first.`);
+            let brokenList = validateModalDraftQueue(state.modalDraftQueue, weekNum);
+
+            if (brokenList.length > 0) {
+                let errSummary = brokenList.map(b => `• ${b.item.tech_name} Lvl ${b.item.level} (${b.reasons.join(', ')})`).join('\n');
+                showAlert(`❌ Cannot save custom plan:\n\n${errSummary}\n\nPlease add the required prerequisites or remove the broken items before saving.`);
                 renderModalQueueAndTree();
                 return;
             }
