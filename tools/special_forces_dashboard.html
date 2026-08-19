@@ -7225,11 +7225,15 @@ Automatically queues secondary filler research to reach your targeted weekly Val
                 let strictGoldCap = isSaveWeek ? effectiveGoldCap : state.goldCap;
 
                 let weekCompletedState = {};
-                Object.keys(techs).forEach(t_id => {
+                Object.keys(fullSfTechs).forEach(t_id => {
                     let doneLvls = 0;
-                    techs[t_id].levels.forEach(lvl => {
-                        if (completedSet.has(t_id + ':' + lvl.level)) doneLvls++;
-                    });
+                    if (fullSfTechs[t_id] && fullSfTechs[t_id].levels) {
+                        fullSfTechs[t_id].levels.forEach(lvl => {
+                            if (completedSet.has(t_id + ':' + lvl.level) || nonT10SfCompletedSet.has('sf_filler:' + t_id + ':' + lvl.level) || nonT10SfCompletedSet.has(t_id + ':' + lvl.level)) {
+                                doneLvls++;
+                            }
+                        });
+                    }
                     weekCompletedState[t_id] = doneLvls;
                 });
 
@@ -8550,8 +8554,8 @@ Automatically queues secondary filler research to reach your targeted weekly Val
 
                     if (activeLvls.length > 0) {
                         cardClass += ' active-this-week';
-                        let minL = Math.min(...activeLvls), maxL = Math.max(...activeLvls);
-                        let rangeStr = minL === maxL ? `Lvl ${minL}` : `Lvl ${minL} → ${maxL}`;
+                        let maxL = Math.max(...activeLvls);
+                        let rangeStr = `Level ${priorLvl} → ${maxL}`;
                         statusHtml = `<div class="hedg-status-text status-active">Researched Wk ${weekNum}:<br>${rangeStr}</div>`;
                     } else if (priorLvl >= e.maxLevel) {
                         cardClass += ' completed-before';
