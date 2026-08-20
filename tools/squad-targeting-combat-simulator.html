@@ -1,0 +1,2936 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Last War: Squad Targeting & Combat Simulator</title>
+  <meta name="description" content="Interactive 5v5 hero positioning, attack targeting order, skill resolution, and Monte Carlo battle simulator for Last War: Survival.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==========================================================================
+       Design System & Theme Tokens (System Default, Dark & Light Palettes)
+       ========================================================================== */
+    :root {
+      --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --radius-xl: 18px;
+    }
+
+    /* Dark Theme Tokens (Default) */
+    :root, [data-theme="dark"] {
+      --bg-base: #0a0e17;
+      --bg-surface: #111827;
+      --bg-surface-elevated: #1f293d;
+      --panel-border: rgba(255, 255, 255, 0.08);
+      --panel-border-bright: rgba(255, 255, 255, 0.16);
+
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+
+      --blue-team: #3b82f6;
+      --blue-glow: rgba(59, 130, 246, 0.25);
+      --blue-border: #60a5fa;
+
+      --red-team: #ef4444;
+      --red-glow: rgba(239, 68, 68, 0.25);
+      --red-border: #f87171;
+
+      --gold-accent: #f59e0b;
+      --gold-glow: rgba(245, 158, 11, 0.25);
+      --cyan-accent: #06b6d4;
+      --cyan-glow: rgba(6, 182, 212, 0.25);
+      --green-accent: #10b981;
+      --purple-accent: #a855f7;
+
+      --input-bg: rgba(15, 23, 42, 0.8);
+      --input-border: rgba(255, 255, 255, 0.12);
+
+      --card-hero-bg: rgba(15, 23, 42, 0.85);
+      --card-hero-border: rgba(255, 255, 255, 0.1);
+      --log-bg: rgba(10, 14, 23, 0.95);
+      --log-entry-bg: rgba(255, 255, 255, 0.02);
+      --modal-bg: #111827;
+      --modal-backdrop: rgba(0, 0, 0, 0.75);
+
+      --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 8px 20px -4px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 16px 32px -8px rgba(0, 0, 0, 0.6);
+      --title-gradient: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+    }
+
+    /* Light Theme Tokens */
+    [data-theme="light"] {
+      --bg-base: #f1f5f9;
+      --bg-surface: #ffffff;
+      --bg-surface-elevated: #e2e8f0;
+      --panel-border: rgba(0, 0, 0, 0.08);
+      --panel-border-bright: rgba(0, 0, 0, 0.16);
+
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --text-dim: #64748b;
+
+      --blue-team: #2563eb;
+      --blue-glow: rgba(37, 99, 235, 0.18);
+      --blue-border: #3b82f6;
+
+      --red-team: #dc2626;
+      --red-glow: rgba(220, 38, 38, 0.18);
+      --red-border: #ef4444;
+
+      --gold-accent: #d97706;
+      --gold-glow: rgba(217, 119, 6, 0.18);
+      --cyan-accent: #0284c7;
+      --cyan-glow: rgba(2, 132, 199, 0.18);
+      --green-accent: #059669;
+      --purple-accent: #9333ea;
+
+      --input-bg: #ffffff;
+      --input-border: rgba(0, 0, 0, 0.18);
+
+      --card-hero-bg: #ffffff;
+      --card-hero-border: rgba(0, 0, 0, 0.12);
+      --log-bg: #ffffff;
+      --log-entry-bg: rgba(0, 0, 0, 0.03);
+      --modal-bg: #ffffff;
+      --modal-backdrop: rgba(15, 23, 42, 0.5);
+
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+      --shadow-md: 0 4px 14px -2px rgba(0, 0, 0, 0.08);
+      --shadow-lg: 0 12px 28px -6px rgba(0, 0, 0, 0.15);
+      --title-gradient: linear-gradient(135deg, #0f172a 0%, #334155 100%);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-main);
+      background-color: var(--bg-base);
+      color: var(--text-main);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    .container {
+      max-width: 1440px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 16px 24px 48px;
+      flex: 1;
+    }
+
+    /* ==========================================================================
+       Header & Top Action Toolbar
+       ========================================================================== */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      padding: 16px 0 20px;
+      border-bottom: 1px solid var(--panel-border);
+      margin-bottom: 20px;
+    }
+
+    .title-group h1 {
+      font-size: 1.65rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      background: var(--title-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .title-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: rgba(59, 130, 246, 0.15);
+      color: var(--blue-team);
+      border: 1px solid rgba(59, 130, 246, 0.35);
+      -webkit-text-fill-color: var(--blue-team);
+    }
+
+    .subtitle {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      font-family: var(--font-main);
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--panel-border);
+      background: var(--bg-surface);
+      color: var(--text-main);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      user-select: none;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn:hover {
+      background: var(--bg-surface-elevated);
+      border-color: var(--panel-border-bright);
+      transform: translateY(-1px);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn-sm {
+      font-size: 0.75rem;
+      padding: 4px 10px;
+      font-weight: 700;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      border-color: #3b82f6;
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      border-color: #60a5fa;
+    }
+
+    /* Preset Selection Segmented Control */
+    .preset-pills {
+      display: flex;
+      background: var(--bg-surface);
+      padding: 3px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--panel-border);
+      gap: 3px;
+      flex-wrap: wrap;
+    }
+
+    .preset-btn {
+      font-family: var(--font-main);
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 6px 10px;
+      border-radius: var(--radius-sm);
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+    }
+
+    .preset-btn:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .preset-btn.active {
+      background: var(--bg-surface-elevated);
+      color: var(--text-main);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--panel-border-bright);
+      font-weight: 700;
+    }
+
+    /* Theme Switcher Segmented Control (Upper Right) */
+    .theme-switcher {
+      display: flex;
+      background: var(--bg-surface);
+      padding: 3px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--panel-border);
+      gap: 2px;
+    }
+
+    .theme-btn {
+      font-family: var(--font-main);
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 5px 9px;
+      border-radius: var(--radius-sm);
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .theme-btn:hover {
+      color: var(--text-main);
+    }
+
+    .theme-btn.active {
+      background: var(--bg-surface-elevated);
+      color: var(--text-main);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--panel-border-bright);
+    }
+
+    /* Toast Notification for Lineup Changes */
+    .toast-banner {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--cyan-accent);
+      color: var(--text-main);
+      padding: 10px 16px;
+      border-radius: var(--radius-md);
+      font-size: 0.84rem;
+      font-weight: 600;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 999;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      pointer-events: none;
+    }
+
+    .toast-banner.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ==========================================================================
+       Targeting Rules Quick Infographic Bar
+       ========================================================================== */
+    .infographic-banner {
+      background: var(--bg-surface);
+      border: 1px solid var(--panel-border);
+      border-radius: var(--radius-md);
+      padding: 12px 18px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 0.84rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .rule-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .rule-pill {
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+    }
+
+    .rule-pill.front-left {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--red-team);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+    }
+
+    .rule-pill.front-right {
+      background: rgba(59, 130, 246, 0.15);
+      color: var(--blue-team);
+      border: 1px solid rgba(59, 130, 246, 0.35);
+    }
+
+    .rule-pill.cascade {
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--gold-accent);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+    }
+
+    /* ==========================================================================
+       Layout Grid: Battlefield & Controls / Analytics
+       ========================================================================== */
+    .main-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+      gap: 20px;
+      align-items: start;
+    }
+
+    @media (max-width: 1100px) {
+      .main-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Battlefield Panel */
+    .battlefield-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--panel-border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      position: relative;
+      box-shadow: var(--shadow-md);
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Squad Containers */
+    .squad-section {
+      border-radius: var(--radius-md);
+      padding: 14px;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .squad-section.defender-side {
+      background: linear-gradient(180deg, rgba(239, 68, 68, 0.06) 0%, var(--bg-surface) 100%);
+      border: 1px solid rgba(239, 68, 68, 0.25);
+      margin-bottom: 12px;
+    }
+
+    .squad-section.attacker-side {
+      background: linear-gradient(0deg, rgba(59, 130, 246, 0.06) 0%, var(--bg-surface) 100%);
+      border: 1px solid rgba(59, 130, 246, 0.25);
+      margin-top: 12px;
+    }
+
+    .squad-header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .squad-title-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .squad-title-box.defender { color: var(--red-team); }
+    .squad-title-box.attacker { color: var(--blue-team); }
+
+    .squad-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* 5v5 Formation Grid */
+    .formation-row {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .formation-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .formation-row.front-row {
+      max-width: 70%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .formation-row.back-row {
+      width: 100%;
+    }
+
+    /* Hero Slot Card */
+    .hero-slot {
+      flex: 1;
+      background: var(--card-hero-bg);
+      border: 1px solid var(--card-hero-border);
+      border-radius: var(--radius-md);
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      position: relative;
+      cursor: grab;
+      user-select: none;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      min-width: 0;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .hero-slot:hover {
+      border-color: var(--panel-border-bright);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .hero-slot.dragging {
+      opacity: 0.5;
+      cursor: grabbing;
+    }
+
+    .hero-slot.drag-over {
+      border-color: var(--gold-accent);
+      background: rgba(245, 158, 11, 0.12);
+      box-shadow: 0 0 16px var(--gold-glow);
+    }
+
+    .hero-slot.selected-swap {
+      border-color: var(--cyan-accent);
+      box-shadow: 0 0 16px var(--cyan-glow);
+      background: rgba(6, 182, 212, 0.12);
+    }
+
+    .hero-slot.defeated {
+      opacity: 0.35;
+      filter: grayscale(0.85);
+      border-color: var(--panel-border);
+      cursor: not-allowed;
+    }
+
+    .hero-slot.acting-now {
+      border-color: var(--gold-accent) !important;
+      box-shadow: 0 0 20px rgba(245, 158, 11, 0.5) !important;
+      transform: scale(1.03);
+      z-index: 10;
+    }
+
+    .hero-slot.taking-damage {
+      animation: flinchDamage 0.4s ease;
+    }
+
+    @keyframes flinchDamage {
+      0% { transform: scale(1); filter: brightness(1); }
+      25% { transform: scale(0.96) translateX(-3px); filter: brightness(1.4) drop-shadow(0 0 8px rgba(239,68,68,0.8)); }
+      50% { transform: scale(0.96) translateX(3px); }
+      100% { transform: scale(1); filter: brightness(1); }
+    }
+
+    /* Slot Header Elements */
+    .slot-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .slot-num-badge {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 1px 5px;
+      border-radius: 3px;
+      background: var(--bg-surface-elevated);
+      color: var(--text-dim);
+    }
+
+    .slot-focus-tag {
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      font-weight: 700;
+      padding: 1px 4px;
+      border-radius: 3px;
+    }
+
+    .slot-focus-tag.heavy {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--red-team);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .slot-focus-tag.moderate {
+      background: rgba(59, 130, 246, 0.15);
+      color: var(--blue-team);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+
+    .role-badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .role-badge.tank {
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--gold-accent);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .role-badge.dps {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--red-team);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .role-badge.support {
+      background: rgba(168, 85, 247, 0.15);
+      color: var(--purple-accent);
+      border: 1px solid rgba(168, 85, 247, 0.3);
+    }
+
+    .hero-name-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .hero-name {
+      font-size: 0.88rem;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .hero-edit-icon {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      cursor: pointer;
+      padding: 2px;
+      border-radius: 3px;
+      transition: color 0.2s;
+    }
+
+    .hero-edit-icon:hover {
+      color: var(--cyan-accent);
+    }
+
+    /* Bars (HP & Energy) */
+    .bar-group {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .bar-container {
+      height: 6px;
+      background: var(--bg-surface-elevated);
+      border-radius: 3px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .bar-fill {
+      height: 100%;
+      transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .bar-fill.hp-bar {
+      background: linear-gradient(90deg, #ef4444 0%, #10b981 100%);
+    }
+
+    .bar-fill.energy-bar {
+      background: linear-gradient(90deg, #3b82f6 0%, #06b6d4 100%);
+    }
+
+    .bar-fill.energy-bar.full {
+      background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 100%);
+      box-shadow: 0 0 8px #f59e0b;
+    }
+
+    .bar-text {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--text-muted);
+    }
+
+    /* Active Buff / Skill Tags */
+    .status-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 3px;
+      min-height: 18px;
+    }
+
+    .status-pill {
+      font-size: 0.62rem;
+      font-weight: 600;
+      padding: 1px 4px;
+      border-radius: 3px;
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .status-pill.buff-def {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--green-accent);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+    }
+
+    .status-pill.buff-atk {
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--gold-accent);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+    }
+
+    .status-pill.buff-shield {
+      background: rgba(6, 182, 212, 0.15);
+      color: var(--cyan-accent);
+      border: 1px solid rgba(6, 182, 212, 0.35);
+    }
+
+    /* Target Indicator Badge on Slot */
+    .target-focus-badge {
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      font-weight: 700;
+      padding: 2px 5px;
+      border-radius: 3px;
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--red-team);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      text-align: center;
+      display: none;
+    }
+
+    .target-focus-badge.active {
+      display: block;
+    }
+
+    /* ==========================================================================
+       SVG Targeting Vectors Overlay Area
+       ========================================================================== */
+    .targeting-overlay-container {
+      height: 70px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 4px 0;
+    }
+
+    .targeting-svg-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: visible;
+    }
+
+    .vector-line {
+      fill: none;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      transition: all 0.3s ease;
+    }
+
+    .vector-line.focus-heavy {
+      stroke-width: 3.5;
+      filter: drop-shadow(0 0 6px rgba(239, 68, 68, 0.6));
+    }
+
+    .vector-line.attacker-vector {
+      stroke: var(--blue-team);
+      stroke-dasharray: 6 3;
+      animation: dashMove 1.5s linear infinite;
+    }
+
+    .vector-line.defender-vector {
+      stroke: var(--red-team);
+      stroke-dasharray: 6 3;
+      animation: dashMoveReverse 1.5s linear infinite;
+    }
+
+    @keyframes dashMove {
+      to { stroke-dashoffset: -18; }
+    }
+
+    @keyframes dashMoveReverse {
+      to { stroke-dashoffset: 18; }
+    }
+
+    .vector-center-info {
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      background: var(--bg-surface);
+      padding: 4px 10px;
+      border-radius: 20px;
+      border: 1px solid var(--panel-border);
+      z-index: 5;
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Floating Damage Text Container */
+    .floating-text-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 100;
+      overflow: hidden;
+    }
+
+    .floating-damage {
+      position: absolute;
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      font-weight: 800;
+      color: #ffffff;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8), 0 0 10px rgba(239, 68, 68, 0.6);
+      animation: floatUp 0.85s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    .floating-damage.crit {
+      font-size: 1.25rem;
+      color: #fbbf24;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8), 0 0 14px rgba(245, 158, 11, 0.9);
+    }
+
+    .floating-damage.skill {
+      font-size: 1.15rem;
+      color: #38bdf8;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8), 0 0 12px rgba(56, 189, 248, 0.9);
+    }
+
+    @keyframes floatUp {
+      0% { opacity: 1; transform: translate(-50%, 10px) scale(0.7); }
+      20% { opacity: 1; transform: translate(-50%, -10px) scale(1.15); }
+      40% { transform: translate(-50%, -20px) scale(1); }
+      100% { opacity: 0; transform: translate(-50%, -45px) scale(0.9); }
+    }
+
+    /* ==========================================================================
+       Playback & Control Bar
+       ========================================================================== */
+    .playback-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid var(--panel-border);
+    }
+
+    .control-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .round-counter-badge {
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      font-weight: 700;
+      padding: 6px 12px;
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--panel-border-bright);
+      border-radius: var(--radius-sm);
+      color: var(--text-main);
+    }
+
+    .speed-select {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      padding: 6px 8px;
+      background: var(--bg-surface);
+      color: var(--text-main);
+      border: 1px solid var(--panel-border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+    }
+
+    /* ==========================================================================
+       Right Panel: Combat Log & Analytics
+       ========================================================================== */
+    .sidebar-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--panel-border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow-md);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Sidebar Tabs */
+    .sub-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--panel-border);
+      padding-bottom: 8px;
+      gap: 10px;
+    }
+
+    .sub-tab-btn {
+      font-family: var(--font-main);
+      font-size: 0.85rem;
+      font-weight: 600;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      transition: all 0.2s;
+    }
+
+    .sub-tab-btn.active {
+      color: var(--text-main);
+      background: var(--bg-surface-elevated);
+      border-bottom: 2px solid var(--blue-team);
+    }
+
+    /* Combat Log Container */
+    .log-container {
+      height: 440px;
+      background: var(--log-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      overflow-y: auto;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .log-entry {
+      padding: 4px 6px;
+      border-radius: 4px;
+      border-left: 3px solid transparent;
+      background: var(--log-entry-bg);
+      line-height: 1.4;
+    }
+
+    .log-entry.round-header {
+      background: var(--bg-surface-elevated);
+      font-weight: 700;
+      color: var(--gold-accent);
+      border-left-color: var(--gold-accent);
+      margin-top: 4px;
+    }
+
+    .log-entry.attacker-act {
+      border-left-color: var(--blue-team);
+    }
+
+    .log-entry.defender-act {
+      border-left-color: var(--red-team);
+    }
+
+    .log-entry.skill-cast {
+      border-left-color: var(--cyan-accent);
+      background: rgba(6, 182, 212, 0.08);
+      font-weight: 600;
+    }
+
+    .log-entry.death {
+      border-left-color: #ef4444;
+      background: rgba(239, 68, 68, 0.12);
+      color: var(--red-team);
+      font-weight: 700;
+    }
+
+    /* Monte Carlo Batch Controls & Progress */
+    .analytics-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .batch-controls-card {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: var(--bg-surface-elevated);
+      padding: 12px 14px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--panel-border);
+    }
+
+    .batch-input-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .batch-input-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .batch-number-input {
+      width: 110px;
+      padding: 6px 10px;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    .batch-progress-container {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-top: 4px;
+    }
+
+    .batch-progress-bar {
+      height: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .batch-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #3b82f6 0%, #10b981 100%);
+      transition: width 0.1s linear;
+    }
+
+    .batch-progress-status {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-dim);
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .kpi-card {
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--panel-border);
+      border-radius: var(--radius-md);
+      padding: 12px;
+    }
+
+    .kpi-title {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--text-dim);
+      letter-spacing: 0.05em;
+    }
+
+    .kpi-value {
+      font-family: var(--font-mono);
+      font-size: 1.45rem;
+      font-weight: 800;
+      margin-top: 2px;
+    }
+
+    .kpi-value.blue { color: var(--blue-team); }
+    .kpi-value.red { color: var(--red-team); }
+    .kpi-value.gold { color: var(--gold-accent); }
+    .kpi-value.green { color: var(--green-accent); }
+
+    /* Survival Heatmap Table */
+    .heatmap-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+    }
+
+    .heatmap-table th, .heatmap-table td {
+      padding: 8px;
+      text-align: left;
+      border-bottom: 1px solid var(--panel-border);
+    }
+
+    .heatmap-table th {
+      color: var(--text-dim);
+      font-weight: 700;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+    }
+
+    .survival-bar-cell {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .survival-track {
+      flex: 1;
+      height: 8px;
+      background: var(--bg-surface-elevated);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .survival-fill {
+      height: 100%;
+      border-radius: 4px;
+    }
+
+    /* ==========================================================================
+       Inspector Modal / Drawer
+       ========================================================================== */
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--modal-backdrop);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-content {
+      background: var(--modal-bg);
+      border: 1px solid var(--panel-border-bright);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 820px;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--panel-border);
+    }
+
+    .modal-body {
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .inspector-hero-selector {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+    }
+
+    .inspector-tab {
+      font-family: var(--font-main);
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--panel-border);
+      background: var(--bg-surface-elevated);
+      color: var(--text-muted);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .inspector-tab.active {
+      border-color: var(--blue-team);
+      background: rgba(59, 130, 246, 0.15);
+      color: var(--blue-team);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    @media (max-width: 650px) {
+      .form-grid { grid-template-columns: 1fr; }
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .form-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .form-input {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      padding: 8px 10px;
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      border-radius: var(--radius-sm);
+      color: var(--text-main);
+      outline: none;
+    }
+
+    .form-input:focus {
+      border-color: var(--cyan-accent);
+    }
+
+    .form-desc {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      padding: 14px 20px;
+      border-top: 1px solid var(--panel-border);
+      background: var(--bg-surface);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Toast Notification -->
+  <div class="toast-banner" id="toastBanner">
+    <span id="toastIcon">✨</span>
+    <span id="toastMsg">Notification message</span>
+  </div>
+
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <div class="title-group">
+        <h1>
+          ⚔️ Squad Targeting & Combat Simulator
+          <span class="title-badge">5v5 Mechanics</span>
+        </h1>
+        <p class="subtitle">Simulate hero positioning, 3-on-1 focus fire, elimination cascades, skill triggers & Monte Carlo match odds.</p>
+      </div>
+
+      <div class="top-actions">
+        <!-- Preset Selector Segmented Bar -->
+        <div class="preset-pills" title="Quick Formation Presets">
+          <button class="preset-btn active" id="presetMirror" title="Standard Mirror: Williams in Pos 1 on both sides">
+            🔄 Standard Mirror
+          </button>
+          <button class="preset-btn" id="presetAttMurphy" title="Put Murphy in Pos 1 on Attacker side">
+            ⚔️ Att: Murphy Pos 1
+          </button>
+          <button class="preset-btn" id="presetDefMurphy" title="Put Murphy in Pos 1 on Defender side">
+            🛡️ Def: Murphy Pos 1
+          </button>
+          <button class="preset-btn" id="presetBothMurphy" title="Put Murphy in Pos 1 on both sides">
+            🔀 Both: Murphy Pos 1
+          </button>
+        </div>
+
+        <button class="btn" id="btnOpenInspector" title="Adjust hero base stats, multipliers and skills">
+          ⚙️ Hero Inspector
+        </button>
+
+        <!-- Light / Dark / System Theme Switcher (Upper Right) -->
+        <div class="theme-switcher" title="Color Theme">
+          <button class="theme-btn active" data-theme-val="system" id="themeBtnSystem" title="Follow System Setting">💻 Auto</button>
+          <button class="theme-btn" data-theme-val="light" id="themeBtnLight" title="Light Theme">☀️ Light</button>
+          <button class="theme-btn" data-theme-val="dark" id="themeBtnDark" title="Dark Theme">🌙 Dark</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Targeting Rules Banner -->
+    <div class="infographic-banner">
+      <div class="rule-item">
+        <span class="rule-pill front-left">Pos 1 Focus (3-on-1)</span>
+        <span>Attacker <strong>Pos 1, 3, 4</strong> focus Defender <strong>Front-Left (Pos 1)</strong></span>
+      </div>
+      <div class="rule-item">
+        <span class="rule-pill front-right">Pos 2 Focus (2-on-1)</span>
+        <span>Attacker <strong>Pos 2, 5</strong> focus Defender <strong>Front-Right (Pos 2)</strong></span>
+      </div>
+      <div class="rule-item">
+        <span class="rule-pill cascade">Cascade Rule</span>
+        <span>When Pos 1 falls, all 5 focus Pos 2. Once frontline falls: Pos 1/3/4 &rarr; Pos 3, Pos 2/5 &rarr; Pos 5, then Pos 4.</span>
+      </div>
+    </div>
+
+    <!-- Main Content Layout -->
+    <div class="main-layout">
+      
+      <!-- Left Column: 5v5 Formation Battlefield -->
+      <div class="battlefield-card" id="battlefieldCard">
+        <div class="section-header">
+          <div class="section-title">
+            <span>🛡️ Tactical Squad Board</span>
+            <span style="font-size:0.75rem; color:var(--text-dim); font-weight:normal;">(Drag or click heroes to swap slots)</span>
+          </div>
+          <div style="font-family:var(--font-mono); font-size:0.75rem; color:var(--text-muted);" id="battleStatusBadge">
+            Status: Ready
+          </div>
+        </div>
+
+        <!-- Floating Damage Overlay -->
+        <div class="floating-text-container" id="floatingDamageContainer"></div>
+
+        <!-- DEFENDER SQUAD (RED / TOP) -->
+        <div class="squad-section defender-side" id="defenderSquadSection">
+          <div class="squad-header-bar">
+            <div class="squad-title-box defender">
+              <span>🔴 Defender Team (Top)</span>
+              <span id="defenderTeamHpLabel" style="font-family:var(--font-mono); font-size:0.75rem; color:var(--text-muted);">HP: 100%</span>
+            </div>
+            <div class="squad-header-actions">
+              <button class="btn btn-sm" id="btnSwapDefenderFront" title="Swap Defender Front-Row Tanks (Pos 1 ↔ Pos 2)">
+                ⇄ Swap Front Row (Pos 1 ↔ 2)
+              </button>
+            </div>
+          </div>
+
+          <!-- Back Row: Pos 3, Pos 4, Pos 5 -->
+          <div class="formation-row back-row" id="defenderBackRow">
+            <!-- Pos 3 -->
+            <div class="hero-slot" data-team="def" data-slot="3" draggable="true" id="slot-def-3"></div>
+            <!-- Pos 4 -->
+            <div class="hero-slot" data-team="def" data-slot="4" draggable="true" id="slot-def-4"></div>
+            <!-- Pos 5 -->
+            <div class="hero-slot" data-team="def" data-slot="5" draggable="true" id="slot-def-5"></div>
+          </div>
+
+          <!-- Front Row: Pos 1, Pos 2 -->
+          <div class="formation-row front-row" id="defenderFrontRow">
+            <!-- Pos 1 -->
+            <div class="hero-slot" data-team="def" data-slot="1" draggable="true" id="slot-def-1"></div>
+            <!-- Pos 2 -->
+            <div class="hero-slot" data-team="def" data-slot="2" draggable="true" id="slot-def-2"></div>
+          </div>
+        </div>
+
+        <!-- TARGETING VECTORS SVG OVERLAY -->
+        <div class="targeting-overlay-container" id="vectorOverlayContainer">
+          <svg class="targeting-svg-canvas" id="targetingSvg"></svg>
+          <div class="vector-center-info" id="vectorCenterText">⚔️ Targeting Vectors Active</div>
+        </div>
+
+        <!-- ATTACKER SQUAD (BLUE / BOTTOM) -->
+        <div class="squad-section attacker-side" id="attackerSquadSection">
+          <div class="squad-header-bar">
+            <div class="squad-title-box attacker">
+              <span>🔵 Attacker Team (Bottom)</span>
+              <span id="attackerTeamHpLabel" style="font-family:var(--font-mono); font-size:0.75rem; color:var(--text-muted);">HP: 100%</span>
+            </div>
+            <div class="squad-header-actions">
+              <button class="btn btn-sm" id="btnSwapAttackerFront" title="Swap Attacker Front-Row Tanks (Pos 1 ↔ Pos 2)">
+                ⇄ Swap Front Row (Pos 1 ↔ 2)
+              </button>
+            </div>
+          </div>
+
+          <!-- Front Row: Pos 1, Pos 2 -->
+          <div class="formation-row front-row" id="attackerFrontRow">
+            <!-- Pos 1 -->
+            <div class="hero-slot" data-team="att" data-slot="1" draggable="true" id="slot-att-1"></div>
+            <!-- Pos 2 -->
+            <div class="hero-slot" data-team="att" data-slot="2" draggable="true" id="slot-att-2"></div>
+          </div>
+
+          <!-- Back Row: Pos 3, Pos 4, Pos 5 -->
+          <div class="formation-row back-row" id="attackerBackRow">
+            <!-- Pos 3 -->
+            <div class="hero-slot" data-team="att" data-slot="3" draggable="true" id="slot-att-3"></div>
+            <!-- Pos 4 -->
+            <div class="hero-slot" data-team="att" data-slot="4" draggable="true" id="slot-att-4"></div>
+            <!-- Pos 5 -->
+            <div class="hero-slot" data-team="att" data-slot="5" draggable="true" id="slot-att-5"></div>
+          </div>
+        </div>
+
+        <!-- Playback Controller Toolbar -->
+        <div class="playback-toolbar">
+          <div class="control-group">
+            <button class="btn" id="btnFirstRound" title="Reset battle">⏮</button>
+            <button class="btn" id="btnPrevStep" title="Previous action">◀ Step</button>
+            <button class="btn btn-primary" id="btnPlayPause" title="Play or Pause battle">▶ Play</button>
+            <button class="btn" id="btnNextStep" title="Next action">Step ▶</button>
+            <button class="btn" id="btnInstantFinish" title="Instantly finish match">⏭ Finish</button>
+          </div>
+
+          <div class="control-group">
+            <span class="round-counter-badge" id="roundCounterText">Round 1</span>
+            <select class="speed-select" id="speedSelect">
+              <option value="1200">0.5x Speed</option>
+              <option value="600" selected>1.0x Speed</option>
+              <option value="300">2.0x Speed</option>
+              <option value="100">5.0x Speed</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Sidebar (Combat Event Log / Batch Analytics) -->
+      <div class="sidebar-card">
+        
+        <!-- Tab Switcher for Sidebar -->
+        <div class="sub-tabs">
+          <button class="sub-tab-btn active" id="tabBtnLog">📜 Combat Event Log</button>
+          <button class="sub-tab-btn" id="tabBtnAnalytics">📊 Monte Carlo Batch</button>
+        </div>
+
+        <!-- TAB 1: Combat Log View -->
+        <div id="viewCombatLog" style="display: flex; flex-direction: column; gap: 10px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 0.8rem; color: var(--text-muted);">Step-by-step combat events:</span>
+            <button class="btn" style="padding: 4px 8px; font-size: 0.72rem;" id="btnClearLog">Clear Log</button>
+          </div>
+          <div class="log-container" id="combatLogContainer">
+            <div class="log-entry round-header">⚔️ Battle Initialized — Tank Matchup</div>
+            <div class="log-entry">Waiting for combat start. Click ▶ Play or Step ▶ to begin.</div>
+          </div>
+        </div>
+
+        <!-- TAB 2: Monte Carlo Batch Analytics View -->
+        <div id="viewBatchAnalytics" class="analytics-panel" style="display: none;">
+          
+          <!-- Customizable Simulation Count + Presets + Run Button -->
+          <div class="batch-controls-card">
+            <div class="batch-input-row">
+              <div class="batch-input-group">
+                <span style="font-size:0.78rem; font-weight:700; color:var(--text-muted);">Battles:</span>
+                <input type="number" class="form-input batch-number-input" id="inpBatchCount" value="1000" min="10" max="500000" step="1000" title="Type custom simulation count">
+                
+                <!-- Quick Count Presets: 1k, 10k, 100k -->
+                <div class="preset-pills" id="batchCountPills" title="Quick Simulation Counts">
+                  <button class="preset-btn active" data-count="1000" id="btnBatch1k">1k</button>
+                  <button class="preset-btn" data-count="10000" id="btnBatch10k">10k</button>
+                  <button class="preset-btn" data-count="100000" id="btnBatch100k">100k</button>
+                </div>
+              </div>
+
+              <button class="btn btn-primary" id="btnExecuteBatch" style="padding: 7px 16px; font-weight:700;">
+                ⚡ Run Simulation
+              </button>
+            </div>
+
+            <!-- Animated Progress Bar for Large Batches -->
+            <div class="batch-progress-container" id="batchProgressContainer" style="display: none;">
+              <div class="batch-progress-bar">
+                <div class="batch-progress-fill" id="batchProgressFill" style="width: 0%;"></div>
+              </div>
+              <div class="batch-progress-status">
+                <span id="batchProgressStatus">Ready</span>
+                <span id="batchSpeedStatus" style="color:var(--text-dim); font-weight:600;"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- KPI Cards -->
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-title">Attacker Win Rate</div>
+              <div class="kpi-value blue" id="kpiAttackerWinRate">--%</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-title">Defender Win Rate</div>
+              <div class="kpi-value red" id="kpiDefenderWinRate">--%</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-title">Avg Duration</div>
+              <div class="kpi-value gold" id="kpiAvgRounds">-- Rnds</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-title">Avg Remaining HP</div>
+              <div class="kpi-value green" id="kpiAvgHp">--%</div>
+            </div>
+          </div>
+
+          <!-- Survival Matrix by Slot -->
+          <div>
+            <div style="font-size: 0.82rem; font-weight: 700; margin-bottom: 8px; display: flex; justify-content: space-between;">
+              <span>Slot Survival Rates (Reddit Focus Fire Proof)</span>
+              <span style="color: var(--text-dim); font-size: 0.72rem;">Front-Left (Pos 1) vs Front-Right (Pos 2)</span>
+            </div>
+            
+            <table class="heatmap-table">
+              <thead>
+                <tr>
+                  <th>Slot / Hero</th>
+                  <th>Target Pressure</th>
+                  <th style="width: 50%;">Survival Rate %</th>
+                </tr>
+              </thead>
+              <tbody id="survivalTableBody">
+                <tr><td colspan="3" style="text-align: center; color: var(--text-dim);">Set simulation count and click ⚡ Run Simulation</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Hero Parameter & Skill Inspector Modal -->
+  <div class="modal-backdrop" id="inspectorModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 style="font-size: 1.15rem; font-weight: 800;">⚙️ Hero Skill & Parameter Inspector</h3>
+        <button class="btn" style="padding: 4px 8px;" id="btnCloseInspector">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Hero Tab Selector -->
+        <div class="inspector-hero-selector" id="inspectorHeroTabs">
+          <button class="inspector-tab active" data-hero="Williams">Williams (Defender)</button>
+          <button class="inspector-tab" data-hero="Murphy">Murphy (Defender)</button>
+          <button class="inspector-tab" data-hero="Kimberly">Kimberly (Attacker)</button>
+          <button class="inspector-tab" data-hero="Stetmann">Stetmann (Attacker)</button>
+          <button class="inspector-tab" data-hero="Marshall">Marshall (Support)</button>
+        </div>
+
+        <!-- Dynamic Form Fields -->
+        <div id="inspectorFormContainer">
+          <!-- Populated by JavaScript based on active hero -->
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn" id="btnResetHeroDefaults">Reset Defaults</button>
+        <button class="btn btn-primary" id="btnSaveInspector">Save & Update Simulation</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Core JavaScript Engine -->
+  <script>
+    /**
+     * LAST WAR: SQUAD TARGETING & COMBAT SIMULATOR
+     * Pure Vanilla ES6 Engine
+     */
+
+    // --- 0. THEME CONTROLLER (SYSTEM DEFAULT, LIGHT, DARK) ---
+    const THEME_STORAGE_KEY = 'lastwar_theme_preference';
+
+    function initThemeSystem() {
+      const savedPref = localStorage.getItem(THEME_STORAGE_KEY) || 'system';
+      applyTheme(savedPref, false);
+
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+        const currentPref = localStorage.getItem(THEME_STORAGE_KEY) || 'system';
+        if (currentPref === 'system') {
+          applyTheme('system', false);
+        }
+      });
+
+      document.querySelectorAll('.theme-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const mode = btn.dataset.themeVal;
+          applyTheme(mode, true);
+        });
+      });
+    }
+
+    function applyTheme(themeMode, persist = true) {
+      if (persist) {
+        localStorage.setItem(THEME_STORAGE_KEY, themeMode);
+      }
+
+      document.querySelectorAll('.theme-btn').forEach(btn => {
+        if (btn.dataset.themeVal === themeMode) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+
+      let effectiveTheme = themeMode;
+      if (themeMode === 'system') {
+        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        effectiveTheme = systemPrefersDark ? 'dark' : 'light';
+      }
+
+      document.documentElement.setAttribute('data-theme', effectiveTheme);
+
+      if (typeof drawTargetingVectors === 'function') {
+        setTimeout(drawTargetingVectors, 50);
+      }
+    }
+
+    function showToast(message, icon = '✨') {
+      const banner = document.getElementById('toastBanner');
+      const msgEl = document.getElementById('toastMsg');
+      const iconEl = document.getElementById('toastIcon');
+      if (!banner || !msgEl) return;
+
+      msgEl.innerText = message;
+      if (iconEl) iconEl.innerText = icon;
+
+      banner.classList.add('show');
+      clearTimeout(banner._timer);
+      banner._timer = setTimeout(() => {
+        banner.classList.remove('show');
+      }, 2500);
+    }
+
+    // --- 1. HERO DEFINITIONS & TEMPLATES ---
+    const DEFAULT_HEROES = {
+      Williams: {
+        name: "Williams",
+        role: "tank",
+        roleLabel: "Defender",
+        baseHp: 32000,
+        baseAtk: 1200,
+        baseDef: 850,
+        critRate: 0.05,
+        energyGainAtk: 25,
+        energyGainHit: 10,
+        basicMultiplier: 1.0,
+        // Williams specific skills:
+        passiveSelfDmgRed: 0.25, // Reduces all damage by 25% for himself
+        activeName: "Iron Will",
+        activeDefBoostFrontRow: 0.45, // Boosts defense of 2 front row targets by 45%
+        activeDuration: 3, // Rounds (approx 3-4s in game)
+        description: "Frontline heavy tank. Passively reduces damage to himself by 25%. 'Iron Will' gives +45% Defense to both Front Row heroes."
+      },
+      Murphy: {
+        name: "Murphy",
+        role: "tank",
+        roleLabel: "Defender",
+        baseHp: 30000,
+        baseAtk: 1100,
+        baseDef: 800,
+        critRate: 0.05,
+        energyGainAtk: 25,
+        energyGainHit: 10,
+        basicMultiplier: 1.0,
+        // Murphy specific skills:
+        passiveFrontRowDmgRed: 0.15, // Reducing damage in battle by 15% for front row
+        activeName: "Ironclad Barrier",
+        activeSquadPhysDmgRed: 0.25, // Reducing entire squad's physical damage by 25%
+        activeDuration: 3,
+        description: "Frontline protective tank. Passively reduces damage to Front Row by 15%. 'Ironclad Barrier' grants squad 25% damage mitigation."
+      },
+      Kimberly: {
+        name: "Kimberly",
+        role: "dps",
+        roleLabel: "Attacker",
+        baseHp: 18000,
+        baseAtk: 3600,
+        baseDef: 400,
+        critRate: 0.15,
+        energyGainAtk: 25,
+        energyGainHit: 10,
+        basicMultiplier: 2.0, // Attackers do 2x damage
+        // Kimberly skills:
+        activeName: "Barrage Strike",
+        activePrimaryDmg: 2.5, // 250% damage
+        activeSplashDmg: 1.2, // 120% splash to adjacent
+        activeDuration: 1,
+        description: "Primary energy DPS. Basic attacks deal 2.0x damage. 'Barrage Strike' unleashes 250% burst + 120% splash damage."
+      },
+      Stetmann: {
+        name: "Stetmann",
+        role: "dps",
+        roleLabel: "Attacker",
+        baseHp: 19000,
+        baseAtk: 3400,
+        baseDef: 420,
+        critRate: 0.25, // High crit rate
+        energyGainAtk: 25,
+        energyGainHit: 10,
+        basicMultiplier: 2.0, // Attackers do 2x damage
+        // Stetmann skills:
+        activeName: "Lightning Rush",
+        activeBurstDmg: 3.0, // 300% burst
+        activeCritBonus: 0.30, // +30% crit on skill
+        activeDuration: 1,
+        description: "High-crit energy burst DPS. 'Lightning Rush' hits primary target for 300% damage with +30% bonus critical chance."
+      },
+      Marshall: {
+        name: "Marshall",
+        role: "support",
+        roleLabel: "Support",
+        baseHp: 21000,
+        baseAtk: 1800,
+        baseDef: 550,
+        critRate: 0.10,
+        energyGainAtk: 25,
+        energyGainHit: 10,
+        basicMultiplier: 1.2,
+        // Marshall skills:
+        activeName: "Command Strategy",
+        activeTeamAtkAmp: 0.50, // Marshall amplifies attackers / team by 50%
+        activeTeamCritAmp: 0.20, // +20% Crit rate
+        activeDuration: 3,
+        description: "Tactical support buffer. 'Command Strategy' empowers all surviving allies with +50% Attack Power and +20% Crit Rate."
+      }
+    };
+
+    // --- 2. GLOBAL STATE ---
+    let heroDatabase = JSON.parse(JSON.stringify(DEFAULT_HEROES));
+
+    // Squad Lineups: Pos 1 (Front-L), Pos 2 (Front-R), Pos 3 (Back-L), Pos 4 (Back-M), Pos 5 (Back-R)
+    let attackerSquad = {
+      1: "Williams",
+      2: "Murphy",
+      3: "Stetmann",
+      4: "Kimberly",
+      5: "Marshall"
+    };
+
+    let defenderSquad = {
+      1: "Williams",
+      2: "Murphy",
+      3: "Stetmann",
+      4: "Kimberly",
+      5: "Marshall"
+    };
+
+    // Simulation Live State
+    let liveBattle = null;
+    let isPlaying = false;
+    let isBatchRunning = false;
+    let playTimer = null;
+    let selectedSlotForSwap = null;
+    let activeInspectorHero = "Williams";
+
+    // --- 3. TARGETING ENGINE (INFOGRAPHIC SPECIFICATION) ---
+    function getTargetSlot(attackerSlot, enemyTeamState) {
+      const isAlive = (slot) => enemyTeamState[slot] && enemyTeamState[slot].currentHp > 0;
+
+      // Group A: Pos 1, Pos 3, Pos 4 (Left / Mid Focus)
+      if (attackerSlot === 1 || attackerSlot === 3 || attackerSlot === 4) {
+        if (isAlive(1)) return 1;
+        if (isAlive(2)) return 2;
+        if (isAlive(3)) return 3;
+        if (isAlive(4)) return 4;
+        if (isAlive(5)) return 5;
+      }
+
+      // Group B: Pos 2, Pos 5 (Right Focus)
+      if (attackerSlot === 2 || attackerSlot === 5) {
+        if (isAlive(2)) return 2;
+        if (isAlive(1)) return 1;
+        if (isAlive(5)) return 5;
+        if (isAlive(4)) return 4;
+        if (isAlive(3)) return 3;
+      }
+
+      for (let s = 1; s <= 5; s++) {
+        if (isAlive(s)) return s;
+      }
+      return null;
+    }
+
+    // --- 4. COMBAT RESOLUTION ENGINE ---
+    function initializeBattle() {
+      const initTeam = (squad, teamKey) => {
+        const team = {};
+        for (let s = 1; s <= 5; s++) {
+          const heroKey = squad[s];
+          const template = heroDatabase[heroKey];
+          team[s] = {
+            slot: s,
+            team: teamKey,
+            key: heroKey,
+            name: template.name,
+            role: template.role,
+            maxHp: template.baseHp,
+            currentHp: template.baseHp,
+            atk: template.baseAtk,
+            def: template.baseDef,
+            critRate: template.critRate,
+            energy: 0,
+            buffs: {
+              defBoost: 0,
+              defBoostRounds: 0,
+              atkAmp: 0,
+              atkAmpRounds: 0,
+              critAmp: 0,
+              critAmpRounds: 0,
+              squadDmgRed: 0,
+              squadDmgRedRounds: 0
+            },
+            stats: {
+              totalDamageDealt: 0,
+              totalDamageTaken: 0,
+              skillsFired: 0
+            }
+          };
+        }
+        return team;
+      };
+
+      return {
+        round: 1,
+        stepIndex: 0,
+        isFinished: false,
+        winner: null,
+        attackerTeam: initTeam(attackerSquad, "att"),
+        defenderTeam: initTeam(defenderSquad, "def"),
+        logs: []
+      };
+    }
+
+    function executeNextCombatStep(battle, isBatch = false) {
+      if (battle.isFinished) return;
+
+      const turnOrder = [
+        { team: 'att', slot: 1 }, { team: 'def', slot: 1 },
+        { team: 'att', slot: 2 }, { team: 'def', slot: 2 },
+        { team: 'att', slot: 3 }, { team: 'def', slot: 3 },
+        { team: 'att', slot: 4 }, { team: 'def', slot: 4 },
+        { team: 'att', slot: 5 }, { team: 'def', slot: 5 }
+      ];
+
+      let attempts = 0;
+      let actor = null;
+      let actorSide = null;
+      let targetSide = null;
+
+      while (attempts < 10) {
+        const turnInfo = turnOrder[battle.stepIndex % 10];
+        const teamObj = turnInfo.team === 'att' ? battle.attackerTeam : battle.defenderTeam;
+        const enemyObj = turnInfo.team === 'att' ? battle.defenderTeam : battle.attackerTeam;
+        const candidate = teamObj[turnInfo.slot];
+
+        if (candidate && candidate.currentHp > 0) {
+          actor = candidate;
+          actorSide = turnInfo.team;
+          targetSide = enemyObj;
+          break;
+        }
+
+        battle.stepIndex++;
+        attempts++;
+
+        if (battle.stepIndex % 10 === 0) {
+          advanceRoundBuffs(battle);
+        }
+      }
+
+      if (!actor) {
+        checkBattleEnd(battle);
+        return;
+      }
+
+      const targetSlotNum = getTargetSlot(actor.slot, targetSide);
+      if (!targetSlotNum) {
+        checkBattleEnd(battle);
+        return;
+      }
+
+      const target = targetSide[targetSlotNum];
+      const template = heroDatabase[actor.key];
+      const isSkillReady = actor.energy >= 100;
+      let damageEvents = [];
+      let logMsg = "";
+
+      if (isSkillReady) {
+        actor.energy = 0;
+        actor.stats.skillsFired++;
+
+        if (actor.key === "Williams") {
+          const ownTeam = actorSide === 'att' ? battle.attackerTeam : battle.defenderTeam;
+          if (ownTeam[1] && ownTeam[1].currentHp > 0) {
+            ownTeam[1].buffs.defBoost = template.activeDefBoostFrontRow;
+            ownTeam[1].buffs.defBoostRounds = template.activeDuration;
+          }
+          if (ownTeam[2] && ownTeam[2].currentHp > 0) {
+            ownTeam[2].buffs.defBoost = template.activeDefBoostFrontRow;
+            ownTeam[2].buffs.defBoostRounds = template.activeDuration;
+          }
+          const hit = calculateDamage(actor, target, 1.0, false);
+          applyDamage(target, hit.damage, hit.isCrit, actor);
+          if (!isBatch) {
+            damageEvents.push({ targetSlot: target.slot, targetTeam: target.team, damage: hit.damage, isCrit: hit.isCrit, text: `🛡️ Iron Will (+45% DEF)` });
+            logMsg = `[${actorSide === 'att' ? '🔵 Attacker' : '🔴 Defender'}] Slot ${actor.slot} ${actor.name} cast [Iron Will] (+45% Frontline DEF) & dealt ${hit.damage.toLocaleString()} damage to Slot ${target.slot} ${target.name}.`;
+          }
+        }
+        else if (actor.key === "Murphy") {
+          const ownTeam = actorSide === 'att' ? battle.attackerTeam : battle.defenderTeam;
+          for (let s = 1; s <= 5; s++) {
+            if (ownTeam[s] && ownTeam[s].currentHp > 0) {
+              ownTeam[s].buffs.squadDmgRed = template.activeSquadPhysDmgRed;
+              ownTeam[s].buffs.squadDmgRedRounds = template.activeDuration;
+            }
+          }
+          const hit = calculateDamage(actor, target, 1.0, false);
+          applyDamage(target, hit.damage, hit.isCrit, actor);
+          if (!isBatch) {
+            damageEvents.push({ targetSlot: target.slot, targetTeam: target.team, damage: hit.damage, isCrit: hit.isCrit, text: `🛡️ Barrier (-25% Dmg)` });
+            logMsg = `[${actorSide === 'att' ? '🔵 Attacker' : '🔴 Defender'}] Slot ${actor.slot} ${actor.name} cast [Ironclad Barrier] (-25% Squad Dmg Taken) & dealt ${hit.damage.toLocaleString()} damage to Slot ${target.slot} ${target.name}.`;
+          }
+        }
+        else if (actor.key === "Marshall") {
+          const ownTeam = actorSide === 'att' ? battle.attackerTeam : battle.defenderTeam;
+          for (let s = 1; s <= 5; s++) {
+            if (ownTeam[s] && ownTeam[s].currentHp > 0) {
+              ownTeam[s].buffs.atkAmp = template.activeTeamAtkAmp;
+              ownTeam[s].buffs.atkAmpRounds = template.activeDuration;
+              ownTeam[s].buffs.critAmp = template.activeTeamCritAmp;
+              ownTeam[s].buffs.critAmpRounds = template.activeDuration;
+            }
+          }
+          const hit = calculateDamage(actor, target, 1.2, false);
+          applyDamage(target, hit.damage, hit.isCrit, actor);
+          if (!isBatch) {
+            damageEvents.push({ targetSlot: target.slot, targetTeam: target.team, damage: hit.damage, isCrit: hit.isCrit, text: `⚔️ Rally (+50% ATK)` });
+            logMsg = `[${actorSide === 'att' ? '🔵 Attacker' : '🔴 Defender'}] Slot ${actor.slot} ${actor.name} cast [Command Strategy] (+50% Team ATK) & dealt ${hit.damage.toLocaleString()} damage to Slot ${target.slot} ${target.name}.`;
+          }
+        }
+        else if (actor.key === "Kimberly") {
+          const primaryHit = calculateDamage(actor, target, template.activePrimaryDmg, true);
+          applyDamage(target, primaryHit.damage, primaryHit.isCrit, actor);
+          if (!isBatch) {
+            damageEvents.push({ targetSlot: target.slot, targetTeam: target.team, damage: primaryHit.damage, isCrit: primaryHit.isCrit, text: `⚡ Barrage Strike!` });
+          }
+
+          const splashSlots = getAdjacentSlots(target.slot);
+          splashSlots.forEach(sNum => {
+            if (targetSide[sNum] && targetSide[sNum].currentHp > 0) {
+              const splashHit = calculateDamage(actor, targetSide[sNum], template.activeSplashDmg, false);
+              applyDamage(targetSide[sNum], splashHit.damage, splashHit.isCrit, actor);
+              if (!isBatch) {
+                damageEvents.push({ targetSlot: sNum, targetTeam: targetSide[sNum].team, damage: splashHit.damage, isCrit: splashHit.isCrit, text: `💥 Splash` });
+              }
+            }
+          });
+          if (!isBatch) {
+            logMsg = `[${actorSide === 'att' ? '🔵 Attacker' : '🔴 Defender'}] Slot ${actor.slot} ${actor.name} fired [Barrage Strike] hitting Slot ${target.slot} ${target.name} for ${primaryHit.damage.toLocaleString()} (and splashed adjacent targets)!`;
+          }
+        }
+        else if (actor.key === "Stetmann") {
+          const burstHit = calculateDamage(actor, target, template.activeBurstDmg, false, template.activeCritBonus);
+          applyDamage(target, burstHit.damage, burstHit.isCrit, actor);
+          if (!isBatch) {
+            damageEvents.push({ targetSlot: target.slot, targetTeam: target.team, damage: burstHit.damage, isCrit: burstHit.isCrit, text: `⚡ Lightning Rush!` });
+            logMsg = `[${actorSide === 'att' ? '🔵 Attacker' : '🔴 Defender'}] Slot ${actor.slot} ${actor.name} cast [Lightning Rush] dealing massive ${burstHit.damage.toLocaleString()} burst damage to Slot ${target.slot} ${target.name}!`;
+          }
+        }
+      } else {
+        const hit = calculateDamage(actor, target, template.basicMultiplier, false);
+        applyDamage(target, hit.damage, hit.isCrit, actor);
+        actor.energy = Math.min(100, actor.energy + template.energyGainAtk);
+        if (!isBatch) {
+          damageEvents.push({ targetSlot: target.slot, targetTeam: target.team, damage: hit.damage, isCrit: hit.isCrit, text: hit.isCrit ? `💥 CRIT!` : null });
+          logMsg = `[${actorSide === 'att' ? '🔵 Attacker' : '🔴 Defender'}] Slot ${actor.slot} ${actor.name} attacked Slot ${target.slot} ${target.name} for ${hit.damage.toLocaleString()} damage.`;
+        }
+      }
+
+      if (!isBatch) {
+        battle.logs.push({
+          round: battle.round,
+          step: battle.stepIndex,
+          actorSlot: actor.slot,
+          actorTeam: actorSide,
+          actorName: actor.name,
+          targetSlot: target.slot,
+          isSkill: isSkillReady,
+          msg: logMsg,
+          damageEvents: damageEvents
+        });
+      }
+
+      battle.stepIndex++;
+      if (battle.stepIndex % 10 === 0) {
+        advanceRoundBuffs(battle);
+      }
+
+      checkBattleEnd(battle);
+    }
+
+    function calculateDamage(attacker, defender, skillMultiplier = 1.0, isSpecialSkill = false, bonusCrit = 0.0) {
+      const atkTemplate = heroDatabase[attacker.key];
+      const defTemplate = heroDatabase[defender.key];
+
+      let effectiveAtk = attacker.atk;
+      if (attacker.buffs.atkAmp > 0) {
+        effectiveAtk *= (1 + attacker.buffs.atkAmp);
+      }
+
+      let rawDamage = effectiveAtk * skillMultiplier;
+      const totalCritRate = attacker.critRate + attacker.buffs.critAmp + bonusCrit;
+      const isCrit = Math.random() < totalCritRate;
+      if (isCrit) {
+        rawDamage *= 1.75;
+      }
+
+      let effectiveDef = defender.def;
+      if (defender.buffs.defBoost > 0) {
+        effectiveDef *= (1 + defender.buffs.defBoost);
+      }
+      const defFactor = 1000 / (1000 + effectiveDef);
+
+      let dmgReductionFactor = 1.0;
+      if (defender.key === "Williams" && defTemplate.passiveSelfDmgRed) {
+        dmgReductionFactor *= (1 - defTemplate.passiveSelfDmgRed);
+      }
+
+      const defTeamObj = defender.team === 'att' ? liveBattle.attackerTeam : liveBattle.defenderTeam;
+      const hasMurphy = Object.values(defTeamObj).some(h => h.key === "Murphy" && h.currentHp > 0);
+      if (hasMurphy && (defender.slot === 1 || defender.slot === 2)) {
+        dmgReductionFactor *= (1 - 0.15);
+      }
+
+      if (defender.buffs.squadDmgRed > 0) {
+        dmgReductionFactor *= (1 - defender.buffs.squadDmgRed);
+      }
+
+      const variance = 0.96 + Math.random() * 0.08;
+      const finalDmg = Math.max(50, Math.round(rawDamage * defFactor * dmgReductionFactor * variance));
+      return { damage: finalDmg, isCrit: isCrit };
+    }
+
+    function applyDamage(defender, dmg, isCrit, attacker) {
+      defender.currentHp = Math.max(0, defender.currentHp - dmg);
+      defender.stats.totalDamageTaken += dmg;
+      attacker.stats.totalDamageDealt += dmg;
+
+      const defTemplate = heroDatabase[defender.key];
+      defender.energy = Math.min(100, defender.energy + (defTemplate.energyGainHit || 10));
+    }
+
+    function getAdjacentSlots(slot) {
+      if (slot === 1) return [2, 3];
+      if (slot === 2) return [1, 5];
+      if (slot === 3) return [1, 4];
+      if (slot === 4) return [3, 5];
+      if (slot === 5) return [2, 4];
+      return [];
+    }
+
+    function advanceRoundBuffs(battle) {
+      battle.round++;
+      const tickTeam = (team) => {
+        for (let s = 1; s <= 5; s++) {
+          const h = team[s];
+          if (!h) continue;
+          if (h.buffs.defBoostRounds > 0) {
+            h.buffs.defBoostRounds--;
+            if (h.buffs.defBoostRounds === 0) h.buffs.defBoost = 0;
+          }
+          if (h.buffs.atkAmpRounds > 0) {
+            h.buffs.atkAmpRounds--;
+            if (h.buffs.atkAmpRounds === 0) h.buffs.atkAmp = 0;
+          }
+          if (h.buffs.critAmpRounds > 0) {
+            h.buffs.critAmpRounds--;
+            if (h.buffs.critAmpRounds === 0) h.buffs.critAmp = 0;
+          }
+          if (h.buffs.squadDmgRedRounds > 0) {
+            h.buffs.squadDmgRedRounds--;
+            if (h.buffs.squadDmgRedRounds === 0) h.buffs.squadDmgRed = 0;
+          }
+        }
+      };
+      tickTeam(battle.attackerTeam);
+      tickTeam(battle.defenderTeam);
+    }
+
+    function checkBattleEnd(battle) {
+      const isTeamAlive = (team) => Object.values(team).some(h => h.currentHp > 0);
+      const attAlive = isTeamAlive(battle.attackerTeam);
+      const defAlive = isTeamAlive(battle.defenderTeam);
+
+      if (!attAlive || !defAlive || battle.round > 50) {
+        battle.isFinished = true;
+        if (attAlive && !defAlive) battle.winner = "att";
+        else if (!attAlive && defAlive) battle.winner = "def";
+        else battle.winner = "draw";
+      }
+    }
+
+    // --- 5. DOM & VISUAL RENDERING ---
+    function updatePresetPills() {
+      const isMirror = attackerSquad[1] === "Williams" && attackerSquad[2] === "Murphy" &&
+                       defenderSquad[1] === "Williams" && defenderSquad[2] === "Murphy";
+      const isAttMurphy = attackerSquad[1] === "Murphy" && attackerSquad[2] === "Williams" &&
+                          defenderSquad[1] === "Williams" && defenderSquad[2] === "Murphy";
+      const isDefMurphy = attackerSquad[1] === "Williams" && attackerSquad[2] === "Murphy" &&
+                          defenderSquad[1] === "Murphy" && defenderSquad[2] === "Williams";
+      const isBothMurphy = attackerSquad[1] === "Murphy" && attackerSquad[2] === "Williams" &&
+                           defenderSquad[1] === "Murphy" && defenderSquad[2] === "Williams";
+
+      document.getElementById("presetMirror").classList.toggle("active", isMirror);
+      document.getElementById("presetAttMurphy").classList.toggle("active", isAttMurphy);
+      document.getElementById("presetDefMurphy").classList.toggle("active", isDefMurphy);
+      document.getElementById("presetBothMurphy").classList.toggle("active", isBothMurphy);
+    }
+
+    function renderBattleState() {
+      if (!liveBattle) return;
+
+      document.getElementById("roundCounterText").innerText = `Round ${liveBattle.round}`;
+      const statusEl = document.getElementById("battleStatusBadge");
+      if (liveBattle.isFinished) {
+        if (liveBattle.winner === "att") {
+          statusEl.innerText = "🏆 Attacker Victory!";
+          statusEl.style.color = "var(--blue-team)";
+        } else if (liveBattle.winner === "def") {
+          statusEl.innerText = "🏆 Defender Victory!";
+          statusEl.style.color = "var(--red-team)";
+        } else {
+          statusEl.innerText = "⚔️ Draw / Stalemate";
+          statusEl.style.color = "var(--gold-accent)";
+        }
+      } else {
+        statusEl.innerText = isPlaying ? "⚡ Battle in Progress..." : "⏸ Paused";
+        statusEl.style.color = isPlaying ? "var(--green-accent)" : "var(--text-muted)";
+      }
+
+      renderTeamSlots(liveBattle.attackerTeam, "att");
+      renderTeamSlots(liveBattle.defenderTeam, "def");
+
+      const getTeamHpPct = (team) => {
+        let cur = 0, max = 0;
+        Object.values(team).forEach(h => { cur += h.currentHp; max += h.maxHp; });
+        return Math.round((cur / max) * 100);
+      };
+      document.getElementById("attackerTeamHpLabel").innerText = `HP: ${getTeamHpPct(liveBattle.attackerTeam)}%`;
+      document.getElementById("defenderTeamHpLabel").innerText = `HP: ${getTeamHpPct(liveBattle.defenderTeam)}%`;
+
+      updatePresetPills();
+      drawTargetingVectors();
+      renderCombatLog();
+    }
+
+    function renderTeamSlots(teamObj, teamKey) {
+      for (let s = 1; s <= 5; s++) {
+        const hero = teamObj[s];
+        const el = document.getElementById(`slot-${teamKey}-${s}`);
+        if (!el || !hero) continue;
+
+        const hpPct = Math.round((hero.currentHp / hero.maxHp) * 100);
+        const energyPct = hero.energy;
+        const isDefeated = hero.currentHp <= 0;
+
+        let roleClass = "dps";
+        let roleIcon = "⚔️";
+        if (hero.role === "tank") { roleClass = "tank"; roleIcon = "🛡️"; }
+        if (hero.role === "support") { roleClass = "support"; roleIcon = "🌟"; }
+
+        // Find incoming attacker count on this slot
+        const enemyTeam = teamKey === 'att' ? liveBattle.defenderTeam : liveBattle.attackerTeam;
+        let incomingFocusCount = 0;
+        if (!isDefeated) {
+          for (let es = 1; es <= 5; es++) {
+            if (enemyTeam[es] && enemyTeam[es].currentHp > 0) {
+              if (getTargetSlot(es, teamObj) === s) {
+                incomingFocusCount++;
+              }
+            }
+          }
+        }
+
+        // Active Buff Pills
+        let buffPillsHtml = "";
+        if (hero.buffs.defBoost > 0) buffPillsHtml += `<span class="status-pill buff-def">🛡️ +${Math.round(hero.buffs.defBoost * 100)}% Def</span>`;
+        if (hero.buffs.atkAmp > 0) buffPillsHtml += `<span class="status-pill buff-atk">⚔️ +${Math.round(hero.buffs.atkAmp * 100)}% Atk</span>`;
+        if (hero.buffs.squadDmgRed > 0) buffPillsHtml += `<span class="status-pill buff-shield">🛡️ -25% Dmg</span>`;
+
+        // Frontline focus tag
+        let focusTagHtml = "";
+        if (s === 1) {
+          focusTagHtml = `<span class="slot-focus-tag heavy">3-on-1 Focus</span>`;
+        } else if (s === 2) {
+          focusTagHtml = `<span class="slot-focus-tag moderate">2-on-1 Focus</span>`;
+        }
+
+        el.className = `hero-slot ${isDefeated ? 'defeated' : ''} ${selectedSlotForSwap && selectedSlotForSwap.team === teamKey && selectedSlotForSwap.slot === s ? 'selected-swap' : ''}`;
+
+        el.innerHTML = `
+          <div class="slot-meta">
+            <div style="display:flex; align-items:center; gap:4px;">
+              <span class="slot-num-badge">Pos ${s}</span>
+              ${focusTagHtml}
+            </div>
+            <span class="role-badge ${roleClass}">${roleIcon} ${hero.role.toUpperCase()}</span>
+          </div>
+          <div class="hero-name-row">
+            <span class="hero-name" title="${hero.name}">${hero.name}</span>
+            <span class="hero-edit-icon" onclick="openHeroInspector('${hero.key}')" title="Configure Stats">⚙️</span>
+          </div>
+          <div class="bar-group">
+            <div class="bar-container">
+              <div class="bar-fill hp-bar" style="width: ${hpPct}%;"></div>
+            </div>
+            <div class="bar-text">
+              <span>HP</span>
+              <span>${hero.currentHp.toLocaleString()} / ${hero.maxHp.toLocaleString()}</span>
+            </div>
+          </div>
+          <div class="bar-group">
+            <div class="bar-container">
+              <div class="bar-fill energy-bar ${energyPct >= 100 ? 'full' : ''}" style="width: ${energyPct}%;"></div>
+            </div>
+            <div class="bar-text">
+              <span>Energy</span>
+              <span>${energyPct}/100</span>
+            </div>
+          </div>
+          <div class="status-tags">
+            ${buffPillsHtml}
+          </div>
+          <div class="target-focus-badge ${incomingFocusCount > 0 ? 'active' : ''}">
+            🎯 ${incomingFocusCount} ${incomingFocusCount === 1 ? 'Attacker' : 'Attackers'}
+          </div>
+        `;
+      }
+    }
+
+    function drawTargetingVectors() {
+      const svg = document.getElementById("targetingSvg");
+      if (!svg || !liveBattle) return;
+
+      const overlayContainer = document.getElementById("vectorOverlayContainer");
+      if (!overlayContainer) return;
+      const overlayRect = overlayContainer.getBoundingClientRect();
+      if (overlayRect.width === 0) return;
+
+      svg.setAttribute("viewBox", `0 0 ${overlayRect.width} ${overlayRect.height}`);
+      svg.innerHTML = "";
+
+      for (let s = 1; s <= 5; s++) {
+        const attHero = liveBattle.attackerTeam[s];
+        if (!attHero || attHero.currentHp <= 0) continue;
+
+        const targetSlotNum = getTargetSlot(s, liveBattle.defenderTeam);
+        if (!targetSlotNum) continue;
+
+        const attSlotEl = document.getElementById(`slot-att-${s}`);
+        const defSlotEl = document.getElementById(`slot-def-${targetSlotNum}`);
+        if (!attSlotEl || !defSlotEl) continue;
+
+        const attRect = attSlotEl.getBoundingClientRect();
+        const defRect = defSlotEl.getBoundingClientRect();
+
+        const x1 = (attRect.left + attRect.width / 2) - overlayRect.left;
+        const y1 = overlayRect.height;
+        const x2 = (defRect.left + defRect.width / 2) - overlayRect.left;
+        const y2 = 0;
+
+        const cx1 = x1;
+        const cy1 = overlayRect.height * 0.5;
+        const cx2 = x2;
+        const cy2 = overlayRect.height * 0.5;
+
+        const pathData = `M ${x1} ${y1} C ${cx1} ${cy1}, ${cx2} ${cy2}, ${x2} ${y2}`;
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute("d", pathData);
+        path.setAttribute("class", `vector-line attacker-vector ${targetSlotNum === 1 ? 'focus-heavy' : ''}`);
+        svg.appendChild(path);
+      }
+    }
+
+    function renderCombatLog() {
+      const container = document.getElementById("combatLogContainer");
+      if (!container || !liveBattle) return;
+
+      if (liveBattle.logs.length === 0) {
+        container.innerHTML = `
+          <div class="log-entry round-header">⚔️ Battle Initialized — Tank Matchup</div>
+          <div class="log-entry">Waiting for combat start. Click ▶ Play or Step ▶ to begin.</div>
+        `;
+        return;
+      }
+
+      let html = "";
+      let lastRound = 0;
+      liveBattle.logs.forEach(log => {
+        if (log.round !== lastRound) {
+          html += `<div class="log-entry round-header">--- ROUND ${log.round} ---</div>`;
+          lastRound = log.round;
+        }
+        const teamClass = log.actorTeam === 'att' ? 'attacker-act' : 'defender-act';
+        const skillClass = log.isSkill ? 'skill-cast' : '';
+        html += `<div class="log-entry ${teamClass} ${skillClass}">${log.msg}</div>`;
+      });
+
+      container.innerHTML = html;
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function triggerFloatingDamage(targetTeam, targetSlot, text, isCrit, isSkill) {
+      const container = document.getElementById("floatingDamageContainer");
+      const targetSlotEl = document.getElementById(`slot-${targetTeam}-${targetSlot}`);
+      if (!container || !targetSlotEl) return;
+
+      const cardRect = document.getElementById("battlefieldCard").getBoundingClientRect();
+      const slotRect = targetSlotEl.getBoundingClientRect();
+
+      const posX = (slotRect.left + slotRect.width / 2) - cardRect.left;
+      const posY = (slotRect.top + slotRect.height / 2) - cardRect.top;
+
+      const pop = document.createElement("div");
+      pop.className = `floating-damage ${isCrit ? 'crit' : ''} ${isSkill ? 'skill' : ''}`;
+      pop.style.left = `${posX}px`;
+      pop.style.top = `${posY}px`;
+      pop.innerText = text;
+
+      container.appendChild(pop);
+      setTimeout(() => { if (pop.parentNode) pop.parentNode.removeChild(pop); }, 900);
+    }
+
+    // --- 6. INTERACTIVE CONTROLLER ACTIONS ---
+    function ensureCombatLogVisible() {
+      const logTab = document.getElementById("tabBtnLog");
+      if (logTab && !logTab.classList.contains("active")) {
+        logTab.click();
+      }
+    }
+
+    function stepSimulation() {
+      ensureCombatLogVisible();
+      if (!liveBattle) liveBattle = initializeBattle();
+      if (liveBattle.isFinished) {
+        pauseSimulation();
+        return;
+      }
+
+      executeNextCombatStep(liveBattle);
+
+      const latestLog = liveBattle.logs[liveBattle.logs.length - 1];
+      if (latestLog && latestLog.damageEvents) {
+        latestLog.damageEvents.forEach(evt => {
+          triggerFloatingDamage(
+            evt.targetTeam,
+            evt.targetSlot,
+            evt.text || `-${evt.damage.toLocaleString()}`,
+            evt.isCrit,
+            latestLog.isSkill
+          );
+        });
+      }
+
+      renderBattleState();
+
+      if (liveBattle.isFinished) {
+        pauseSimulation();
+      }
+    }
+
+    function playSimulation() {
+      ensureCombatLogVisible();
+      if (isPlaying) return;
+      isPlaying = true;
+      document.getElementById("btnPlayPause").innerText = "⏸ Pause";
+      document.getElementById("btnPlayPause").classList.remove("btn-primary");
+      document.getElementById("btnPlayPause").classList.add("btn-gold");
+
+      const speed = parseInt(document.getElementById("speedSelect").value, 10);
+      playTimer = setInterval(() => {
+        if (!isPlaying || liveBattle.isFinished) {
+          pauseSimulation();
+        } else {
+          stepSimulation();
+        }
+      }, speed);
+    }
+
+    function pauseSimulation() {
+      isPlaying = false;
+      if (playTimer) clearInterval(playTimer);
+      document.getElementById("btnPlayPause").innerText = "▶ Play";
+      document.getElementById("btnPlayPause").classList.add("btn-primary");
+      document.getElementById("btnPlayPause").classList.remove("btn-gold");
+      renderBattleState();
+    }
+
+    function resetBattle() {
+      pauseSimulation();
+      liveBattle = initializeBattle();
+      renderBattleState();
+    }
+
+    function instantFinishBattle() {
+      ensureCombatLogVisible();
+      pauseSimulation();
+      if (!liveBattle) liveBattle = initializeBattle();
+      while (!liveBattle.isFinished && liveBattle.round <= 50) {
+        executeNextCombatStep(liveBattle);
+      }
+      renderBattleState();
+    }
+
+    // --- 7. MONTE CARLO BATCH RUNNER (CHUNKED ASYNC FOR SMOOTH 1K-100K RUNS) ---
+    function syncBatchCountPills(count) {
+      document.querySelectorAll('#batchCountPills .preset-btn').forEach(btn => {
+        btn.classList.toggle('active', parseInt(btn.dataset.count, 10) === count);
+      });
+    }
+
+    function runMonteCarloBatch(iterations = 1000) {
+      if (isBatchRunning) return;
+      isBatchRunning = true;
+
+      const btn = document.getElementById("btnExecuteBatch");
+      const progressContainer = document.getElementById("batchProgressContainer");
+      const progressFill = document.getElementById("batchProgressFill");
+      const progressStatus = document.getElementById("batchProgressStatus");
+      const speedStatus = document.getElementById("batchSpeedStatus");
+
+      btn.disabled = true;
+      btn.innerText = "⏳ Simulating...";
+      progressContainer.style.display = "flex";
+      progressFill.style.width = "0%";
+      progressStatus.innerText = `Starting ${iterations.toLocaleString()} simulations...`;
+      speedStatus.innerText = "";
+
+      const startTime = performance.now();
+      let completed = 0;
+      let attWins = 0;
+      let defWins = 0;
+      let draws = 0;
+      let totalRounds = 0;
+      let totalRemainingHpPct = 0;
+
+      const survivalCounts = {
+        att: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
+        def: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }
+      };
+
+      const chunkSize = Math.min(5000, Math.max(500, Math.floor(iterations / 20)));
+
+      function processChunk() {
+        const chunkLimit = Math.min(completed + chunkSize, iterations);
+
+        for (; completed < chunkLimit; completed++) {
+          const battle = initializeBattle();
+          while (!battle.isFinished && battle.round <= 60) {
+            executeNextCombatStep(battle, true);
+          }
+
+          if (battle.winner === "att") attWins++;
+          else if (battle.winner === "def") defWins++;
+          else draws++;
+
+          totalRounds += battle.round;
+
+          for (let s = 1; s <= 5; s++) {
+            if (battle.attackerTeam[s].currentHp > 0) survivalCounts.att[s]++;
+            if (battle.defenderTeam[s].currentHp > 0) survivalCounts.def[s]++;
+          }
+
+          let winnerHp = 0, winnerMax = 0;
+          const winTeam = battle.winner === "att" ? battle.attackerTeam : battle.defenderTeam;
+          Object.values(winTeam).forEach(h => { winnerHp += h.currentHp; winnerMax += h.maxHp; });
+          totalRemainingHpPct += (winnerHp / winnerMax);
+        }
+
+        const pct = Math.round((completed / iterations) * 100);
+        progressFill.style.width = `${pct}%`;
+        progressStatus.innerText = `Simulated ${completed.toLocaleString()} / ${iterations.toLocaleString()} (${pct}%)`;
+
+        if (completed < iterations) {
+          setTimeout(processChunk, 0);
+        } else {
+          // Finished!
+          const totalElapsedMs = performance.now() - startTime;
+          const seconds = (totalElapsedMs / 1000).toFixed(2);
+          const battlesPerSec = Math.round((iterations / (totalElapsedMs / 1000))).toLocaleString();
+
+          btn.disabled = false;
+          btn.innerText = "⚡ Run Simulation";
+          progressStatus.innerText = `✅ Finished ${iterations.toLocaleString()} battles in ${seconds}s`;
+          speedStatus.innerText = `${battlesPerSec} battles/sec`;
+          isBatchRunning = false;
+
+          // Update KPI metrics
+          const attWinPct = ((attWins / iterations) * 100).toFixed(1);
+          const defWinPct = ((defWins / iterations) * 100).toFixed(1);
+          const avgRounds = (totalRounds / iterations).toFixed(1);
+          const avgHpPct = ((totalRemainingHpPct / iterations) * 100).toFixed(1);
+
+          document.getElementById("kpiAttackerWinRate").innerText = `${attWinPct}%`;
+          document.getElementById("kpiDefenderWinRate").innerText = `${defWinPct}%`;
+          document.getElementById("kpiAvgRounds").innerText = `${avgRounds} Rnds`;
+          document.getElementById("kpiAvgHp").innerText = `${avgHpPct}%`;
+
+          renderSurvivalTable(survivalCounts, iterations);
+          showToast(`Completed ${iterations.toLocaleString()} simulations in ${seconds}s!`, '📊');
+        }
+      }
+
+      setTimeout(processChunk, 10);
+    }
+
+    function renderSurvivalTable(survivalCounts, iterations) {
+      const tableBody = document.getElementById("survivalTableBody");
+      let tableHtml = "";
+
+      const slotLabels = [
+        { slot: 1, name: "Pos 1: Front-Left", focus: "Heavy (3-on-1 Focus)" },
+        { slot: 2, name: "Pos 2: Front-Right", focus: "Moderate (2-on-1 Focus)" },
+        { slot: 3, name: "Pos 3: Back-Left", focus: "Protected Backline" },
+        { slot: 4, name: "Pos 4: Back-Center", focus: "Protected Backline" },
+        { slot: 5, name: "Pos 5: Back-Right", focus: "Protected Backline" }
+      ];
+
+      slotLabels.forEach(row => {
+        const attSurvPct = ((survivalCounts.att[row.slot] / iterations) * 100).toFixed(1);
+        const defSurvPct = ((survivalCounts.def[row.slot] / iterations) * 100).toFixed(1);
+        const heroNameAtt = attackerSquad[row.slot];
+        const heroNameDef = defenderSquad[row.slot];
+
+        tableHtml += `
+          <tr>
+            <td>
+              <strong>${row.name}</strong><br>
+              <span style="color:var(--text-muted); font-size:0.7rem;">Att: ${heroNameAtt} | Def: ${heroNameDef}</span>
+            </td>
+            <td>
+              <span style="color:${row.slot === 1 ? 'var(--red-team)' : row.slot === 2 ? 'var(--blue-team)' : 'var(--text-dim)'}; font-weight:700;">
+                ${row.focus}
+              </span>
+            </td>
+            <td>
+              <div class="survival-bar-cell">
+                <div class="survival-track">
+                  <div class="survival-fill" style="width: ${attSurvPct}%; background: ${row.slot === 1 ? 'var(--red-team)' : 'var(--green-accent)'};"></div>
+                </div>
+                <span>${attSurvPct}%</span>
+              </div>
+            </td>
+          </tr>
+        `;
+      });
+
+      tableBody.innerHTML = tableHtml;
+    }
+
+    // --- 8. HERO INSPECTOR MODAL ---
+    function openHeroInspector(heroKey = "Williams") {
+      activeInspectorHero = heroKey;
+      const modal = document.getElementById("inspectorModal");
+      modal.classList.add("open");
+
+      document.querySelectorAll(".inspector-tab").forEach(tab => {
+        if (tab.dataset.hero === heroKey) tab.classList.add("active");
+        else tab.classList.remove("active");
+      });
+
+      renderInspectorFields(heroKey);
+    }
+
+    function closeHeroInspector() {
+      document.getElementById("inspectorModal").classList.remove("open");
+    }
+
+    function renderInspectorFields(heroKey) {
+      const hero = heroDatabase[heroKey];
+      const container = document.getElementById("inspectorFormContainer");
+      if (!hero || !container) return;
+
+      container.innerHTML = `
+        <div style="font-size:0.85rem; color:var(--cyan-accent); font-weight:600; margin-bottom:12px;">
+          ${hero.name} (${hero.roleLabel}) — ${hero.description}
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Base HP <span>(Health Pool)</span></label>
+            <input type="number" class="form-input" id="inpBaseHp" value="${hero.baseHp}" step="500">
+            <span class="form-desc">Total hit points before battle multipliers.</span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Base Attack <span>(ATK)</span></label>
+            <input type="number" class="form-input" id="inpBaseAtk" value="${hero.baseAtk}" step="100">
+            <span class="form-desc">Base offensive power for attacks and skills.</span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Base Defense <span>(DEF)</span></label>
+            <input type="number" class="form-input" id="inpBaseDef" value="${hero.baseDef}" step="50">
+            <span class="form-desc">Reduces incoming damage via mitigation curve.</span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Base Crit Rate <span>(0.00 - 1.00)</span></label>
+            <input type="number" class="form-input" id="inpCritRate" value="${hero.critRate}" step="0.05" min="0" max="1">
+            <span class="form-desc">Chance to deal 175% critical damage.</span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Basic Attack Multiplier <span>(x DMG)</span></label>
+            <input type="number" class="form-input" id="inpBasicMultiplier" value="${hero.basicMultiplier}" step="0.1">
+            <span class="form-desc">Attackers do 2.0x, defenders 1.0x.</span>
+          </div>
+
+          ${hero.passiveSelfDmgRed !== undefined ? `
+            <div class="form-group">
+              <label class="form-label">Passive Self Dmg Reduction <span>(-% Dmg)</span></label>
+              <input type="number" class="form-input" id="inpPassiveSelfDmgRed" value="${hero.passiveSelfDmgRed}" step="0.05">
+              <span class="form-desc">Williams passive: 0.25 = 25% damage reduction.</span>
+            </div>
+          ` : ''}
+
+          ${hero.activeDefBoostFrontRow !== undefined ? `
+            <div class="form-group">
+              <label class="form-label">Iron Will Frontline DEF Boost <span>(+% DEF)</span></label>
+              <input type="number" class="form-input" id="inpActiveDefBoostFrontRow" value="${hero.activeDefBoostFrontRow}" step="0.05">
+              <span class="form-desc">Williams active skill: 0.45 = +45% Frontline DEF.</span>
+            </div>
+          ` : ''}
+
+          ${hero.activeSquadPhysDmgRed !== undefined ? `
+            <div class="form-group">
+              <label class="form-label">Ironclad Barrier Mitigation <span>(-% Squad Dmg)</span></label>
+              <input type="number" class="form-input" id="inpActiveSquadPhysDmgRed" value="${hero.activeSquadPhysDmgRed}" step="0.05">
+              <span class="form-desc">Murphy active: 0.25 = 25% squad physical damage reduction.</span>
+            </div>
+          ` : ''}
+
+          ${hero.activePrimaryDmg !== undefined ? `
+            <div class="form-group">
+              <label class="form-label">Barrage Strike Primary Multiplier <span>(x DMG)</span></label>
+              <input type="number" class="form-input" id="inpActivePrimaryDmg" value="${hero.activePrimaryDmg}" step="0.1">
+              <span class="form-desc">Kimberly active skill burst on main target.</span>
+            </div>
+          ` : ''}
+
+          ${hero.activeTeamAtkAmp !== undefined ? `
+            <div class="form-group">
+              <label class="form-label">Command Strategy Attack Amp <span>(+% ATK)</span></label>
+              <input type="number" class="form-input" id="inpActiveTeamAtkAmp" value="${hero.activeTeamAtkAmp}" step="0.05">
+              <span class="form-desc">Marshall active skill team attack buff.</span>
+            </div>
+          ` : ''}
+
+          ${hero.activeBurstDmg !== undefined ? `
+            <div class="form-group">
+              <label class="form-label">Lightning Rush Burst Multiplier <span>(x DMG)</span></label>
+              <input type="number" class="form-input" id="inpActiveBurstDmg" value="${hero.activeBurstDmg}" step="0.1">
+              <span class="form-desc">Stetmann single-target particle blast.</span>
+            </div>
+          ` : ''}
+        </div>
+      `;
+    }
+
+    function saveHeroInspector() {
+      const hero = heroDatabase[activeInspectorHero];
+      if (!hero) return;
+
+      const hpInp = document.getElementById("inpBaseHp");
+      if (hpInp) hero.baseHp = Math.max(1000, parseInt(hpInp.value, 10));
+
+      const atkInp = document.getElementById("inpBaseAtk");
+      if (atkInp) hero.baseAtk = Math.max(100, parseInt(atkInp.value, 10));
+
+      const defInp = document.getElementById("inpBaseDef");
+      if (defInp) hero.baseDef = Math.max(50, parseInt(defInp.value, 10));
+
+      const critInp = document.getElementById("inpCritRate");
+      if (critInp) hero.critRate = Math.max(0, Math.min(1, parseFloat(critInp.value)));
+
+      const multInp = document.getElementById("inpBasicMultiplier");
+      if (multInp) hero.basicMultiplier = parseFloat(multInp.value);
+
+      const willPass = document.getElementById("inpPassiveSelfDmgRed");
+      if (willPass) hero.passiveSelfDmgRed = parseFloat(willPass.value);
+
+      const willAct = document.getElementById("inpActiveDefBoostFrontRow");
+      if (willAct) hero.activeDefBoostFrontRow = parseFloat(willAct.value);
+
+      const murphAct = document.getElementById("inpActiveSquadPhysDmgRed");
+      if (murphAct) hero.activeSquadPhysDmgRed = parseFloat(murphAct.value);
+
+      const kimAct = document.getElementById("inpActivePrimaryDmg");
+      if (kimAct) hero.activePrimaryDmg = parseFloat(kimAct.value);
+
+      const marshAct = document.getElementById("inpActiveTeamAtkAmp");
+      if (marshAct) hero.activeTeamAtkAmp = parseFloat(marshAct.value);
+
+      const stetAct = document.getElementById("inpActiveBurstDmg");
+      if (stetAct) hero.activeBurstDmg = parseFloat(stetAct.value);
+
+      closeHeroInspector();
+      resetBattle();
+      showToast(`Updated stats for ${hero.name}!`, '⚙️');
+    }
+
+    // --- 9. DRAG & DROP / CLICK-TO-SWAP SQUAD BUILDER ---
+    function setupDragAndDrop() {
+      const slots = document.querySelectorAll(".hero-slot");
+
+      slots.forEach(slotEl => {
+        slotEl.addEventListener("dragstart", (e) => {
+          e.dataTransfer.setData("text/plain", JSON.stringify({
+            team: slotEl.dataset.team,
+            slot: parseInt(slotEl.dataset.slot, 10)
+          }));
+          slotEl.classList.add("dragging");
+        });
+
+        slotEl.addEventListener("dragend", () => {
+          slotEl.classList.remove("dragging");
+          document.querySelectorAll(".hero-slot").forEach(s => s.classList.remove("drag-over"));
+        });
+
+        slotEl.addEventListener("dragover", (e) => {
+          e.preventDefault();
+          slotEl.classList.add("drag-over");
+        });
+
+        slotEl.addEventListener("dragleave", () => {
+          slotEl.classList.remove("drag-over");
+        });
+
+        slotEl.addEventListener("drop", (e) => {
+          e.preventDefault();
+          slotEl.classList.remove("drag-over");
+          try {
+            const src = JSON.parse(e.dataTransfer.getData("text/plain"));
+            const targetTeam = slotEl.dataset.team;
+            const targetSlot = parseInt(slotEl.dataset.slot, 10);
+
+            if (src.team === targetTeam && src.slot !== targetSlot) {
+              swapSlots(src.team, src.slot, targetSlot);
+            }
+          } catch (err) {}
+        });
+
+        slotEl.addEventListener("click", (e) => {
+          if (e.target.classList.contains("hero-edit-icon")) return;
+
+          const team = slotEl.dataset.team;
+          const slotNum = parseInt(slotEl.dataset.slot, 10);
+
+          if (!selectedSlotForSwap) {
+            selectedSlotForSwap = { team, slot: slotNum };
+            renderBattleState();
+          } else {
+            if (selectedSlotForSwap.team === team && selectedSlotForSwap.slot !== slotNum) {
+              swapSlots(team, selectedSlotForSwap.slot, slotNum);
+            }
+            selectedSlotForSwap = null;
+            renderBattleState();
+          }
+        });
+      });
+    }
+
+    function swapSlots(teamKey, slotA, slotB) {
+      const squad = teamKey === 'att' ? attackerSquad : defenderSquad;
+      const temp = squad[slotA];
+      squad[slotA] = squad[slotB];
+      squad[slotB] = temp;
+      resetBattle();
+
+      const teamName = teamKey === 'att' ? 'Attacker' : 'Defender';
+      showToast(`${teamName} Pos ${slotA} (${squad[slotA]}) & Pos ${slotB} (${squad[slotB]}) swapped!`, '🔀');
+    }
+
+    // --- 10. EVENT LISTENERS & INITIALIZATION ---
+    document.addEventListener("DOMContentLoaded", () => {
+      // 1. Theme
+      initThemeSystem();
+
+      // 2. Setup drag and drop
+      setupDragAndDrop();
+
+      // 3. Initialize battle
+      resetBattle();
+
+      // Playback Controls
+      document.getElementById("btnPlayPause").addEventListener("click", () => {
+        if (isPlaying) pauseSimulation();
+        else playSimulation();
+      });
+
+      document.getElementById("btnNextStep").addEventListener("click", stepSimulation);
+      document.getElementById("btnFirstRound").addEventListener("click", resetBattle);
+      document.getElementById("btnInstantFinish").addEventListener("click", instantFinishBattle);
+
+      document.getElementById("speedSelect").addEventListener("change", () => {
+        if (isPlaying) {
+          pauseSimulation();
+          playSimulation();
+        }
+      });
+
+      // Formation Presets (Top Segmented Bar)
+      document.getElementById("presetMirror").addEventListener("click", () => {
+        attackerSquad = { 1: "Williams", 2: "Murphy", 3: "Stetmann", 4: "Kimberly", 5: "Marshall" };
+        defenderSquad = { 1: "Williams", 2: "Murphy", 3: "Stetmann", 4: "Kimberly", 5: "Marshall" };
+        resetBattle();
+        showToast("Loaded Standard Mirror (Williams Pos 1 on both sides)", "🔄");
+      });
+
+      document.getElementById("presetAttMurphy").addEventListener("click", () => {
+        attackerSquad = { 1: "Murphy", 2: "Williams", 3: "Stetmann", 4: "Kimberly", 5: "Marshall" };
+        defenderSquad = { 1: "Williams", 2: "Murphy", 3: "Stetmann", 4: "Kimberly", 5: "Marshall" };
+        resetBattle();
+        showToast("Attacker setup: Murphy in Pos 1 (taking 3-on-1 focus)", "⚔️");
+      });
+
+      document.getElementById("presetDefMurphy").addEventListener("click", () => {
+        attackerSquad = { 1: "Williams", 2: "Murphy", 3: "Stetmann", 4: "Kimberly", 5: "Marshall" };
+        defenderSquad = { 1: "Murphy", 2: "Williams", 3: "Stetmann", 4: "Kimberly", 5: "Marshall" };
+        resetBattle();
+        showToast("Defender setup: Murphy in Pos 1 (taking 3-on-1 focus)", "🛡️");
+      });
+
+      document.getElementById("presetBothMurphy").addEventListener("click", () => {
+        attackerSquad = { 1: "Murphy", 2: "Williams", 3: "Stetmann", 4: "Kimberly", 5: "Marshall" };
+        defenderSquad = { 1: "Murphy", 2: "Williams", 3: "Stetmann", 4: "Kimberly", 5: "Marshall" };
+        resetBattle();
+        showToast("Both squads: Murphy in Pos 1 (taking 3-on-1 focus)", "🔀");
+      });
+
+      // On-Card Frontline Swap Buttons
+      document.getElementById("btnSwapDefenderFront").addEventListener("click", () => {
+        swapSlots("def", 1, 2);
+      });
+
+      document.getElementById("btnSwapAttackerFront").addEventListener("click", () => {
+        swapSlots("att", 1, 2);
+      });
+
+      document.getElementById("btnClearLog").addEventListener("click", () => {
+        if (liveBattle) {
+          liveBattle.logs = [];
+          renderCombatLog();
+        }
+      });
+
+      // Sidebar Tabs: Combat Event Log vs Monte Carlo Batch
+      document.getElementById("tabBtnLog").addEventListener("click", () => {
+        document.getElementById("tabBtnLog").classList.add("active");
+        document.getElementById("tabBtnAnalytics").classList.remove("active");
+        document.getElementById("viewCombatLog").style.display = "flex";
+        document.getElementById("viewBatchAnalytics").style.display = "none";
+      });
+
+      document.getElementById("tabBtnAnalytics").addEventListener("click", () => {
+        document.getElementById("tabBtnAnalytics").classList.add("active");
+        document.getElementById("tabBtnLog").classList.remove("active");
+        document.getElementById("viewCombatLog").style.display = "none";
+        document.getElementById("viewBatchAnalytics").style.display = "flex";
+      });
+
+      // Monte Carlo Count Presets (1k, 10k, 100k) & Input Sync
+      document.querySelectorAll('#batchCountPills .preset-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const val = parseInt(btn.dataset.count, 10);
+          document.getElementById('inpBatchCount').value = val;
+          syncBatchCountPills(val);
+        });
+      });
+
+      document.getElementById('inpBatchCount').addEventListener('input', (e) => {
+        const val = parseInt(e.target.value, 10) || 0;
+        syncBatchCountPills(val);
+      });
+
+      // Monte Carlo Run Simulation Button
+      document.getElementById("btnExecuteBatch").addEventListener("click", () => {
+        const val = Math.max(10, parseInt(document.getElementById("inpBatchCount").value, 10) || 1000);
+        runMonteCarloBatch(val);
+      });
+
+      // Inspector Modal Events
+      document.getElementById("btnOpenInspector").addEventListener("click", () => openHeroInspector("Williams"));
+      document.getElementById("btnCloseInspector").addEventListener("click", closeHeroInspector);
+      document.getElementById("btnSaveInspector").addEventListener("click", saveHeroInspector);
+      document.getElementById("btnResetHeroDefaults").addEventListener("click", () => {
+        heroDatabase = JSON.parse(JSON.stringify(DEFAULT_HEROES));
+        renderInspectorFields(activeInspectorHero);
+        resetBattle();
+      });
+
+      document.querySelectorAll(".inspector-tab").forEach(tab => {
+        tab.addEventListener("click", () => {
+          document.querySelectorAll(".inspector-tab").forEach(t => t.classList.remove("active"));
+          tab.classList.add("active");
+          activeInspectorHero = tab.dataset.hero;
+          renderInspectorFields(activeInspectorHero);
+        });
+      });
+
+      window.addEventListener("resize", drawTargetingVectors);
+    });
+  </script>
+</body>
+</html>
