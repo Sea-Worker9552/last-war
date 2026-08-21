@@ -204,16 +204,23 @@
       transition: all 0.2s ease;
       user-select: none;
       box-shadow: var(--shadow-sm);
+      white-space: nowrap;
     }
 
-    .btn:hover {
+    .btn:hover:not(:disabled) {
       background: var(--bg-surface-elevated);
       border-color: var(--panel-border-bright);
       transform: translateY(-1px);
     }
 
-    .btn:active {
+    .btn:active:not(:disabled) {
       transform: translateY(0);
+    }
+
+    .btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none !important;
     }
 
     .btn-sm {
@@ -229,9 +236,21 @@
       box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
     }
 
-    .btn-primary:hover {
+    .btn-primary:hover:not(:disabled) {
       background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
       border-color: #60a5fa;
+    }
+
+    .btn-gold {
+      background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+      border-color: #f59e0b;
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+    }
+
+    .btn-gold:hover:not(:disabled) {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      border-color: #fbbf24;
     }
 
     /* Preset Selection Segmented Control */
@@ -341,6 +360,70 @@
     }
 
     /* ==========================================================================
+       Custom Floating Instant Tooltip
+       ========================================================================== */
+    .custom-tooltip {
+      position: fixed;
+      z-index: 10000;
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--panel-border-bright);
+      color: var(--text-main);
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 1px 1px rgba(255, 255, 255, 0.1);
+      pointer-events: none;
+      max-width: 290px;
+      font-size: 0.78rem;
+      line-height: 1.45;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: opacity 0.12s ease;
+      opacity: 0;
+    }
+
+    .custom-tooltip.visible {
+      opacity: 1;
+    }
+
+    .custom-tooltip-title {
+      font-weight: 800;
+      font-size: 0.86rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 2px;
+      color: var(--text-main);
+    }
+
+    .custom-tooltip-source {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--cyan-accent);
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .custom-tooltip-desc {
+      color: var(--text-muted);
+      font-size: 0.76rem;
+    }
+
+    .custom-tooltip-status {
+      margin-top: 6px;
+      padding-top: 5px;
+      border-top: 1px solid var(--panel-border);
+      font-family: var(--font-mono);
+      font-size: 0.70rem;
+      font-weight: 700;
+      color: var(--gold-accent);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* ==========================================================================
        Targeting Rules Quick Infographic Bar
        ========================================================================== */
     .infographic-banner {
@@ -395,7 +478,7 @@
        ========================================================================== */
     .main-layout {
       display: grid;
-      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+      grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
       gap: 20px;
       align-items: start;
     }
@@ -588,6 +671,7 @@
       font-weight: 700;
       padding: 1px 4px;
       border-radius: 3px;
+      cursor: help;
     }
 
     .slot-focus-tag.heavy {
@@ -657,7 +741,7 @@
       color: var(--cyan-accent);
     }
 
-    /* Bars (HP & Energy) */
+    /* Bars (HP & Skill Cooldown) */
     .bar-group {
       display: flex;
       flex-direction: column;
@@ -698,7 +782,7 @@
       color: var(--text-muted);
     }
 
-    /* Active Buff / Skill Tags */
+    /* Active Buff / Passive Skill Badges */
     .status-tags {
       display: flex;
       flex-wrap: wrap;
@@ -709,11 +793,19 @@
     .status-pill {
       font-size: 0.62rem;
       font-weight: 600;
-      padding: 1px 4px;
-      border-radius: 3px;
+      padding: 2px 6px;
+      border-radius: 4px;
       display: inline-flex;
       align-items: center;
-      gap: 2px;
+      gap: 3px;
+      cursor: help;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+
+    .status-pill:hover {
+      transform: translateY(-1px) scale(1.04);
+      filter: brightness(1.15);
     }
 
     .status-pill.buff-def {
@@ -732,6 +824,18 @@
       background: rgba(6, 182, 212, 0.15);
       color: var(--cyan-accent);
       border: 1px solid rgba(6, 182, 212, 0.35);
+    }
+
+    .status-pill.buff-passive {
+      background: rgba(14, 165, 233, 0.15);
+      color: var(--cyan-accent);
+      border: 1px solid rgba(14, 165, 233, 0.35);
+    }
+
+    .status-pill.buff-passive-self {
+      background: rgba(168, 85, 247, 0.15);
+      color: var(--purple-accent);
+      border: 1px solid rgba(168, 85, 247, 0.35);
     }
 
     /* Target Indicator Badge on Slot */
@@ -862,23 +966,30 @@
     }
 
     /* ==========================================================================
-       Playback & Control Bar
+       Playback & Control Bar + Timeline Scrubber
        ========================================================================== */
     .playback-toolbar {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid var(--panel-border);
+    }
+
+    .playback-controls-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 12px;
-      margin-top: 16px;
-      padding-top: 14px;
-      border-top: 1px solid var(--panel-border);
+      gap: 10px;
     }
 
     .control-group {
       display: flex;
       align-items: center;
       gap: 6px;
+      flex-wrap: wrap;
     }
 
     .round-counter-badge {
@@ -903,6 +1014,69 @@
       cursor: pointer;
     }
 
+    /* Timeline Scrubber Container */
+    .timeline-scrubber-card {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      background: var(--bg-surface-elevated);
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--panel-border);
+    }
+
+    .timeline-meta-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      color: var(--text-muted);
+    }
+
+    .timeline-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.15);
+      outline: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    [data-theme="light"] .timeline-slider {
+      background: rgba(0, 0, 0, 0.15);
+    }
+
+    .timeline-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--blue-team);
+      border: 2px solid #ffffff;
+      cursor: pointer;
+      box-shadow: 0 0 8px var(--blue-glow);
+      transition: transform 0.15s ease;
+    }
+
+    .timeline-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.25);
+    }
+
+    .timeline-slider::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--blue-team);
+      border: 2px solid #ffffff;
+      cursor: pointer;
+      box-shadow: 0 0 8px var(--blue-glow);
+    }
+
     /* ==========================================================================
        Right Panel: Combat Log & Analytics
        ========================================================================== */
@@ -914,7 +1088,7 @@
       box-shadow: var(--shadow-md);
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 14px;
     }
 
     /* Sidebar Tabs */
@@ -946,7 +1120,7 @@
 
     /* Combat Log Container */
     .log-container {
-      height: 440px;
+      height: 250px;
       background: var(--log-bg);
       border: 1px solid var(--panel-border);
       border-radius: var(--radius-md);
@@ -957,14 +1131,16 @@
       display: flex;
       flex-direction: column;
       gap: 6px;
+      scroll-behavior: smooth;
     }
 
     .log-entry {
-      padding: 4px 6px;
+      padding: 5px 8px;
       border-radius: 4px;
       border-left: 3px solid transparent;
       background: var(--log-entry-bg);
       line-height: 1.4;
+      transition: all 0.2s ease;
     }
 
     .log-entry.round-header {
@@ -994,6 +1170,172 @@
       background: rgba(239, 68, 68, 0.12);
       color: var(--red-team);
       font-weight: 700;
+    }
+
+    /* Highlighted current active step in log */
+    .log-entry.active-step {
+      border: 1px solid var(--gold-accent) !important;
+      background: rgba(245, 158, 11, 0.18) !important;
+      box-shadow: 0 0 12px rgba(245, 158, 11, 0.35);
+      font-weight: 700;
+      transform: translateX(3px);
+    }
+
+    .log-entry.future-step {
+      opacity: 0.45;
+    }
+
+    /* ==========================================================================
+       Post-Battle Casualty & Damage Summary Card
+       ========================================================================== */
+    .match-summary-card {
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--panel-border);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .summary-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--panel-border);
+    }
+
+    .summary-title-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .summary-title {
+      font-size: 0.84rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .summary-status-pill {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-muted);
+    }
+
+    .summary-kpis {
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      color: var(--text-muted);
+    }
+
+    .summary-squads-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .summary-team-block {
+      background: var(--card-hero-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+    }
+
+    .summary-team-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 5px 8px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+    }
+
+    .summary-team-header.blue {
+      background: rgba(59, 130, 246, 0.12);
+      color: var(--blue-team);
+      border-bottom: 1px solid rgba(59, 130, 246, 0.25);
+    }
+
+    .summary-team-header.red {
+      background: rgba(239, 68, 68, 0.12);
+      color: var(--red-team);
+      border-bottom: 1px solid rgba(239, 68, 68, 0.25);
+    }
+
+    .summary-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+    }
+
+    .summary-table th, .summary-table td {
+      padding: 5px 8px;
+      text-align: left;
+      border-bottom: 1px solid var(--panel-border);
+    }
+
+    .summary-table th {
+      color: var(--text-dim);
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      background: rgba(0, 0, 0, 0.04);
+    }
+
+    .summary-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .status-badge-survived {
+      color: var(--green-accent);
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .status-badge-dead {
+      color: var(--red-team);
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .dmg-bar-container {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .dmg-bar-track {
+      width: 40px;
+      height: 5px;
+      background: var(--bg-surface-elevated);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .dmg-bar-fill-dealt {
+      height: 100%;
+      background: var(--gold-accent);
+    }
+
+    .dmg-bar-fill-taken {
+      height: 100%;
+      background: var(--red-team);
     }
 
     /* Monte Carlo Batch Controls & Progress */
@@ -1270,6 +1612,9 @@
 </head>
 <body>
 
+  <!-- Custom Floating Instant Tooltip Element -->
+  <div id="customTooltip" class="custom-tooltip" style="display: none;"></div>
+
   <!-- Toast Notification -->
   <div class="toast-banner" id="toastBanner">
     <span id="toastIcon">✨</span>
@@ -1284,7 +1629,7 @@
           ⚔️ Squad Targeting & Combat Simulator
           <span class="title-badge">5v5 Mechanics</span>
         </h1>
-        <p class="subtitle">Simulate hero positioning, 3-on-1 focus fire, elimination cascades, skill triggers & Monte Carlo match odds.</p>
+        <p class="subtitle">Simulate hero positioning, 3-on-1 focus fire, elimination cascades, 9.09s skill cooldowns & Monte Carlo match odds.</p>
       </div>
 
       <div class="top-actions">
@@ -1423,24 +1768,38 @@
           </div>
         </div>
 
-        <!-- Playback Controller Toolbar -->
+        <!-- Playback Controller Toolbar & Timeline Scrubber -->
         <div class="playback-toolbar">
-          <div class="control-group">
-            <button class="btn" id="btnFirstRound" title="Reset battle">⏮</button>
-            <button class="btn" id="btnPrevStep" title="Previous action">◀ Step</button>
-            <button class="btn btn-primary" id="btnPlayPause" title="Play or Pause battle">▶ Play</button>
-            <button class="btn" id="btnNextStep" title="Next action">Step ▶</button>
-            <button class="btn" id="btnInstantFinish" title="Instantly finish match">⏭ Finish</button>
+          <div class="playback-controls-row">
+            <div class="control-group">
+              <button class="btn" id="btnNewBattle" title="Start a fresh new battle with full HP and new RNG">🔄 New Battle</button>
+              <button class="btn" id="btnFirstRound" title="Rewind to Step 0 (Start of current battle)">⏮ Start</button>
+              <button class="btn" id="btnPrevStep" title="Rewind 1 Hero Action Turn">◀ Step</button>
+              <button class="btn btn-primary" id="btnPlayPause" title="Play or Pause continuous battle">▶ Play</button>
+              <button class="btn" id="btnNextStep" title="Advance 1 Hero Action Turn">Step ▶</button>
+              <button class="btn" id="btnNextRound" title="Advance 1 Full Round (all 10 turns)">Round ▶</button>
+              <button class="btn" id="btnInstantFinish" title="Instantly simulate to match end">⏭ Finish</button>
+            </div>
+
+            <div class="control-group">
+              <span class="round-counter-badge" id="roundCounterText">Round 1</span>
+              <select class="speed-select" id="speedSelect">
+                <option value="1200">0.5x Speed</option>
+                <option value="600" selected>1.0x Speed</option>
+                <option value="300">2.0x Speed</option>
+                <option value="100">5.0x Speed</option>
+              </select>
+            </div>
           </div>
 
-          <div class="control-group">
-            <span class="round-counter-badge" id="roundCounterText">Round 1</span>
-            <select class="speed-select" id="speedSelect">
-              <option value="1200">0.5x Speed</option>
-              <option value="600" selected>1.0x Speed</option>
-              <option value="300">2.0x Speed</option>
-              <option value="100">5.0x Speed</option>
-            </select>
+          <!-- Timeline Scrubber Bar -->
+          <div class="timeline-scrubber-card">
+            <div class="timeline-meta-row">
+              <span id="timelineStepLabel">Step 0 / 0</span>
+              <span style="font-size:0.7rem; color:var(--text-dim);">Scrub anywhere in battle history</span>
+              <span id="timelineRoundLabel">Round 1</span>
+            </div>
+            <input type="range" class="timeline-slider" id="timelineSlider" min="0" max="0" value="0" step="1" title="Drag to scrub through battle history">
           </div>
         </div>
       </div>
@@ -1454,16 +1813,76 @@
           <button class="sub-tab-btn" id="tabBtnAnalytics">📊 Monte Carlo Batch</button>
         </div>
 
-        <!-- TAB 1: Combat Log View -->
-        <div id="viewCombatLog" style="display: flex; flex-direction: column; gap: 10px;">
+        <!-- TAB 1: Combat Log View + Post-Battle Casualty / Damage Summary -->
+        <div id="viewCombatLog" style="display: flex; flex-direction: column; gap: 12px;">
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <span style="font-size: 0.8rem; color: var(--text-muted);">Step-by-step combat events:</span>
             <button class="btn" style="padding: 4px 8px; font-size: 0.72rem;" id="btnClearLog">Clear Log</button>
           </div>
+          
           <div class="log-container" id="combatLogContainer">
             <div class="log-entry round-header">⚔️ Battle Initialized — Tank Matchup</div>
-            <div class="log-entry">Waiting for combat start. Click ▶ Play or Step ▶ to begin.</div>
+            <div class="log-entry">Waiting for combat start. Click ▶ Play, Step ▶, Round ▶, or ⏭ Finish to begin.</div>
           </div>
+
+          <!-- Post-Battle Casualty & Performance Summary Box -->
+          <div class="match-summary-card" id="matchSummaryCard">
+            <div class="summary-header">
+              <div class="summary-title-group">
+                <span class="summary-title">📊 Match Casualty & Damage Summary</span>
+                <span class="summary-status-pill" id="summaryStatusPill">Ready</span>
+              </div>
+              <div class="summary-kpis">
+                <span>Duration: <strong id="summaryDurationText">-- Rnds</strong></span>
+              </div>
+            </div>
+
+            <!-- Squad Breakdown Tables -->
+            <div class="summary-squads-grid">
+              <!-- Attacker Squad -->
+              <div class="summary-team-block">
+                <div class="summary-team-header blue">
+                  <span>🔵 Attacker Squad</span>
+                  <span id="summaryAttSurvCount">Surviving: 5/5</span>
+                </div>
+                <table class="summary-table">
+                  <thead>
+                    <tr>
+                      <th>Hero / Slot</th>
+                      <th>Status</th>
+                      <th>Dmg Given</th>
+                      <th>Dmg Taken</th>
+                    </tr>
+                  </thead>
+                  <tbody id="summaryAttackerTableBody">
+                    <!-- Populated by JS -->
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Defender Squad -->
+              <div class="summary-team-block">
+                <div class="summary-team-header red">
+                  <span>🔴 Defender Squad</span>
+                  <span id="summaryDefSurvCount">Surviving: 5/5</span>
+                </div>
+                <table class="summary-table">
+                  <thead>
+                    <tr>
+                      <th>Hero / Slot</th>
+                      <th>Status</th>
+                      <th>Dmg Given</th>
+                      <th>Dmg Taken</th>
+                    </tr>
+                  </thead>
+                  <tbody id="summaryDefenderTableBody">
+                    <!-- Populated by JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
         </div>
 
         <!-- TAB 2: Monte Carlo Batch Analytics View -->
@@ -1524,7 +1943,7 @@
           <!-- Survival Matrix by Slot -->
           <div>
             <div style="font-size: 0.82rem; font-weight: 700; margin-bottom: 8px; display: flex; justify-content: space-between;">
-              <span>Slot Survival Rates (Reddit Focus Fire Proof)</span>
+              <span>Slot Survival Rates (Focus Fire Analysis)</span>
               <span style="color: var(--text-dim); font-size: 0.72rem;">Front-Left (Pos 1) vs Front-Right (Pos 2)</span>
             </div>
             
@@ -1584,10 +2003,10 @@
   <script>
     /**
      * LAST WAR: SQUAD TARGETING & COMBAT SIMULATOR
-     * Pure Vanilla ES6 Engine
+     * Instant Floating Tooltips + 9.09s Cooldowns + Murphy All-Around Armor + Marshall Rapid Start
      */
 
-    // --- 0. THEME CONTROLLER (SYSTEM DEFAULT, LIGHT, DARK) ---
+    // --- 0. THEME & INSTANT TOOLTIP CONTROLLER ---
     const THEME_STORAGE_KEY = 'lastwar_theme_preference';
 
     function initThemeSystem() {
@@ -1635,6 +2054,64 @@
       }
     }
 
+    function initCustomTooltips() {
+      const tooltip = document.getElementById("customTooltip");
+      if (!tooltip) return;
+
+      const positionTooltip = (e) => {
+        const offset = 14;
+        let x = e.clientX + offset;
+        let y = e.clientY + offset;
+
+        const rect = tooltip.getBoundingClientRect();
+        if (x + rect.width > window.innerWidth - 12) {
+          x = e.clientX - rect.width - offset;
+        }
+        if (y + rect.height > window.innerHeight - 12) {
+          y = e.clientY - rect.height - offset;
+        }
+
+        tooltip.style.left = `${Math.max(10, x)}px`;
+        tooltip.style.top = `${Math.max(10, y)}px`;
+      };
+
+      document.addEventListener("mouseover", (e) => {
+        const target = e.target.closest("[data-tip-title]");
+        if (target) {
+          const title = target.dataset.tipTitle || "";
+          const source = target.dataset.tipSource || "";
+          const desc = target.dataset.tipDesc || "";
+          const status = target.dataset.tipStatus || "";
+
+          tooltip.innerHTML = `
+            <div class="custom-tooltip-title">${title}</div>
+            ${source ? `<div class="custom-tooltip-source">${source}</div>` : ''}
+            <div class="custom-tooltip-desc">${desc}</div>
+            ${status ? `<div class="custom-tooltip-status">${status}</div>` : ''}
+          `;
+
+          tooltip.style.display = "block";
+          positionTooltip(e);
+          requestAnimationFrame(() => tooltip.classList.add("visible"));
+        }
+      });
+
+      document.addEventListener("mousemove", (e) => {
+        const target = e.target.closest("[data-tip-title]");
+        if (target && tooltip.style.display === "block") {
+          positionTooltip(e);
+        }
+      });
+
+      document.addEventListener("mouseout", (e) => {
+        const target = e.target.closest("[data-tip-title]");
+        if (target) {
+          tooltip.classList.remove("visible");
+          tooltip.style.display = "none";
+        }
+      });
+    }
+
     function showToast(message, icon = '✨') {
       const banner = document.getElementById('toastBanner');
       const msgEl = document.getElementById('toastMsg');
@@ -1651,7 +2128,7 @@
       }, 2500);
     }
 
-    // --- 1. HERO DEFINITIONS & TEMPLATES ---
+    // --- 1. HERO DEFINITIONS & TEMPLATES (9.09s Cooldown Model) ---
     const DEFAULT_HEROES = {
       Williams: {
         name: "Williams",
@@ -1661,15 +2138,14 @@
         baseAtk: 1200,
         baseDef: 850,
         critRate: 0.05,
-        energyGainAtk: 25,
-        energyGainHit: 10,
+        skillCooldownSeconds: 9.09, // 10s base with +10% cooldown speed
         basicMultiplier: 1.0,
-        // Williams specific skills:
+        passiveName: "Iron Fortress",
         passiveSelfDmgRed: 0.25, // Reduces all damage by 25% for himself
         activeName: "Iron Will",
         activeDefBoostFrontRow: 0.45, // Boosts defense of 2 front row targets by 45%
-        activeDuration: 3, // Rounds (approx 3-4s in game)
-        description: "Frontline heavy tank. Passively reduces damage to himself by 25%. 'Iron Will' gives +45% Defense to both Front Row heroes."
+        activeDuration: 3, // Rounds
+        description: "Frontline heavy tank. Passively reduces damage to himself by 25% via 'Iron Fortress'. 'Iron Will' gives +45% Defense to both Front Row heroes."
       },
       Murphy: {
         name: "Murphy",
@@ -1679,15 +2155,14 @@
         baseAtk: 1100,
         baseDef: 800,
         critRate: 0.05,
-        energyGainAtk: 25,
-        energyGainHit: 10,
+        skillCooldownSeconds: 9.09,
         basicMultiplier: 1.0,
-        // Murphy specific skills:
+        passiveName: "All-Around Armor",
         passiveFrontRowDmgRed: 0.15, // Reducing damage in battle by 15% for front row
         activeName: "Ironclad Barrier",
         activeSquadPhysDmgRed: 0.25, // Reducing entire squad's physical damage by 25%
         activeDuration: 3,
-        description: "Frontline protective tank. Passively reduces damage to Front Row by 15%. 'Ironclad Barrier' grants squad 25% damage mitigation."
+        description: "Frontline protective tank. Passively reduces damage to Front Row by 15% via 'All-Around Armor' (while Murphy is alive). 'Ironclad Barrier' grants squad 25% damage mitigation."
       },
       Kimberly: {
         name: "Kimberly",
@@ -1697,10 +2172,8 @@
         baseAtk: 3600,
         baseDef: 400,
         critRate: 0.15,
-        energyGainAtk: 25,
-        energyGainHit: 10,
+        skillCooldownSeconds: 9.09,
         basicMultiplier: 2.0, // Attackers do 2x damage
-        // Kimberly skills:
         activeName: "Barrage Strike",
         activePrimaryDmg: 2.5, // 250% damage
         activeSplashDmg: 1.2, // 120% splash to adjacent
@@ -1715,10 +2188,8 @@
         baseAtk: 3400,
         baseDef: 420,
         critRate: 0.25, // High crit rate
-        energyGainAtk: 25,
-        energyGainHit: 10,
+        skillCooldownSeconds: 9.09,
         basicMultiplier: 2.0, // Attackers do 2x damage
-        // Stetmann skills:
         activeName: "Lightning Rush",
         activeBurstDmg: 3.0, // 300% burst
         activeCritBonus: 0.30, // +30% crit on skill
@@ -1733,15 +2204,14 @@
         baseAtk: 1800,
         baseDef: 550,
         critRate: 0.10,
-        energyGainAtk: 25,
-        energyGainHit: 10,
+        skillCooldownSeconds: 9.09,
         basicMultiplier: 1.2,
-        // Marshall skills:
+        passiveName: "Rapid Start",
+        passiveHighestAtkDmgRed: 0.10, // 10% damage reduction to highest ATK ally (Kimberly)
         activeName: "Command Strategy",
-        activeTeamAtkAmp: 0.50, // Marshall amplifies attackers / team by 50%
-        activeTeamCritAmp: 0.20, // +20% Crit rate
-        activeDuration: 3,
-        description: "Tactical support buffer. 'Command Strategy' empowers all surviving allies with +50% Attack Power and +20% Crit Rate."
+        activeTeamAtkAmp: 0.15, // Boosts entire squad's Attack by 15% for 8s
+        activeDuration: 5, // ~8 seconds (approx 5 rounds)
+        description: "Tactical support buffer. 'Command Strategy' boosts entire squad's Attack by 15% for 8 seconds. 'Rapid Start' passively grants 10% damage reduction to the ally with highest Attack (while Marshall lives)."
       }
     };
 
@@ -1765,8 +2235,10 @@
       5: "Marshall"
     };
 
-    // Simulation Live State
+    // Simulation Live State & Time-Travel Frame History
     let liveBattle = null;
+    let battleHistory = []; // Snapshots of every single action step
+    let currentHistoryIndex = 0; // Current time-travel scrub point
     let isPlaying = false;
     let isBatchRunning = false;
     let playTimer = null;
@@ -1801,7 +2273,7 @@
       return null;
     }
 
-    // --- 4. COMBAT RESOLUTION ENGINE ---
+    // --- 4. COMBAT RESOLUTION ENGINE & SNAPSHOTS ---
     function initializeBattle() {
       const initTeam = (squad, teamKey) => {
         const team = {};
@@ -1819,7 +2291,8 @@
             atk: template.baseAtk,
             def: template.baseDef,
             critRate: template.critRate,
-            energy: 0,
+            skillTimer: 0.0, // Seconds charged toward skillCooldownSeconds (starts at 0.0s)
+            skillCooldown: template.skillCooldownSeconds || 9.09,
             buffs: {
               defBoost: 0,
               defBoostRounds: 0,
@@ -1833,7 +2306,9 @@
             stats: {
               totalDamageDealt: 0,
               totalDamageTaken: 0,
-              skillsFired: 0
+              skillsFired: 0,
+              deathRound: null,
+              deathStep: null
             }
           };
         }
@@ -1851,8 +2326,45 @@
       };
     }
 
+    function createBattleSnapshot(battle, latestAction = null) {
+      const cloneTeam = (team) => {
+        const res = {};
+        for (let s = 1; s <= 5; s++) {
+          const h = team[s];
+          res[s] = {
+            slot: h.slot,
+            team: h.team,
+            key: h.key,
+            name: h.name,
+            role: h.role,
+            maxHp: h.maxHp,
+            currentHp: h.currentHp,
+            atk: h.atk,
+            def: h.def,
+            critRate: h.critRate,
+            skillTimer: h.skillTimer,
+            skillCooldown: h.skillCooldown,
+            buffs: { ...h.buffs },
+            stats: { ...h.stats }
+          };
+        }
+        return res;
+      };
+
+      return {
+        stepIndex: battle.stepIndex,
+        round: battle.round,
+        isFinished: battle.isFinished,
+        winner: battle.winner,
+        attackerTeam: cloneTeam(battle.attackerTeam),
+        defenderTeam: cloneTeam(battle.defenderTeam),
+        logsCount: battle.logs.length,
+        latestAction: latestAction
+      };
+    }
+
     function executeNextCombatStep(battle, isBatch = false) {
-      if (battle.isFinished) return;
+      if (battle.isFinished) return null;
 
       const turnOrder = [
         { team: 'att', slot: 1 }, { team: 'def', slot: 1 },
@@ -1884,29 +2396,30 @@
         attempts++;
 
         if (battle.stepIndex % 10 === 0) {
-          advanceRoundBuffs(battle);
+          advanceRoundBuffsAndTime(battle);
         }
       }
 
       if (!actor) {
         checkBattleEnd(battle);
-        return;
+        return null;
       }
 
       const targetSlotNum = getTargetSlot(actor.slot, targetSide);
       if (!targetSlotNum) {
         checkBattleEnd(battle);
-        return;
+        return null;
       }
 
       const target = targetSide[targetSlotNum];
       const template = heroDatabase[actor.key];
-      const isSkillReady = actor.energy >= 100;
+      
+      const isSkillReady = actor.skillTimer >= actor.skillCooldown;
       let damageEvents = [];
       let logMsg = "";
 
       if (isSkillReady) {
-        actor.energy = 0;
+        actor.skillTimer = 0.0;
         actor.stats.skillsFired++;
 
         if (actor.key === "Williams") {
@@ -1919,12 +2432,10 @@
             ownTeam[2].buffs.defBoost = template.activeDefBoostFrontRow;
             ownTeam[2].buffs.defBoostRounds = template.activeDuration;
           }
-          const hit = calculateDamage(actor, target, 1.0, false);
-          applyDamage(target, hit.damage, hit.isCrit, actor);
-          if (!isBatch) {
-            damageEvents.push({ targetSlot: target.slot, targetTeam: target.team, damage: hit.damage, isCrit: hit.isCrit, text: `🛡️ Iron Will (+45% DEF)` });
-            logMsg = `[${actorSide === 'att' ? '🔵 Attacker' : '🔴 Defender'}] Slot ${actor.slot} ${actor.name} cast [Iron Will] (+45% Frontline DEF) & dealt ${hit.damage.toLocaleString()} damage to Slot ${target.slot} ${target.name}.`;
-          }
+          const hit = calculateDamage(actor, target, 1.0, false, 0.0, battle);
+          applyDamage(target, hit.damage, hit.isCrit, actor, battle);
+          damageEvents.push({ targetSlot: target.slot, targetTeam: target.team, damage: hit.damage, isCrit: hit.isCrit, text: `🛡️ Iron Will (+45% DEF)` });
+          logMsg = `[${actorSide === 'att' ? '🔵 Attacker' : '🔴 Defender'}] Slot ${actor.slot} ${actor.name} cast [Iron Will] (+45% Frontline DEF) & dealt ${hit.damage.toLocaleString()} damage to Slot ${target.slot} ${target.name}.`;
         }
         else if (actor.key === "Murphy") {
           const ownTeam = actorSide === 'att' ? battle.attackerTeam : battle.defenderTeam;
@@ -1934,12 +2445,10 @@
               ownTeam[s].buffs.squadDmgRedRounds = template.activeDuration;
             }
           }
-          const hit = calculateDamage(actor, target, 1.0, false);
-          applyDamage(target, hit.damage, hit.isCrit, actor);
-          if (!isBatch) {
-            damageEvents.push({ targetSlot: target.slot, targetTeam: target.team, damage: hit.damage, isCrit: hit.isCrit, text: `🛡️ Barrier (-25% Dmg)` });
-            logMsg = `[${actorSide === 'att' ? '🔵 Attacker' : '🔴 Defender'}] Slot ${actor.slot} ${actor.name} cast [Ironclad Barrier] (-25% Squad Dmg Taken) & dealt ${hit.damage.toLocaleString()} damage to Slot ${target.slot} ${target.name}.`;
-          }
+          const hit = calculateDamage(actor, target, 1.0, false, 0.0, battle);
+          applyDamage(target, hit.damage, hit.isCrit, actor, battle);
+          damageEvents.push({ targetSlot: target.slot, targetTeam: target.team, damage: hit.damage, isCrit: hit.isCrit, text: `🛡️ Barrier (-25% Dmg)` });
+          logMsg = `[${actorSide === 'att' ? '🔵 Attacker' : '🔴 Defender'}] Slot ${actor.slot} ${actor.name} cast [Ironclad Barrier] (-25% Squad Dmg Taken) & dealt ${hit.damage.toLocaleString()} damage to Slot ${target.slot} ${target.name}.`;
         }
         else if (actor.key === "Marshall") {
           const ownTeam = actorSide === 'att' ? battle.attackerTeam : battle.defenderTeam;
@@ -1947,79 +2456,68 @@
             if (ownTeam[s] && ownTeam[s].currentHp > 0) {
               ownTeam[s].buffs.atkAmp = template.activeTeamAtkAmp;
               ownTeam[s].buffs.atkAmpRounds = template.activeDuration;
-              ownTeam[s].buffs.critAmp = template.activeTeamCritAmp;
-              ownTeam[s].buffs.critAmpRounds = template.activeDuration;
             }
           }
-          const hit = calculateDamage(actor, target, 1.2, false);
-          applyDamage(target, hit.damage, hit.isCrit, actor);
-          if (!isBatch) {
-            damageEvents.push({ targetSlot: target.slot, targetTeam: target.team, damage: hit.damage, isCrit: hit.isCrit, text: `⚔️ Rally (+50% ATK)` });
-            logMsg = `[${actorSide === 'att' ? '🔵 Attacker' : '🔴 Defender'}] Slot ${actor.slot} ${actor.name} cast [Command Strategy] (+50% Team ATK) & dealt ${hit.damage.toLocaleString()} damage to Slot ${target.slot} ${target.name}.`;
-          }
+          const hit = calculateDamage(actor, target, 1.2, false, 0.0, battle);
+          applyDamage(target, hit.damage, hit.isCrit, actor, battle);
+          damageEvents.push({ targetSlot: target.slot, targetTeam: target.team, damage: hit.damage, isCrit: hit.isCrit, text: `⚔️ Rally (+15% ATK)` });
+          logMsg = `[${actorSide === 'att' ? '🔵 Attacker' : '🔴 Defender'}] Slot ${actor.slot} ${actor.name} cast [Command Strategy] (+15% Squad ATK for 8s) & dealt ${hit.damage.toLocaleString()} damage to Slot ${target.slot} ${target.name}.`;
         }
         else if (actor.key === "Kimberly") {
-          const primaryHit = calculateDamage(actor, target, template.activePrimaryDmg, true);
-          applyDamage(target, primaryHit.damage, primaryHit.isCrit, actor);
-          if (!isBatch) {
-            damageEvents.push({ targetSlot: target.slot, targetTeam: target.team, damage: primaryHit.damage, isCrit: primaryHit.isCrit, text: `⚡ Barrage Strike!` });
-          }
+          const primaryHit = calculateDamage(actor, target, template.activePrimaryDmg, true, 0.0, battle);
+          applyDamage(target, primaryHit.damage, primaryHit.isCrit, actor, battle);
+          damageEvents.push({ targetSlot: target.slot, targetTeam: target.team, damage: primaryHit.damage, isCrit: primaryHit.isCrit, text: `⚡ Barrage Strike!` });
 
           const splashSlots = getAdjacentSlots(target.slot);
           splashSlots.forEach(sNum => {
             if (targetSide[sNum] && targetSide[sNum].currentHp > 0) {
-              const splashHit = calculateDamage(actor, targetSide[sNum], template.activeSplashDmg, false);
-              applyDamage(targetSide[sNum], splashHit.damage, splashHit.isCrit, actor);
-              if (!isBatch) {
-                damageEvents.push({ targetSlot: sNum, targetTeam: targetSide[sNum].team, damage: splashHit.damage, isCrit: splashHit.isCrit, text: `💥 Splash` });
-              }
+              const splashHit = calculateDamage(actor, targetSide[sNum], template.activeSplashDmg, false, 0.0, battle);
+              applyDamage(targetSide[sNum], splashHit.damage, splashHit.isCrit, actor, battle);
+              damageEvents.push({ targetSlot: sNum, targetTeam: targetSide[sNum].team, damage: splashHit.damage, isCrit: splashHit.isCrit, text: `💥 Splash` });
             }
           });
-          if (!isBatch) {
-            logMsg = `[${actorSide === 'att' ? '🔵 Attacker' : '🔴 Defender'}] Slot ${actor.slot} ${actor.name} fired [Barrage Strike] hitting Slot ${target.slot} ${target.name} for ${primaryHit.damage.toLocaleString()} (and splashed adjacent targets)!`;
-          }
+          logMsg = `[${actorSide === 'att' ? '🔵 Attacker' : '🔴 Defender'}] Slot ${actor.slot} ${actor.name} fired [Barrage Strike] hitting Slot ${target.slot} ${target.name} for ${primaryHit.damage.toLocaleString()} (and splashed adjacent targets)!`;
         }
         else if (actor.key === "Stetmann") {
-          const burstHit = calculateDamage(actor, target, template.activeBurstDmg, false, template.activeCritBonus);
-          applyDamage(target, burstHit.damage, burstHit.isCrit, actor);
-          if (!isBatch) {
-            damageEvents.push({ targetSlot: target.slot, targetTeam: target.team, damage: burstHit.damage, isCrit: burstHit.isCrit, text: `⚡ Lightning Rush!` });
-            logMsg = `[${actorSide === 'att' ? '🔵 Attacker' : '🔴 Defender'}] Slot ${actor.slot} ${actor.name} cast [Lightning Rush] dealing massive ${burstHit.damage.toLocaleString()} burst damage to Slot ${target.slot} ${target.name}!`;
-          }
+          const burstHit = calculateDamage(actor, target, template.activeBurstDmg, false, template.activeCritBonus, battle);
+          applyDamage(target, burstHit.damage, burstHit.isCrit, actor, battle);
+          damageEvents.push({ targetSlot: target.slot, targetTeam: target.team, damage: burstHit.damage, isCrit: burstHit.isCrit, text: `⚡ Lightning Rush!` });
+          logMsg = `[${actorSide === 'att' ? '🔵 Attacker' : '🔴 Defender'}] Slot ${actor.slot} ${actor.name} cast [Lightning Rush] dealing massive ${burstHit.damage.toLocaleString()} burst damage to Slot ${target.slot} ${target.name}!`;
         }
       } else {
-        const hit = calculateDamage(actor, target, template.basicMultiplier, false);
-        applyDamage(target, hit.damage, hit.isCrit, actor);
-        actor.energy = Math.min(100, actor.energy + template.energyGainAtk);
-        if (!isBatch) {
-          damageEvents.push({ targetSlot: target.slot, targetTeam: target.team, damage: hit.damage, isCrit: hit.isCrit, text: hit.isCrit ? `💥 CRIT!` : null });
-          logMsg = `[${actorSide === 'att' ? '🔵 Attacker' : '🔴 Defender'}] Slot ${actor.slot} ${actor.name} attacked Slot ${target.slot} ${target.name} for ${hit.damage.toLocaleString()} damage.`;
-        }
+        const hit = calculateDamage(actor, target, template.basicMultiplier, false, 0.0, battle);
+        applyDamage(target, hit.damage, hit.isCrit, actor, battle);
+        damageEvents.push({ targetSlot: target.slot, targetTeam: target.team, damage: hit.damage, isCrit: hit.isCrit, text: hit.isCrit ? `💥 CRIT!` : null });
+        logMsg = `[${actorSide === 'att' ? '🔵 Attacker' : '🔴 Defender'}] Slot ${actor.slot} ${actor.name} attacked Slot ${target.slot} ${target.name} for ${hit.damage.toLocaleString()} damage.`;
       }
 
+      const actionData = {
+        round: battle.round,
+        step: battle.stepIndex,
+        actorSlot: actor.slot,
+        actorTeam: actorSide,
+        actorName: actor.name,
+        targetSlot: target.slot,
+        isSkill: isSkillReady,
+        msg: logMsg,
+        damageEvents: damageEvents
+      };
+
       if (!isBatch) {
-        battle.logs.push({
-          round: battle.round,
-          step: battle.stepIndex,
-          actorSlot: actor.slot,
-          actorTeam: actorSide,
-          actorName: actor.name,
-          targetSlot: target.slot,
-          isSkill: isSkillReady,
-          msg: logMsg,
-          damageEvents: damageEvents
-        });
+        battle.logs.push(actionData);
       }
 
       battle.stepIndex++;
       if (battle.stepIndex % 10 === 0) {
-        advanceRoundBuffs(battle);
+        advanceRoundBuffsAndTime(battle);
       }
 
       checkBattleEnd(battle);
+      return actionData;
     }
 
-    function calculateDamage(attacker, defender, skillMultiplier = 1.0, isSpecialSkill = false, bonusCrit = 0.0) {
+    function calculateDamage(attacker, defender, skillMultiplier = 1.0, isSpecialSkill = false, bonusCrit = 0.0, battle = null) {
+      const activeBattle = battle || liveBattle;
       const atkTemplate = heroDatabase[attacker.key];
       const defTemplate = heroDatabase[defender.key];
 
@@ -2046,10 +2544,31 @@
         dmgReductionFactor *= (1 - defTemplate.passiveSelfDmgRed);
       }
 
-      const defTeamObj = defender.team === 'att' ? liveBattle.attackerTeam : liveBattle.defenderTeam;
-      const hasMurphy = Object.values(defTeamObj).some(h => h.key === "Murphy" && h.currentHp > 0);
-      if (hasMurphy && (defender.slot === 1 || defender.slot === 2)) {
-        dmgReductionFactor *= (1 - 0.15);
+      // 1. Murphy 'All-Around Armor' Passive (-15% damage taken for Front Row while Murphy is alive)
+      if (activeBattle) {
+        const defTeamObj = defender.team === 'att' ? activeBattle.attackerTeam : activeBattle.defenderTeam;
+        const murphyHero = Object.values(defTeamObj).find(h => h.key === "Murphy" && h.currentHp > 0);
+        if (murphyHero && (defender.slot === 1 || defender.slot === 2)) {
+          const murphyTemplate = heroDatabase["Murphy"];
+          dmgReductionFactor *= (1 - (murphyTemplate.passiveFrontRowDmgRed || 0.15));
+        }
+
+        // 2. Marshall 'Rapid Start' Passive (-10% damage taken by the ally with highest ATK while Marshall lives)
+        const marshallHero = Object.values(defTeamObj).find(h => h.key === "Marshall" && h.currentHp > 0);
+        if (marshallHero) {
+          let highestAtkSlot = null;
+          let highestAtkVal = -1;
+          Object.values(defTeamObj).forEach(h => {
+            if (h.currentHp > 0 && h.atk > highestAtkVal) {
+              highestAtkVal = h.atk;
+              highestAtkSlot = h.slot;
+            }
+          });
+          if (highestAtkSlot === defender.slot) {
+            const marshallTemplate = heroDatabase["Marshall"];
+            dmgReductionFactor *= (1 - (marshallTemplate.passiveHighestAtkDmgRed || 0.10));
+          }
+        }
       }
 
       if (defender.buffs.squadDmgRed > 0) {
@@ -2061,13 +2580,15 @@
       return { damage: finalDmg, isCrit: isCrit };
     }
 
-    function applyDamage(defender, dmg, isCrit, attacker) {
+    function applyDamage(defender, dmg, isCrit, attacker, battle = null) {
       defender.currentHp = Math.max(0, defender.currentHp - dmg);
       defender.stats.totalDamageTaken += dmg;
       attacker.stats.totalDamageDealt += dmg;
 
-      const defTemplate = heroDatabase[defender.key];
-      defender.energy = Math.min(100, defender.energy + (defTemplate.energyGainHit || 10));
+      if (defender.currentHp <= 0 && defender.stats.deathRound === null && battle) {
+        defender.stats.deathRound = battle.round;
+        defender.stats.deathStep = battle.stepIndex;
+      }
     }
 
     function getAdjacentSlots(slot) {
@@ -2079,12 +2600,21 @@
       return [];
     }
 
-    function advanceRoundBuffs(battle) {
+    function advanceRoundBuffsAndTime(battle) {
       battle.round++;
+      const timeIncrementPerRound = 1.5; // ~1.5s combat time per 10-turn round
+
       const tickTeam = (team) => {
         for (let s = 1; s <= 5; s++) {
           const h = team[s];
           if (!h) continue;
+
+          // Increment skill cooldown timer toward 9.09s
+          if (h.currentHp > 0) {
+            h.skillTimer = Math.min(h.skillCooldown, h.skillTimer + timeIncrementPerRound);
+          }
+
+          // Buff expiration ticks
           if (h.buffs.defBoostRounds > 0) {
             h.buffs.defBoostRounds--;
             if (h.buffs.defBoostRounds === 0) h.buffs.defBoost = 0;
@@ -2138,15 +2668,19 @@
     }
 
     function renderBattleState() {
-      if (!liveBattle) return;
+      if (!liveBattle || battleHistory.length === 0) return;
 
-      document.getElementById("roundCounterText").innerText = `Round ${liveBattle.round}`;
+      const currentSnapshot = battleHistory[currentHistoryIndex] || battleHistory[0];
+
+      // Update round and status
+      document.getElementById("roundCounterText").innerText = `Round ${currentSnapshot.round}`;
       const statusEl = document.getElementById("battleStatusBadge");
-      if (liveBattle.isFinished) {
-        if (liveBattle.winner === "att") {
+      
+      if (currentSnapshot.isFinished) {
+        if (currentSnapshot.winner === "att") {
           statusEl.innerText = "🏆 Attacker Victory!";
           statusEl.style.color = "var(--blue-team)";
-        } else if (liveBattle.winner === "def") {
+        } else if (currentSnapshot.winner === "def") {
           statusEl.innerText = "🏆 Defender Victory!";
           statusEl.style.color = "var(--red-team)";
         } else {
@@ -2154,34 +2688,78 @@
           statusEl.style.color = "var(--gold-accent)";
         }
       } else {
-        statusEl.innerText = isPlaying ? "⚡ Battle in Progress..." : "⏸ Paused";
+        statusEl.innerText = isPlaying ? "⚡ Battle in Progress..." : (currentHistoryIndex > 0 ? `⏸ Paused (Step ${currentHistoryIndex})` : "Status: Ready");
         statusEl.style.color = isPlaying ? "var(--green-accent)" : "var(--text-muted)";
       }
 
-      renderTeamSlots(liveBattle.attackerTeam, "att");
-      renderTeamSlots(liveBattle.defenderTeam, "def");
+      // Render slots from the active time-travel snapshot
+      renderTeamSlots(currentSnapshot.attackerTeam, "att");
+      renderTeamSlots(currentSnapshot.defenderTeam, "def");
 
       const getTeamHpPct = (team) => {
         let cur = 0, max = 0;
         Object.values(team).forEach(h => { cur += h.currentHp; max += h.maxHp; });
         return Math.round((cur / max) * 100);
       };
-      document.getElementById("attackerTeamHpLabel").innerText = `HP: ${getTeamHpPct(liveBattle.attackerTeam)}%`;
-      document.getElementById("defenderTeamHpLabel").innerText = `HP: ${getTeamHpPct(liveBattle.defenderTeam)}%`;
+      document.getElementById("attackerTeamHpLabel").innerText = `HP: ${getTeamHpPct(currentSnapshot.attackerTeam)}%`;
+      document.getElementById("defenderTeamHpLabel").innerText = `HP: ${getTeamHpPct(currentSnapshot.defenderTeam)}%`;
 
+      // Update Timeline Slider, Presets, Vectors, Logs, and Post-Battle Casualty Summary
+      updateTimelineSlider();
       updatePresetPills();
       drawTargetingVectors();
       renderCombatLog();
+      renderMatchSummary(currentSnapshot);
+    }
+
+    function updateTimelineSlider() {
+      const slider = document.getElementById("timelineSlider");
+      const stepLabel = document.getElementById("timelineStepLabel");
+      const roundLabel = document.getElementById("timelineRoundLabel");
+      const btnPrev = document.getElementById("btnPrevStep");
+      const btnNext = document.getElementById("btnNextStep");
+      const btnNextRound = document.getElementById("btnNextRound");
+
+      const maxSteps = Math.max(0, battleHistory.length - 1);
+      slider.max = maxSteps;
+      slider.value = currentHistoryIndex;
+
+      stepLabel.innerText = `Step ${currentHistoryIndex} / ${maxSteps}`;
+      const curSnapshot = battleHistory[currentHistoryIndex];
+      roundLabel.innerText = `Round ${curSnapshot ? curSnapshot.round : 1}`;
+
+      btnPrev.disabled = (currentHistoryIndex <= 0);
+      const isAtEnd = (currentHistoryIndex >= maxSteps);
+      const isMatchOver = curSnapshot && curSnapshot.isFinished;
+      btnNext.disabled = (isAtEnd && isMatchOver);
+      if (btnNextRound) btnNextRound.disabled = (isAtEnd && isMatchOver);
     }
 
     function renderTeamSlots(teamObj, teamKey) {
+      const currentSnapshot = battleHistory[currentHistoryIndex] || battleHistory[0];
+      const enemyTeam = teamKey === 'att' ? currentSnapshot.defenderTeam : currentSnapshot.attackerTeam;
+
+      const hasLivingMurphy = Object.values(teamObj).some(h => h.key === "Murphy" && h.currentHp > 0);
+      const hasLivingMarshall = Object.values(teamObj).some(h => h.key === "Marshall" && h.currentHp > 0);
+
+      // Find slot of living ally with highest ATK (for Marshall's Rapid Start passive)
+      let highestAtkSlot = null;
+      let highestAtkVal = -1;
+      Object.values(teamObj).forEach(h => {
+        if (h.currentHp > 0 && h.atk > highestAtkVal) {
+          highestAtkVal = h.atk;
+          highestAtkSlot = h.slot;
+        }
+      });
+
       for (let s = 1; s <= 5; s++) {
         const hero = teamObj[s];
         const el = document.getElementById(`slot-${teamKey}-${s}`);
         if (!el || !hero) continue;
 
         const hpPct = Math.round((hero.currentHp / hero.maxHp) * 100);
-        const energyPct = hero.energy;
+        const skillCooldown = hero.skillCooldown || 9.09;
+        const skillPct = Math.min(100, Math.round((hero.skillTimer / skillCooldown) * 100));
         const isDefeated = hero.currentHp <= 0;
 
         let roleClass = "dps";
@@ -2189,8 +2767,6 @@
         if (hero.role === "tank") { roleClass = "tank"; roleIcon = "🛡️"; }
         if (hero.role === "support") { roleClass = "support"; roleIcon = "🌟"; }
 
-        // Find incoming attacker count on this slot
-        const enemyTeam = teamKey === 'att' ? liveBattle.defenderTeam : liveBattle.attackerTeam;
         let incomingFocusCount = 0;
         if (!isDefeated) {
           for (let es = 1; es <= 5; es++) {
@@ -2202,21 +2778,101 @@
           }
         }
 
-        // Active Buff Pills
+        // Active Buff & Passive Pills with INSTANT CUSTOM TOOLTIPS
         let buffPillsHtml = "";
-        if (hero.buffs.defBoost > 0) buffPillsHtml += `<span class="status-pill buff-def">🛡️ +${Math.round(hero.buffs.defBoost * 100)}% Def</span>`;
-        if (hero.buffs.atkAmp > 0) buffPillsHtml += `<span class="status-pill buff-atk">⚔️ +${Math.round(hero.buffs.atkAmp * 100)}% Atk</span>`;
-        if (hero.buffs.squadDmgRed > 0) buffPillsHtml += `<span class="status-pill buff-shield">🛡️ -25% Dmg</span>`;
 
-        // Frontline focus tag
-        let focusTagHtml = "";
-        if (s === 1) {
-          focusTagHtml = `<span class="slot-focus-tag heavy">3-on-1 Focus</span>`;
-        } else if (s === 2) {
-          focusTagHtml = `<span class="slot-focus-tag moderate">2-on-1 Focus</span>`;
+        // 1. Murphy 'All-Around Armor' Passive (-15% Front Row damage taken while Murphy lives)
+        if ((s === 1 || s === 2) && hasLivingMurphy && !isDefeated) {
+          buffPillsHtml += `
+            <span class="status-pill buff-passive"
+                  data-tip-title="🛡️ All-Around Armor"
+                  data-tip-source="Murphy Passive Skill"
+                  data-tip-desc="Reduces damage taken in battle by 15% for all Front-Row allies (Pos 1 & Pos 2)."
+                  data-tip-status="🟢 Active (Requires Murphy to be alive)">
+              🛡️ All-Around Armor (-15%)
+            </span>`;
         }
 
-        el.className = `hero-slot ${isDefeated ? 'defeated' : ''} ${selectedSlotForSwap && selectedSlotForSwap.team === teamKey && selectedSlotForSwap.slot === s ? 'selected-swap' : ''}`;
+        // 2. Williams 'Iron Fortress' Personal Passive (-25% self dmg taken)
+        if (hero.key === "Williams" && !isDefeated) {
+          buffPillsHtml += `
+            <span class="status-pill buff-passive-self"
+                  data-tip-title="🛡️ Iron Fortress"
+                  data-tip-source="Williams Passive Skill"
+                  data-tip-desc="Passively reduces all incoming damage taken by 25% for himself."
+                  data-tip-status="🟢 Permanent Self Passive">
+              🛡️ Hardened (-25% Self)
+            </span>`;
+        }
+
+        // 3. Marshall 'Rapid Start' Passive (-10% damage taken for highest ATK ally while Marshall lives)
+        if (hasLivingMarshall && s === highestAtkSlot && !isDefeated) {
+          buffPillsHtml += `
+            <span class="status-pill buff-passive"
+                  data-tip-title="🛡️ Rapid Start"
+                  data-tip-source="Marshall Passive Skill"
+                  data-tip-desc="Reduces damage taken by 10% for the squad's highest-ATK ally (${hero.name})."
+                  data-tip-status="🟢 Active (Requires Marshall to be alive)">
+              🛡️ Rapid Start (-10%)
+            </span>`;
+        }
+
+        // 4. Active Buffs with Rounds Remaining
+        if (hero.buffs.defBoost > 0) {
+          buffPillsHtml += `
+            <span class="status-pill buff-def"
+                  data-tip-title="🛡️ Iron Will"
+                  data-tip-source="Williams Active Skill (Ult)"
+                  data-tip-desc="Boosts Front-Row Defense by +45% for 3 rounds."
+                  data-tip-status="⏱️ ${hero.buffs.defBoostRounds} ${hero.buffs.defBoostRounds === 1 ? 'round' : 'rounds'} remaining">
+              🛡️ +${Math.round(hero.buffs.defBoost * 100)}% Def
+            </span>`;
+        }
+        if (hero.buffs.atkAmp > 0) {
+          buffPillsHtml += `
+            <span class="status-pill buff-atk"
+                  data-tip-title="⚔️ Command Strategy"
+                  data-tip-source="Marshall Active Skill (Ult)"
+                  data-tip-desc="Empowers entire squad with +15% Attack Power for 8 seconds (~5 rounds)."
+                  data-tip-status="⏱️ ${hero.buffs.atkAmpRounds} ${hero.buffs.atkAmpRounds === 1 ? 'round' : 'rounds'} remaining">
+              ⚔️ +${Math.round(hero.buffs.atkAmp * 100)}% Atk
+            </span>`;
+        }
+        if (hero.buffs.squadDmgRed > 0) {
+          buffPillsHtml += `
+            <span class="status-pill buff-shield"
+                  data-tip-title="🛡️ Ironclad Barrier"
+                  data-tip-source="Murphy Active Skill (Ult)"
+                  data-tip-desc="Grants entire squad 25% physical damage mitigation."
+                  data-tip-status="⏱️ ${hero.buffs.squadDmgRedRounds} ${hero.buffs.squadDmgRedRounds === 1 ? 'round' : 'rounds'} remaining">
+              🛡️ -25% Squad Dmg
+            </span>`;
+        }
+
+        let focusTagHtml = "";
+        if (s === 1) {
+          focusTagHtml = `
+            <span class="slot-focus-tag heavy"
+                  data-tip-title="🎯 Front-Left (Pos 1) Focus"
+                  data-tip-source="Targeting Priority Rule"
+                  data-tip-desc="Attacker Pos 1, 3, and 4 concentrate their primary focus fire on this slot."
+                  data-tip-status="🔥 High Pressure Slot (3-on-1)">
+              3-on-1 Focus
+            </span>`;
+        } else if (s === 2) {
+          focusTagHtml = `
+            <span class="slot-focus-tag moderate"
+                  data-tip-title="🎯 Front-Right (Pos 2) Focus"
+                  data-tip-source="Targeting Priority Rule"
+                  data-tip-desc="Attacker Pos 2 and 5 concentrate their primary focus fire on this slot."
+                  data-tip-status="⚡ Moderate Pressure Slot (2-on-1)">
+              2-on-1 Focus
+            </span>`;
+        }
+
+        const isActor = currentSnapshot.latestAction && currentSnapshot.latestAction.actorTeam === teamKey && currentSnapshot.latestAction.actorSlot === s;
+
+        el.className = `hero-slot ${isDefeated ? 'defeated' : ''} ${isActor ? 'acting-now' : ''} ${selectedSlotForSwap && selectedSlotForSwap.team === teamKey && selectedSlotForSwap.slot === s ? 'selected-swap' : ''}`;
 
         el.innerHTML = `
           <div class="slot-meta">
@@ -2227,7 +2883,10 @@
             <span class="role-badge ${roleClass}">${roleIcon} ${hero.role.toUpperCase()}</span>
           </div>
           <div class="hero-name-row">
-            <span class="hero-name" title="${hero.name}">${hero.name}</span>
+            <span class="hero-name"
+                  data-tip-title="⭐ ${hero.name}"
+                  data-tip-source="${hero.role.toUpperCase()} HERO"
+                  data-tip-desc="${heroDatabase[hero.key].description}">${hero.name}</span>
             <span class="hero-edit-icon" onclick="openHeroInspector('${hero.key}')" title="Configure Stats">⚙️</span>
           </div>
           <div class="bar-group">
@@ -2241,11 +2900,11 @@
           </div>
           <div class="bar-group">
             <div class="bar-container">
-              <div class="bar-fill energy-bar ${energyPct >= 100 ? 'full' : ''}" style="width: ${energyPct}%;"></div>
+              <div class="bar-fill energy-bar ${skillPct >= 100 ? 'full' : ''}" style="width: ${skillPct}%;"></div>
             </div>
             <div class="bar-text">
-              <span>Energy</span>
-              <span>${energyPct}/100</span>
+              <span>Skill CD</span>
+              <span>${skillPct >= 100 ? '⚡ READY' : `${hero.skillTimer.toFixed(1)}s / ${skillCooldown.toFixed(1)}s`}</span>
             </div>
           </div>
           <div class="status-tags">
@@ -2260,8 +2919,9 @@
 
     function drawTargetingVectors() {
       const svg = document.getElementById("targetingSvg");
-      if (!svg || !liveBattle) return;
+      if (!svg || !liveBattle || battleHistory.length === 0) return;
 
+      const currentSnapshot = battleHistory[currentHistoryIndex] || battleHistory[0];
       const overlayContainer = document.getElementById("vectorOverlayContainer");
       if (!overlayContainer) return;
       const overlayRect = overlayContainer.getBoundingClientRect();
@@ -2271,10 +2931,10 @@
       svg.innerHTML = "";
 
       for (let s = 1; s <= 5; s++) {
-        const attHero = liveBattle.attackerTeam[s];
+        const attHero = currentSnapshot.attackerTeam[s];
         if (!attHero || attHero.currentHp <= 0) continue;
 
-        const targetSlotNum = getTargetSlot(s, liveBattle.defenderTeam);
+        const targetSlotNum = getTargetSlot(s, currentSnapshot.defenderTeam);
         if (!targetSlotNum) continue;
 
         const attSlotEl = document.getElementById(`slot-att-${s}`);
@@ -2309,25 +2969,148 @@
       if (liveBattle.logs.length === 0) {
         container.innerHTML = `
           <div class="log-entry round-header">⚔️ Battle Initialized — Tank Matchup</div>
-          <div class="log-entry">Waiting for combat start. Click ▶ Play or Step ▶ to begin.</div>
+          <div class="log-entry">Waiting for combat start. Click ▶ Play, Step ▶, Round ▶, or ⏭ Finish to begin.</div>
         `;
         return;
       }
 
+      const curSnapshot = battleHistory[currentHistoryIndex] || battleHistory[0];
+      const activeLogIdx = curSnapshot.logsCount - 1;
+
       let html = "";
       let lastRound = 0;
-      liveBattle.logs.forEach(log => {
+      liveBattle.logs.forEach((log, idx) => {
         if (log.round !== lastRound) {
           html += `<div class="log-entry round-header">--- ROUND ${log.round} ---</div>`;
           lastRound = log.round;
         }
         const teamClass = log.actorTeam === 'att' ? 'attacker-act' : 'defender-act';
         const skillClass = log.isSkill ? 'skill-cast' : '';
-        html += `<div class="log-entry ${teamClass} ${skillClass}">${log.msg}</div>`;
+        const isActive = (idx === activeLogIdx);
+        const isFuture = (idx > activeLogIdx);
+
+        html += `<div class="log-entry ${teamClass} ${skillClass} ${isActive ? 'active-step' : ''} ${isFuture ? 'future-step' : ''}" id="log-entry-${idx}" data-idx="${idx}">
+          <span style="font-size:0.68rem; opacity:0.75; margin-right:4px;">#${idx+1}</span> ${log.msg}
+        </div>`;
       });
 
       container.innerHTML = html;
-      container.scrollTop = container.scrollHeight;
+
+      if (activeLogIdx >= 0) {
+        const activeEl = document.getElementById(`log-entry-${activeLogIdx}`);
+        if (activeEl) {
+          activeEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      } else {
+        container.scrollTop = 0;
+      }
+    }
+
+    function renderMatchSummary(snapshot) {
+      const container = document.getElementById("matchSummaryCard");
+      if (!container || !snapshot) return;
+
+      const attTeam = snapshot.attackerTeam;
+      const defTeam = snapshot.defenderTeam;
+
+      let maxDmgDealt = 1;
+      let maxDmgTaken = 1;
+      let topDealer = null;
+      let topSoaker = null;
+
+      const allHeroes = [...Object.values(attTeam), ...Object.values(defTeam)];
+      allHeroes.forEach(h => {
+        if (h.stats.totalDamageDealt > maxDmgDealt) maxDmgDealt = h.stats.totalDamageDealt;
+        if (h.stats.totalDamageTaken > maxDmgTaken) maxDmgTaken = h.stats.totalDamageTaken;
+      });
+
+      allHeroes.forEach(h => {
+        if (!topDealer || h.stats.totalDamageDealt > topDealer.stats.totalDamageDealt) topDealer = h;
+        if (!topSoaker || h.stats.totalDamageTaken > topSoaker.stats.totalDamageTaken) topSoaker = h;
+      });
+
+      let attSurv = 0, defSurv = 0;
+      Object.values(attTeam).forEach(h => { if (h.currentHp > 0) attSurv++; });
+      Object.values(defTeam).forEach(h => { if (h.currentHp > 0) defSurv++; });
+
+      document.getElementById("summaryAttSurvCount").innerText = `Surviving: ${attSurv}/5`;
+      document.getElementById("summaryDefSurvCount").innerText = `Surviving: ${defSurv}/5`;
+      document.getElementById("summaryDurationText").innerText = `${snapshot.round} Rnds (${snapshot.stepIndex} Steps)`;
+
+      const statusPill = document.getElementById("summaryStatusPill");
+      if (snapshot.isFinished) {
+        if (snapshot.winner === "att") {
+          statusPill.innerText = "🏆 Attacker Won";
+          statusPill.style.background = "rgba(59, 130, 246, 0.2)";
+          statusPill.style.color = "var(--blue-team)";
+        } else if (snapshot.winner === "def") {
+          statusPill.innerText = "🏆 Defender Won";
+          statusPill.style.background = "rgba(239, 68, 68, 0.2)";
+          statusPill.style.color = "var(--red-team)";
+        } else {
+          statusPill.innerText = "⚔️ Stalemate / Draw";
+          statusPill.style.background = "rgba(245, 158, 11, 0.2)";
+          statusPill.style.color = "var(--gold-accent)";
+        }
+      } else {
+        statusPill.innerText = snapshot.stepIndex > 0 ? `Turn ${snapshot.stepIndex} (In Progress)` : "Ready";
+        statusPill.style.background = "rgba(255, 255, 255, 0.08)";
+        statusPill.style.color = "var(--text-muted)";
+      }
+
+      const renderTeamRows = (team) => {
+        let rows = "";
+        for (let s = 1; s <= 5; s++) {
+          const h = team[s];
+          const isAlive = h.currentHp > 0;
+          const hpPct = Math.round((h.currentHp / h.maxHp) * 100);
+          
+          let statusHtml = "";
+          if (isAlive) {
+            statusHtml = `<span class="status-badge-survived">🟢 Survived (${hpPct}%)</span>`;
+          } else {
+            const roundText = h.stats.deathRound ? `Rnd ${h.stats.deathRound}` : `Defeated`;
+            statusHtml = `<span class="status-badge-dead">💀 Died (${roundText})</span>`;
+          }
+
+          const dealtPct = Math.min(100, Math.round((h.stats.totalDamageDealt / maxDmgDealt) * 100));
+          const takenPct = Math.min(100, Math.round((h.stats.totalDamageTaken / maxDmgTaken) * 100));
+
+          const isMvp = (topDealer && topDealer.name === h.name && topDealer.team === h.team && topDealer.stats.totalDamageDealt > 0);
+          const isTankMvp = (topSoaker && topSoaker.name === h.name && topSoaker.team === h.team && topSoaker.stats.totalDamageTaken > 0);
+
+          rows += `
+            <tr>
+              <td>
+                <strong>Pos ${s}: ${h.name}</strong>
+                ${isMvp ? '<span title="Highest Damage Dealt" style="margin-left:4px; font-size:0.68rem; color:var(--gold-accent);">⭐ MVP</span>' : ''}
+                ${isTankMvp ? '<span title="Most Damage Soaked" style="margin-left:4px; font-size:0.68rem; color:var(--cyan-accent);">🛡️ Soaker</span>' : ''}
+              </td>
+              <td>${statusHtml}</td>
+              <td>
+                <div class="dmg-bar-container">
+                  <div class="dmg-bar-track">
+                    <div class="dmg-bar-fill-dealt" style="width: ${dealtPct}%;"></div>
+                  </div>
+                  <span>${h.stats.totalDamageDealt.toLocaleString()}</span>
+                </div>
+              </td>
+              <td>
+                <div class="dmg-bar-container">
+                  <div class="dmg-bar-track">
+                    <div class="dmg-bar-fill-taken" style="width: ${takenPct}%;"></div>
+                  </div>
+                  <span>${h.stats.totalDamageTaken.toLocaleString()}</span>
+                </div>
+              </td>
+            </tr>
+          `;
+        }
+        return rows;
+      };
+
+      document.getElementById("summaryAttackerTableBody").innerHTML = renderTeamRows(attTeam);
+      document.getElementById("summaryDefenderTableBody").innerHTML = renderTeamRows(defTeam);
     }
 
     function triggerFloatingDamage(targetTeam, targetSlot, text, isCrit, isSkill) {
@@ -2351,7 +3134,7 @@
       setTimeout(() => { if (pop.parentNode) pop.parentNode.removeChild(pop); }, 900);
     }
 
-    // --- 6. INTERACTIVE CONTROLLER ACTIONS ---
+    // --- 6. TIME-TRAVEL CONTROLLER ACTIONS (STEP BACK, STEP FORWARD, ROUND FORWARD, SCRUB) ---
     function ensureCombatLogVisible() {
       const logTab = document.getElementById("tabBtnLog");
       if (logTab && !logTab.classList.contains("active")) {
@@ -2359,27 +3142,37 @@
       }
     }
 
-    function stepSimulation() {
+    function stepForward() {
       ensureCombatLogVisible();
       if (!liveBattle) liveBattle = initializeBattle();
+
+      if (currentHistoryIndex < battleHistory.length - 1) {
+        currentHistoryIndex++;
+        const snapshot = battleHistory[currentHistoryIndex];
+        if (snapshot.latestAction && snapshot.latestAction.damageEvents) {
+          snapshot.latestAction.damageEvents.forEach(evt => {
+            triggerFloatingDamage(evt.targetTeam, evt.targetSlot, evt.text || `-${evt.damage.toLocaleString()}`, evt.isCrit, snapshot.latestAction.isSkill);
+          });
+        }
+        renderBattleState();
+        return;
+      }
+
       if (liveBattle.isFinished) {
         pauseSimulation();
         return;
       }
 
-      executeNextCombatStep(liveBattle);
+      const actionData = executeNextCombatStep(liveBattle);
+      if (actionData) {
+        battleHistory.push(createBattleSnapshot(liveBattle, actionData));
+        currentHistoryIndex = battleHistory.length - 1;
 
-      const latestLog = liveBattle.logs[liveBattle.logs.length - 1];
-      if (latestLog && latestLog.damageEvents) {
-        latestLog.damageEvents.forEach(evt => {
-          triggerFloatingDamage(
-            evt.targetTeam,
-            evt.targetSlot,
-            evt.text || `-${evt.damage.toLocaleString()}`,
-            evt.isCrit,
-            latestLog.isSkill
-          );
-        });
+        if (actionData.damageEvents) {
+          actionData.damageEvents.forEach(evt => {
+            triggerFloatingDamage(evt.targetTeam, evt.targetSlot, evt.text || `-${evt.damage.toLocaleString()}`, evt.isCrit, actionData.isSkill);
+          });
+        }
       }
 
       renderBattleState();
@@ -2389,9 +3182,76 @@
       }
     }
 
+    function stepRoundForward() {
+      ensureCombatLogVisible();
+      if (!liveBattle) liveBattle = initializeBattle();
+      if (liveBattle.isFinished && currentHistoryIndex >= battleHistory.length - 1) {
+        pauseSimulation();
+        return;
+      }
+
+      const currentRound = (battleHistory[currentHistoryIndex] || liveBattle).round;
+      const targetRound = currentRound + 1;
+
+      let stepsTaken = 0;
+      while (stepsTaken < 10) {
+        if (currentHistoryIndex < battleHistory.length - 1) {
+          currentHistoryIndex++;
+          stepsTaken++;
+          if (battleHistory[currentHistoryIndex].round >= targetRound || battleHistory[currentHistoryIndex].isFinished) {
+            break;
+          }
+        } else {
+          if (liveBattle.isFinished) break;
+          const actionData = executeNextCombatStep(liveBattle);
+          if (actionData) {
+            battleHistory.push(createBattleSnapshot(liveBattle, actionData));
+            currentHistoryIndex = battleHistory.length - 1;
+            stepsTaken++;
+            if (liveBattle.round >= targetRound || liveBattle.isFinished) {
+              break;
+            }
+          } else {
+            break;
+          }
+        }
+      }
+
+      renderBattleState();
+      if (liveBattle.isFinished) {
+        pauseSimulation();
+      }
+    }
+
+    function stepBackward() {
+      ensureCombatLogVisible();
+      pauseSimulation();
+
+      if (currentHistoryIndex > 0) {
+        currentHistoryIndex--;
+        renderBattleState();
+      }
+    }
+
+    function jumpToHistoryStep(targetIndex) {
+      ensureCombatLogVisible();
+      pauseSimulation();
+
+      const clampedIndex = Math.max(0, Math.min(targetIndex, battleHistory.length - 1));
+      currentHistoryIndex = clampedIndex;
+      renderBattleState();
+    }
+
     function playSimulation() {
       ensureCombatLogVisible();
       if (isPlaying) return;
+
+      const curSnapshot = battleHistory[currentHistoryIndex];
+      if (curSnapshot && curSnapshot.isFinished && currentHistoryIndex === battleHistory.length - 1) {
+        currentHistoryIndex = 0;
+        renderBattleState();
+      }
+
       isPlaying = true;
       document.getElementById("btnPlayPause").innerText = "⏸ Pause";
       document.getElementById("btnPlayPause").classList.remove("btn-primary");
@@ -2399,10 +3259,11 @@
 
       const speed = parseInt(document.getElementById("speedSelect").value, 10);
       playTimer = setInterval(() => {
-        if (!isPlaying || liveBattle.isFinished) {
+        const cur = battleHistory[currentHistoryIndex];
+        if (!isPlaying || (cur && cur.isFinished && currentHistoryIndex === battleHistory.length - 1)) {
           pauseSimulation();
         } else {
-          stepSimulation();
+          stepForward();
         }
       }, speed);
     }
@@ -2419,17 +3280,27 @@
     function resetBattle() {
       pauseSimulation();
       liveBattle = initializeBattle();
+      battleHistory = [createBattleSnapshot(liveBattle, null)];
+      currentHistoryIndex = 0;
       renderBattleState();
+      showToast("Fresh battle started with full HP!", "🔄");
     }
 
     function instantFinishBattle() {
       ensureCombatLogVisible();
       pauseSimulation();
       if (!liveBattle) liveBattle = initializeBattle();
+
       while (!liveBattle.isFinished && liveBattle.round <= 50) {
-        executeNextCombatStep(liveBattle);
+        const actionData = executeNextCombatStep(liveBattle);
+        if (actionData) {
+          battleHistory.push(createBattleSnapshot(liveBattle, actionData));
+        }
       }
+
+      currentHistoryIndex = battleHistory.length - 1;
       renderBattleState();
+      showToast("Match finished! You can inspect casualty & damage summary below.", "⏭");
     }
 
     // --- 7. MONTE CARLO BATCH RUNNER (CHUNKED ASYNC FOR SMOOTH 1K-100K RUNS) ---
@@ -2632,6 +3503,12 @@
           </div>
 
           <div class="form-group">
+            <label class="form-label">Skill Cooldown <span>(Seconds)</span></label>
+            <input type="number" class="form-input" id="inpSkillCooldown" value="${hero.skillCooldownSeconds || 9.09}" step="0.5" min="2" max="30">
+            <span class="form-desc">Base 10s cooldown (+10% speed = 9.09s).</span>
+          </div>
+
+          <div class="form-group">
             <label class="form-label">Basic Attack Multiplier <span>(x DMG)</span></label>
             <input type="number" class="form-input" id="inpBasicMultiplier" value="${hero.basicMultiplier}" step="0.1">
             <span class="form-desc">Attackers do 2.0x, defenders 1.0x.</span>
@@ -2639,9 +3516,25 @@
 
           ${hero.passiveSelfDmgRed !== undefined ? `
             <div class="form-group">
-              <label class="form-label">Passive Self Dmg Reduction <span>(-% Dmg)</span></label>
+              <label class="form-label">Iron Fortress Self Dmg Reduction <span>(-% Dmg)</span></label>
               <input type="number" class="form-input" id="inpPassiveSelfDmgRed" value="${hero.passiveSelfDmgRed}" step="0.05">
-              <span class="form-desc">Williams passive: 0.25 = 25% damage reduction.</span>
+              <span class="form-desc">Williams passive: 0.25 = 25% personal damage reduction.</span>
+            </div>
+          ` : ''}
+
+          ${hero.passiveFrontRowDmgRed !== undefined ? `
+            <div class="form-group">
+              <label class="form-label">All-Around Armor Frontline Mitigation <span>(-% Dmg)</span></label>
+              <input type="number" class="form-input" id="inpPassiveFrontRowDmgRed" value="${hero.passiveFrontRowDmgRed}" step="0.05">
+              <span class="form-desc">Murphy passive: 0.15 = 15% damage reduction for Front Row (while Murphy lives).</span>
+            </div>
+          ` : ''}
+
+          ${hero.passiveHighestAtkDmgRed !== undefined ? `
+            <div class="form-group">
+              <label class="form-label">Rapid Start Dmg Reduction <span>(-% Dmg)</span></label>
+              <input type="number" class="form-input" id="inpPassiveHighestAtkDmgRed" value="${hero.passiveHighestAtkDmgRed}" step="0.02">
+              <span class="form-desc">Marshall passive: 0.10 = 10% damage reduction for highest ATK ally (Kimberly).</span>
             </div>
           ` : ''}
 
@@ -2673,7 +3566,7 @@
             <div class="form-group">
               <label class="form-label">Command Strategy Attack Amp <span>(+% ATK)</span></label>
               <input type="number" class="form-input" id="inpActiveTeamAtkAmp" value="${hero.activeTeamAtkAmp}" step="0.05">
-              <span class="form-desc">Marshall active skill team attack buff.</span>
+              <span class="form-desc">Marshall active: 0.15 = +15% squad Attack for 8 seconds.</span>
             </div>
           ` : ''}
 
@@ -2704,11 +3597,20 @@
       const critInp = document.getElementById("inpCritRate");
       if (critInp) hero.critRate = Math.max(0, Math.min(1, parseFloat(critInp.value)));
 
+      const cdInp = document.getElementById("inpSkillCooldown");
+      if (cdInp) hero.skillCooldownSeconds = Math.max(1.0, parseFloat(cdInp.value));
+
       const multInp = document.getElementById("inpBasicMultiplier");
       if (multInp) hero.basicMultiplier = parseFloat(multInp.value);
 
       const willPass = document.getElementById("inpPassiveSelfDmgRed");
       if (willPass) hero.passiveSelfDmgRed = parseFloat(willPass.value);
+
+      const murphPass = document.getElementById("inpPassiveFrontRowDmgRed");
+      if (murphPass) hero.passiveFrontRowDmgRed = parseFloat(murphPass.value);
+
+      const marshPass = document.getElementById("inpPassiveHighestAtkDmgRed");
+      if (marshPass) hero.passiveHighestAtkDmgRed = parseFloat(marshPass.value);
 
       const willAct = document.getElementById("inpActiveDefBoostFrontRow");
       if (willAct) hero.activeDefBoostFrontRow = parseFloat(willAct.value);
@@ -2804,24 +3706,35 @@
 
     // --- 10. EVENT LISTENERS & INITIALIZATION ---
     document.addEventListener("DOMContentLoaded", () => {
-      // 1. Theme
+      // 1. Theme System & Custom Instant Tooltips
       initThemeSystem();
+      initCustomTooltips();
 
-      // 2. Setup drag and drop
+      // 2. Drag & Drop Squad Builder
       setupDragAndDrop();
 
-      // 3. Initialize battle
+      // 3. Initialize Battle State & History
       resetBattle();
 
-      // Playback Controls
+      // Playback Toolbar Controls
+      document.getElementById("btnNewBattle").addEventListener("click", resetBattle);
+      document.getElementById("btnFirstRound").addEventListener("click", () => jumpToHistoryStep(0));
+
       document.getElementById("btnPlayPause").addEventListener("click", () => {
         if (isPlaying) pauseSimulation();
         else playSimulation();
       });
 
-      document.getElementById("btnNextStep").addEventListener("click", stepSimulation);
-      document.getElementById("btnFirstRound").addEventListener("click", resetBattle);
+      document.getElementById("btnNextStep").addEventListener("click", stepForward);
+      document.getElementById("btnNextRound").addEventListener("click", stepRoundForward);
+      document.getElementById("btnPrevStep").addEventListener("click", stepBackward);
       document.getElementById("btnInstantFinish").addEventListener("click", instantFinishBattle);
+
+      // Timeline Scrubber Slider
+      const timelineSlider = document.getElementById("timelineSlider");
+      timelineSlider.addEventListener("input", (e) => {
+        jumpToHistoryStep(parseInt(e.target.value, 10));
+      });
 
       document.getElementById("speedSelect").addEventListener("change", () => {
         if (isPlaying) {
