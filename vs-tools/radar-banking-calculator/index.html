@@ -1,1 +1,1706 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="system">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Last War: Radar Banking & Pre-Bank Carryover Calculator</title>
+  <style>
+    :root {
+      /* Dark Theme (Default variables) */
+      --bg-body: #0b1120;
+      --bg-panel: rgba(30, 41, 59, 0.85);
+      --bg-card: rgba(15, 23, 42, 0.75);
+      --bg-card-inner: #070b14;
+      --border-color: rgba(255, 255, 255, 0.12);
+      --border-subtle: rgba(255, 255, 255, 0.07);
+      
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      
+      --input-bg: #0f172a;
+      --input-border: rgba(255, 255, 255, 0.16);
+      --input-text: #ffffff;
+      
+      --gold-color: #f59e0b;
+      --gold-bg: rgba(245, 158, 11, 0.12);
+      --gold-border: rgba(245, 158, 11, 0.4);
+      
+      --cyan-color: #06b6d4;
+      --cyan-bg: rgba(6, 182, 212, 0.12);
+      --cyan-border: rgba(6, 182, 212, 0.4);
+      
+      --green-color: #10b981;
+      --green-bg: rgba(16, 185, 129, 0.12);
+      --green-border: rgba(16, 185, 129, 0.4);
+      
+      --red-color: #ef4444;
+      --red-bg: rgba(239, 68, 68, 0.12);
+      --red-border: rgba(239, 68, 68, 0.4);
+      
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --radius-xl: 18px;
+    }
 
+    /* Explicit Light Theme */
+    html[data-theme="light"] {
+      --bg-body: #f1f5f9;
+      --bg-panel: #ffffff;
+      --bg-card: #f8fafc;
+      --bg-card-inner: #f1f5f9;
+      --border-color: #cbd5e1;
+      --border-subtle: #e2e8f0;
+      
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --text-dim: #64748b;
+      
+      --input-bg: #ffffff;
+      --input-border: #cbd5e1;
+      --input-text: #0f172a;
+      
+      --gold-color: #b45309;
+      --gold-bg: #fef3c7;
+      --gold-border: #f59e0b;
+      
+      --cyan-color: #0369a1;
+      --cyan-bg: #e0f2fe;
+      --cyan-border: #0ea5e9;
+      
+      --green-color: #047857;
+      --green-bg: #d1fae5;
+      --green-border: #10b981;
+      
+      --red-color: #b91c1c;
+      --red-bg: #fee2e2;
+      --red-border: #ef4444;
+    }
+
+    /* System Light Scheme Preference */
+    @media (prefers-color-scheme: light) {
+      html[data-theme="system"] {
+        --bg-body: #f1f5f9;
+        --bg-panel: #ffffff;
+        --bg-card: #f8fafc;
+        --bg-card-inner: #f1f5f9;
+        --border-color: #cbd5e1;
+        --border-subtle: #e2e8f0;
+        
+        --text-main: #0f172a;
+        --text-muted: #475569;
+        --text-dim: #64748b;
+        
+        --input-bg: #ffffff;
+        --input-border: #cbd5e1;
+        --input-text: #0f172a;
+        
+        --gold-color: #b45309;
+        --gold-bg: #fef3c7;
+        --gold-border: #f59e0b;
+        
+        --cyan-color: #0369a1;
+        --cyan-bg: #e0f2fe;
+        --cyan-border: #0ea5e9;
+        
+        --green-color: #047857;
+        --green-bg: #d1fae5;
+        --green-border: #10b981;
+        
+        --red-color: #b91c1c;
+        --red-bg: #fee2e2;
+        --red-border: #ef4444;
+      }
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      font-family: var(--font-family);
+      font-size: 15px;
+      line-height: 1.5;
+      padding: 24px 16px 60px;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* Top Nav */
+    .top-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 14px;
+      border-radius: var(--radius-sm);
+      background: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.15s ease;
+    }
+    .back-btn:hover {
+      color: var(--text-main);
+      border-color: var(--cyan-color);
+    }
+
+    /* Theme Switcher */
+    .theme-switcher {
+      display: inline-flex;
+      background: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      padding: 3px;
+      border-radius: var(--radius-md);
+      gap: 2px;
+      align-items: center;
+    }
+    .theme-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      font-family: var(--font-family);
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .theme-btn:hover { color: var(--text-main); }
+    .theme-btn.active {
+      background: var(--cyan-bg);
+      border-color: var(--cyan-border);
+      color: var(--cyan-color);
+      font-weight: 700;
+    }
+
+    /* Header Banner */
+    .header-panel {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-xl);
+      padding: 24px 28px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+    }
+    .header-panel h1 {
+      font-size: 1.75rem;
+      font-weight: 800;
+      margin-bottom: 6px;
+      color: var(--text-main);
+      letter-spacing: -0.3px;
+    }
+    .header-panel p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      max-width: 880px;
+    }
+
+    /* Input Controls Bar */
+    .controls-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-xl);
+      padding: 20px 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+    }
+    .controls-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    @media (max-width: 720px) {
+      .controls-grid { grid-template-columns: 1fr; }
+    }
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .control-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    select, input[type="number"] {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      color: var(--input-text);
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      font-size: 0.95rem;
+      font-family: var(--font-family);
+      outline: none;
+      transition: all 0.15s ease;
+    }
+    select:focus, input:focus {
+      border-color: var(--cyan-color);
+      box-shadow: 0 0 0 3px var(--cyan-bg);
+    }
+
+    .custom-inputs-box {
+      display: none;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px dashed var(--border-color);
+    }
+    .custom-inputs-box.visible { display: grid; }
+
+    /* PRIMARY DECISION HERO PANEL */
+    .decision-panel {
+      background: var(--bg-panel);
+      border: 2px solid var(--cyan-color);
+      border-radius: var(--radius-xl);
+      padding: 24px 28px;
+      margin-bottom: 24px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    }
+    .decision-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.75px;
+      margin-bottom: 12px;
+    }
+    .badge-no-save {
+      background: var(--green-bg);
+      border: 1px solid var(--green-border);
+      color: var(--green-color);
+    }
+    .badge-save-req {
+      background: var(--gold-bg);
+      border: 1px solid var(--gold-border);
+      color: var(--gold-color);
+    }
+
+    .decision-main-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 6px;
+      line-height: 1.35;
+    }
+    .decision-subtext {
+      font-size: 0.925rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+
+    /* Screen HUD Display */
+    .screen-hud-display {
+      display: grid;
+      grid-template-columns: 1.25fr 1fr;
+      gap: 16px;
+      align-items: stretch;
+    }
+    @media (max-width: 820px) {
+      .screen-hud-display { grid-template-columns: 1fr; }
+    }
+
+    .hud-box-large {
+      background: var(--bg-card);
+      border: 1.5px solid var(--gold-border);
+      border-radius: var(--radius-lg);
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .hud-box-large.green-border {
+      border-color: var(--green-border);
+    }
+    .hud-box-header {
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--gold-color);
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .hud-split-counters {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .screen-counter-badge {
+      background: var(--bg-card-inner);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 8px 14px;
+      display: flex;
+      flex-direction: column;
+    }
+    .sc-label {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+    .sc-val {
+      font-size: 1.45rem;
+      font-weight: 800;
+      line-height: 1.15;
+      color: var(--text-main);
+    }
+    .sc-val.gold { color: var(--gold-color); }
+    .sc-val.cyan { color: var(--cyan-color); }
+    .sc-val.green { color: var(--green-color); }
+
+    .hud-box-summary {
+      font-size: 0.85rem;
+      color: var(--text-main);
+      line-height: 1.4;
+    }
+
+    .hud-stats-side {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .mini-stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .mini-stat-lbl {
+      font-size: 0.68rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+    .mini-stat-val {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--text-main);
+      line-height: 1.1;
+    }
+
+    /* Comparison Cards */
+    .scenarios-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 820px) {
+      .scenarios-grid { grid-template-columns: 1fr; }
+    }
+    .scenario-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 18px 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    }
+    .scenario-card.safe { border-top: 3px solid var(--green-color); }
+    .scenario-card.risky { border-top: 3px solid var(--gold-color); }
+    .scenario-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .scenario-points-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+    .scenario-points-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      line-height: 1.4;
+    }
+
+    /* Universal Cheat Sheet Card */
+    .card {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-xl);
+      padding: 22px 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+    }
+    .card-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .table-container {
+      overflow-x: auto;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+      background: var(--bg-card);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      text-align: left;
+    }
+    th {
+      background: var(--bg-card-inner);
+      color: var(--text-muted);
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 0.7rem;
+      letter-spacing: 0.5px;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border-color);
+      white-space: nowrap;
+    }
+    td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border-subtle);
+      vertical-align: middle;
+    }
+    tr.active-level-row {
+      background: var(--cyan-bg) !important;
+      font-weight: 700;
+    }
+    tr.active-level-row td {
+      color: var(--text-main);
+      border-color: var(--cyan-border);
+    }
+    .pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+    .pill-green { background: var(--green-bg); color: var(--green-color); border: 1px solid var(--green-border); }
+    .pill-gold { background: var(--gold-bg); color: var(--gold-color); border: 1px solid var(--gold-border); }
+    .pill-red { background: var(--red-bg); color: var(--red-color); border: 1px solid var(--red-border); }
+
+    /* Expand / Collapse Button */
+    .toggle-expand-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: var(--radius-sm);
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--cyan-color);
+      font-size: 0.8rem;
+      font-weight: 700;
+      font-family: var(--font-family);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    /* Weekly Planner Styles */
+    .presets-bar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+    .preset-pill-btn {
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      font-weight: 600;
+      font-family: var(--font-family);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .preset-pill-btn:hover {
+      color: var(--text-main);
+      border-color: var(--cyan-color);
+    }
+    .preset-pill-btn.active {
+      background: var(--cyan-bg);
+      border-color: var(--cyan-border);
+      color: var(--cyan-color);
+      font-weight: 700;
+    }
+
+    /* Vertical Weekly Table Styles */
+    .weekly-table {
+      width: 100%;
+      table-layout: auto;
+    }
+    .weekly-table th {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 8px 10px;
+      white-space: nowrap;
+    }
+    .weekly-table td {
+      vertical-align: middle;
+      font-size: 0.8rem;
+      padding: 8px 10px;
+    }
+    .col-day-cell {
+      white-space: nowrap;
+      min-width: 175px;
+    }
+    .col-stat-cell {
+      white-space: nowrap;
+      min-width: 105px;
+    }
+    .col-regen-cell {
+      white-space: nowrap;
+      min-width: 75px;
+    }
+    .col-spend-cell {
+      white-space: nowrap;
+      min-width: 110px;
+    }
+    .col-status-cell {
+      min-width: 190px;
+    }
+    .cell-toggle-group {
+      display: inline-flex;
+      gap: 3px;
+      background: var(--bg-card-inner);
+      padding: 2px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-subtle);
+    }
+    .cell-toggle-btn {
+      padding: 2px 7px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      font-family: var(--font-family);
+      border-radius: 3px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+    }
+    .cell-toggle-btn:hover { color: var(--text-main); }
+    .cell-toggle-btn.active-a {
+      background: var(--green-bg);
+      border-color: var(--green-border);
+      color: var(--green-color);
+    }
+    .cell-toggle-btn.active-b {
+      background: var(--gold-bg);
+      border-color: var(--gold-border);
+      color: var(--gold-color);
+    }
+
+    .weekly-row-points {
+      background: rgba(56, 189, 248, 0.03);
+    }
+    .weekly-row-bank {
+      background: rgba(148, 163, 184, 0.02);
+    }
+    .weekly-row-rebuild {
+      background: rgba(245, 158, 11, 0.04);
+    }
+
+    .weekly-verdict-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .weekly-verdict-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    /* Footer */
+    footer {
+      margin-top: 40px;
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 0.825rem;
+    }
+    footer a { color: var(--cyan-color); text-decoration: none; font-weight: 600; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Top Navigation with Theme Toggle -->
+  <div class="top-nav">
+    <a href="../hub/index.html" class="back-btn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      Back to Tools Hub
+    </a>
+
+    <!-- Theme Switcher -->
+    <div class="theme-switcher" role="radiogroup" aria-label="Color Theme Switcher">
+      <button class="theme-btn" data-theme-val="light" onclick="setTheme('light')" title="Light Mode">☀️ Light</button>
+      <button class="theme-btn" data-theme-val="dark" onclick="setTheme('dark')" title="Dark Mode">🌙 Dark</button>
+      <button class="theme-btn" data-theme-val="system" onclick="setTheme('system')" title="System Preference">💻 System</button>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <div class="header-panel">
+    <h1>Radar Tasks Banking & Pre-Bank Carryover Calculator</h1>
+    <p>Answers your exact question before Bank Day (Sunday, Tuesday, Thursday): <strong>Can you spend 100% of your radar tasks today, or do you need to stop and leave tasks behind tonight?</strong> Displays all results in actual in-game screen readings (<strong>Stored in Radar Menu + Displayed on Map</strong>).</p>
+  </div>
+
+  <!-- Controls Bar -->
+  <div class="controls-card">
+    <div class="controls-grid">
+
+      <!-- Col 1: Radar Level -->
+      <div class="control-group">
+        <label class="control-label" for="radarLevelSelect">
+          <span>1. Radar Facility Level</span>
+          <span id="levelBonusBadge" style="color:var(--gold-color);">+15% RSS</span>
+        </label>
+        <select id="radarLevelSelect">
+          <option value="1">Radar 1: 5 tasks displayed, 25 stored, Total 30</option>
+          <option value="2">Radar 2: 6 tasks displayed, 25 stored, Total 31</option>
+          <option value="3">Radar 3: 6 tasks displayed, 25 stored, Total 31</option>
+          <option value="4">Radar 4: 6 tasks displayed, 25 stored, Total 31</option>
+          <option value="5">Radar 5: 7 tasks displayed, 25 stored, Total 32</option>
+          <option value="6">Radar 6: 7 tasks displayed, 25 stored, Total 32</option>
+          <option value="7">Radar 7: 8 tasks displayed, 30 stored, Total 38</option>
+          <option value="8">Radar 8: 8 tasks displayed, 35 stored, Total 43</option>
+          <option value="9">Radar 9: 9 tasks displayed, 35 stored, Total 44</option>
+          <option value="10" selected>Radar 10: 9 tasks displayed, 40 stored, Total 49</option>
+          <option value="11">Radar 11: 10 tasks displayed, 40 stored, Total 50</option>
+          <option value="12">Radar 12: 10 tasks displayed, 40 stored, Total 50</option>
+          <option value="13">Radar 13: 11 tasks displayed, 40 stored, Total 51</option>
+          <option value="14">Radar 14: 12 tasks displayed, 40 stored, Total 52</option>
+          <option value="15">Radar 15: 12 tasks displayed, 40 stored, Total 52</option>
+          <option value="16">Radar 16: 12 tasks displayed, 40 stored, Total 52</option>
+          <option value="17">Radar 17: 12 tasks displayed, 45 stored, Total 57</option>
+          <option value="custom">⚙️ Custom Parameters...</option>
+        </select>
+
+        <!-- Custom Inputs -->
+        <div class="custom-inputs-box" id="customBox">
+          <div class="control-group">
+            <label class="control-label" style="font-size:0.65rem;">Tasks / 6h</label>
+            <input type="number" id="customRefresh" value="11" min="1" max="30">
+          </div>
+          <div class="control-group">
+            <label class="control-label" style="font-size:0.65rem;">Map Limit</label>
+            <input type="number" id="customDisplay" value="9" min="1" max="30">
+          </div>
+          <div class="control-group">
+            <label class="control-label" style="font-size:0.65rem;">Storage Limit</label>
+            <input type="number" id="customStorage" value="40" min="5" max="100">
+          </div>
+        </div>
+      </div>
+
+      <!-- Col 2: Tasks to consume on Bank Day (Pulldown max 10) -->
+      <div class="control-group">
+        <label class="control-label" for="bankSpendSelect">
+          <span>2. Tasks To Consume on Bank Day</span>
+          <span style="color:var(--cyan-color);" id="bankSpendBadge">7 tasks</span>
+        </label>
+        <select id="bankSpendSelect">
+          <option value="0">0 Tasks (Pure Maximum Banking)</option>
+          <option value="1">1 Task</option>
+          <option value="2">2 Tasks</option>
+          <option value="3">3 Tasks</option>
+          <option value="4">4 Tasks</option>
+          <option value="5">5 Tasks (Battle Pass / Sky Predator / Dailies)</option>
+          <option value="6">6 Tasks</option>
+          <option value="7" selected>7 Tasks (Taylor 4★ Chest)</option>
+          <option value="8">8 Tasks (Taylor 5★ Chest)</option>
+          <option value="9">9 Tasks</option>
+          <option value="10">10 Tasks</option>
+        </select>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- PRIMARY DECISION HERO PANEL -->
+  <div class="decision-panel" id="mainDecisionPanel">
+    <div id="decisionBadge" class="decision-badge badge-save-req">⚠️ PRE-BANK REQUIRED TO ENTER BANK DAY</div>
+    
+    <div class="decision-main-title" id="decisionHeadline">
+      Enter Bank Day with: <span style="color:var(--cyan-color);">2 / 40 Stored</span> + <span style="color:var(--cyan-color);">9 on Map</span> (<span style="color:var(--gold-color);">11 total</span>)
+    </div>
+    
+    <div class="decision-subtext" id="decisionDescription">
+      Bank Day regenerates <strong>44 tasks</strong> and you plan to consume <strong>7 tasks</strong> (net +37). Because net generation is 11 tasks short of your 48-task safe bank ($n-1$), you cannot empty out to 0 today if you want to enter the next duel at 100% capacity.
+    </div>
+
+    <!-- Screen HUD Display -->
+    <div class="screen-hud-display">
+      
+      <!-- Box 1: Pre-Banked Tasks to Enter Bank Day With -->
+      <div class="hud-box-large" id="hudBoxTonight">
+        <div class="hud-box-header">
+          <span>🌙 PRE-BANKED TASKS TO ENTER BANK DAY WITH</span>
+          <span style="font-size:0.68rem; color:var(--text-dim);">IN-GAME SCREEN READING</span>
+        </div>
+        <div class="hud-split-counters">
+          <div class="screen-counter-badge">
+            <span class="sc-label">📡 Radar Screen</span>
+            <span class="sc-val gold" id="screenStoredTonight">2 / 40</span>
+            <span style="font-size:0.68rem; color:var(--text-dim);">Stored Queue</span>
+          </div>
+          <span style="font-size:1.3rem; font-weight:700; color:var(--text-dim);">+</span>
+          <div class="screen-counter-badge">
+            <span class="sc-label">🗺️ World Map</span>
+            <span class="sc-val cyan" id="screenMapTonight">9 / 9</span>
+            <span style="font-size:0.68rem; color:var(--text-dim);">On Base Map</span>
+          </div>
+          <span style="font-size:1.3rem; font-weight:700; color:var(--text-dim);">=</span>
+          <div class="screen-counter-badge">
+            <span class="sc-label">🔢 Total Needed</span>
+            <span class="sc-val" id="totalTonight">11 Total</span>
+            <span style="font-size:0.68rem; color:var(--text-dim);">Pre-Bank</span>
+          </div>
+        </div>
+        <div class="hud-box-summary" id="hudTonightSummary">
+          👉 Complete tasks on your map until exactly <strong>2 stored</strong> remain in your Radar queue with <strong>9 waiting on map</strong>, then stop claiming!
+        </div>
+      </div>
+
+      <!-- Box 2: Quick Key Numbers -->
+      <div class="hud-stats-side">
+        <div class="mini-stat-card">
+          <span class="mini-stat-lbl">🎯 Max Spend on Spend Day</span>
+          <span class="mini-stat-val" style="color:var(--cyan-color);" id="statMaxSpend">81 Tasks</span>
+          <span style="font-size:0.7rem; color:var(--text-dim);">Points you can claim on spend day</span>
+        </div>
+
+        <div class="mini-stat-card">
+          <span class="mini-stat-lbl">🛡️ Full Bank (n−1)</span>
+          <span class="mini-stat-val" style="color:var(--green-color);" id="statFullBank">48 Tasks</span>
+          <span style="font-size:0.7rem; color:var(--text-dim);" id="statFullBankSplit">39/40 Stored + 9 Map</span>
+        </div>
+
+        <div class="mini-stat-card">
+          <span class="mini-stat-lbl">⚡ Bank Day 24h Regen</span>
+          <span class="mini-stat-val" id="statBankRegen">+44 Tasks</span>
+          <span style="font-size:0.7rem; color:var(--text-dim);">4 cycles × 11 tasks</span>
+        </div>
+
+        <div class="mini-stat-card">
+          <span class="mini-stat-lbl">🟢 Cooldown Timer</span>
+          <span class="mini-stat-val" style="color:var(--green-color); font-size:1rem;">RUNNING 24/7</span>
+          <span style="font-size:0.7rem; color:var(--text-dim);">Zero timer freeze</span>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Comparison: Strategy A vs Strategy B -->
+  <div class="scenarios-grid">
+    <div class="scenario-card safe">
+      <div class="scenario-title">
+        <span style="color:var(--green-color);">✅ Strategy A: Recommended Pre-Bank</span>
+        <span class="pill pill-green">Optimal</span>
+      </div>
+      <ul class="scenario-points-list">
+        <li><span>🔹</span> <div><strong>Tonight:</strong> Stop claiming when your Radar screen shows <strong style="color:var(--cyan-color);" id="scenSafeEnd">2/40 Stored + 9 on Map</strong>.</div></li>
+        <li><span>🔹</span> <div><strong>On Bank Day:</strong> Complete map tasks and claim your planned <strong id="scenSafeSpend">7</strong> daily tasks.</div></li>
+        <li><span>🔹</span> <div><strong>Next Point Day:</strong> You enter the duel with your Radar at <strong style="color:var(--green-color);" id="scenSafeStart">39/40 Stored + 9 on Map (48 total)</strong> at 100% capacity.</div></li>
+      </ul>
+    </div>
+
+    <div class="scenario-card risky">
+      <div class="scenario-title">
+        <span style="color:var(--gold-color);">💥 Strategy B: Enter Bank Day with 0 (All-In)</span>
+        <span class="pill pill-gold">High Risk</span>
+      </div>
+      <ul class="scenario-points-list">
+        <li><span>🔸</span> <div><strong>Tonight:</strong> You spend 100% of all radar tasks today (leaving 0/40 Stored and 0 on Map).</div></li>
+        <li><span>🔸</span> <div><strong>On Bank Day:</strong> You regenerate tasks from 0 and do your planned <strong id="scenEmptySpend">7</strong> tasks.</div></li>
+        <li><span>🔸</span> <div><strong>Next Point Day:</strong> Your Radar will only reach <strong style="color:var(--red-color);" id="scenEmptyStart">28/40 Stored + 9 on Map (37 total)</strong> — entering the next duel with an <strong style="color:var(--red-color);" id="scenEmptyDeficit">11-task deficit (~275k points lost)</strong>.</div></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Weekly VS Duel Strategy Schedule (7-Day Vertical Table) -->
+  <div class="card">
+    <div class="card-title">
+      <div style="display:flex; flex-direction:column; gap:2px;">
+        <span style="font-size:1.1rem; font-weight:800;">🗓️ Weekly VS Duel Strategy Schedule (Monday ➔ Sunday)</span>
+        <span style="font-size:0.78rem; color:var(--text-muted); font-weight:normal;">Select Strategy A or B on spend days to simulate starting inventory, allowed spend, carryover, and bank rebuild pivots.</span>
+      </div>
+    </div>
+
+    <!-- Quick Strategy Presets -->
+    <div class="presets-bar">
+      <span style="font-size:0.75rem; font-weight:700; color:var(--text-muted); display:flex; align-items:center; margin-right:4px;">STRATEGY PRESETS:</span>
+      <button class="preset-pill-btn" id="presetBtnAAA" onclick="setWeekPreset('A','A','A')">🛡️ Pure Safe (A / A / A)</button>
+      <button class="preset-pill-btn" id="presetBtnAAB" onclick="setWeekPreset('A','A','B')">🛡️ Balanced Optimal (A / A / B)</button>
+      <button class="preset-pill-btn active" id="presetBtnBAB" onclick="setWeekPreset('B','A','B')">🔥 Mon &amp; Fri Peak (B / A / B Rebuild)</button>
+      <button class="preset-pill-btn" id="presetBtnABB" onclick="setWeekPreset('A','B','B')">⚡ Wednesday Push (A / B / B)</button>
+      <button class="preset-pill-btn" id="presetBtnBBB" onclick="setWeekPreset('B','B','B')">💥 All-In Every Day (B / B / B)</button>
+    </div>
+
+    <!-- 7-Day Vertical Table -->
+    <div class="table-container">
+      <table class="weekly-table">
+        <thead>
+          <tr>
+            <th class="col-day-cell">Day &amp; Strategy</th>
+            <th class="col-stat-cell">Starting Inventory</th>
+            <th class="col-regen-cell">24h Regen</th>
+            <th class="col-spend-cell">Tasks Spent / Cleared</th>
+            <th class="col-stat-cell">Carryover Into Next Day</th>
+            <th class="col-status-cell">Strategic Status &amp; Bridge</th>
+          </tr>
+        </thead>
+        <tbody id="weeklyTableBody">
+          <!-- Dynamically populated via JS -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Weekly Summary Verdict Card -->
+    <div class="weekly-verdict-card" id="weeklyVerdictCard" style="margin-top:16px;">
+      <div class="weekly-verdict-header">
+        <div>
+          <span style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; font-weight:700;">WEEKLY TOTAL RADAR POINTS SPEND</span>
+          <div style="font-size:1.45rem; font-weight:800; color:var(--cyan-color);" id="weeklyTotalSpend">254 Tasks (~6.35M VS Points)</div>
+        </div>
+        <span class="pill pill-green" id="weeklyVerdictBadge">🔥 Optimal Rebuild Strategy</span>
+      </div>
+      <div style="font-size:0.85rem; color:var(--text-main); line-height:1.45;" id="weeklyVerdictNarrative">
+        <strong>Monday B (92 tasks) ➔ Wednesday A (70 tasks) ➔ Friday B (92 tasks)</strong>: You push maximum 92-task firepower on Monday, use Wednesday as a tactical 70-task rebuild day, and hit Friday at 100% full bank (92 tasks) with zero penalty for next week!
+      </div>
+    </div>
+  </div>
+
+  <!-- Universal Cheat Sheet Table (Streamlined 6 Columns) -->
+  <div class="card">
+    <div class="card-title">
+      <div style="display:flex; flex-direction:column; gap:2px;">
+        <span id="tableTitleText">Radar Level Summary (Level 10)</span>
+        <span style="font-size:0.78rem; color:var(--text-muted); font-weight:normal;">Shows pre-bank required vs ending bank if starting with 0 (based on consuming <strong id="tableSpendHeader" style="color:var(--cyan-color);">7 tasks</strong> on Bank Day)</span>
+      </div>
+      <button id="toggleTableBtn" class="toggle-expand-btn" onclick="toggleTableExpand()">
+        <span id="toggleTableText">🔽 Show All Levels (1–17)</span>
+      </button>
+    </div>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th rowspan="2" style="vertical-align:middle;">Level</th>
+            <th rowspan="2" style="vertical-align:middle;">Safe Bank Target (n−1)</th>
+            <th rowspan="2" style="vertical-align:middle;">24h Regen</th>
+            <th colspan="2" style="text-align:center; background:var(--green-bg); color:var(--green-color); border-left:1px solid var(--border-color); border-right:1px solid var(--border-color); border-bottom:1px solid var(--green-border);">✅ Strategy A: Recommended Pre-Bank</th>
+            <th colspan="2" style="text-align:center; background:var(--gold-bg); color:var(--gold-color); border-right:1px solid var(--border-color); border-bottom:1px solid var(--gold-border);">💥 Strategy B: All-In (Drain to 0)</th>
+          </tr>
+          <tr>
+            <th style="background:var(--green-bg); font-size:0.68rem; border-left:1px solid var(--border-color);">Pre-Bank to Enter Bank Day</th>
+            <th style="background:var(--green-bg); font-size:0.68rem; border-right:1px solid var(--border-color);">Safe Spend on Spend Day</th>
+            <th style="background:var(--gold-bg); font-size:0.68rem;">Ending Bank (Next Duel)</th>
+            <th style="background:var(--gold-bg); font-size:0.68rem; border-right:1px solid var(--border-color);">All-In Spend on Spend Day</th>
+          </tr>
+        </thead>
+        <tbody id="cheatTableBody">
+          <!-- Dynamically populated -->
+        </tbody>
+      </table>
+    </div>
+    <div style="display:flex; justify-content:center; margin-top:14px;">
+      <button id="toggleTableFooterBtn" class="toggle-expand-btn" onclick="toggleTableExpand()">
+        <span id="toggleTableFooterText">🔽 Show All Levels (1–17)</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>Last War: Survival Tactical Tools &bull; Radar Banking & Pre-Bank Carryover Calculator &bull; <a href="../hub/index.html">Back to Tools Hub</a></p>
+  </footer>
+
+</div>
+
+<script>
+  // Complete Radar Level Database (Levels 1 to 17)
+  const RADAR_DATA = {
+    1: { level: 1, refresh: 6, display: 5, storage: 25, bonus: "0%" },
+    2: { level: 2, refresh: 6, display: 6, storage: 25, bonus: "5%" },
+    3: { level: 3, refresh: 7, display: 6, storage: 25, bonus: "5%" },
+    4: { level: 4, refresh: 8, display: 6, storage: 25, bonus: "5%" },
+    5: { level: 5, refresh: 9, display: 7, storage: 25, bonus: "5%" },
+    6: { level: 6, refresh: 10, display: 7, storage: 25, bonus: "5%" },
+    7: { level: 7, refresh: 10, display: 8, storage: 30, bonus: "10%" },
+    8: { level: 8, refresh: 10, display: 8, storage: 35, bonus: "10%" },
+    9: { level: 9, refresh: 11, display: 9, storage: 35, bonus: "10%" },
+    10: { level: 10, refresh: 11, display: 9, storage: 40, bonus: "15%" },
+    11: { level: 11, refresh: 11, display: 10, storage: 40, bonus: "15%" },
+    12: { level: 12, refresh: 12, display: 10, storage: 40, bonus: "15%" },
+    13: { level: 13, refresh: 12, display: 11, storage: 40, bonus: "20%" },
+    14: { level: 14, refresh: 12, display: 12, storage: 40, bonus: "20%" },
+    15: { level: 15, refresh: 13, display: 12, storage: 40, bonus: "20%" },
+    16: { level: 16, refresh: 13, display: 12, storage: 40, bonus: "25%" },
+    17: { level: 17, refresh: 13, display: 12, storage: 45, bonus: "25%" }
+  };
+
+  // Theme Management (Default: system)
+  let currentThemeMode = localStorage.getItem('theme-mode') || 'system';
+
+  function setTheme(mode) {
+    currentThemeMode = mode;
+    localStorage.setItem('theme-mode', mode);
+    applyTheme();
+  }
+
+  function applyTheme() {
+    const root = document.documentElement;
+    const buttons = document.querySelectorAll('.theme-btn');
+
+    buttons.forEach(btn => {
+      const val = btn.getAttribute('data-theme-val');
+      if (val === currentThemeMode) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+
+    root.setAttribute('data-theme', currentThemeMode);
+  }
+
+  // Listen for OS system theme changes
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+    if (currentThemeMode === 'system') applyTheme();
+  });
+
+  // DOM Elements
+  const radarLevelSelect = document.getElementById('radarLevelSelect');
+  const customBox = document.getElementById('customBox');
+  const customRefresh = document.getElementById('customRefresh');
+  const customDisplay = document.getElementById('customDisplay');
+  const customStorage = document.getElementById('customStorage');
+  const levelBonusBadge = document.getElementById('levelBonusBadge');
+
+  const bankSpendSelect = document.getElementById('bankSpendSelect');
+  const bankSpendBadge = document.getElementById('bankSpendBadge');
+  const tableSpendHeader = document.getElementById('tableSpendHeader');
+
+  const mainDecisionPanel = document.getElementById('mainDecisionPanel');
+  const decisionBadge = document.getElementById('decisionBadge');
+  const decisionHeadline = document.getElementById('decisionHeadline');
+  const decisionDescription = document.getElementById('decisionDescription');
+
+  const hudBoxTonight = document.getElementById('hudBoxTonight');
+  const screenStoredTonight = document.getElementById('screenStoredTonight');
+  const screenMapTonight = document.getElementById('screenMapTonight');
+  const totalTonight = document.getElementById('totalTonight');
+  const hudTonightSummary = document.getElementById('hudTonightSummary');
+
+  const statMaxSpend = document.getElementById('statMaxSpend');
+  const statFullBank = document.getElementById('statFullBank');
+  const statFullBankSplit = document.getElementById('statFullBankSplit');
+  const statBankRegen = document.getElementById('statBankRegen');
+
+  const scenSafeEnd = document.getElementById('scenSafeEnd');
+  const scenSafeSpend = document.getElementById('scenSafeSpend');
+  const scenSafeStart = document.getElementById('scenSafeStart');
+  const scenEmptySpend = document.getElementById('scenEmptySpend');
+  const scenEmptyStart = document.getElementById('scenEmptyStart');
+  const scenEmptyDeficit = document.getElementById('scenEmptyDeficit');
+
+  const cheatTableBody = document.getElementById('cheatTableBody');
+
+  // Event Listeners
+  radarLevelSelect.addEventListener('change', () => {
+    if (radarLevelSelect.value === 'custom') {
+      customBox.classList.add('visible');
+    } else {
+      customBox.classList.remove('visible');
+    }
+    updateCalculator();
+  });
+
+  [customRefresh, customDisplay, customStorage].forEach(el => {
+    el.addEventListener('input', updateCalculator);
+  });
+
+  bankSpendSelect.addEventListener('change', updateCalculator);
+
+  function getRadarProfile() {
+    const val = radarLevelSelect.value;
+    if (val === 'custom') {
+      const ref = parseInt(customRefresh.value) || 11;
+      const disp = parseInt(customDisplay.value) || 9;
+      const store = parseInt(customStorage.value) || 40;
+      const total = disp + store;
+      return {
+        level: 'Custom',
+        refresh: ref,
+        display: disp,
+        storage: store,
+        totalCap: total,
+        safeBank: Math.max(1, total - 1),
+        dailyRegen: ref * 4,
+        bonus: 'Custom'
+      };
+    } else {
+      const data = RADAR_DATA[val];
+      const total = data.display + data.storage;
+      return {
+        level: data.level,
+        refresh: data.refresh,
+        display: data.display,
+        storage: data.storage,
+        totalCap: total,
+        safeBank: Math.max(1, total - 1),
+        dailyRegen: data.refresh * 4,
+        bonus: data.bonus
+      };
+    }
+  }
+
+  // Format total tasks into In-Game reading: Stored in Radar + Displayed on Map
+  function formatBankSplit(totalBanked, displayCap, storageCap) {
+    let mapTasks = Math.min(totalBanked, displayCap);
+    let storedTasks = Math.max(0, totalBanked - displayCap);
+    storedTasks = Math.min(storedTasks, storageCap);
+    return {
+      storedTasks,
+      mapTasks,
+      total: totalBanked,
+      readingStr: `${storedTasks}/${storageCap} Stored + ${mapTasks}/${displayCap} Map`,
+      shortStr: `${storedTasks}/${storageCap} + ${mapTasks}`
+    };
+  }
+
+  function updateCalculator() {
+    const radar = getRadarProfile();
+    const plannedBankSpend = parseInt(bankSpendSelect.value) || 0;
+
+    levelBonusBadge.textContent = radar.bonus !== 'Custom' ? `${radar.bonus} RSS` : 'Custom Stats';
+    bankSpendBadge.textContent = `${plannedBankSpend} tasks`;
+    tableSpendHeader.textContent = `${plannedBankSpend} task${plannedBankSpend === 1 ? '' : 's'}`;
+
+    // Net regeneration on bank day after planned spend:
+    const netBankDayRegen = Math.max(0, radar.dailyRegen - plannedBankSpend);
+    
+    // Required carryover from day before bank day:
+    const reqSaveTonight = Math.max(0, radar.safeBank - netBankDayRegen);
+    const maxSafeSpendToday = Math.max(0, (radar.safeBank + radar.dailyRegen) - reqSaveTonight);
+
+    // Splits
+    const safeSplit = formatBankSplit(radar.safeBank, radar.display, radar.storage);
+    const saveTonightSplit = formatBankSplit(reqSaveTonight, radar.display, radar.storage);
+
+    // If player empties out to 0:
+    const emptyEndBank = Math.min(radar.safeBank, netBankDayRegen);
+    const emptyDeficit = radar.safeBank - emptyEndBank;
+    const emptySplit = formatBankSplit(emptyEndBank, radar.display, radar.storage);
+
+    // Screen HUD values
+    screenStoredTonight.textContent = `${saveTonightSplit.storedTasks} / ${radar.storage}`;
+    screenMapTonight.textContent = `${saveTonightSplit.mapTasks} / ${radar.display}`;
+    totalTonight.textContent = `${reqSaveTonight} Total`;
+
+    statMaxSpend.textContent = `${maxSafeSpendToday} Tasks`;
+    statFullBank.textContent = `${radar.safeBank} Tasks`;
+    statFullBankSplit.textContent = `${safeSplit.storedTasks}/${radar.storage} Stored + ${safeSplit.mapTasks} Map`;
+    statBankRegen.textContent = `+${radar.dailyRegen} Tasks`;
+
+    // Decision Presentation
+    if (reqSaveTonight === 0) {
+      decisionBadge.className = 'decision-badge badge-no-save';
+      decisionBadge.innerHTML = '✅ ENTER WITH 0 (EMPTY OUT 100% TODAY)';
+      decisionHeadline.innerHTML = `You can enter Bank Day with <span style="color:var(--green-color);">0 pre-banked tasks</span>! Bank Day alone is 100% sufficient.`;
+      decisionDescription.innerHTML = `Because Bank Day regenerates <strong>${radar.dailyRegen} tasks</strong> and you plan to consume <strong>${plannedBankSpend} tasks</strong>, your net gain is <strong>+${netBankDayRegen} tasks</strong>. This fully covers your entire <strong>${radar.safeBank}-task safe limit (${safeSplit.storedTasks}/${radar.storage} Stored + ${safeSplit.mapTasks} Map)</strong> from scratch!`;
+      mainDecisionPanel.style.borderColor = 'var(--green-color)';
+      hudBoxTonight.className = 'hud-box-large green-border';
+      screenStoredTonight.className = 'sc-val green';
+      hudTonightSummary.innerHTML = `👉 You can spend <strong>100% of your radar tasks</strong> today. Tomorrow's generation alone will completely fill your bank.`;
+    } else {
+      decisionBadge.className = 'decision-badge badge-save-req';
+      decisionBadge.innerHTML = '⚠️ PRE-BANK REQUIRED TO ENTER BANK DAY';
+      decisionHeadline.innerHTML = `Enter Bank Day with: <span style="color:var(--cyan-color);">${saveTonightSplit.storedTasks} / ${radar.storage} Stored</span> + <span style="color:var(--cyan-color);">${saveTonightSplit.mapTasks} on Map</span> (<span style="color:var(--gold-color);">${reqSaveTonight} total</span>)`;
+      decisionDescription.innerHTML = `Bank Day regenerates <strong>${radar.dailyRegen} tasks</strong> and you plan to consume <strong>${plannedBankSpend} tasks</strong> (net +${netBankDayRegen}). Because net regeneration is <strong>${reqSaveTonight} tasks short</strong> of your ${radar.safeBank}-task target, you must enter Bank Day with this exact inventory to wake up on the next point day at 100% full capacity.`;
+      mainDecisionPanel.style.borderColor = 'var(--cyan-color)';
+      hudBoxTonight.className = 'hud-box-large';
+      screenStoredTonight.className = 'sc-val gold';
+      hudTonightSummary.innerHTML = `👉 Complete tasks until exactly <strong>${saveTonightSplit.storedTasks} stored</strong> remain in your Radar menu with <strong>${saveTonightSplit.mapTasks} waiting on map</strong>, then stop claiming!`;
+    }
+
+    // Update Scenario Descriptions
+    scenSafeEnd.textContent = `${saveTonightSplit.storedTasks}/${radar.storage} Stored + ${saveTonightSplit.mapTasks} on Map (${reqSaveTonight} Total)`;
+    scenSafeSpend.textContent = plannedBankSpend;
+    scenSafeStart.textContent = `${safeSplit.storedTasks}/${radar.storage} Stored + ${safeSplit.mapTasks} on Map (${radar.safeBank} Total)`;
+
+    scenEmptySpend.textContent = plannedBankSpend;
+    scenEmptyStart.textContent = `${emptySplit.storedTasks}/${radar.storage} Stored + ${emptySplit.mapTasks} on Map (${emptyEndBank} Total)`;
+    scenEmptyDeficit.textContent = `${emptyDeficit}-task deficit (~${Math.round(emptyDeficit * 25)}k pts)`;
+
+    // Update Weekly Duel Strategy Planner
+    updateWeeklyPlanner(radar, plannedBankSpend);
+
+    // Render Table for active level (or expanded table)
+    renderCheatTable(radar, plannedBankSpend);
+  }
+
+  // Weekly Planner State (Default: Monday B, Wednesday A Rebuild, Friday B)
+  let weekStrat = { mon: 'B', wed: 'A', fri: 'B' };
+
+  function setDayStrat(day, strat) {
+    weekStrat[day] = strat;
+    updateCalculator();
+  }
+
+  function setWeekPreset(mon, wed, fri) {
+    weekStrat = { mon, wed, fri };
+    updateCalculator();
+  }
+
+  function updateWeeklyPlanner(radar, plannedBankSpend) {
+    const safe = radar.safeBank;
+    const regen = radar.dailyRegen;
+    const netBankGain = Math.max(0, regen - plannedBankSpend);
+    const reqPreBank = Math.max(0, safe - netBankGain);
+
+    // 1. Monday
+    const monStart = safe;
+    const monAvail = monStart + regen;
+    const monSpend = weekStrat.mon === 'A' ? (monAvail - reqPreBank) : monAvail;
+    const monEnd = weekStrat.mon === 'A' ? reqPreBank : 0;
+    const monEndSplit = formatBankSplit(monEnd, radar.display, radar.storage);
+
+    // Tuesday bridge -> Wednesday Start
+    const tueStart = monEnd;
+    const tueStartSplit = formatBankSplit(tueStart, radar.display, radar.storage);
+    const wedStart = Math.min(safe, monEnd + netBankGain);
+    const wedStartDeficit = safe - wedStart;
+    const wedStartSplit = formatBankSplit(wedStart, radar.display, radar.storage);
+
+    // 2. Wednesday
+    const wedAvail = wedStart + regen;
+    let wedSpend, wedEnd;
+    if (weekStrat.wed === 'A') {
+      wedSpend = Math.max(0, wedAvail - reqPreBank);
+      wedEnd = Math.min(wedAvail, reqPreBank);
+    } else {
+      wedSpend = wedAvail;
+      wedEnd = 0;
+    }
+    const wedEndSplit = formatBankSplit(wedEnd, radar.display, radar.storage);
+
+    // Thursday bridge -> Friday Start
+    const thuStart = wedEnd;
+    const thuStartSplit = formatBankSplit(thuStart, radar.display, radar.storage);
+    const friStart = Math.min(safe, wedEnd + netBankGain);
+    const friStartDeficit = safe - friStart;
+    const friStartSplit = formatBankSplit(friStart, radar.display, radar.storage);
+
+    // 3. Friday
+    const friAvail = friStart + regen;
+    let friSpend, friEnd;
+    if (weekStrat.fri === 'A') {
+      friSpend = Math.max(0, friAvail - reqPreBank);
+      friEnd = Math.min(friAvail, reqPreBank);
+    } else {
+      friSpend = friAvail; // Always safe to spend 100% on Friday
+      friEnd = 0;
+    }
+    const friEndSplit = formatBankSplit(friEnd, radar.display, radar.storage);
+
+    // Saturday (Pre-Bank Day) & Sunday (Bank Day into Monday)
+    const satStart = friEnd;
+    const satStartSplit = formatBankSplit(satStart, radar.display, radar.storage);
+    const satAvail = satStart + regen;
+    const satSpend = Math.max(0, satAvail - reqPreBank);
+    const satEnd = reqPreBank;
+    const satEndSplit = formatBankSplit(satEnd, radar.display, radar.storage);
+
+    const sunStart = satEnd;
+    const sunStartSplit = formatBankSplit(sunStart, radar.display, radar.storage);
+    const sunEnd = safe;
+    const sunEndSplit = formatBankSplit(sunEnd, radar.display, radar.storage);
+
+    const totalWeeklySpend = monSpend + wedSpend + friSpend;
+    const totalWeeklyPts = Math.round(totalWeeklySpend * 25);
+
+    // Update Presets UI
+    ['AAA', 'AAB', 'BAB', 'ABB', 'BBB'].forEach(p => {
+      const btn = document.getElementById(`presetBtn${p}`);
+      if (btn) btn.classList.remove('active');
+    });
+    if (weekStrat.mon === 'A' && weekStrat.wed === 'A' && weekStrat.fri === 'A') {
+      document.getElementById('presetBtnAAA')?.classList.add('active');
+    } else if (weekStrat.mon === 'A' && weekStrat.wed === 'A' && weekStrat.fri === 'B') {
+      document.getElementById('presetBtnAAB')?.classList.add('active');
+    } else if (weekStrat.mon === 'B' && weekStrat.wed === 'A' && weekStrat.fri === 'B') {
+      document.getElementById('presetBtnBAB')?.classList.add('active');
+    } else if (weekStrat.mon === 'A' && weekStrat.wed === 'B' && weekStrat.fri === 'B') {
+      document.getElementById('presetBtnABB')?.classList.add('active');
+    } else if (weekStrat.mon === 'B' && weekStrat.wed === 'B' && weekStrat.fri === 'B') {
+      document.getElementById('presetBtnBBB')?.classList.add('active');
+    }
+
+    // Render 7-Day Vertical Table Rows (Monday thru Sunday)
+    const weeklyTableBody = document.getElementById('weeklyTableBody');
+    if (weeklyTableBody) {
+      const daysData = [
+        {
+          id: 'mon',
+          isPoints: true,
+          rowClass: 'weekly-row-points',
+          dayLabel: 'Monday: Radar Training',
+          daySub: '',
+          toggleHtml: `
+            <div class="cell-toggle-group">
+              <button class="cell-toggle-btn ${weekStrat.mon === 'A' ? 'active-a' : ''}" onclick="setDayStrat('mon','A')">✅ Strat A</button>
+              <button class="cell-toggle-btn ${weekStrat.mon === 'B' ? 'active-b' : ''}" onclick="setDayStrat('mon','B')">💥 Strat B</button>
+            </div>
+          `,
+          start: monStart,
+          startSplit: sunEndSplit,
+          startNote: `${safe} Tasks (100% Full)`,
+          regen: regen,
+          spendHtml: `<strong style="font-size:0.95rem; color:${weekStrat.mon === 'A' ? 'var(--green-color)' : 'var(--gold-color)'};">${monSpend} Tasks</strong><br><span style="font-size:0.7rem; color:var(--text-muted);">${weekStrat.mon === 'A' ? 'Safe Pre-Bank' : 'All-In Drain'}</span>`,
+          end: monEnd,
+          endSplit: monEndSplit,
+          endNote: monEnd === 0 ? '0 Tasks (Drain 100%)' : `${monEnd} Tasks (Hold)`,
+          statusHtml: weekStrat.mon === 'A'
+            ? `<span class="pill pill-green">✅ Safe Pre-Bank</span><div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">Holds ${monEnd} tasks. Tuesday Base Expansion regenerates to 100% full bank.</div>`
+            : `<span class="pill pill-gold">💥 All-In Firepower</span><div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">Drained to 0. Tuesday Base Expansion regenerates to 37 tasks (−11 deficit).</div>`
+        },
+        {
+          id: 'tue',
+          isPoints: false,
+          rowClass: 'weekly-row-bank',
+          dayLabel: 'Tuesday: Base Expansion',
+          daySub: '<span class="pill pill-cyan" style="font-size:0.68rem;">🛡️ Bank Day</span>',
+          toggleHtml: '',
+          start: tueStart,
+          startSplit: tueStartSplit,
+          startNote: `${tueStart} Tasks`,
+          regen: regen,
+          spendHtml: `<span style="color:var(--text-muted); font-weight:600;">−${plannedBankSpend} Tasks</span><br><span style="font-size:0.7rem; color:var(--text-dim);">(Taylor/Pass)</span>`,
+          end: wedStart,
+          endSplit: wedStartSplit,
+          endNote: `${wedStart} Tasks`,
+          statusHtml: wedStartDeficit === 0
+            ? `<span class="pill pill-green">🛡️ 100% Full Bank</span><div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">Held ${monEnd} + net ${netBankGain} = ${wedStart} tasks. Age of Science starts maxed!</div>`
+            : `<span class="pill pill-red">⚠️ −${wedStartDeficit} Deficit (${wedStart}/${safe})</span><div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">Net +${netBankGain} from 0. Enters Age of Science at 77% capacity.</div>`
+        },
+        {
+          id: 'wed',
+          isPoints: true,
+          rowClass: (weekStrat.mon === 'B' && weekStrat.wed === 'A') ? 'weekly-row-rebuild' : 'weekly-row-points',
+          dayLabel: 'Wednesday: Age of Science',
+          daySub: '',
+          toggleHtml: `
+            <div class="cell-toggle-group">
+              <button class="cell-toggle-btn ${weekStrat.wed === 'A' ? 'active-a' : ''}" onclick="setDayStrat('wed','A')">✅ Strat A</button>
+              <button class="cell-toggle-btn ${weekStrat.wed === 'B' ? 'active-b' : ''}" onclick="setDayStrat('wed','B')">💥 Strat B</button>
+            </div>
+          `,
+          start: wedStart,
+          startSplit: wedStartSplit,
+          startNote: `${wedStart} Tasks`,
+          regen: regen,
+          spendHtml: `<strong style="font-size:0.95rem; color:${(weekStrat.mon === 'B' && weekStrat.wed === 'A') ? 'var(--cyan-color)' : (weekStrat.wed === 'A' ? 'var(--green-color)' : 'var(--gold-color)')};">${wedSpend} Tasks</strong><br><span style="font-size:0.7rem; color:var(--text-muted);">${(weekStrat.mon === 'B' && weekStrat.wed === 'A') ? 'Rebuild Pivot' : (weekStrat.wed === 'A' ? 'Safe Pre-Bank' : 'All-In Drain')}</span>`,
+          end: wedEnd,
+          endSplit: wedEndSplit,
+          endNote: wedEnd === 0 ? '0 Tasks (Drain 100%)' : `${wedEnd} Tasks (Hold)`,
+          statusHtml: (weekStrat.mon === 'B' && weekStrat.wed === 'A')
+            ? `<span class="pill pill-green">✨ Tactical Rebuild Pivot</span><div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">Spends 70 tasks, holds 11. Guarantees 100% full bank for Total Mobilization (Friday)!</div>`
+            : (weekStrat.wed === 'A')
+              ? `<span class="pill pill-green">✅ Safe Pre-Bank</span><div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">Holds ${wedEnd} tasks. Train Heroes regenerates to 100% full bank.</div>`
+              : (weekStrat.mon === 'A')
+                ? `<span class="pill pill-gold">💥 Peak Firepower (92 Tasks)</span><div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">Drained to 0. Train Heroes regenerates to 37 tasks (−11 deficit).</div>`
+                : `<span class="pill pill-red">⚠️ Compounded Deficit (81 Tasks)</span><div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">Spent from depleted bank. Enters Train Heroes from 0.</div>`
+        },
+        {
+          id: 'thu',
+          isPoints: false,
+          rowClass: 'weekly-row-bank',
+          dayLabel: 'Thursday: Train Heroes',
+          daySub: '<span class="pill pill-cyan" style="font-size:0.68rem;">🛡️ Bank Day</span>',
+          toggleHtml: '',
+          start: thuStart,
+          startSplit: thuStartSplit,
+          startNote: `${thuStart} Tasks`,
+          regen: regen,
+          spendHtml: `<span style="color:var(--text-muted); font-weight:600;">−${plannedBankSpend} Tasks</span><br><span style="font-size:0.7rem; color:var(--text-dim);">(Taylor/Pass)</span>`,
+          end: friStart,
+          endSplit: friStartSplit,
+          endNote: `${friStart} Tasks`,
+          statusHtml: friStartDeficit === 0
+            ? `<span class="pill pill-green">🛡️ 100% Full Bank</span><div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">Held ${wedEnd} + net ${netBankGain} = ${friStart} tasks. Total Mobilization is 100% ready!</div>`
+            : `<span class="pill pill-red">⚠️ −${friStartDeficit} Deficit (${friStart}/${safe})</span><div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">Net +${netBankGain} from 0. Friday starting bank is limited.</div>`
+        },
+        {
+          id: 'fri',
+          isPoints: true,
+          rowClass: 'weekly-row-points',
+          dayLabel: 'Friday: Total Mobilization',
+          daySub: '',
+          toggleHtml: `
+            <div class="cell-toggle-group">
+              <button class="cell-toggle-btn ${weekStrat.fri === 'A' ? 'active-a' : ''}" onclick="setDayStrat('fri','A')">✅ Strat A</button>
+              <button class="cell-toggle-btn ${weekStrat.fri === 'B' ? 'active-b' : ''}" onclick="setDayStrat('fri','B')">💥 Strat B</button>
+            </div>
+          `,
+          start: friStart,
+          startSplit: friStartSplit,
+          startNote: `${friStart} Tasks`,
+          regen: regen,
+          spendHtml: `<strong style="font-size:0.95rem; color:${(friStartDeficit === 0 && weekStrat.fri === 'B') ? 'var(--green-color)' : 'var(--gold-color)'};">${friSpend} Tasks</strong><br><span style="font-size:0.7rem; color:var(--text-muted);">${weekStrat.fri === 'A' ? 'Conservative Hold' : 'All-In Weekend Drain'}</span>`,
+          end: friEnd,
+          endSplit: friEndSplit,
+          endNote: friEnd === 0 ? '0 Tasks (Drain 100%)' : `${friEnd} Tasks (Hold)`,
+          statusHtml: (friStartDeficit === 0 && weekStrat.fri === 'B')
+            ? `<span class="pill pill-green">🔥 100% Max Peak (92 Tasks)</span><div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">Full bank unleashed! Weekend restores full 48 bank for Monday Radar Training.</div>`
+            : (weekStrat.fri === 'B')
+              ? `<span class="pill pill-gold">💥 All-In Spend (81 Tasks)</span><div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">Spent from depleted bank. Weekend restores full bank for Monday Radar Training.</div>`
+              : `<span class="pill pill-cyan">🛡️ Conservative Hold (81 Tasks)</span><div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">Held ${friEnd} tasks into Saturday Enemy Buster.</div>`
+        },
+        {
+          id: 'sat',
+          isPoints: false,
+          rowClass: 'weekly-row-bank',
+          dayLabel: 'Saturday: Enemy Buster',
+          daySub: '<span class="pill pill-cyan" style="font-size:0.68rem;">🛡️ Pre-Bank Day</span>',
+          toggleHtml: '',
+          start: satStart,
+          startSplit: satStartSplit,
+          startNote: `${satStart} Tasks`,
+          regen: regen,
+          spendHtml: `<strong style="font-size:0.9rem; color:var(--gold-color);">${satSpend} Tasks</strong><br><span style="font-size:0.7rem; color:var(--text-dim);">(Cleared / Played)</span>`,
+          end: satEnd,
+          endSplit: satEndSplit,
+          endNote: `${satEnd} Tasks (Hold)`,
+          statusHtml: `<span class="pill pill-green">🛡️ Pre-Bank for Sunday</span><div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">Held ${satEnd} tasks tonight so Sunday Rest Day (+37 net gain) hits 48 tasks with zero overflow!</div>`
+        },
+        {
+          id: 'sun',
+          isPoints: false,
+          rowClass: 'weekly-row-bank',
+          dayLabel: 'Sunday: Rest Day (No Event)',
+          daySub: '<span class="pill pill-cyan" style="font-size:0.68rem;">🛡️ Bank Day</span>',
+          toggleHtml: '',
+          start: sunStart,
+          startSplit: sunStartSplit,
+          startNote: `${sunStart} Tasks (from Sat)`,
+          regen: regen,
+          spendHtml: `<span style="color:var(--text-muted); font-weight:600;">−${plannedBankSpend} Tasks</span><br><span style="font-size:0.7rem; color:var(--text-dim);">(Taylor/Pass)</span>`,
+          end: sunEnd,
+          endSplit: sunEndSplit,
+          endNote: `${safe} Tasks (Full Bank)`,
+          statusHtml: `<span class="pill pill-green">🛡️ 100% Full Bank Target</span><div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">Starts with ${sunStart} + ${netBankGain} net = <strong>${safe} tasks</strong>. Zero overflow into Monday Radar Training!</div>`
+        }
+      ];
+
+      weeklyTableBody.innerHTML = '';
+      daysData.forEach(d => {
+        const tr = document.createElement('tr');
+        tr.className = d.rowClass;
+
+        const dayTitleHtml = `
+          <div class="col-day-cell" style="display:flex; flex-direction:column; gap:3px;">
+            <div style="font-weight:800; font-size:0.84rem; color:var(--text-main); white-space:nowrap;">
+              ${d.dayLabel}
+            </div>
+            <div style="display:flex; align-items:center; gap:4px; flex-wrap:nowrap;">
+              ${d.daySub}
+              ${d.toggleHtml}
+            </div>
+          </div>
+        `;
+
+        const startCell = (d.start === 0)
+          ? `<div class="col-stat-cell"><strong style="color:var(--text-dim); font-size:0.82rem;">0 Tasks</strong></div>`
+          : `
+            <div class="col-stat-cell" style="display:flex; flex-direction:column; gap:1px; font-size:0.78rem; line-height:1.3;">
+              <div><span style="color:var(--text-muted); font-size:0.7rem;">Storage:</span> <strong style="color:var(--text-main);">${d.startSplit.storedTasks} / ${radar.storage}</strong></div>
+              <div><span style="color:var(--text-muted); font-size:0.7rem;">Map:</span> <strong style="color:var(--cyan-color);">${d.startSplit.mapTasks} Map</strong></div>
+              <div><span style="color:var(--text-muted); font-size:0.7rem;">Total:</span> <strong style="color:var(--gold-color);">${d.start} Tasks</strong></div>
+            </div>
+          `;
+
+        const spendCell = `
+          <div class="col-spend-cell" style="display:flex; flex-direction:column; gap:1px; line-height:1.25;">
+            ${d.spendHtml}
+          </div>
+        `;
+
+        const endCell = (d.end === 0)
+          ? `<div class="col-stat-cell"><span class="pill pill-green" style="font-size:0.7rem; padding:2px 6px;">0 Tasks (Drain)</span></div>`
+          : `
+            <div class="col-stat-cell" style="display:flex; flex-direction:column; gap:1px; font-size:0.78rem; line-height:1.3;">
+              <div><span style="color:var(--text-muted); font-size:0.7rem;">Storage:</span> <strong style="color:var(--text-main);">${d.endSplit.storedTasks} / ${radar.storage}</strong></div>
+              <div><span style="color:var(--text-muted); font-size:0.7rem;">Map:</span> <strong style="color:var(--cyan-color);">${d.endSplit.mapTasks} Map</strong></div>
+              <div><span style="color:var(--text-muted); font-size:0.7rem;">Total:</span> <strong style="color:var(--green-color);">${d.end} Tasks</strong></div>
+            </div>
+          `;
+
+        const regenCell = `
+          <div class="col-regen-cell">
+            <strong style="color:var(--cyan-color); font-size:0.85rem;">+${d.regen}</strong>
+            <span style="font-size:0.7rem; color:var(--text-muted);">/ day</span>
+          </div>
+        `;
+
+        const statusCell = `
+          <div class="col-status-cell" style="display:flex; flex-direction:column; gap:3px; line-height:1.35;">
+            ${d.statusHtml}
+          </div>
+        `;
+
+        tr.innerHTML = `
+          <td>${dayTitleHtml}</td>
+          <td>${startCell}</td>
+          <td>${regenCell}</td>
+          <td>${spendCell}</td>
+          <td>${endCell}</td>
+          <td>${statusCell}</td>
+        `;
+        weeklyTableBody.appendChild(tr);
+      });
+    }
+
+    // Update Weekly Verdict Card
+    const totalEl = document.getElementById('weeklyTotalSpend');
+    if (totalEl) totalEl.textContent = `${totalWeeklySpend} Tasks (~${totalWeeklyPts}k VS Points)`;
+
+    const verdictBadge = document.getElementById('weeklyVerdictBadge');
+    const verdictNarrative = document.getElementById('weeklyVerdictNarrative');
+
+    if (verdictBadge && verdictNarrative) {
+      if (weekStrat.mon === 'B' && weekStrat.wed === 'A' && weekStrat.fri === 'B') {
+        verdictBadge.className = 'pill pill-green';
+        verdictBadge.textContent = '🔥 Optimal Rebuild Strategy';
+        verdictNarrative.innerHTML = `<strong>Monday B (${monSpend} tasks) ➔ Wednesday A (${wedSpend} tasks) ➔ Friday B (${friSpend} tasks)</strong>: You unleashed maximum ${monSpend}-task firepower on Monday, used Wednesday as a tactical ${wedSpend}-task rebuild day, and hit Friday at 100% full bank (${friSpend} tasks) with zero penalty for next week!`;
+      } else if (weekStrat.mon === 'A' && weekStrat.wed === 'A' && weekStrat.fri === 'B') {
+        verdictBadge.className = 'pill pill-green';
+        verdictBadge.textContent = '🛡️ Balanced Optimal (A / A / B)';
+        verdictNarrative.innerHTML = `<strong>Monday A (${monSpend} tasks) ➔ Wednesday A (${wedSpend} tasks) ➔ Friday B (${friSpend} tasks)</strong>: Safe, steady performance with 100% full bank before Monday and Wednesday, and full ${friSpend}-task drain on Friday!`;
+      } else if (weekStrat.mon === 'A' && weekStrat.wed === 'A' && weekStrat.fri === 'A') {
+        verdictBadge.className = 'pill pill-cyan';
+        verdictBadge.textContent = '🛡️ Pure Safe (A / A / A)';
+        verdictNarrative.innerHTML = `<strong>Monday A (${monSpend} tasks) ➔ Wednesday A (${wedSpend} tasks) ➔ Friday A (${friSpend} tasks)</strong>: Conservative hold on every point day. Notice that holding on Friday rolls ${friEnd} tasks into Saturday, resulting in ${totalWeeklySpend} total radar points spent.`;
+      } else if (weekStrat.mon === 'A' && weekStrat.wed === 'B') {
+        verdictBadge.className = 'pill pill-gold';
+        verdictBadge.textContent = '⚡ Wednesday Push Strategy';
+        verdictNarrative.innerHTML = `<strong>Monday A (${monSpend} tasks) ➔ Wednesday B (${wedSpend} tasks) ➔ Friday (${friSpend} tasks)</strong>: You saved tasks on Monday to hit Wednesday with maximum peak firepower (${wedSpend} tasks), accepting a slight handicap (${friSpend} tasks) on Friday.`;
+      } else {
+        verdictBadge.className = 'pill pill-red';
+        verdictBadge.textContent = '💥 Continuous All-In Drain';
+        verdictNarrative.innerHTML = `<strong>Monday B (${monSpend} tasks) ➔ Wednesday B (${wedSpend} tasks) ➔ Friday (${friSpend} tasks)</strong>: Draining to 0 on Monday limits Wednesday to ${wedSpend} tasks, and draining on Wednesday limits Friday to ${friSpend} tasks.`;
+      }
+    }
+  }
+
+  // Table Expand / Collapse State (Default: false -> Show only my level)
+  let isTableExpanded = false;
+
+  function toggleTableExpand() {
+    isTableExpanded = !isTableExpanded;
+    updateCalculator();
+  }
+
+  function renderCheatTable(radarProfile, plannedSpend) {
+    cheatTableBody.innerHTML = '';
+    const activeLevel = radarProfile.level;
+
+    const tableTitleText = document.getElementById('tableTitleText');
+    const toggleTableText = document.getElementById('toggleTableText');
+    const toggleTableFooterText = document.getElementById('toggleTableFooterText');
+
+    if (tableTitleText) {
+      tableTitleText.textContent = isTableExpanded 
+        ? 'Universal Radar Level Comparison (All Levels 1–17)'
+        : `Radar Level Summary (Level ${activeLevel})`;
+    }
+
+    const btnLabel = isTableExpanded 
+      ? `🔼 Show Only Level ${activeLevel}`
+      : '🔽 Show All Levels (1–17)';
+
+    if (toggleTableText) toggleTableText.textContent = btnLabel;
+    if (toggleTableFooterText) toggleTableFooterText.textContent = btnLabel;
+
+    // Determine rows to render
+    let levelsToRender = [];
+    if (!isTableExpanded) {
+      if (activeLevel === 'Custom') {
+        levelsToRender = ['custom'];
+      } else {
+        levelsToRender = [parseInt(activeLevel)];
+      }
+    } else {
+      levelsToRender = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17];
+      if (activeLevel === 'Custom') {
+        levelsToRender.push('custom');
+      }
+    }
+
+    levelsToRender.forEach(l => {
+      let d, safe, regen, isRowActive, levelLabel;
+
+      if (l === 'custom') {
+        d = radarProfile;
+        safe = radarProfile.safeBank;
+        regen = radarProfile.dailyRegen;
+        isRowActive = true;
+        levelLabel = 'Custom';
+      } else {
+        d = RADAR_DATA[l];
+        safe = (d.display + d.storage) - 1;
+        regen = d.refresh * 4;
+        isRowActive = (activeLevel === l);
+        levelLabel = `Lvl ${l}`;
+      }
+
+      const netRegen = Math.max(0, regen - plannedSpend);
+      const reqSave = Math.max(0, safe - netRegen);
+      const saveSplit = formatBankSplit(reqSave, d.display, d.storage);
+      const maxSpend = (safe + regen) - reqSave;
+
+      // What happens if starting bank day with 0:
+      const endIfZero = Math.min(safe, netRegen);
+      const deficitIfZero = safe - endIfZero;
+      const zeroSplit = formatBankSplit(endIfZero, d.display, d.storage);
+
+      const tr = document.createElement('tr');
+      if (isRowActive) {
+        tr.className = 'active-level-row';
+      }
+
+      // 3-line Pre-Bank Needed Column
+      let leaveCell = '';
+      if (reqSave === 0) {
+        leaveCell = `
+          <div style="display:flex; flex-direction:column; gap:2px; font-size:0.82rem; line-height:1.35;">
+            <div><span style="color:var(--text-muted); font-size:0.72rem; font-weight:600;">Storage:</span> <strong style="color:var(--green-color);">0 / ${d.storage}</strong></div>
+            <div><span style="color:var(--text-muted); font-size:0.72rem; font-weight:600;">Map:</span> <strong style="color:var(--green-color);">0 on Screen</strong></div>
+            <div><span class="pill pill-green">0 Tasks (Empty 100%)</span></div>
+          </div>
+        `;
+      } else {
+        leaveCell = `
+          <div style="display:flex; flex-direction:column; gap:2px; font-size:0.82rem; line-height:1.35;">
+            <div><span style="color:var(--text-muted); font-size:0.72rem; font-weight:600;">Storage:</span> <strong style="color:var(--gold-color);">${saveSplit.storedTasks} / ${d.storage}</strong></div>
+            <div><span style="color:var(--text-muted); font-size:0.72rem; font-weight:600;">Map:</span> <strong style="color:var(--cyan-color);">${saveSplit.mapTasks} on Screen</strong></div>
+            <div><span style="color:var(--text-muted); font-size:0.72rem; font-weight:600;">Total:</span> <strong style="color:var(--gold-color);">${reqSave} Tasks</strong></div>
+          </div>
+        `;
+      }
+
+      // 3-line Enter with 0 Column (shows Deficit on 3rd line)
+      let zeroResultCell = '';
+      if (deficitIfZero === 0) {
+        zeroResultCell = `
+          <div style="display:flex; flex-direction:column; gap:2px; font-size:0.82rem; line-height:1.35;">
+            <div><span style="color:var(--text-muted); font-size:0.72rem; font-weight:600;">Storage:</span> <strong style="color:var(--green-color);">${zeroSplit.storedTasks} / ${d.storage}</strong></div>
+            <div><span style="color:var(--text-muted); font-size:0.72rem; font-weight:600;">Map:</span> <strong style="color:var(--green-color);">${zeroSplit.mapTasks} on Screen</strong></div>
+            <div><span style="color:var(--text-muted); font-size:0.72rem; font-weight:600;">Deficit:</span> <strong style="color:var(--green-color);">0 (Full Bank)</strong></div>
+          </div>
+        `;
+      } else {
+        zeroResultCell = `
+          <div style="display:flex; flex-direction:column; gap:2px; font-size:0.82rem; line-height:1.35;">
+            <div><span style="color:var(--text-muted); font-size:0.72rem; font-weight:600;">Storage:</span> <strong style="color:var(--text-main);">${zeroSplit.storedTasks} / ${d.storage}</strong></div>
+            <div><span style="color:var(--text-muted); font-size:0.72rem; font-weight:600;">Map:</span> <strong style="color:var(--cyan-color);">${zeroSplit.mapTasks} on Screen</strong></div>
+            <div><span style="color:var(--text-muted); font-size:0.72rem; font-weight:600;">Deficit:</span> <span class="pill pill-red">−${deficitIfZero} Tasks (${endIfZero}/${safe})</span></div>
+          </div>
+        `;
+      }
+
+      // 3-line Safe Bank Column: Storage, Number on Map, Total
+      const safeBankCombined = `
+        <div style="display:flex; flex-direction:column; gap:2px; font-size:0.82rem; line-height:1.35;">
+          <div><span style="color:var(--text-muted); font-size:0.72rem; font-weight:600;">Storage:</span> <strong style="color:var(--gold-color);">${d.storage - 1} / ${d.storage}</strong></div>
+          <div><span style="color:var(--text-muted); font-size:0.72rem; font-weight:600;">Map:</span> <strong style="color:var(--cyan-color);">${d.display} on Screen</strong></div>
+          <div><span style="color:var(--text-muted); font-size:0.72rem; font-weight:600;">Total:</span> <strong style="color:var(--green-color);">${safe} Tasks</strong></div>
+        </div>
+      `;
+
+      const allInSpend = safe + regen; // Total spend if draining everything from full bank
+
+      tr.innerHTML = `
+        <td><strong>${levelLabel}</strong> ${isRowActive ? '⭐' : ''}</td>
+        <td>${safeBankCombined}</td>
+        <td style="color:var(--cyan-color); font-weight:600;">+${regen} / day</td>
+        <td style="border-left:1px solid var(--border-subtle);">${leaveCell}</td>
+        <td style="font-weight:700; color:var(--green-color); border-right:1px solid var(--border-subtle);">${maxSpend} tasks</td>
+        <td>${zeroResultCell}</td>
+        <td style="font-weight:700; color:var(--gold-color); border-right:1px solid var(--border-subtle);">${allInSpend} tasks</td>
+      `;
+      cheatTableBody.appendChild(tr);
+    });
+  }
+
+  // Initial Load & Apply Theme
+  applyTheme();
+  updateCalculator();
+</script>
+
+</body>
+</html>
