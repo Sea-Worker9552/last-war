@@ -640,12 +640,12 @@
 
           <div class="system-status">
             <span class="status-dot"></span>
-            <span>8 Offline Tools Active</span>
+            <span>9 Offline Tools Active</span>
           </div>
         </div>
       </div>
       <h1>LAST WAR: SURVIVAL TOOLS & CALCULATORS</h1>
-      <p class="subtitle">Your central portal for Last War: Survival tools & calculators — featuring Squad Targeting & 5v5 Combat Simulator, Secretary Buff & Arms Race Optimizer, Special Forces T10 Research, Season 1 Start Date Projection, Alliance Help Breakeven, VS Friday Troop Training, Gold Zombie Spawner, and Taylor Hero Yield Simulator.</p>
+      <p class="subtitle">Your central portal for Last War: Survival tools & calculators — featuring Radar Tasks Banking & VS Optimizer, Squad Targeting & 5v5 Combat Simulator, Secretary Buff & Arms Race Optimizer, Special Forces T10 Research, Season 1 Start Date Projection, Alliance Help & Survivor Optimizer, VS Friday Troop Training, Gold Zombie Spawner, and Taylor Hero Yield Simulator.</p>
     </header>
 
     <!-- Metrics Summary -->
@@ -682,11 +682,11 @@
         </div>
       </div>
 
-      <div class="metric-card" onclick="scrollToTool('card-alliancehelp')" title="Jump to Alliance Help Breakeven Dashboard">
+      <div class="metric-card" onclick="scrollToTool('card-alliancehelp')" title="Jump to Alliance Help & Survivor Optimizer">
         <div class="metric-icon">🏛️</div>
         <div class="metric-info">
           <div class="val">Alliance Help</div>
-          <div class="lbl">Survivor Breakeven</div>
+          <div class="lbl">Survivor Optimizer</div>
         </div>
       </div>
 
@@ -711,6 +711,14 @@
         <div class="metric-info">
           <div class="val">1 ~ 365 Days</div>
           <div class="lbl">Taylor ROI & Payouts</div>
+        </div>
+      </div>
+
+      <div class="metric-card" onclick="scrollToTool('card-radar')" title="Jump to Radar Tasks Banking Calculator">
+        <div class="metric-icon">📡</div>
+        <div class="metric-info">
+          <div class="val">n−1 Banking</div>
+          <div class="lbl">VS Radar & Taylor Sync</div>
         </div>
       </div>
     </div>
@@ -780,25 +788,26 @@
         </div>
       </div>
 
-      <!-- 2. Alliance Center Help Breakeven Dashboard -->
-      <div class="tool-card" id="card-alliancehelp" data-category="survivors tech" data-title="alliance help breakeven dashboard survivor ur ssr 0.5% flat build time construction research survivors">
+      <!-- 2. Alliance Center Help & Survivor Optimizer -->
+      <div class="tool-card" id="card-alliancehelp" data-category="survivors tech" data-title="alliance help survivor optimizer breakeven dashboard survivor ur ssr 0.5% flat build time construction research survivors optimizer lineup solver">
         <div>
           <div class="tool-header">
             <div class="tool-icon-wrapper">🏛️</div>
             <span class="tool-category-badge badge-survivors">Survivors</span>
           </div>
-          <h2>Alliance Help Breakeven Dashboard</h2>
-          <p class="description">Compare Survivor setups (UR vs SSR) to optimize construction and research speedups. Model 0.5% vs flat time reductions and calculate exact build breakeven curves.</p>
+          <h2>Alliance Help & Survivor Optimizer</h2>
+          <p class="description">Compare Survivor setups (UR vs SSR) to optimize construction and research speedups. Model 0.5% vs flat time reductions, auto-solve optimal lineups, and calculate exact build breakeven curves.</p>
           <div class="features-list">
-            <span class="feature-tag">Survivor Setup</span>
+            <span class="feature-tag">Optimal Lineup Solver</span>
+            <span class="feature-tag">Survivor Setup (UR vs SSR)</span>
             <span class="feature-tag">0.5% vs Flat Time</span>
             <span class="feature-tag">Breakeven Curve</span>
             <span class="feature-tag">Speedup Optimizer</span>
           </div>
         </div>
         <div class="card-footer">
-          <span class="status-text">✅ Interactive Tool</span>
-          <a href="tools/alliance_help_survivor_calculator.html" class="btn-launch">Launch Tool ➔</a>
+          <span class="status-text">✅ Interactive Optimizer</span>
+          <a href="tools/alliance_help_survivor_optimizer.html" class="btn-launch">Launch Optimizer ➔</a>
         </div>
       </div>
 
@@ -914,6 +923,32 @@
         <div class="card-footer">
           <span class="status-text">✅ Live Interactive Simulator</span>
           <a href="tools/squad-targeting-combat-simulator.html" class="btn-launch cyan">Launch Simulator ➔</a>
+        </div>
+      </div>
+
+      <!-- 8. Radar Tasks Banking Calculator & VS Strategy Planner -->
+      <div class="tool-card" id="card-radar" data-category="duel events" data-title="radar tasks banking calculator vs duel points alliance monday wednesday friday taylor daily chests 6 hours n-1 capacity timer freeze">
+        <div>
+          <div class="tool-header">
+            <div class="tool-icon-wrapper">📡</div>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <span class="tool-category-badge badge-duel">Alliance Duel</span>
+              <span class="tool-category-badge badge-events">Strategy</span>
+            </div>
+          </div>
+          <h2>Radar Tasks Banking Calculator</h2>
+          <p class="description">Master the <strong>n−1 capacity rule</strong> to eliminate 6-hour refresh timer freezes. Optimize radar task reserves on Sunday, Tuesday, and Thursday to dominate VS Duel point days (Monday, Wednesday, Friday) and guarantee Taylor daily chests.</p>
+          <div class="features-list">
+            <span class="feature-tag">n−1 Safe Bank (Levels 1–17)</span>
+            <span class="feature-tag">Taylor 4★/5★ Chest Sync</span>
+            <span class="feature-tag">Mon→Wed Carryover Optimizer</span>
+            <span class="feature-tag">7-Day VS Duel Simulator</span>
+            <span class="feature-tag">6h Refresh Cycle Clock</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <span class="status-text">✅ Live Interactive Tool</span>
+          <a href="vs-tools/radar-banking-calculator/index.html" class="btn-launch orange">Launch Tool ➔</a>
         </div>
       </div>
 
