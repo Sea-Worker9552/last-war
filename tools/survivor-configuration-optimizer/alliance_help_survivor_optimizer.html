@@ -25,6 +25,9 @@
             --color-cfgA-glow: rgba(6, 182, 212, 0.25);
             --color-cfgB: #f43f5e; /* Neon Coral / Rose */
             --color-cfgB-glow: rgba(244, 63, 94, 0.25);
+            --color-cfgC: #a855f7; /* Neon Purple for Custom Config C */
+            --color-cfgC-glow: rgba(168, 85, 247, 0.25);
+            
             --color-optimal: #10b981; /* Emerald Green for #1 Optimal */
             --color-optimal-glow: rgba(16, 185, 129, 0.25);
             
@@ -53,6 +56,8 @@
             --color-cfgA-glow: rgba(2, 132, 199, 0.2);
             --color-cfgB: #e11d48; /* Crimson Rose */
             --color-cfgB-glow: rgba(225, 29, 72, 0.2);
+            --color-cfgC: #7e22ce; /* Deep Purple */
+            --color-cfgC-glow: rgba(126, 34, 206, 0.2);
             --color-optimal: #059669;
             --color-optimal-glow: rgba(5, 150, 105, 0.2);
             
@@ -721,11 +726,55 @@
             gap: 0.65rem;
         }
 
-        /* Auto-Derived Lineups Grid */
+        /* Auto-Derived Lineups Grid & Horizontal Scroll */
+        .lineups-scroll-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 0.75rem;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+        }
+
+        .lineups-scroll-wrapper::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .lineups-scroll-wrapper::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 6px;
+        }
+
+        .lineups-scroll-wrapper::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.18);
+            border-radius: 6px;
+        }
+
+        .lineups-scroll-wrapper::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        [data-theme="light"] .lineups-scroll-wrapper {
+            scrollbar-color: #cbd5e1 transparent;
+        }
+
+        [data-theme="light"] .lineups-scroll-wrapper::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        [data-theme="light"] .lineups-scroll-wrapper::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+        }
+
+        [data-theme="light"] .lineups-scroll-wrapper::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
         .lineups-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 1.5rem;
+            grid-template-columns: repeat(3, minmax(500px, 1fr));
+            gap: 1.25rem;
+            min-width: min-content;
         }
 
         .config-lineup-card {
@@ -736,12 +785,20 @@
             display: flex;
             flex-direction: column;
             gap: 1rem;
+            min-width: 500px;
+        }
+
+        .config-lineup-card .lineup-table th,
+        .config-lineup-card .lineup-table td {
+            white-space: nowrap;
         }
 
         .config-lineup-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
         }
 
         .config-title-tag {
@@ -815,7 +872,7 @@
             border: 1px solid rgba(255, 255, 255, 0.04);
             display: flex;
             flex-direction: column;
-            gap: 1rem;
+            gap: 0.85rem;
         }
 
         .input-group {
@@ -905,11 +962,29 @@
             color: var(--color-ur);
         }
 
-        /* Comparison Display */
+        .btn-copy-cfg {
+            background: rgba(168, 85, 247, 0.12);
+            border: 1px solid rgba(168, 85, 247, 0.35);
+            color: #c084fc;
+            padding: 0.25rem 0.55rem;
+            border-radius: 6px;
+            font-size: 0.74rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .btn-copy-cfg:hover {
+            background: rgba(168, 85, 247, 0.25);
+            border-color: var(--color-cfgC);
+            color: #fff;
+        }
+
+        /* Comparison Display (3 Cards) */
         .comparison-container {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0.85rem;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 0.75rem;
         }
 
         .comp-card {
@@ -933,13 +1008,13 @@
         .comp-card.winner::after {
             content: 'WINNER';
             position: absolute;
-            top: 0.5rem;
-            right: 0.6rem;
+            top: 0.45rem;
+            right: 0.55rem;
             background: var(--color-success);
             color: #000;
-            font-size: 0.6rem;
+            font-size: 0.58rem;
             font-weight: 800;
-            padding: 0.15rem 0.45rem;
+            padding: 0.12rem 0.4rem;
             border-radius: 4px;
             letter-spacing: 0.5px;
         }
@@ -950,7 +1025,7 @@
         }
 
         .comp-name {
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-weight: 700;
         }
 
@@ -961,16 +1036,16 @@
         }
 
         .comp-time-value {
-            font-size: 1.35rem;
+            font-size: 1.25rem;
             font-weight: 800;
-            margin: 0.2rem 0;
+            margin: 0.15rem 0;
             display: flex;
             align-items: baseline;
             gap: 0.2rem;
         }
 
         .comp-time-unit {
-            font-size: 0.78rem;
+            font-size: 0.75rem;
             font-weight: 600;
             color: var(--text-muted);
         }
@@ -998,11 +1073,15 @@
             background: linear-gradient(90deg, var(--color-cfgB), #fb7185);
         }
 
+        .comp-bar-c {
+            background: linear-gradient(90deg, var(--color-cfgC), #c084fc);
+        }
+
         .comp-details {
             display: flex;
             flex-direction: column;
             gap: 0.25rem;
-            font-size: 0.76rem;
+            font-size: 0.74rem;
             color: var(--text-muted);
             border-top: 1px solid rgba(255, 255, 255, 0.05);
             padding-top: 0.45rem;
@@ -1027,21 +1106,23 @@
             border-radius: 10px;
             padding: 0.65rem 0.85rem;
             margin-top: 0.65rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
         }
 
         .summary-text h3 {
-            font-size: 0.9rem;
+            font-size: 0.88rem;
             font-weight: 700;
         }
 
         .summary-text p {
-            font-size: 0.76rem;
+            font-size: 0.75rem;
             color: var(--text-muted);
             margin-top: 0.1rem;
         }
 
         .summary-saving {
-            font-size: 1.15rem;
+            font-size: 1.1rem;
             font-weight: 800;
         }
 
@@ -1235,7 +1316,6 @@
         }
 
         @media (max-width: 680px) {
-            .lineups-grid,
             .comparison-container {
                 grid-template-columns: 1fr;
             }
@@ -1433,12 +1513,12 @@
                 <div class="card-title">⏱️ Set Initial Construction Time</div>
 
                 <!-- Smart Time Input Box -->
-                <div class="smart-input-box" style="margin-top: 1rem; margin-bottom: 1.15rem;">
-                    <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.45rem;">
+                <div class="smart-input-box" style="margin-top: 0.75rem; margin-bottom: 1rem;">
+                    <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.4rem;">
                         ⚡ Smart Time Input (e.g. <span style="color: var(--color-cfgA); font-family: monospace;">1d 23h 48m 2s</span> <span style="margin: 0 0.4rem; color: var(--text-dim); font-weight: 400;">or</span> <span style="color: var(--color-cfgA); font-family: monospace;">5d 20:10:00</span>):
                     </label>
                     <div style="position: relative; display: flex; align-items: center;">
-                        <input type="text" id="smart-time-input" placeholder="Type: 1d 23h 48m, 5d 20:10:00, 36h..." class="select-input" style="width: 100%; font-size: 0.88rem; padding: 0.55rem 0.75rem; font-family: monospace; font-weight: 600;">
+                        <input type="text" id="smart-time-input" placeholder="Type: 1d 23h 48m 2s, 5d 20:10:00, 36h..." class="select-input" style="width: 100%; font-size: 0.88rem; padding: 0.55rem 0.75rem; font-family: monospace; font-weight: 600;">
                     </div>
                 </div>
 
@@ -1492,7 +1572,7 @@
             <div class="quick-presets" style="margin-top: 1rem;">
                 <button class="preset-btn" data-time="12">12h</button>
                 <button class="preset-btn" data-time="24">1 Day</button>
-                <button class="preset-btn" id="preset-btn-breakeven" data-time="0">No Breakeven</button>
+                <span id="dynamic-crossover-container" style="display: contents;"></span>
                 <button class="preset-btn" data-time="48">2 Days</button>
                 <button class="preset-btn" data-time="72">3 Days</button>
                 <button class="preset-btn" data-time="120">5 Days</button>
@@ -1500,10 +1580,10 @@
             </div>
         </div>
 
-        <!-- Right Half: Performance Results -->
+        <!-- Right Half: Performance Results (3 Cards Comparison) -->
         <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
             <div>
-                <div class="card-title">⚖️ Performance Results</div>
+                <div class="card-title">⚖️ Performance Results (3-Way Comparison)</div>
                 
                 <div class="comparison-container">
                     <!-- Config A Card -->
@@ -1561,14 +1641,42 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Config C Card (Custom Setup) -->
+                    <div class="comp-card" id="card-c">
+                        <div class="comp-header">
+                            <span class="comp-name" style="color: var(--color-cfgC);">Config C (Custom Setup)</span>
+                            <span class="comp-sub" id="sub-c">0 Helps | 0s Fixed</span>
+                        </div>
+                        <div class="comp-time-value" id="reduction-c">
+                            0.00 <span class="comp-time-unit">hrs reduced</span>
+                        </div>
+                        <div class="comp-bar">
+                            <div class="comp-bar-fill comp-bar-c" id="bar-c"></div>
+                        </div>
+                        <div class="comp-details">
+                            <div class="comp-detail-row">
+                                <span>Helps using 0.5%:</span>
+                                <span class="comp-detail-val" id="pct-c">0</span>
+                            </div>
+                            <div class="comp-detail-row">
+                                <span>Helps using Fixed:</span>
+                                <span class="comp-detail-val" id="fix-c">0</span>
+                            </div>
+                            <div class="comp-detail-row">
+                                <span>Remaining Time:</span>
+                                <span class="comp-detail-val" id="rem-c">0s</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <!-- Summary Banner -->
             <div class="summary-banner" style="margin-top: 0.65rem;">
                 <div class="summary-text">
-                    <h3 id="winner-banner-title">Configurations are Tied!</h3>
-                    <p id="winner-banner-desc">At this build time, both configurations yield identical reductions.</p>
+                    <h3 id="winner-banner-title">Config A (#1 Optimal) is the Winner!</h3>
+                    <p id="winner-banner-desc">Comparing Config A against Config B and your Custom Config C.</p>
                 </div>
                 <div class="summary-saving" id="winner-banner-saving">
                     ±0m
@@ -1628,16 +1736,20 @@
         </div>
     </div>
 
-    <!-- 6. Two Specialist Baseline Lineups (Config A & Config B) -->
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.25rem; margin-bottom: 0.25rem;">
+    <!-- 6. Three Configuration Cards: Config A, Config B, and Config C (Custom Sandbox) -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.25rem; margin-bottom: 0.25rem; flex-wrap: wrap; gap: 0.5rem;">
         <h2 style="font-size: 1.15rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 0.5rem; margin: 0;">
-            ⚔️ Top 2 Optimal Configurations For Currently Selected Build Time (Config A vs Config B)
+            ⚔️ Configuration Benchmark & Custom Sandbox (Config A vs Config B vs Config C)
         </h2>
+        <span style="font-size: 0.78rem; font-weight: 600; color: var(--text-muted); display: flex; align-items: center; gap: 0.35rem;">
+            ↔️ Scroll horizontally to compare all 3 configurations
+        </span>
     </div>
 
-    <div class="lineups-grid">
-        <!-- Config A Lineup (Short Build Optimal) -->
-        <div class="config-lineup-card">
+    <div class="lineups-scroll-wrapper">
+        <div class="lineups-grid">
+        <!-- Config A Lineup (#1 Optimal) -->
+        <div class="config-lineup-card" style="border-top: 3px solid var(--color-cfgA);">
             <div class="config-lineup-header">
                 <span class="config-title-tag" style="color: var(--color-cfgA);">
                     🥇 Config A: #1 Optimal Lineup (Winner)
@@ -1670,8 +1782,8 @@
             </div>
         </div>
 
-        <!-- Config B Lineup (Long Build Optimal) -->
-        <div class="config-lineup-card">
+        <!-- Config B Lineup (#2 Runner-Up) -->
+        <div class="config-lineup-card" style="border-top: 3px solid var(--color-cfgB);">
             <div class="config-lineup-header">
                 <span class="config-title-tag" style="color: var(--color-cfgB);">
                     🥈 Config B: #2 Runner-Up Alternative
@@ -1703,6 +1815,44 @@
                 </div>
             </div>
         </div>
+
+        <!-- Config C Lineup (Custom Configuration Sandbox) -->
+        <div class="config-lineup-card" style="border-top: 3px solid var(--color-cfgC);">
+            <div class="config-lineup-header">
+                <span class="config-title-tag" style="color: var(--color-cfgC);">
+                    🛠️ Config C: Custom Setup
+                </span>
+                <div style="display: flex; gap: 0.35rem; align-items: center;">
+                    <button class="btn-copy-cfg" onclick="copyToConfigC('A')" title="Copy Config A into Config C">📋 Copy A</button>
+                    <button class="btn-copy-cfg" onclick="copyToConfigC('B')" title="Copy Config B into Config C">📋 Copy B</button>
+                </div>
+            </div>
+
+            <div class="strategy-note">
+                🛠️ <strong>Custom Sandbox:</strong> Choose any survivors from your pool below to test how your current in-game or experimental lineup performs.
+            </div>
+
+            <div class="table-responsive" id="container-cfgC">
+                <!-- Slots 1-4 with interactive dropdowns populated dynamically -->
+            </div>
+
+            <!-- Config C Summary Box (3 Rows) -->
+            <div class="config-total-box">
+                <div class="total-row">
+                    <span class="row-label">Baseline (Center & Tech)</span>
+                    <span class="row-val" id="cfgC-row1">0 Helps | 0 sec / 0:00</span>
+                </div>
+                <div class="total-row">
+                    <span class="row-label">Custom Lineup Bonus</span>
+                    <span class="row-val" id="cfgC-row2">+0 Helps | 0 sec / 0:00</span>
+                </div>
+                <div class="total-row grand-total-row">
+                    <span class="row-label">Config C Grand Total</span>
+                    <span class="row-val grand-val" style="color: var(--color-cfgC);" id="cfgC-row3">0 Helps | 0 sec / 0:00</span>
+                </div>
+            </div>
+        </div>
+    </div>
     </div>
 
     <!-- 7. Full-Width Breakeven Curve & Dynamic Pointer -->
@@ -1881,6 +2031,7 @@
         seconds: 0,
         initialTimeSec: 0,
         breakevenSec: null,
+        crossoverPoints: [],
         theme: 'system',
 
         // 4 UR Candidates + 4 SSR Candidates
@@ -1896,7 +2047,10 @@
             { id: 'SSR-2', name: 'SSR Hero 2', enabled: true, star: 0, tier: 0 },
             { id: 'SSR-3', name: 'SSR Hero 3', enabled: true, star: 0, tier: 0 },
             { id: 'SSR-4', name: 'SSR Hero 4', enabled: true, star: 0, tier: 0 }
-        ]
+        ],
+
+        // Config C (Custom Sandbox Slots: hero IDs)
+        customConfigC: ['UR-1', 'UR-2', 'SSR-1', 'SSR-2']
     };
 
     let state = JSON.parse(JSON.stringify(DEFAULT_STATE));
@@ -1918,6 +2072,9 @@
             if (saved) {
                 const parsed = JSON.parse(saved);
                 state = Object.assign({}, DEFAULT_STATE, parsed);
+                if (!Array.isArray(state.customConfigC) || state.customConfigC.length !== 4) {
+                    state.customConfigC = ['UR-1', 'UR-2', 'SSR-1', 'SSR-2'];
+                }
             }
         } catch(e) {}
     }
@@ -2104,7 +2261,6 @@
                 isBetter = true;
             } else if (isTied) {
                 if (sim.remainingTime === 0 && bestSim.remainingTime === 0) {
-                    // Both completely finish the build to 0s! The one that finishes in fewer helps (higher fixed time) is better!
                     if (totFixed > bestSim.totalFixed) isBetter = true;
                 } else if (totFixed > bestSim.totalFixed) {
                     isBetter = true;
@@ -2152,14 +2308,13 @@
                 remainingTime: sim.remainingTime,
                 helpsPct: sim.helpsPct,
                 helpsFixed: sim.helpsFixed,
-                // Key for detecting distinct compositions
                 sig: `${combo.filter(x => x.rarity === 'UR').length}UR_${totHelps}H_${totFixed}F`
             });
         });
 
         // Sort descending:
         // 1. Total reduction
-        // 2. If both 100% finished (rem === 0), fewer helps / higher fixed wins
+        // 2. If both 100% finished (rem === 0), higher fixed wins (fewer clicks needed)
         // 3. Higher total fixed seconds
         evaluated.sort((a, b) => {
             if (Math.abs(b.totalReduction - a.totalReduction) > 0.5) {
@@ -2186,6 +2341,55 @@
             configA: bestA.combo,
             configB: bestB.combo
         };
+    }
+
+    // Get current heroes for Config C based on state.customConfigC
+    function getConfigCHeroes() {
+        const candidates = getAllCandidates();
+        const candMap = {};
+        candidates.forEach(c => { candMap[c.id] = c; });
+
+        const heroes = [];
+        state.customConfigC.forEach((id, idx) => {
+            if (id && id !== 'none' && candMap[id]) {
+                heroes.push({ ...candMap[id], slotIdx: idx });
+            } else {
+                heroes.push({
+                    id: 'none',
+                    label: 'Empty Slot',
+                    fullName: 'Empty Slot',
+                    rarity: 'NONE',
+                    star: 0,
+                    tier: 0,
+                    helps: 0,
+                    timeSec: 0,
+                    slotIdx: idx
+                });
+            }
+        });
+        return heroes;
+    }
+
+    function updateConfigCSlot(slotIdx, heroId) {
+        state.customConfigC[slotIdx] = heroId;
+        saveState();
+        renderConfigCSlots();
+        updateUI();
+    }
+
+    function copyToConfigC(source) {
+        const sourceCombo = source === 'A' ? optimalConfigA : optimalConfigB;
+        if (!sourceCombo || sourceCombo.length === 0) return;
+
+        state.customConfigC = [
+            sourceCombo[0] ? sourceCombo[0].id : 'none',
+            sourceCombo[1] ? sourceCombo[1].id : 'none',
+            sourceCombo[2] ? sourceCombo[2].id : 'none',
+            sourceCombo[3] ? sourceCombo[3].id : 'none'
+        ];
+        saveState();
+        renderConfigCSlots();
+        updateUI();
     }
 
     // Calculate all Pareto Transitions across the build time spectrum
@@ -2320,6 +2524,7 @@
         state[rarityKey][index][field] = value;
         saveState();
         renderRosterInputs();
+        renderConfigCSlots();
         updateOptimizedLineups();
         updateUI();
     }
@@ -2404,33 +2609,33 @@
             <table class="lineup-table">
                 <thead>
                     <tr>
-                        <th style="width: 14%;">Slot</th>
-                        <th style="width: 48%;">Selected Survivor</th>
-                        <th style="width: 16%; text-align: right;">Helps</th>
-                        <th style="width: 22%; text-align: right;">Fixed Help Time</th>
+                        <th style="width: 12%; white-space: nowrap;">Slot</th>
+                        <th style="white-space: nowrap;">Selected Survivor</th>
+                        <th style="width: 18%; text-align: right; white-space: nowrap;">Helps</th>
+                        <th style="width: 26%; text-align: right; white-space: nowrap;">Fixed Help Time</th>
                     </tr>
                 </thead>
                 <tbody>
         `;
 
-        if (combo.length === 0) {
+        if (!combo || combo.length === 0) {
             html += `<tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 1rem;">No active survivors in roster pool</td></tr>`;
         } else {
             combo.forEach((hero, idx) => {
                 const isUR = hero.rarity === 'UR';
-                const rowClass = isUR ? 'slot-row-ur' : 'slot-row-ssr';
-                const badgeColor = isUR ? 'var(--color-ur)' : 'var(--color-ssr)';
-                const badgeBg = isUR ? 'var(--color-ur-glow)' : 'var(--color-ssr-glow)';
+                const rowClass = isUR ? 'slot-row-ur' : (hero.rarity === 'SSR' ? 'slot-row-ssr' : '');
+                const badgeColor = isUR ? 'var(--color-ur)' : (hero.rarity === 'SSR' ? 'var(--color-ssr)' : 'var(--text-dim)');
+                const badgeBg = isUR ? 'var(--color-ur-glow)' : (hero.rarity === 'SSR' ? 'var(--color-ssr-glow)' : 'rgba(255,255,255,0.05)');
                 
                 html += `
                     <tr class="${rowClass}">
-                        <td style="font-weight: 700; color: var(--text-muted);">Slot ${idx + 1}</td>
-                        <td>
-                            <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                <span style="background: ${badgeBg}; color: ${badgeColor}; font-weight: 800; font-size: 0.75rem; padding: 0.15rem 0.4rem; border-radius: 4px; border: 1px solid ${badgeColor};">
+                        <td style="font-weight: 700; color: var(--text-muted); white-space: nowrap;">Slot ${idx + 1}</td>
+                        <td style="white-space: nowrap;">
+                            <div style="display: flex; align-items: center; gap: 0.5rem; white-space: nowrap;">
+                                <span style="background: ${badgeBg}; color: ${badgeColor}; font-weight: 800; font-size: 0.75rem; padding: 0.15rem 0.4rem; border-radius: 4px; border: 1px solid ${badgeColor}; flex-shrink: 0;">
                                     ${hero.rarity}
                                 </span>
-                                <span style="font-weight: 700; color: var(--text-main); font-size: 0.85rem;">
+                                <span style="font-weight: 700; color: var(--text-main); font-size: 0.85rem; white-space: nowrap;">
                                     ${hero.label} <span style="color: var(--text-muted); font-weight: 600;">(${hero.star}★ Tier ${hero.tier})</span>
                                 </span>
                             </div>
@@ -2441,6 +2646,78 @@
                 `;
             });
         }
+
+        html += `
+                </tbody>
+            </table>
+        `;
+        container.innerHTML = html;
+    }
+
+    // Render Config C Interactive Slots
+    function renderConfigCSlots() {
+        const container = document.getElementById('container-cfgC');
+        const candidates = getAllCandidates();
+        const candMap = {};
+        candidates.forEach(c => { candMap[c.id] = c; });
+
+        let html = `
+            <table class="lineup-table">
+                <thead>
+                    <tr>
+                        <th style="width: 12%; white-space: nowrap;">Slot</th>
+                        <th style="white-space: nowrap;">Select Survivor</th>
+                        <th style="width: 18%; text-align: right; white-space: nowrap;">Helps</th>
+                        <th style="width: 26%; text-align: right; white-space: nowrap;">Fixed Help Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+        state.customConfigC.forEach((curId, slotIdx) => {
+            const curHero = candMap[curId] || { id: 'none', label: 'Empty Slot', rarity: 'NONE', star: 0, tier: 0, helps: 0, timeSec: 0 };
+            const isUR = curHero.rarity === 'UR';
+            const rowClass = isUR ? 'slot-row-ur' : (curHero.rarity === 'SSR' ? 'slot-row-ssr' : '');
+
+            let optionsHtml = `<option value="none" ${curId === 'none' ? 'selected' : ''}>-- Empty Slot --</option>`;
+            
+            // Group UR
+            const urList = candidates.filter(c => c.rarity === 'UR');
+            if (urList.length > 0) {
+                optionsHtml += `<optgroup label="👑 UR Survivors (Gold)">`;
+                urList.forEach(c => {
+                    optionsHtml += `<option value="${c.id}" ${curId === c.id ? 'selected' : ''}>${c.label} (${c.star}★ Tier ${c.tier})</option>`;
+                });
+                optionsHtml += `</optgroup>`;
+            }
+
+            // Group SSR
+            const ssrList = candidates.filter(c => c.rarity === 'SSR');
+            if (ssrList.length > 0) {
+                optionsHtml += `<optgroup label="🔮 SSR Survivors (Purple)">`;
+                ssrList.forEach(c => {
+                    optionsHtml += `<option value="${c.id}" ${curId === c.id ? 'selected' : ''}>${c.label} (${c.star}★ Tier ${c.tier})</option>`;
+                });
+                optionsHtml += `</optgroup>`;
+            }
+
+            html += `
+                <tr class="${rowClass}">
+                    <td style="font-weight: 700; color: var(--text-muted); white-space: nowrap;">Slot ${slotIdx + 1}</td>
+                    <td style="white-space: nowrap;">
+                        <select class="select-input" style="width: 100%; min-width: 200px; font-size: 0.82rem; white-space: nowrap;" onchange="updateConfigCSlot(${slotIdx}, this.value)">
+                            ${optionsHtml}
+                        </select>
+                    </td>
+                    <td style="text-align: right; font-weight: 700; color: var(--text-main); white-space: nowrap;">
+                        ${curHero.rarity !== 'NONE' ? `+${curHero.helps} Helps` : '+0 Helps'}
+                    </td>
+                    <td style="text-align: right; font-weight: 700; color: var(--text-main); white-space: nowrap;">
+                        ${curHero.rarity !== 'NONE' ? formatSecAndClock(curHero.timeSec).replace('seconds', 'sec') : '0 sec / 0:00'}
+                    </td>
+                </tr>
+            `;
+        });
 
         html += `
                 </tbody>
@@ -2460,6 +2737,7 @@
 
         renderDerivedLineup('container-cfgA', optimalConfigA);
         renderDerivedLineup('container-cfgB', optimalConfigB);
+        renderConfigCSlots();
     }
 
     function getTotals() {
@@ -2480,6 +2758,14 @@
             bonusFixedB += h.timeSec;
         });
 
+        const heroesC = getConfigCHeroes();
+        let bonusHelpsC = 0;
+        let bonusFixedC = 0;
+        heroesC.forEach(h => {
+            bonusHelpsC += h.helps;
+            bonusFixedC += h.timeSec;
+        });
+
         return {
             baseHelps,
             baseFixed,
@@ -2490,7 +2776,11 @@
             bonusHelpsB,
             bonusFixedB,
             totalHelpsB: baseHelps + bonusHelpsB,
-            totalFixedB: baseFixed + bonusFixedB
+            totalFixedB: baseFixed + bonusFixedB,
+            bonusHelpsC,
+            bonusFixedC,
+            totalHelpsC: baseHelps + bonusHelpsC,
+            totalFixedC: baseFixed + bonusFixedC
         };
     }
 
@@ -2620,6 +2910,28 @@
         updateUI();
     }
 
+    function getCrossoverPoints(schedule) {
+        if (!Array.isArray(schedule) || schedule.length <= 1) return [];
+        const crossovers = [];
+        for (let i = 0; i < schedule.length - 1; i++) {
+            const cur = schedule[i];
+            const next = schedule[i + 1];
+            const bSec = cur.endSec;
+            if (bSec <= 60 || bSec >= 150 * 86400) continue;
+            crossovers.push({
+                sec: bSec,
+                timeStr: formatTimeFriendly(bSec),
+                fromCombo: cur.combo,
+                toCombo: next.combo,
+                fromHelps: cur.totalHelps,
+                fromFixed: cur.totalFixed,
+                toHelps: next.totalHelps,
+                toFixed: next.totalFixed
+            });
+        }
+        return crossovers;
+    }
+
     // UI Updater
     function updateUI() {
         updateOptimizedLineups();
@@ -2643,17 +2955,25 @@
         document.getElementById('cfgB-row2').textContent = `+${tot.bonusHelpsB} Helps | ${formatSecAndClock(tot.bonusFixedB).replace('seconds', 'sec')}`;
         document.getElementById('cfgB-row3').textContent = `${tot.totalHelpsB} Helps | ${formatSecAndClock(tot.totalFixedB).replace('seconds', 'sec')}`;
 
+        // Update Config C Summary Box (3 Rows)
+        document.getElementById('cfgC-row1').textContent = `${tot.baseHelps} Helps | ${formatSecAndClock(tot.baseFixed).replace('seconds', 'sec')}`;
+        document.getElementById('cfgC-row2').textContent = `+${tot.bonusHelpsC} Helps | ${formatSecAndClock(tot.bonusFixedC).replace('seconds', 'sec')}`;
+        document.getElementById('cfgC-row3').textContent = `${tot.totalHelpsC} Helps | ${formatSecAndClock(tot.totalFixedC).replace('seconds', 'sec')}`;
+
         // Subtitles in comparison cards
         document.getElementById('sub-a').textContent = `${tot.totalHelpsA} Helps | ${formatClock(tot.totalFixedA)} Fixed`;
         document.getElementById('sub-b').textContent = `${tot.totalHelpsB} Helps | ${formatClock(tot.totalFixedB)} Fixed`;
+        document.getElementById('sub-c').textContent = `${tot.totalHelpsC} Helps | ${formatClock(tot.totalFixedC)} Fixed`;
 
-        // Run simulations for Config A & Config B
+        // Run simulations for Config A, B, and C
         const resA = runSimulation(state.initialTimeSec, tot.totalHelpsA, tot.totalFixedA);
         const resB = runSimulation(state.initialTimeSec, tot.totalHelpsB, tot.totalFixedB);
+        const resC = runSimulation(state.initialTimeSec, tot.totalHelpsC, tot.totalFixedC);
 
         // Update Comparison Cards
         document.getElementById('reduction-a').innerHTML = `${(resA.totalReduction / 3600.0).toFixed(2)} <span class="comp-time-unit">hrs reduced</span>`;
         document.getElementById('reduction-b').innerHTML = `${(resB.totalReduction / 3600.0).toFixed(2)} <span class="comp-time-unit">hrs reduced</span>`;
+        document.getElementById('reduction-c').innerHTML = `${(resC.totalReduction / 3600.0).toFixed(2)} <span class="comp-time-unit">hrs reduced</span>`;
 
         document.getElementById('pct-a').textContent = resA.helpsPct;
         document.getElementById('fix-a').textContent = resA.helpsFixed;
@@ -2663,38 +2983,46 @@
         document.getElementById('fix-b').textContent = resB.helpsFixed;
         document.getElementById('rem-b').textContent = formatTimeFriendly(resB.remainingTime);
 
-        const maxRed = Math.max(resA.totalReduction, resB.totalReduction, 1);
+        document.getElementById('pct-c').textContent = resC.helpsPct;
+        document.getElementById('fix-c').textContent = resC.helpsFixed;
+        document.getElementById('rem-c').textContent = formatTimeFriendly(resC.remainingTime);
+
+        const maxRed = Math.max(resA.totalReduction, resB.totalReduction, resC.totalReduction, 1);
         document.getElementById('bar-a').style.width = `${(resA.totalReduction / maxRed) * 100}%`;
         document.getElementById('bar-b').style.width = `${(resB.totalReduction / maxRed) * 100}%`;
+        document.getElementById('bar-c').style.width = `${(resC.totalReduction / maxRed) * 100}%`;
 
-        // Winner Banner
-        const diff = resB.totalReduction - resA.totalReduction;
+        // Winner Highlight
         const cardA = document.getElementById('card-a');
         const cardB = document.getElementById('card-b');
+        const cardC = document.getElementById('card-c');
         cardA.classList.remove('winner');
         cardB.classList.remove('winner');
+        cardC.classList.remove('winner');
 
         const bannerTitle = document.getElementById('winner-banner-title');
         const bannerDesc = document.getElementById('winner-banner-desc');
         const bannerSaving = document.getElementById('winner-banner-saving');
 
-        if (Math.abs(diff) < 0.5) {
-            bannerTitle.textContent = "Configurations are Tied!";
-            bannerDesc.textContent = `At this build time, both configurations yield identical reductions.`;
-            bannerSaving.textContent = `±0m`;
-            bannerSaving.style.color = 'var(--text-muted)';
-        } else if (diff > 0) {
-            cardB.classList.add('winner');
-            bannerTitle.textContent = "Config B (#2 Alternative) is more effective!";
-            bannerDesc.textContent = `Config B reduces build time by an extra ${formatTimeFriendly(diff)}.`;
-            bannerSaving.textContent = `+${formatTimeFriendly(diff)}`;
-            bannerSaving.style.color = 'var(--color-cfgB)';
-        } else {
+        const diffAB = resA.totalReduction - resB.totalReduction;
+        const diffAC = resA.totalReduction - resC.totalReduction;
+
+        if (resA.totalReduction >= resB.totalReduction && resA.totalReduction >= resC.totalReduction) {
             cardA.classList.add('winner');
-            bannerTitle.textContent = "Config A (#1 Optimal) is the Winner!";
-            bannerDesc.textContent = `Config A reduces build time by an extra ${formatTimeFriendly(-diff)}.`;
-            bannerSaving.textContent = `+${formatTimeFriendly(-diff)}`;
-            bannerSaving.style.color = 'var(--color-cfgA)';
+            bannerTitle.textContent = "🥇 Config A (#1 Optimal) is the Winner!";
+            let desc = `Config A achieves the highest reduction for this build time.`;
+            if (diffAC > 1) {
+                desc += ` Saves an extra ${formatTimeFriendly(diffAC)} compared to your custom Config C.`;
+            }
+            bannerDesc.textContent = desc;
+            bannerSaving.textContent = diffAB > 0.5 ? `+${formatTimeFriendly(diffAB)} vs #2` : `±0m`;
+            bannerSaving.style.color = 'var(--color-optimal)';
+        } else if (resC.totalReduction > resA.totalReduction) {
+            cardC.classList.add('winner');
+            bannerTitle.textContent = "🛠️ Config C (Custom Setup) is the Winner!";
+            bannerDesc.textContent = `Your custom Config C achieves the highest reduction for this build time.`;
+            bannerSaving.textContent = `+${formatTimeFriendly(resC.totalReduction - resA.totalReduction)}`;
+            bannerSaving.style.color = 'var(--color-cfgC)';
         }
 
         // --- DYNAMIC REAL-TIME WINNER CALCULATION FOR SELECTED BUILD TIME ---
@@ -2766,23 +3094,25 @@
         });
         schedTbody.innerHTML = schedHtml;
 
-        // Dynamic Breakeven Preset Button
-        const breakBtn = document.getElementById('preset-btn-breakeven');
-        if (breakBtn) {
-            if (state.breakevenSec !== null && state.breakevenSec > 0) {
-                const breakevenHrs = (state.breakevenSec / 3600.0).toFixed(2);
-                breakBtn.dataset.time = breakevenHrs;
-                breakBtn.textContent = `${formatTimeFriendly(state.breakevenSec)} (Breakeven)`;
-                breakBtn.disabled = false;
-                breakBtn.style.opacity = '1';
-                breakBtn.style.cursor = 'pointer';
-            } else {
-                breakBtn.dataset.time = "0";
-                breakBtn.textContent = `No Breakeven`;
-                breakBtn.disabled = true;
-                breakBtn.style.opacity = '0.4';
-                breakBtn.style.cursor = 'not-allowed';
-            }
+        // Dynamic Crossover Preset Buttons
+        const crossoverContainer = document.getElementById('dynamic-crossover-container');
+        state.crossoverPoints = getCrossoverPoints(schedule);
+        if (crossoverContainer) {
+            let crossHtml = '';
+            state.crossoverPoints.forEach((cp, idx) => {
+                const label = state.crossoverPoints.length === 1
+                    ? `${cp.timeStr} (Crossover)`
+                    : `${cp.timeStr} (Crossover ${idx + 1})`;
+                const isActive = Math.abs(state.initialTimeSec - cp.sec) < 45;
+                crossHtml += `
+                    <button class="preset-btn ${isActive ? 'active' : ''}" 
+                            data-time="${(cp.sec / 3600.0).toFixed(2)}"
+                            onclick="selectTimeToSeconds(${cp.sec})">
+                        ${label}
+                    </button>
+                `;
+            });
+            crossoverContainer.innerHTML = crossHtml;
         }
 
         // Active presets highlight
@@ -2809,10 +3139,14 @@
         // Update Chart Subtitle
         const chartSub = document.getElementById('chart-subtitle');
         if (chartSub) {
-            if (state.breakevenSec !== null && state.breakevenSec > 0) {
-                chartSub.innerHTML = `Green dashed line marks the breakeven crossover point (<strong>${formatTimeFriendly(state.breakevenSec)}</strong>). Cyan dashed line marks your selected build time.`;
+            const crosses = state.crossoverPoints || [];
+            if (crosses.length === 1) {
+                chartSub.innerHTML = `Green dashed line marks the crossover point (<strong>${crosses[0].timeStr}</strong>). Cyan dashed line marks your selected build time.`;
+            } else if (crosses.length > 1) {
+                const crossStr = crosses.map((c, i) => `#${i+1} at <strong>${c.timeStr}</strong>`).join(', ');
+                chartSub.innerHTML = `Green dashed lines mark the crossover points (${crossStr}). Cyan dashed line marks your selected build time.`;
             } else {
-                chartSub.innerHTML = `<span style="color: var(--color-ur); font-weight: 600;">No crossover point for current lineups (one configuration is superior across all build times).</span>`;
+                chartSub.innerHTML = `<span style="color: var(--color-ur); font-weight: 600;">No crossover point for current roster (one configuration dominates across all build times).</span>`;
             }
         }
 
@@ -2822,9 +3156,15 @@
 
     function getDynamicChartMaxHours() {
         const currentHours = (state.initialTimeSec || 0) / 3600.0;
-        const breakevenHours = state.breakevenSec ? (state.breakevenSec / 3600.0) : 0;
+        let maxCrossHours = 0;
+        if (Array.isArray(state.crossoverPoints)) {
+            state.crossoverPoints.forEach(cp => {
+                const h = cp.sec / 3600.0;
+                if (h > maxCrossHours) maxCrossHours = h;
+            });
+        }
         
-        let target = Math.max(currentHours, breakevenHours, 12.0) * 1.35;
+        let target = Math.max(currentHours, maxCrossHours, 12.0) * 1.35;
         
         if (target <= 24) return 24;
         if (target <= 48) return 48;
@@ -2843,31 +3183,34 @@
 
         const dataA = [];
         const dataB = [];
+        const dataC = [];
 
         for (let i = 0; i <= numPoints; i++) {
             const h = parseFloat((i * step).toFixed(2));
             const t0 = h * 3600;
             const redA = runSimulation(t0, tot.totalHelpsA, tot.totalFixedA).totalReduction / 3600.0;
             const redB = runSimulation(t0, tot.totalHelpsB, tot.totalFixedB).totalReduction / 3600.0;
+            const redC = runSimulation(t0, tot.totalHelpsC, tot.totalFixedC).totalReduction / 3600.0;
 
             dataA.push({ x: h, y: redA });
             dataB.push({ x: h, y: redB });
+            dataC.push({ x: h, y: redC });
         }
 
-        return { maxH, dataA, dataB };
+        return { maxH, dataA, dataB, dataC };
     }
 
-    // Chart.js Setup
+    // Chart.js Setup (3 Datasets: Cyan, Coral, Purple)
     function setupChart() {
         const ctx = document.getElementById('breakevenChart').getContext('2d');
-        const { maxH, dataA, dataB } = generateChartData();
+        const { maxH, dataA, dataB, dataC } = generateChartData();
 
         chartInstance = new Chart(ctx, {
             type: 'line',
             data: {
                 datasets: [
                     {
-                        label: 'Config A (Short Specialist)',
+                        label: 'Config A (#1 Optimal)',
                         data: dataA,
                         borderColor: '#06b6d4',
                         backgroundColor: 'rgba(6, 182, 212, 0.06)',
@@ -2877,7 +3220,7 @@
                         fill: true
                     },
                     {
-                        label: 'Config B (Long Specialist)',
+                        label: 'Config B (#2 Runner-Up)',
                         data: dataB,
                         borderColor: '#f43f5e',
                         backgroundColor: 'rgba(244, 63, 94, 0.06)',
@@ -2885,6 +3228,17 @@
                         pointRadius: 0,
                         tension: 0.1,
                         fill: true
+                    },
+                    {
+                        label: 'Config C (Custom Setup)',
+                        data: dataC,
+                        borderColor: '#a855f7',
+                        backgroundColor: 'rgba(168, 85, 247, 0.06)',
+                        borderWidth: 2.5,
+                        borderDash: [4, 4],
+                        pointRadius: 0,
+                        tension: 0.1,
+                        fill: false
                     }
                 ]
             },
@@ -2995,41 +3349,46 @@
                         ctx.restore();
                     }
 
-                    // Line 2: Breakeven Point Line & Dot (if crossover exists)
-                    if (state.breakevenSec !== null && state.breakevenSec > 0) {
-                        const breakevenHrs = state.breakevenSec / 3600.0;
-                        if (breakevenHrs <= maxH) {
-                            const xBreak = getXPixel(breakevenHrs);
-                            const tot = getTotals();
-                            const yBreakVal = runSimulation(state.breakevenSec, tot.totalHelpsA, tot.totalFixedA).totalReduction / 3600.0;
-                            const yBreak = yAxis.getPixelForValue(yBreakVal);
-                            const breakColor = isLight ? '#059669' : '#10b981';
-                            const strokeOutline = isLight ? '#ffffff' : '#0a0d14';
+                    // Line 2: Crossover Line(s) & Dot(s)
+                    if (Array.isArray(state.crossoverPoints) && state.crossoverPoints.length > 0) {
+                        state.crossoverPoints.forEach((cp, idx) => {
+                            const crossHrs = cp.sec / 3600.0;
+                            if (crossHrs <= maxH) {
+                                const xCross = getXPixel(crossHrs);
+                                const sim = runSimulation(cp.sec, cp.fromHelps, cp.fromFixed);
+                                const yCrossVal = sim.totalReduction / 3600.0;
+                                const yCross = yAxis.getPixelForValue(yCrossVal);
+                                const crossColor = isLight ? '#059669' : '#10b981';
+                                const strokeOutline = isLight ? '#ffffff' : '#0a0d14';
 
-                            ctx.save();
-                            ctx.beginPath();
-                            ctx.moveTo(xBreak, yAxis.top);
-                            ctx.lineTo(xBreak, yAxis.bottom);
-                            ctx.lineWidth = 2;
-                            ctx.strokeStyle = breakColor;
-                            ctx.setLineDash([5, 4]);
-                            ctx.stroke();
+                                ctx.save();
+                                ctx.beginPath();
+                                ctx.moveTo(xCross, yAxis.top);
+                                ctx.lineTo(xCross, yAxis.bottom);
+                                ctx.lineWidth = 2;
+                                ctx.strokeStyle = crossColor;
+                                ctx.setLineDash([5, 4]);
+                                ctx.stroke();
 
-                            ctx.beginPath();
-                            ctx.arc(xBreak, yBreak, 6, 0, 2 * Math.PI);
-                            ctx.fillStyle = breakColor;
-                            ctx.fill();
-                            ctx.strokeStyle = strokeOutline;
-                            ctx.lineWidth = 2;
-                            ctx.stroke();
+                                ctx.beginPath();
+                                ctx.arc(xCross, yCross, 6, 0, 2 * Math.PI);
+                                ctx.fillStyle = crossColor;
+                                ctx.fill();
+                                ctx.strokeStyle = strokeOutline;
+                                ctx.lineWidth = 2;
+                                ctx.stroke();
 
-                            ctx.fillStyle = breakColor;
-                            ctx.font = 'bold 11px Plus Jakarta Sans';
-                            const xSelected = currentHours > 0 ? getXPixel(currentHours) : -999;
-                            const labelY = Math.abs(xBreak - xSelected) < 70 ? yAxis.top + 36 : yAxis.top + 18;
-                            ctx.fillText(`🎯 Breakeven: ${formatTimeFriendly(state.breakevenSec)}`, xBreak + 6, labelY);
-                            ctx.restore();
-                        }
+                                ctx.fillStyle = crossColor;
+                                ctx.font = 'bold 11px Plus Jakarta Sans';
+                                const xSelected = currentHours > 0 ? getXPixel(currentHours) : -999;
+                                const labelY = Math.abs(xCross - xSelected) < 70 ? yAxis.top + 36 : yAxis.top + 18;
+                                const labelText = state.crossoverPoints.length === 1 
+                                    ? `🎯 Crossover: ${cp.timeStr}` 
+                                    : `🎯 Crossover ${idx + 1}: ${cp.timeStr}`;
+                                ctx.fillText(labelText, xCross + 6, labelY);
+                                ctx.restore();
+                            }
+                        });
                     }
                 }
             }]
@@ -3038,11 +3397,14 @@
 
     function updateChartData() {
         if (!chartInstance) return;
-        const { maxH, dataA, dataB } = generateChartData();
+        const { maxH, dataA, dataB, dataC } = generateChartData();
 
         chartInstance.options.scales.x.max = maxH;
         chartInstance.data.datasets[0].data = dataA;
         chartInstance.data.datasets[1].data = dataB;
+        if (chartInstance.data.datasets[2]) {
+            chartInstance.data.datasets[2].data = dataC;
+        }
         chartInstance.update();
     }
 
@@ -3178,6 +3540,12 @@
         saveState();
         updateUI();
     });
+    secondsSlider.addEventListener('input', () => {
+        state.seconds = parseInt(secondsSlider.value) || 0;
+        secondsInput.value = state.seconds;
+        saveState();
+        updateUI();
+    });
 
     daysInput.addEventListener('input', () => {
         state.days = Math.max(0, parseInt(daysInput.value) || 0);
@@ -3199,14 +3567,6 @@
         saveState();
         updateUI();
     });
-
-    secondsSlider.addEventListener('input', () => {
-        state.seconds = parseInt(secondsSlider.value) || 0;
-        secondsInput.value = state.seconds;
-        saveState();
-        updateUI();
-    });
-
     secondsInput.addEventListener('input', () => {
         state.seconds = Math.max(0, Math.min(59, parseInt(secondsInput.value) || 0));
         secondsInput.value = state.seconds;
@@ -3230,6 +3590,7 @@
             state.days = days;
             state.hours = hours;
             state.minutes = minutes;
+            state.seconds = 0;
 
             daysInput.value = days;
             daysSlider.value = Math.min(days, parseInt(daysSlider.max));
@@ -3239,6 +3600,9 @@
 
             minutesInput.value = minutes;
             minutesSlider.value = Math.min(minutes, parseInt(minutesSlider.max));
+
+            secondsInput.value = 0;
+            secondsSlider.value = 0;
 
             saveState();
             updateUI();
@@ -3299,6 +3663,7 @@
 
         applyTheme();
         renderRosterInputs();
+        renderConfigCSlots();
         updateOptimizedLineups();
         setupChart();
         updateUI();
