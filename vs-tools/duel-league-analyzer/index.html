@@ -1,1 +1,2632 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Duel League Scenario & Path Analyzer • Last War</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+:root {
+  /* Dark Theme Default */
+  --bg-primary: #070b14;
+  --bg-secondary: #0b1120;
+  --bg-card: rgba(15, 23, 42, 0.78);
+  --bg-card-hover: rgba(30, 41, 59, 0.88);
+  --bg-surface: rgba(30, 41, 59, 0.5);
+  --bg-input: rgba(15, 23, 42, 0.85);
+  
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-medium: rgba(255, 255, 255, 0.16);
+  --border-highlight: rgba(234, 179, 8, 0.4);
 
+  --text-main: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+
+  --accent-gold: #eab308;
+  --accent-gold-glow: rgba(234, 179, 8, 0.2);
+  --accent-cyan: #06b6d4;
+  --accent-cyan-glow: rgba(6, 182, 212, 0.2);
+  --accent-purple: #a855f7;
+
+  --status-promote-bg: rgba(34, 197, 94, 0.16);
+  --status-promote-border: rgba(34, 197, 94, 0.4);
+  --status-promote-text: #4ade80;
+
+  --status-safe-bg: rgba(59, 130, 246, 0.15);
+  --status-safe-border: rgba(59, 130, 246, 0.35);
+  --status-safe-text: #60a5fa;
+
+  --status-demote-bg: rgba(239, 68, 68, 0.16);
+  --status-demote-border: rgba(239, 68, 68, 0.4);
+  --status-demote-text: #f87171;
+
+  --badge-win-bg: rgba(34, 197, 94, 0.2);
+  --badge-win-color: #4ade80;
+  --badge-loss-bg: rgba(239, 68, 68, 0.2);
+  --badge-loss-color: #f87171;
+
+  --shadow-card: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
+  --shadow-hover: 0 16px 36px -4px rgba(0, 0, 0, 0.6);
+
+  --font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+html[data-theme="light"] {
+  --bg-primary: #f8fafc;
+  --bg-secondary: #f1f5f9;
+  --bg-card: rgba(255, 255, 255, 0.92);
+  --bg-card-hover: #ffffff;
+  --bg-surface: #e2e8f0;
+  --bg-input: #ffffff;
+  
+  --border-subtle: rgba(148, 163, 184, 0.3);
+  --border-medium: rgba(148, 163, 184, 0.5);
+  --border-highlight: rgba(202, 138, 4, 0.6);
+
+  --text-main: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+
+  --accent-gold: #ca8a04;
+  --accent-gold-glow: rgba(202, 138, 4, 0.18);
+  --accent-cyan: #0891b2;
+  --accent-cyan-glow: rgba(8, 145, 178, 0.18);
+  --accent-purple: #9333ea;
+
+  --status-promote-bg: rgba(34, 197, 94, 0.14);
+  --status-promote-border: rgba(34, 197, 94, 0.5);
+  --status-promote-text: #15803d;
+
+  --status-safe-bg: rgba(59, 130, 246, 0.12);
+  --status-safe-border: rgba(59, 130, 246, 0.4);
+  --status-safe-text: #1d4ed8;
+
+  --status-demote-bg: rgba(239, 68, 68, 0.12);
+  --status-demote-border: rgba(239, 68, 68, 0.4);
+  --status-demote-text: #b91c1c;
+
+  --badge-win-bg: rgba(34, 197, 94, 0.15);
+  --badge-win-color: #166534;
+  --badge-loss-bg: rgba(239, 68, 68, 0.15);
+  --badge-loss-color: #991b1b;
+
+  --shadow-card: 0 8px 24px -4px rgba(148, 163, 184, 0.25);
+  --shadow-hover: 0 14px 30px -4px rgba(148, 163, 184, 0.35);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--bg-primary);
+  background-image: 
+    radial-gradient(circle at 15% 10%, var(--accent-gold-glow) 0%, transparent 40%),
+    radial-gradient(circle at 85% 90%, var(--accent-cyan-glow) 0%, transparent 45%),
+    linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+  background-attachment: fixed;
+  color: var(--text-main);
+  font-family: var(--font-family);
+  min-height: 100vh;
+  line-height: 1.5;
+  padding: 24px 16px 60px;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Header & Top Bar */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.brand-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.brand-badge {
+  background: linear-gradient(135deg, var(--accent-gold), #f59e0b);
+  color: #000;
+  font-weight: 800;
+  font-size: 1.1rem;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  box-shadow: 0 0 16px var(--accent-gold-glow);
+}
+
+.brand-titles h1 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-titles p {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav-hub-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-medium);
+  color: var(--text-main);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+}
+
+.nav-hub-link:hover {
+  border-color: var(--accent-gold);
+  color: var(--accent-gold);
+  transform: translateY(-1px);
+}
+
+/* Theme Switcher */
+.theme-switcher {
+  display: inline-flex;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-medium);
+  border-radius: 10px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.theme-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.theme-btn:hover {
+  color: var(--text-main);
+}
+
+.theme-btn.active {
+  background: var(--bg-card);
+  color: var(--text-main);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Week Selector Banner */
+.week-selector-bar {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  box-shadow: var(--shadow-card);
+}
+
+.week-pills-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.bar-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin-right: 6px;
+}
+
+.week-btn {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.18s ease;
+}
+
+.week-btn:hover {
+  border-color: var(--border-medium);
+  color: var(--text-main);
+}
+
+.week-btn.active {
+  background: linear-gradient(135deg, rgba(234, 179, 8, 0.15), rgba(234, 179, 8, 0.05));
+  border-color: var(--accent-gold);
+  color: var(--accent-gold);
+  box-shadow: 0 0 12px var(--accent-gold-glow);
+}
+
+.week-btn .live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 6px #22c55e;
+  animation: pulse 1.8s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(0.9); opacity: 0.7; }
+  50% { transform: scale(1.3); opacity: 1; }
+  100% { transform: scale(0.9); opacity: 0.7; }
+}
+
+.settings-toggle-btn {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.settings-toggle-btn:hover {
+  border-color: var(--border-medium);
+  color: var(--text-main);
+}
+
+/* Settings Drawer (Collapsible) */
+.settings-drawer {
+  background: var(--bg-card);
+  border: 1px solid var(--border-medium);
+  border-radius: 14px;
+  padding: 18px 22px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-card);
+  display: none;
+}
+
+.settings-drawer.open {
+  display: block;
+}
+
+.settings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+  align-items: end;
+}
+
+.setting-item label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.setting-item input,
+.setting-item select {
+  width: 100%;
+  background: var(--bg-input);
+  border: 1px solid var(--border-medium);
+  color: var(--text-main);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.9rem;
+}
+
+.setting-item input:focus,
+.setting-item select:focus {
+  outline: none;
+  border-color: var(--accent-gold);
+}
+
+.presets-pills {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.preset-chip {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.preset-chip:hover {
+  color: var(--text-main);
+  border-color: var(--border-medium);
+}
+
+/* Quick Rank Bar */
+.rank-selection-section {
+  margin-bottom: 24px;
+}
+
+.section-title-wrap {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 12px;
+}
+
+.section-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+}
+
+.rank-chips-grid {
+  display: grid;
+  grid-template-columns: repeat(16, minmax(0, 1fr));
+  gap: 6px;
+}
+
+@media (max-width: 900px) {
+  .rank-chips-grid {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    row-gap: 8px;
+  }
+}
+
+@media (max-width: 500px) {
+  .rank-chips-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    row-gap: 8px;
+  }
+}
+
+.rank-chip {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  padding: 10px 4px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.16s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.rank-chip:hover {
+  border-color: var(--border-medium);
+  transform: translateY(-2px);
+}
+
+.rank-chip.selected {
+  border-color: var(--accent-gold);
+  background: linear-gradient(180deg, rgba(234, 179, 8, 0.15) 0%, var(--bg-card) 100%);
+  box-shadow: 0 0 14px var(--accent-gold-glow);
+  transform: translateY(-2px);
+}
+
+.rank-chip-num {
+  font-size: 1.05rem;
+  font-weight: 800;
+  display: block;
+}
+
+.rank-chip-record {
+  font-size: 0.68rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  margin-top: 2px;
+  display: block;
+}
+
+.rank-chip.selected .rank-chip-num {
+  color: var(--accent-gold);
+}
+
+.rank-chip.selected .rank-chip-record {
+  color: var(--accent-gold);
+}
+
+/* Two Column Main Grid */
+.main-layout-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+@media (max-width: 1000px) {
+  .main-layout-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Alliance Spotlight Card */
+.spotlight-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.spotlight-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.spotlight-rank-badge {
+  background: linear-gradient(135deg, var(--accent-gold), #f59e0b);
+  color: #000;
+  font-size: 1.8rem;
+  font-weight: 900;
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 15px var(--accent-gold-glow);
+}
+
+.spotlight-info {
+  flex-grow: 1;
+}
+
+.name-edit-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.alliance-name-display {
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--text-main);
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 2px 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.alliance-name-display:hover {
+  background: var(--bg-surface);
+  border-color: var(--border-subtle);
+}
+
+.alliance-name-input {
+  font-size: 1.25rem;
+  font-weight: 800;
+  background: var(--bg-input);
+  border: 1px solid var(--accent-gold);
+  color: var(--text-main);
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-family: inherit;
+  display: none;
+}
+
+.alliance-name-input.active {
+  display: block;
+}
+
+.edit-icon-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 4px;
+}
+
+.edit-icon-btn:hover {
+  color: var(--accent-gold);
+}
+
+.record-badges-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.sequence-badge {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.78rem;
+  padding: 3px 8px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.badge-w {
+  background: var(--badge-win-bg);
+  color: var(--badge-win-color);
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.badge-l {
+  background: var(--badge-loss-bg);
+  color: var(--badge-loss-color);
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.badge-blank {
+  background: var(--bg-surface);
+  color: var(--text-muted);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* Matchup VS Card */
+.matchup-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.matchup-team {
+  flex: 1;
+}
+
+.matchup-team.right {
+  text-align: right;
+}
+
+.matchup-team-tag {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.matchup-team-name {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin: 2px 0;
+}
+
+.matchup-vs-pill {
+  background: linear-gradient(135deg, var(--accent-gold), #f59e0b);
+  color: #000;
+  font-weight: 900;
+  font-size: 0.8rem;
+  padding: 4px 10px;
+  border-radius: 20px;
+  flex-shrink: 0;
+  box-shadow: 0 0 10px var(--accent-gold-glow);
+}
+
+/* Key Stats Ribbon */
+.stats-ribbon {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.stat-box {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  padding: 12px;
+  text-align: center;
+}
+
+.stat-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+  margin-bottom: 4px;
+}
+
+.stat-val {
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: var(--text-main);
+}
+
+.stat-val.best {
+  color: var(--status-promote-text);
+}
+
+.stat-val.worst {
+  color: var(--status-demote-text);
+}
+
+/* Interactive What-If Section */
+.simulator-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.simulator-header h3 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.simulator-header p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.sim-controls-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sim-step-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 12px 16px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.sim-step-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sim-step-badge {
+  background: var(--bg-card);
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border-subtle);
+}
+
+.sim-step-text {
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.sim-btn-group {
+  display: flex;
+  gap: 6px;
+}
+
+.sim-toggle-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.sim-toggle-btn:hover {
+  color: var(--text-main);
+  border-color: var(--border-medium);
+}
+
+.sim-toggle-btn.btn-win.active {
+  background: var(--badge-win-bg);
+  border-color: var(--badge-win-color);
+  color: var(--badge-win-color);
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.25);
+}
+
+.sim-toggle-btn.btn-loss.active {
+  background: var(--badge-loss-bg);
+  border-color: var(--badge-loss-color);
+  color: var(--badge-loss-color);
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.25);
+}
+
+.sim-result-callout {
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.12), rgba(6, 182, 212, 0.04));
+  border: 1px solid var(--accent-cyan);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.sim-result-details h4 {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: var(--accent-cyan);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.sim-result-details p {
+  font-size: 0.86rem;
+  color: var(--text-main);
+  margin-top: 2px;
+}
+
+.sim-result-rank {
+  text-align: right;
+}
+
+.sim-projected-num {
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: var(--accent-cyan);
+  line-height: 1;
+}
+
+/* Scenarios Matrix & Branch Cards */
+.scenarios-section {
+  margin-bottom: 32px;
+}
+
+.branch-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-top: 14px;
+}
+
+@media (max-width: 900px) {
+  .branch-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 500px) {
+  .branch-cards-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.branch-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  padding: 18px;
+  box-shadow: var(--shadow-card);
+  transition: all 0.2s ease;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.branch-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--border-medium);
+}
+
+.branch-card.matched-sim {
+  border-color: var(--accent-gold);
+  box-shadow: 0 0 16px var(--accent-gold-glow);
+}
+
+.branch-trajectory {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.trajectory-step {
+  font-size: 0.8rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.trajectory-arrow {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.branch-finish-box {
+  margin: 12px 0;
+  text-align: center;
+}
+
+.branch-final-rank {
+  font-size: 2.2rem;
+  font-weight: 900;
+  line-height: 1;
+  color: var(--text-main);
+}
+
+.branch-zone-pill {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 4px 10px;
+  border-radius: 20px;
+  margin-top: 8px;
+}
+
+.zone-promote {
+  background: var(--status-promote-bg);
+  border: 1px solid var(--status-promote-border);
+  color: var(--status-promote-text);
+}
+
+.zone-safe {
+  background: var(--status-safe-bg);
+  border: 1px solid var(--status-safe-border);
+  color: var(--status-safe-text);
+}
+
+.zone-demote {
+  background: var(--status-demote-bg);
+  border: 1px solid var(--status-demote-border);
+  color: var(--status-demote-text);
+}
+
+.branch-desc {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 10px;
+  margin-top: auto;
+}
+
+/* Full Standings Table */
+.standings-section {
+  margin-bottom: 40px;
+}
+
+.table-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+.standings-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.88rem;
+}
+
+.standings-table th {
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-medium);
+}
+
+.standings-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-main);
+  vertical-align: middle;
+}
+
+.standings-table tr.selected-row {
+  background: linear-gradient(90deg, rgba(234, 179, 8, 0.12) 0%, transparent 100%);
+}
+
+.standings-table tr:hover {
+  background: var(--bg-card-hover);
+  cursor: pointer;
+}
+
+.rank-col {
+  font-weight: 800;
+  font-size: 1rem;
+  width: 70px;
+}
+
+.alliance-col {
+  font-weight: 700;
+}
+
+.alliance-row-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.table-name-edit {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-main);
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.table-name-edit:focus {
+  background: var(--bg-input);
+  border-color: var(--accent-gold);
+  outline: none;
+}
+
+.record-col {
+  font-family: var(--font-mono);
+  font-weight: 700;
+}
+
+.matchup-col {
+  color: var(--text-secondary);
+}
+
+.outcome-range-col {
+  font-weight: 800;
+}
+
+/* Simulation Enhancements */
+.btn-clear-sim {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-clear-sim:hover {
+  background: var(--badge-loss-bg);
+  color: var(--status-demote-text);
+  border-color: var(--status-demote-border);
+}
+
+.table-sim-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.table-sim-tag {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(6, 182, 212, 0.15));
+  border: 1px solid rgba(168, 85, 247, 0.4);
+  color: #c084fc;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 8px;
+}
+
+.btn-clear-all-sims {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-clear-all-sims:hover {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--status-demote-text);
+  border-color: var(--status-demote-border);
+}
+
+.standings-table tr.has-sim-path {
+  background: linear-gradient(90deg, rgba(6, 182, 212, 0.12) 0%, transparent 100%);
+  border-left: 3px solid var(--accent-cyan);
+}
+
+.sim-indicator-pill {
+  background: rgba(6, 182, 212, 0.18);
+  border: 1px solid rgba(6, 182, 212, 0.4);
+  color: var(--accent-cyan);
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.badge-sim-w {
+  background: rgba(34, 197, 94, 0.25);
+  border: 1px dashed var(--badge-win-color);
+  color: var(--badge-win-color);
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.badge-sim-l {
+  background: rgba(239, 68, 68, 0.25);
+  border: 1px dashed var(--badge-loss-color);
+  color: var(--badge-loss-color);
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.sim-row-clear-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.75rem;
+  padding: 2px 5px;
+  border-radius: 4px;
+  margin-left: 6px;
+}
+
+.sim-row-clear-btn:hover {
+  color: var(--status-demote-text);
+  background: var(--badge-loss-bg);
+}
+
+.sim-step-row.step-locked {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+/* Final Results & Season Summary */
+.btn-final-results {
+  background: linear-gradient(135deg, rgba(234, 179, 8, 0.12), rgba(168, 85, 247, 0.12));
+  border-color: rgba(234, 179, 8, 0.35);
+  color: var(--accent-gold);
+  font-weight: 700;
+}
+
+.btn-final-results:hover {
+  background: linear-gradient(135deg, rgba(234, 179, 8, 0.22), rgba(168, 85, 247, 0.22));
+  border-color: var(--accent-gold);
+  color: var(--accent-gold);
+}
+
+.btn-final-results.active {
+  background: linear-gradient(135deg, rgba(234, 179, 8, 0.25), rgba(168, 85, 247, 0.25));
+  border-color: var(--accent-gold);
+  color: var(--accent-gold);
+  box-shadow: 0 0 16px var(--accent-gold-glow);
+}
+
+.season-summary-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.season-recap-zone {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+
+.season-recap-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.season-recap-title {
+  font-size: 0.82rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.season-team-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.season-team-pill {
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-main);
+}
+
+.season-team-pill:hover {
+  border-color: var(--accent-gold);
+  color: var(--accent-gold);
+}
+
+.jump-sim-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.jump-sim-btn:hover {
+  border-color: var(--accent-gold);
+  color: var(--accent-gold);
+}
+
+/* Footer */
+.app-footer {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 24px;
+  margin-top: 40px;
+}
+
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="brand-wrapper">
+        <div class="brand-badge">⚔️</div>
+        <div class="brand-titles">
+          <h1>Duel League Scenario & Path Analyzer</h1>
+          <p>16-Alliance Linear Swiss Bracket • Tiebreaker & Promotion Engine</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <a href="../hub/index.html" class="nav-hub-link" title="Return to Tools & Calculators Hub">
+          <span>← Tools Hub</span>
+        </a>
+
+        <!-- Theme Switcher -->
+        <div class="theme-switcher" role="radiogroup" aria-label="Color Theme Switcher">
+          <button class="theme-btn" data-theme-val="light" onclick="setTheme('light')" title="Light Mode">☀️ Light</button>
+          <button class="theme-btn" data-theme-val="dark" onclick="setTheme('dark')" title="Dark Mode">🌙 Dark</button>
+          <button class="theme-btn" data-theme-val="system" onclick="setTheme('system')" title="System Preference">💻 System</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Week Selector Bar -->
+    <section class="week-selector-bar">
+      <div class="week-pills-group">
+        <span class="bar-label">Battling Week:</span>
+        <button class="week-btn active" data-week="1">Week 1</button>
+        <button class="week-btn" data-week="2">Week 2</button>
+        <button class="week-btn" data-week="3">Week 3</button>
+        <button class="week-btn" data-week="4">Week 4</button>
+        <button class="week-btn btn-final-results" data-week="5" title="View final season standings and promotion/demotion outcomes">🏁 Final Results</button>
+      </div>
+
+      <button class="settings-toggle-btn" id="settingsToggleBtn" title="Configure Promotion & Demotion Cutoffs">
+        <span>⚙️ Cutoff Rules</span>
+      </button>
+    </section>
+
+    <!-- Settings Drawer -->
+    <section class="settings-drawer" id="settingsDrawer">
+      <div class="settings-grid">
+        <div class="setting-item">
+          <label for="inputPromotionCutoff">Promotion Zone (Top N Alliances)</label>
+          <input type="number" id="inputPromotionCutoff" min="1" max="8" value="3">
+        </div>
+        <div class="setting-item">
+          <label for="inputDemotionCutoff">Demotion Zone (Rank N and Below)</label>
+          <input type="number" id="inputDemotionCutoff" min="9" max="16" value="14">
+        </div>
+        <div class="setting-item">
+          <label>Quick Presets</label>
+          <div class="presets-pills">
+            <button class="preset-chip" onclick="setPreset(3, 14)">Top 3 / Bot 3</button>
+            <button class="preset-chip" onclick="setPreset(4, 13)">Top 4 / Bot 4</button>
+            <button class="preset-chip" onclick="setPreset(2, 15)">Top 2 / Bot 2</button>
+            <button class="preset-chip" onclick="resetAllAllianceNames()" style="margin-left:auto;">Reset Names (1–16)</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quick Rank Selector -->
+    <section class="rank-selection-section">
+      <div class="section-title-wrap">
+        <span class="section-title">Select Alliance Rank to Analyze</span>
+        <span style="font-size: 0.8rem; color: var(--text-muted);">Click any rank to inspect path</span>
+      </div>
+      <div class="rank-chips-grid" id="rankChipsGrid">
+        <!-- Rendered by JS -->
+      </div>
+    </section>
+
+    <!-- Main 2-Column Grid -->
+    <div class="main-layout-grid">
+      <!-- Left Column: Alliance Spotlight Card -->
+      <section class="spotlight-card">
+        <div class="spotlight-header">
+          <div class="spotlight-rank-badge" id="spotlightRankNum">#1</div>
+          <div class="spotlight-info">
+            <div class="name-edit-wrapper">
+              <span class="alliance-name-display" id="allianceNameDisplay">Alliance 1</span>
+              <input type="text" class="alliance-name-input" id="allianceNameInput" maxlength="32">
+              <button class="edit-icon-btn" id="editNameBtn" title="Click to Rename">✏️</button>
+            </div>
+            <div class="record-badges-row" id="spotlightSequenceBadges">
+              <!-- Rendered by JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Matchup VS Card -->
+        <div class="matchup-card">
+          <div class="matchup-team">
+            <div class="matchup-team-tag" id="myTeamRank">RANK #1</div>
+            <div class="matchup-team-name" id="myTeamName">Alliance 1</div>
+          </div>
+          <div class="matchup-vs-pill">VS</div>
+          <div class="matchup-team right">
+            <div class="matchup-team-tag" id="oppTeamRank">RANK #2</div>
+            <div class="matchup-team-name" id="oppTeamName">Alliance 2</div>
+          </div>
+        </div>
+
+        <!-- Key Stats Ribbon -->
+        <div class="stats-ribbon">
+          <div class="stat-box">
+            <div class="stat-label">Best Possible Finish</div>
+            <div class="stat-val best" id="statBestRank">#1</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Worst Possible Finish</div>
+            <div class="stat-val worst" id="statWorstRank">#16</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Current Zone</div>
+            <div class="stat-val" id="statCurrentZone">PROMOTION</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Column: Interactive What-If Simulator -->
+      <section class="simulator-box">
+        <div class="simulator-header" style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px;">
+          <div>
+            <h3>🎯 Interactive "What-If" Simulator</h3>
+            <p>Carry this alliance forward week-by-week with custom win/loss outcomes.</p>
+          </div>
+          <button class="btn-clear-sim" id="btnClearAllianceSim" onclick="clearSelectedAllianceSim()" style="display:none;" title="Reset custom simulation for this alliance">✕ Clear</button>
+        </div>
+
+        <div class="sim-controls-wrapper" id="simulatorControls">
+          <!-- Rendered dynamically by JS -->
+        </div>
+
+        <div class="sim-result-callout" id="simResultCallout">
+          <div class="sim-result-details">
+            <h4>Projected Standing</h4>
+            <p id="simProjectedDesc">Select Week 3 & 4 outcomes above to simulate your exact finish</p>
+          </div>
+          <div class="sim-result-rank">
+            <div class="sim-projected-num" id="simProjectedRankNum">#1 – #6</div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Scenarios Matrix & Branch Cards -->
+    <section class="scenarios-section">
+      <div class="section-title-wrap">
+        <span class="section-title">All Possible Future Branches</span>
+        <span style="font-size: 0.8rem; color: var(--text-muted);">Side-by-side outcome comparison</span>
+      </div>
+      <div class="branch-cards-grid" id="branchCardsGrid">
+        <!-- Rendered by JS -->
+      </div>
+    </section>
+
+    <!-- Full 16-Alliance Standings Table -->
+    <section class="standings-section">
+      <div class="section-title-wrap">
+        <div>
+          <span class="section-title">Current League Standings & Matchups</span>
+          <span style="font-size: 0.8rem; color: var(--text-muted); display:block; margin-top:2px;">Click any row to inspect; edit names directly in table</span>
+        </div>
+        <div class="table-sim-status" id="tableSimStatus" style="display:none;">
+          <span class="table-sim-tag" id="tableSimTag">🔮 1 Custom Simulation Active</span>
+          <button class="btn-clear-all-sims" onclick="clearAllSimulations()" title="Reset all custom simulation outcomes">Reset All Sims</button>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-responsive">
+          <table class="standings-table">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Alliance Name</th>
+                <th>Record</th>
+                <th>Sequence</th>
+                <th>Current Matchup</th>
+                <th>Final Rank Range</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="standingsTableBody">
+              <!-- Rendered by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>Last War: Survival • Duel League 16-Alliance Swiss Tournament Model</p>
+      <p style="margin-top: 4px; font-size: 0.75rem;">Standings sorted by: 1. Total Victories &nbsp;|&nbsp; 2. Earliest Victory Week &nbsp;|&nbsp; 3. Initial Seed</p>
+    </footer>
+  </div>
+
+  <script>
+/**
+ * Last War: Survival - Duel League Scenario & Path Analyzer
+ * Tournament Engine, Multi-Week Carrying Simulator, Standings Tracker, and Final Results
+ */
+
+(function () {
+  'use strict';
+
+  // --- DEFAULT CONFIGURATION & STATE ---
+  const DEFAULT_PROMOTION_CUTOFF = 3;
+  const DEFAULT_DEMOTION_CUTOFF = 14; // Ranks 14, 15, 16 demoted
+
+  function createDefaultAllianceNames() {
+    const names = {};
+    for (let i = 1; i <= 16; i++) {
+      names[i] = `Alliance ${i}`;
+    }
+    return names;
+  }
+
+  // Load and sanitize stored alliance names
+  let storedNames = JSON.parse(localStorage.getItem('dl_alliance_names') || '{}');
+  const isOldPreset = Object.values(storedNames).some(n => 
+    typeof n === 'string' && (n.includes('SL4P') || n.includes('TCO') || n.includes('Apex Predators') || n.includes('Shadow Syndicate'))
+  );
+  if (isOldPreset || Object.keys(storedNames).length === 0) {
+    storedNames = createDefaultAllianceNames();
+    localStorage.setItem('dl_alliance_names', JSON.stringify(storedNames));
+  }
+
+  // Load stored simulations per alliance: { [rank]: { [week]: 'W'|'L' } }
+  let storedSims = JSON.parse(localStorage.getItem('dl_simulations') || '{}');
+
+  let state = {
+    currentWeek: 1, // 1 to 4 = Battles, 5 = Final Results
+    selectedRank: 1, // Rank 1 to 16
+    promotionCutoff: parseInt(localStorage.getItem('dl_promotion_cutoff')) || DEFAULT_PROMOTION_CUTOFF,
+    demotionCutoff: parseInt(localStorage.getItem('dl_demotion_cutoff')) || DEFAULT_DEMOTION_CUTOFF,
+    theme: localStorage.getItem('theme-mode') || 'system',
+    customNames: storedNames,
+    simulations: storedSims // { [rank]: { 1: 'W', 2: 'L', ... } }
+  };
+
+  function saveCustomNames() {
+    localStorage.setItem('dl_alliance_names', JSON.stringify(state.customNames));
+  }
+
+  function saveSimulations() {
+    localStorage.setItem('dl_simulations', JSON.stringify(state.simulations));
+  }
+
+  function saveCutoffs() {
+    localStorage.setItem('dl_promotion_cutoff', state.promotionCutoff);
+    localStorage.setItem('dl_demotion_cutoff', state.demotionCutoff);
+  }
+
+  // --- TOURNAMENT MATHEMATICAL ENGINE ---
+
+  /**
+   * Deterministic 4-week rank mapping from a 4-game sequence.
+   * Total Wins DESC, then Earlier Wins DESC (Lexicographic W > L).
+   */
+  const SEQUENCE_TO_FINAL_RANK = {
+    'WWWW': 1,
+    'WWWL': 2,
+    'WWLW': 3,
+    'WLWW': 4,
+    'LWWW': 5,
+    'WWLL': 6,
+    'WLWL': 7,
+    'WLLW': 8,
+    'LWWL': 9,
+    'LWLW': 10,
+    'LLWW': 11,
+    'WLLL': 12,
+    'LWLL': 13,
+    'LLWL': 14,
+    'LLLW': 15,
+    'LLLL': 16
+  };
+
+  /**
+   * Complete final 4-game sequence for each final standing rank.
+   */
+  const FINAL_RANK_TO_SEQUENCE = {
+    1: ['W', 'W', 'W', 'W'],
+    2: ['W', 'W', 'W', 'L'],
+    3: ['W', 'W', 'L', 'W'],
+    4: ['W', 'L', 'W', 'W'],
+    5: ['L', 'W', 'W', 'W'],
+    6: ['W', 'W', 'L', 'L'],
+    7: ['W', 'L', 'W', 'L'],
+    8: ['W', 'L', 'L', 'W'],
+    9: ['L', 'W', 'W', 'L'],
+    10: ['L', 'W', 'L', 'W'],
+    11: ['L', 'L', 'W', 'W'],
+    12: ['W', 'L', 'L', 'L'],
+    13: ['L', 'W', 'L', 'L'],
+    14: ['L', 'L', 'W', 'L'],
+    15: ['L', 'L', 'L', 'W'],
+    16: ['L', 'L', 'L', 'L']
+  };
+
+  /**
+   * Pairings for Week 4 Finals (mapped to final rank):
+   * 1v2 (WWW), 3v6 (WWL), 4v7 (WLW), 5v9 (LWW), 8v12 (WLL), 10v13 (LWL), 11v14 (LLW), 15v16 (LLL).
+   */
+  const WEEK4_OPPONENT_BY_FINAL_RANK = {
+    1: 2, 2: 1,
+    3: 6, 6: 3,
+    4: 7, 7: 4,
+    5: 9, 9: 5,
+    8: 12, 12: 8,
+    10: 13, 13: 10,
+    11: 14, 14: 11,
+    15: 16, 16: 15
+  };
+
+  /**
+   * Returns the known W/L history array up to `week - 1` for a given rank entering `week`.
+   * If week === 5, returns the complete settled 4-week sequence.
+   */
+  function getHistoricalRecord(rank, week) {
+    if (week <= 1) return [];
+
+    if (week === 2) {
+      return rank <= 8 ? ['W'] : ['L'];
+    }
+
+    if (week === 3) {
+      if (rank <= 4) return ['W', 'W'];
+      if (rank <= 8) return ['W', 'L'];
+      if (rank <= 12) return ['L', 'W'];
+      return ['L', 'L'];
+    }
+
+    if (week === 4) {
+      if (rank <= 2) return ['W', 'W', 'W'];
+      if (rank <= 4) return ['W', 'W', 'L'];
+      if (rank <= 6) return ['W', 'L', 'W'];
+      if (rank <= 8) return ['L', 'W', 'W'];
+      if (rank <= 10) return ['W', 'L', 'L'];
+      if (rank <= 12) return ['L', 'W', 'L'];
+      if (rank <= 14) return ['L', 'L', 'W'];
+      return ['L', 'L', 'L'];
+    }
+
+    if (week >= 5) {
+      return FINAL_RANK_TO_SEQUENCE[rank] || ['L', 'L', 'L', 'L'];
+    }
+
+    return [];
+  }
+
+  /**
+   * Returns the scheduled or past opponent rank for the given rank.
+   */
+  function getOpponentRank(rank, week = state.currentWeek) {
+    if (week >= 5) {
+      return WEEK4_OPPONENT_BY_FINAL_RANK[rank] || (rank % 2 === 1 ? rank + 1 : rank - 1);
+    }
+    return rank % 2 === 1 ? rank + 1 : rank - 1;
+  }
+
+  function calculateFinalRank(seqArray) {
+    const key = seqArray.join('');
+    return SEQUENCE_TO_FINAL_RANK[key] || 16;
+  }
+
+  /**
+   * Calculates the min and max final rank possible from a partial sequence.
+   */
+  function getPossibleFinalRanks(partialSeq) {
+    const remaining = 4 - partialSeq.length;
+    if (remaining <= 0) {
+      const r = calculateFinalRank(partialSeq.slice(0, 4));
+      return [r];
+    }
+
+    const ranks = [];
+    const totalCombos = 1 << remaining;
+    for (let mask = 0; mask < totalCombos; mask++) {
+      const full = [...partialSeq];
+      for (let bit = remaining - 1; bit >= 0; bit--) {
+        full.push((mask & (1 << bit)) ? 'W' : 'L');
+      }
+      ranks.push(calculateFinalRank(full));
+    }
+    return ranks;
+  }
+
+  /**
+   * Computes future branches from current week for the given rank.
+   */
+  function getFutureBranches(rank, week) {
+    if (week >= 5) return [];
+
+    const past = getHistoricalRecord(rank, week);
+    const branches = [];
+
+    if (week === 3) {
+      const paths = [
+        { w3: 'W', w4: 'W', label: 'Win Week 3, Win Week 4', short: 'W → W' },
+        { w3: 'W', w4: 'L', label: 'Win Week 3, Lose Week 4', short: 'W → L' },
+        { w3: 'L', w4: 'W', label: 'Lose Week 3, Win Week 4', short: 'L → W' },
+        { w3: 'L', w4: 'L', label: 'Lose Week 3, Lose Week 4', short: 'L → L' }
+      ];
+      paths.forEach(p => {
+        const fullSeq = [...past, p.w3, p.w4];
+        branches.push({
+          steps: [p.w3, p.w4],
+          fullSeq,
+          finalRank: calculateFinalRank(fullSeq),
+          label: p.label,
+          short: p.short,
+          w3Result: p.w3,
+          w4Result: p.w4
+        });
+      });
+    } else if (week === 4) {
+      ['W', 'L'].forEach(w4 => {
+        const fullSeq = [...past, w4];
+        branches.push({
+          steps: [w4],
+          fullSeq,
+          finalRank: calculateFinalRank(fullSeq),
+          label: w4 === 'W' ? 'Win Week 4 (Final)' : 'Lose Week 4 (Final)',
+          short: w4,
+          w4Result: w4
+        });
+      });
+    } else if (week === 2) {
+      const outcomes = ['W', 'L'];
+      outcomes.forEach(w2 => {
+        outcomes.forEach(w3 => {
+          outcomes.forEach(w4 => {
+            const fullSeq = [...past, w2, w3, w4];
+            branches.push({
+              steps: [w2, w3, w4],
+              fullSeq,
+              finalRank: calculateFinalRank(fullSeq),
+              label: `W2: ${w2}, W3: ${w3}, W4: ${w4}`,
+              short: `${w2} → ${w3} → ${w4}`,
+              w2Result: w2,
+              w3Result: w3,
+              w4Result: w4
+            });
+          });
+        });
+      });
+    } else if (week === 1) {
+      const outcomes = ['W', 'L'];
+      outcomes.forEach(w1 => {
+        outcomes.forEach(w2 => {
+          outcomes.forEach(w3 => {
+            outcomes.forEach(w4 => {
+              const fullSeq = [w1, w2, w3, w4];
+              branches.push({
+                steps: [w1, w2, w3, w4],
+                fullSeq,
+                finalRank: calculateFinalRank(fullSeq),
+                label: `W1: ${w1}, W2: ${w2}, W3: ${w3}, W4: ${w4}`,
+                short: `${w1} → ${w2} → ${w3} → ${w4}`,
+                w1Result: w1,
+                w2Result: w2,
+                w3Result: w3,
+                w4Result: w4
+              });
+            });
+          });
+        });
+      });
+    }
+
+    return branches;
+  }
+
+  function getZone(rank) {
+    if (rank <= state.promotionCutoff) return 'promote';
+    if (rank >= state.demotionCutoff) return 'demote';
+    return 'safe';
+  }
+
+  function getZoneLabel(rank) {
+    const zone = getZone(rank);
+    if (zone === 'promote') return 'Promotion Zone';
+    if (zone === 'demote') return 'Demotion Zone';
+    return 'Safe / Mid Tier';
+  }
+
+  function getAllianceName(rank) {
+    return state.customNames[rank] || `Alliance ${rank}`;
+  }
+
+  /**
+   * Merges settled history with any user-selected simulated weeks.
+   */
+  function getAllianceSimSequence(rank) {
+    if (state.currentWeek >= 5) {
+      return FINAL_RANK_TO_SEQUENCE[rank] || ['L', 'L', 'L', 'L'];
+    }
+
+    const settled = getHistoricalRecord(rank, state.currentWeek);
+    const simMap = state.simulations[rank] || {};
+    const full = [...settled];
+    for (let w = state.currentWeek; w <= 4; w++) {
+      if (simMap[w]) {
+        full.push(simMap[w]);
+      } else {
+        break;
+      }
+    }
+    return full;
+  }
+
+  // --- UI RENDERING ---
+
+  function renderAll() {
+    renderWeekSelector();
+    renderRankChips();
+    renderSpotlightCard();
+    renderSimulator();
+    renderScenariosGrid();
+    renderStandingsTable();
+    updateCutoffInputs();
+  }
+
+  function renderWeekSelector() {
+    const weekBtns = document.querySelectorAll('.week-btn');
+    weekBtns.forEach(btn => {
+      const wk = parseInt(btn.getAttribute('data-week'));
+      btn.classList.toggle('active', wk === state.currentWeek);
+    });
+  }
+
+  function renderRankChips() {
+    const container = document.getElementById('rankChipsGrid');
+    if (!container) return;
+
+    container.innerHTML = '';
+    const isFinal = state.currentWeek >= 5;
+
+    for (let r = 1; r <= 16; r++) {
+      let recordText = '';
+      let badgeIcon = '';
+
+      if (isFinal) {
+        const seq = FINAL_RANK_TO_SEQUENCE[r];
+        const wins = seq.filter(x => x === 'W').length;
+        recordText = `${wins}-${4 - wins}`;
+        badgeIcon = r === 1 ? '🏆' : (r <= state.promotionCutoff ? '🟢' : (r >= state.demotionCutoff ? '🔴' : ''));
+      } else {
+        const past = getHistoricalRecord(r, state.currentWeek);
+        const wins = past.filter(x => x === 'W').length;
+        const losses = past.filter(x => x === 'L').length;
+        recordText = state.currentWeek === 1 ? '0-0' : `${wins}-${losses}`;
+        const hasSim = state.simulations[r] && Object.keys(state.simulations[r]).length > 0;
+        badgeIcon = hasSim ? '🔮' : '';
+      }
+
+      const chip = document.createElement('div');
+      chip.className = `rank-chip ${r === state.selectedRank ? 'selected' : ''}`;
+      chip.setAttribute('data-rank', r);
+      chip.innerHTML = `
+        <span class="rank-chip-num">#${r} ${badgeIcon}</span>
+        <span class="rank-chip-record">${recordText}</span>
+      `;
+      chip.addEventListener('click', () => {
+        selectRank(r);
+      });
+      container.appendChild(chip);
+    }
+  }
+
+  function renderSpotlightCard() {
+    const r = state.selectedRank;
+    const isFinal = state.currentWeek >= 5;
+    const name = getAllianceName(r);
+    const oppRank = getOpponentRank(r, state.currentWeek);
+    const oppName = getAllianceName(oppRank);
+    const simMap = state.simulations[r] || {};
+
+    const rankNumEl = document.getElementById('spotlightRankNum');
+    if (!rankNumEl) return;
+
+    rankNumEl.textContent = `#${r}`;
+    const nameDisplay = document.getElementById('allianceNameDisplay');
+    if (nameDisplay) nameDisplay.textContent = name;
+    const nameInput = document.getElementById('allianceNameInput');
+    if (nameInput) nameInput.value = name;
+
+    const seqRow = document.getElementById('spotlightSequenceBadges');
+    if (seqRow) {
+      seqRow.innerHTML = '';
+      if (isFinal) {
+        const fullSeq = FINAL_RANK_TO_SEQUENCE[r];
+        for (let w = 1; w <= 4; w++) {
+          const res = fullSeq[w - 1];
+          const pill = document.createElement('span');
+          pill.className = `sequence-badge ${res === 'W' ? 'badge-w' : 'badge-l'}`;
+          pill.textContent = `W${w}: ${res === 'W' ? 'WIN' : 'LOSS'}`;
+          seqRow.appendChild(pill);
+        }
+      } else {
+        const past = getHistoricalRecord(r, state.currentWeek);
+        for (let w = 1; w <= 4; w++) {
+          const pill = document.createElement('span');
+          if (w < state.currentWeek) {
+            const res = past[w - 1];
+            pill.className = `sequence-badge ${res === 'W' ? 'badge-w' : 'badge-l'}`;
+            pill.textContent = `W${w}: ${res === 'W' ? 'WIN' : 'LOSS'}`;
+          } else if (simMap[w]) {
+            const simRes = simMap[w];
+            pill.className = `sequence-badge ${simRes === 'W' ? 'badge-sim-w' : 'badge-sim-l'}`;
+            pill.textContent = `W${w}: ${simRes === 'W' ? 'WIN (Sim)' : 'LOSS (Sim)'}`;
+          } else if (w === state.currentWeek) {
+            pill.className = 'sequence-badge badge-blank';
+            pill.style.borderColor = 'var(--accent-gold)';
+            pill.textContent = `W${w}: PENDING`;
+          } else {
+            pill.className = 'sequence-badge badge-blank';
+            pill.textContent = `W${w}: --`;
+          }
+          seqRow.appendChild(pill);
+        }
+      }
+    }
+
+    const myTeamName = document.getElementById('myTeamName');
+    const myTeamRank = document.getElementById('myTeamRank');
+    const oppTeamName = document.getElementById('oppTeamName');
+    const oppTeamRank = document.getElementById('oppTeamRank');
+
+    if (myTeamName) myTeamName.textContent = name;
+    if (oppTeamName) oppTeamName.textContent = oppName;
+
+    if (isFinal) {
+      if (myTeamRank) myTeamRank.textContent = `FINAL RANK #${r}`;
+      if (oppTeamRank) oppTeamRank.textContent = `W4 OPPONENT #${oppRank}`;
+    } else {
+      if (myTeamRank) myTeamRank.textContent = `RANK #${r}`;
+      if (oppTeamRank) oppTeamRank.textContent = `RANK #${oppRank}`;
+    }
+
+    const currentZone = getZone(r);
+    const zoneBadge = document.getElementById('statCurrentZone');
+    if (zoneBadge) {
+      zoneBadge.className = `stat-val ${currentZone === 'promote' ? 'best' : currentZone === 'demote' ? 'worst' : ''}`;
+      zoneBadge.textContent = currentZone.toUpperCase();
+    }
+
+    const statBestRank = document.getElementById('statBestRank');
+    const statWorstRank = document.getElementById('statWorstRank');
+
+    if (isFinal) {
+      const wins = FINAL_RANK_TO_SEQUENCE[r].filter(x => x === 'W').length;
+      if (statBestRank) statBestRank.textContent = `#${r}`;
+      if (statWorstRank) statWorstRank.textContent = `${wins} Wins`;
+    } else {
+      const simSeq = getAllianceSimSequence(r);
+      const possibleRanks = getPossibleFinalRanks(simSeq);
+      const bestRank = Math.min(...possibleRanks);
+      const worstRank = Math.max(...possibleRanks);
+      if (statBestRank) statBestRank.textContent = `#${bestRank}`;
+      if (statWorstRank) statWorstRank.textContent = `#${worstRank}`;
+    }
+  }
+
+  /**
+   * Renders the week-by-week simulator or the season summary panel in Final Results.
+   */
+  function renderSimulator() {
+    const r = state.selectedRank;
+    const currentW = state.currentWeek;
+    const simBox = document.getElementById('simulatorControls');
+    const clearBtn = document.getElementById('btnClearAllianceSim');
+    if (!simBox) return;
+
+    if (currentW >= 5) {
+      // Final Results View: Season Recap and Movement
+      if (clearBtn) clearBtn.style.display = 'none';
+
+      let promoList = [];
+      let safeList = [];
+      let demoList = [];
+
+      for (let i = 1; i <= 16; i++) {
+        const aName = getAllianceName(i);
+        const z = getZone(i);
+        const isSelected = i === r;
+        const style = isSelected ? 'border-color:var(--accent-gold); font-weight:800;' : '';
+        const pill = `<span class="season-team-pill" style="${style}" onclick="window.selectRank(${i})">#${i} ${aName}</span>`;
+        if (z === 'promote') promoList.push(pill);
+        else if (z === 'demote') demoList.push(pill);
+        else safeList.push(pill);
+      }
+
+      const myZoneLabel = getZoneLabel(r);
+      const mySeq = FINAL_RANK_TO_SEQUENCE[r].join(' ');
+      const myWins = FINAL_RANK_TO_SEQUENCE[r].filter(x => x === 'W').length;
+
+      simBox.innerHTML = `
+        <div class="season-summary-card">
+          <div class="season-recap-zone" style="border-left: 3px solid var(--status-promote-text);">
+            <div class="season-recap-header">
+              <span class="season-recap-title" style="color:var(--status-promote-text);">🟢 Promoted to Higher Tier (Ranks 1 – ${state.promotionCutoff})</span>
+              <span style="font-size:0.75rem; font-weight:700; color:var(--status-promote-text);">${promoList.length} Teams</span>
+            </div>
+            <div class="season-team-pills">${promoList.join('')}</div>
+          </div>
+
+          <div class="season-recap-zone" style="border-left: 3px solid var(--status-safe-text);">
+            <div class="season-recap-header">
+              <span class="season-recap-title" style="color:var(--status-safe-text);">🔵 Retained / Safe (Ranks ${state.promotionCutoff + 1} – ${state.demotionCutoff - 1})</span>
+              <span style="font-size:0.75rem; font-weight:700; color:var(--status-safe-text);">${safeList.length} Teams</span>
+            </div>
+            <div class="season-team-pills">${safeList.join('')}</div>
+          </div>
+
+          <div class="season-recap-zone" style="border-left: 3px solid var(--status-demote-text);">
+            <div class="season-recap-header">
+              <span class="season-recap-title" style="color:var(--status-demote-text);">🔴 Demoted to Lower Tier (Ranks ${state.demotionCutoff} – 16)</span>
+              <span style="font-size:0.75rem; font-weight:700; color:var(--status-demote-text);">${demoList.length} Teams</span>
+            </div>
+            <div class="season-team-pills">${demoList.join('')}</div>
+          </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px; padding-top:10px; border-top:1px solid var(--border-subtle); flex-wrap:wrap; gap:8px;">
+            <span style="font-size:0.8rem; color:var(--text-muted);">Simulate earlier weeks:</span>
+            <div style="display:flex; gap:6px;">
+              <button class="jump-sim-btn" onclick="window.setWeek(1)">Week 1</button>
+              <button class="jump-sim-btn" onclick="window.setWeek(3)">Week 3</button>
+              <button class="jump-sim-btn" onclick="window.setWeek(4)">Week 4</button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('simProjectedRankNum').textContent = `#${r}`;
+      document.getElementById('simProjectedDesc').textContent = `${getAllianceName(r)} completed season at #${r} (${myWins}W-${4 - myWins}L • ${mySeq}) → ${myZoneLabel}`;
+      return;
+    }
+
+    // Active Week (1 to 4) View
+    const simMap = state.simulations[r] || {};
+    const hasAnySim = Object.keys(simMap).length > 0;
+    if (clearBtn) {
+      clearBtn.style.display = hasAnySim ? 'inline-block' : 'none';
+    }
+
+    simBox.innerHTML = '';
+    let cumulativeSeq = getHistoricalRecord(r, currentW);
+
+    for (let w = currentW; w <= 4; w++) {
+      const stepRow = document.createElement('div');
+      stepRow.className = 'sim-step-row';
+
+      const isAvailable = (w === currentW) || Boolean(simMap[w - 1]);
+      if (!isAvailable) {
+        stepRow.classList.add('step-locked');
+      }
+
+      let stepDesc = '';
+      if (w === currentW) {
+        stepDesc = `vs #${getOpponentRank(r, w)} (${getAllianceName(getOpponentRank(r, w))})`;
+      } else {
+        const prevChoice = simMap[w - 1];
+        if (prevChoice) {
+          const winsSoFar = cumulativeSeq.filter(x => x === 'W').length;
+          stepDesc = `Carried Forward (${winsSoFar}W-${cumulativeSeq.length - winsSoFar}L) • Week ${w} Match`;
+        } else {
+          stepDesc = `Complete Week ${w - 1} outcome to unlock`;
+        }
+      }
+
+      const activeVal = simMap[w] || null;
+
+      stepRow.innerHTML = `
+        <div class="sim-step-info">
+          <span class="sim-step-badge">Week ${w}</span>
+          <span class="sim-step-text">${stepDesc}</span>
+        </div>
+        <div class="sim-btn-group">
+          <button class="sim-toggle-btn btn-win ${activeVal === 'W' ? 'active' : ''}" 
+                  onclick="window.toggleSimWeek(${w}, 'W')" 
+                  ${!isAvailable ? 'disabled' : ''}>Win</button>
+          <button class="sim-toggle-btn btn-loss ${activeVal === 'L' ? 'active' : ''}" 
+                  onclick="window.toggleSimWeek(${w}, 'L')" 
+                  ${!isAvailable ? 'disabled' : ''}>Lose</button>
+        </div>
+      `;
+
+      simBox.appendChild(stepRow);
+
+      if (simMap[w]) {
+        cumulativeSeq.push(simMap[w]);
+      }
+    }
+
+    updateSimulatedCallout();
+  }
+
+  function updateSimulatedCallout() {
+    if (state.currentWeek >= 5) return;
+
+    const r = state.selectedRank;
+    const currentW = state.currentWeek;
+    const past = getHistoricalRecord(r, currentW);
+    const simMap = state.simulations[r] || {};
+
+    const callout = document.getElementById('simResultCallout');
+    if (!callout) return;
+
+    const simSeq = getAllianceSimSequence(r);
+    const possibleRanks = getPossibleFinalRanks(simSeq);
+    const minR = Math.min(...possibleRanks);
+    const maxR = Math.max(...possibleRanks);
+
+    const hasSim = Object.keys(simMap).length > 0;
+    let projectedRankText = '';
+    let descText = '';
+
+    if (simSeq.length === 4) {
+      const exactRank = calculateFinalRank(simSeq);
+      projectedRankText = `#${exactRank}`;
+      const zoneLabel = getZoneLabel(exactRank);
+      descText = `Full Simulation: ${simSeq.join(' ')} (${simSeq.filter(x => x === 'W').length} Wins) → Finishes ${zoneLabel}`;
+    } else if (hasSim) {
+      projectedRankText = minR === maxR ? `#${minR}` : `#${minR} – #${maxR}`;
+      descText = `Carried through Week ${simSeq.length}: ${simSeq.join(' ')} • Next results decide final standing`;
+    } else {
+      projectedRankText = minR === maxR ? `#${minR}` : `#${minR} – #${maxR}`;
+      descText = `Select Win or Lose above to carry Alliance ${r} forward week-by-week`;
+    }
+
+    document.getElementById('simProjectedRankNum').textContent = projectedRankText;
+    document.getElementById('simProjectedDesc').textContent = descText;
+
+    highlightMatchedBranch();
+  }
+
+  function renderScenariosGrid() {
+    const r = state.selectedRank;
+    const w = state.currentWeek;
+    const grid = document.getElementById('branchCardsGrid');
+    if (!grid) return;
+
+    grid.innerHTML = '';
+
+    if (w >= 5) {
+      // In Final Results, display Season Record Cohorts
+      const cohorts = [
+        {
+          title: '🏆 4 Wins (Champion)',
+          ranks: [1],
+          desc: 'Won all 4 consecutive duels (WWWW)',
+          badgeClass: 'zone-promote'
+        },
+        {
+          title: '🥈 3 Wins (Contenders)',
+          ranks: [2, 3, 4, 5],
+          desc: '#2 (WWWL) • #3 (WWLW) • #4 (WLWW) • #5 (LWWW)',
+          badgeClass: 'zone-promote'
+        },
+        {
+          title: '⚔️ 2 Wins (Mid-Table Core)',
+          ranks: [6, 7, 8, 9, 10, 11],
+          desc: '#6 (WWLL) • #7 (WLWL) • #8 (WLLW) • #9 (LWWL) • #10 (LWLW) • #11 (LLWW)',
+          badgeClass: 'zone-safe'
+        },
+        {
+          title: '⚠️ 1 Win (Danger Zone)',
+          ranks: [12, 13, 14, 15],
+          desc: '#12 (WLLL) • #13 (LWLL) • #14 (LLWL) • #15 (LLLW)',
+          badgeClass: 'zone-demote'
+        },
+        {
+          title: '🔻 0 Wins (Relegated Floor)',
+          ranks: [16],
+          desc: 'Lost all 4 duels (LLLL)',
+          badgeClass: 'zone-demote'
+        }
+      ];
+
+      cohorts.forEach(c => {
+        const card = document.createElement('div');
+        card.className = 'branch-card';
+        const containsSelected = c.ranks.includes(r);
+        if (containsSelected) card.classList.add('matched-sim');
+
+        card.innerHTML = `
+          <div class="branch-trajectory">
+            <span class="trajectory-step" style="background:var(--bg-surface); color:var(--text-main); font-weight:800;">${c.title}</span>
+          </div>
+          <div class="branch-finish-box">
+            <div class="branch-final-rank" style="font-size:1.6rem;">${c.ranks.map(rk => '#' + rk).join(' ')}</div>
+            <span class="branch-zone-pill ${c.badgeClass}">${c.ranks.length} Alliance${c.ranks.length > 1 ? 's' : ''}</span>
+          </div>
+          <div class="branch-desc">
+            ${c.desc}
+          </div>
+        `;
+        card.addEventListener('click', () => {
+          selectRank(c.ranks[0]);
+        });
+        grid.appendChild(card);
+      });
+      return;
+    }
+
+    const branches = getFutureBranches(r, w);
+
+    branches.forEach(b => {
+      const finalR = b.finalRank;
+      const zone = getZone(finalR);
+      const zoneLabel = getZoneLabel(finalR);
+      const card = document.createElement('div');
+      card.className = 'branch-card';
+      card.setAttribute('data-w1', b.w1Result || '');
+      card.setAttribute('data-w2', b.w2Result || '');
+      card.setAttribute('data-w3', b.w3Result || '');
+      card.setAttribute('data-w4', b.w4Result || '');
+
+      let trajectoryHtml = '';
+      if (b.steps) {
+        trajectoryHtml = b.steps.map((st, idx) => {
+          const badgeClass = st === 'W' ? 'badge-w' : 'badge-l';
+          const stepWeek = w + idx;
+          return `<span class="trajectory-step ${badgeClass}">W${stepWeek}: ${st}</span>`;
+        }).join('<span class="trajectory-arrow">→</span>');
+      }
+
+      card.innerHTML = `
+        <div class="branch-trajectory">
+          ${trajectoryHtml}
+        </div>
+        <div class="branch-finish-box">
+          <div class="branch-final-rank">#${finalR}</div>
+          <span class="branch-zone-pill zone-${zone}">${zoneLabel}</span>
+        </div>
+        <div class="branch-desc">
+          <strong>${b.label || ''}</strong><br>
+          Record: ${b.fullSeq ? b.fullSeq.join(' ') : ''}
+        </div>
+      `;
+
+      card.addEventListener('click', () => {
+        applyBranchToSimulation(r, b);
+      });
+
+      grid.appendChild(card);
+    });
+
+    highlightMatchedBranch();
+  }
+
+  function highlightMatchedBranch() {
+    if (state.currentWeek >= 5) return;
+    const r = state.selectedRank;
+    const simMap = state.simulations[r] || {};
+    const cards = document.querySelectorAll('.branch-card');
+
+    cards.forEach(card => {
+      let matches = true;
+      for (let w = state.currentWeek; w <= 4; w++) {
+        const choice = simMap[w];
+        if (choice) {
+          const cardVal = card.getAttribute(`data-w${w}`);
+          if (cardVal && cardVal !== choice) {
+            matches = false;
+            break;
+          }
+        }
+      }
+      card.classList.toggle('matched-sim', matches && Object.keys(simMap).length > 0);
+    });
+  }
+
+  function applyBranchToSimulation(rank, branch) {
+    if (!state.simulations[rank]) {
+      state.simulations[rank] = {};
+    }
+    for (let w = state.currentWeek; w <= 4; w++) {
+      const val = branch[`w${w}Result`];
+      if (val) {
+        state.simulations[rank][w] = val;
+      }
+    }
+    saveSimulations();
+    renderAll();
+  }
+
+  /**
+   * Standings table with clear custom simulation indicators and badges.
+   */
+  function renderStandingsTable() {
+    const tbody = document.getElementById('standingsTableBody');
+    const banner = document.getElementById('tableSimStatus');
+    const bannerText = document.getElementById('tableSimTag');
+    if (!tbody) return;
+
+    const isFinal = state.currentWeek >= 5;
+
+    let activeSimCount = 0;
+    Object.keys(state.simulations).forEach(rk => {
+      if (Object.keys(state.simulations[rk]).length > 0) activeSimCount++;
+    });
+
+    if (banner) {
+      if (!isFinal && activeSimCount > 0) {
+        banner.style.display = 'inline-flex';
+        bannerText.textContent = `🔮 ${activeSimCount} Alliance${activeSimCount > 1 ? 's' : ''} with Custom Simulation`;
+      } else {
+        banner.style.display = 'none';
+      }
+    }
+
+    tbody.innerHTML = '';
+    for (let r = 1; r <= 16; r++) {
+      const tr = document.createElement('tr');
+      if (r === state.selectedRank) {
+        tr.classList.add('selected-row');
+      }
+
+      const name = getAllianceName(r);
+      const oppRank = getOpponentRank(r, state.currentWeek);
+      const oppName = getAllianceName(oppRank);
+      const currentZone = getZone(r);
+      const zoneBadge = `<span class="branch-zone-pill zone-${currentZone}" style="font-size:0.7rem; padding:2px 8px;">${currentZone.toUpperCase()}</span>`;
+
+      if (isFinal) {
+        // Final Results Mode
+        const seq = FINAL_RANK_TO_SEQUENCE[r];
+        const wins = seq.filter(x => x === 'W').length;
+        const recordSummary = `${wins}-${4 - wins}`;
+
+        let seqHtml = '';
+        seq.forEach(res => {
+          seqHtml += `<span class="badge-${res.toLowerCase()}" style="margin-right:3px;">${res}</span>`;
+        });
+
+        tr.innerHTML = `
+          <td class="rank-col">#${r}</td>
+          <td class="alliance-col">
+            <div class="alliance-row-name">
+              <input type="text" class="table-name-edit" data-rank="${r}" value="${name}">
+              ${r === 1 ? '<span style="font-size:0.85rem;" title="Champion">🏆</span>' : ''}
+            </div>
+          </td>
+          <td class="record-col">${recordSummary}</td>
+          <td>${seqHtml}</td>
+          <td class="matchup-col">W4 Duel: vs #${oppRank} (${oppName})</td>
+          <td class="outcome-range-col"><strong style="color:var(--accent-gold);">Final #${r}</strong></td>
+          <td>${zoneBadge}</td>
+        `;
+      } else {
+        // Battle Weeks Mode (1 to 4)
+        const simMap = state.simulations[r] || {};
+        const hasCustomSim = Object.keys(simMap).length > 0;
+        if (hasCustomSim) {
+          tr.classList.add('has-sim-path');
+        }
+
+        const past = getHistoricalRecord(r, state.currentWeek);
+        const simSeq = getAllianceSimSequence(r);
+        const possibleRanks = getPossibleFinalRanks(simSeq);
+        const best = Math.min(...possibleRanks);
+        const worst = Math.max(...possibleRanks);
+
+        const wins = past.filter(x => x === 'W').length;
+        const losses = past.filter(x => x === 'L').length;
+        const recordSummary = state.currentWeek === 1 ? '0-0' : `${wins}-${losses}`;
+
+        let seqHtml = '';
+        for (let w = 1; w <= 4; w++) {
+          if (w < state.currentWeek) {
+            const res = past[w - 1];
+            seqHtml += `<span class="badge-${res.toLowerCase()}" style="margin-right:3px;">${res}</span>`;
+          } else if (simMap[w]) {
+            const sRes = simMap[w];
+            seqHtml += `<span class="badge-sim-${sRes.toLowerCase()}" title="Simulated Week ${w}: ${sRes}" style="margin-right:3px;">${sRes}*</span>`;
+          } else {
+            seqHtml += `<span class="badge-blank" style="margin-right:3px;">-</span>`;
+          }
+        }
+
+        const simIndicator = hasCustomSim 
+          ? `<span class="sim-indicator-pill" title="Custom simulation active">🔮 Sim <button class="sim-row-clear-btn" onclick="event.stopPropagation(); window.clearRankSim(${r})" title="Clear simulation for this alliance">✕</button></span>`
+          : '';
+
+        let rankRangeDisplay = '';
+        if (hasCustomSim) {
+          if (simSeq.length === 4) {
+            rankRangeDisplay = `<strong style="color:var(--accent-cyan)">⭐ #${best} (Sim)</strong>`;
+          } else {
+            rankRangeDisplay = `<strong style="color:var(--accent-cyan)">#${best} – #${worst} (Sim)</strong>`;
+          }
+        } else {
+          rankRangeDisplay = best === worst ? `#${best}` : `#${best} – #${worst}`;
+        }
+
+        tr.innerHTML = `
+          <td class="rank-col">#${r}</td>
+          <td class="alliance-col">
+            <div class="alliance-row-name">
+              <input type="text" class="table-name-edit" data-rank="${r}" value="${name}">
+              ${simIndicator}
+            </div>
+          </td>
+          <td class="record-col">${recordSummary}</td>
+          <td>${seqHtml}</td>
+          <td class="matchup-col">vs #${oppRank} (${oppName})</td>
+          <td class="outcome-range-col">${rankRangeDisplay}</td>
+          <td>${zoneBadge}</td>
+        `;
+      }
+
+      tr.addEventListener('click', (e) => {
+        if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'BUTTON') {
+          selectRank(r);
+        }
+      });
+
+      const input = tr.querySelector('.table-name-edit');
+      input.addEventListener('change', (e) => {
+        updateAllianceName(r, e.target.value);
+      });
+      input.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+
+      tbody.appendChild(tr);
+    }
+  }
+
+  function updateCutoffInputs() {
+    const promoInput = document.getElementById('inputPromotionCutoff');
+    const demoInput = document.getElementById('inputDemotionCutoff');
+    if (promoInput) promoInput.value = state.promotionCutoff;
+    if (demoInput) demoInput.value = state.demotionCutoff;
+  }
+
+  // --- ACTIONS ---
+
+  function selectRank(r) {
+    state.selectedRank = r;
+    renderAll();
+  }
+  window.selectRank = selectRank;
+
+  function setWeek(w) {
+    state.currentWeek = w;
+    if (w < 5) {
+      Object.keys(state.simulations).forEach(rk => {
+        Object.keys(state.simulations[rk]).forEach(simW => {
+          if (parseInt(simW) < w) {
+            delete state.simulations[rk][simW];
+          }
+        });
+      });
+      saveSimulations();
+    }
+    renderAll();
+  }
+  window.setWeek = setWeek;
+
+  function updateAllianceName(rank, newName) {
+    const cleanName = newName.trim();
+    if (!cleanName) return;
+    state.customNames[rank] = cleanName;
+    saveCustomNames();
+    renderAll();
+  }
+
+  window.toggleSimWeek = function (week, result) {
+    if (state.currentWeek >= 5) return;
+    const r = state.selectedRank;
+    if (!state.simulations[r]) {
+      state.simulations[r] = {};
+    }
+
+    if (state.simulations[r][week] === result) {
+      for (let w = week; w <= 4; w++) {
+        delete state.simulations[r][w];
+      }
+    } else {
+      state.simulations[r][week] = result;
+      for (let w = week + 1; w <= 4; w++) {
+        delete state.simulations[r][w];
+      }
+    }
+
+    if (Object.keys(state.simulations[r]).length === 0) {
+      delete state.simulations[r];
+    }
+
+    saveSimulations();
+    renderAll();
+  };
+
+  window.clearSelectedAllianceSim = function () {
+    const r = state.selectedRank;
+    delete state.simulations[r];
+    saveSimulations();
+    renderAll();
+  };
+
+  window.clearRankSim = function (rank) {
+    delete state.simulations[rank];
+    saveSimulations();
+    renderAll();
+  };
+
+  window.clearAllSimulations = function () {
+    state.simulations = {};
+    saveSimulations();
+    renderAll();
+  };
+
+  window.resetAllAllianceNames = function () {
+    state.customNames = createDefaultAllianceNames();
+    saveCustomNames();
+    renderAll();
+  };
+
+  // --- THEME SWITCHER LOGIC ---
+  function applyTheme() {
+    const mode = state.theme;
+    const root = document.documentElement;
+
+    document.querySelectorAll('.theme-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.getAttribute('data-theme-val') === mode);
+    });
+
+    if (mode === 'system') {
+      const systemDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      root.setAttribute('data-theme', systemDark ? 'dark' : 'light');
+    } else {
+      root.setAttribute('data-theme', mode);
+    }
+  }
+
+  window.setTheme = function (mode) {
+    state.theme = mode;
+    localStorage.setItem('theme-mode', mode);
+    applyTheme();
+  };
+
+  if (window.matchMedia) {
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+      if (state.theme === 'system') applyTheme();
+    });
+  }
+
+  // --- EVENT LISTENERS INITIALIZATION ---
+  document.addEventListener('DOMContentLoaded', () => {
+    applyTheme();
+
+    document.querySelectorAll('.week-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        setWeek(parseInt(btn.getAttribute('data-week')));
+      });
+    });
+
+    const settingsToggle = document.getElementById('settingsToggleBtn');
+    const settingsDrawer = document.getElementById('settingsDrawer');
+    if (settingsToggle && settingsDrawer) {
+      settingsToggle.addEventListener('click', () => {
+        settingsDrawer.classList.toggle('open');
+      });
+    }
+
+    const promoInput = document.getElementById('inputPromotionCutoff');
+    const demoInput = document.getElementById('inputDemotionCutoff');
+
+    if (promoInput) {
+      promoInput.addEventListener('change', (e) => {
+        let val = parseInt(e.target.value) || 3;
+        val = Math.max(1, Math.min(15, val));
+        state.promotionCutoff = val;
+        saveCutoffs();
+        renderAll();
+      });
+    }
+
+    if (demoInput) {
+      demoInput.addEventListener('change', (e) => {
+        let val = parseInt(e.target.value) || 14;
+        val = Math.max(state.promotionCutoff + 1, Math.min(16, val));
+        state.demotionCutoff = val;
+        saveCutoffs();
+        renderAll();
+      });
+    }
+
+    window.setPreset = function (promo, demo) {
+      state.promotionCutoff = promo;
+      state.demotionCutoff = demo;
+      saveCutoffs();
+      renderAll();
+    };
+
+    const nameDisplay = document.getElementById('allianceNameDisplay');
+    const nameInput = document.getElementById('allianceNameInput');
+    const editBtn = document.getElementById('editNameBtn');
+
+    function startEditingName() {
+      nameDisplay.style.display = 'none';
+      nameInput.classList.add('active');
+      nameInput.focus();
+      nameInput.select();
+    }
+
+    function finishEditingName() {
+      const val = nameInput.value.trim();
+      if (val) {
+        updateAllianceName(state.selectedRank, val);
+      }
+      nameInput.classList.remove('active');
+      nameDisplay.style.display = 'block';
+    }
+
+    if (editBtn) editBtn.addEventListener('click', startEditingName);
+    if (nameDisplay) nameDisplay.addEventListener('click', startEditingName);
+    if (nameInput) {
+      nameInput.addEventListener('blur', finishEditingName);
+      nameInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') finishEditingName();
+        if (e.key === 'Escape') {
+          nameInput.value = getAllianceName(state.selectedRank);
+          nameInput.classList.remove('active');
+          nameDisplay.style.display = 'block';
+        }
+      });
+    }
+
+    renderAll();
+  });
+
+})();
+
+  </script>
+</body>
+</html>
