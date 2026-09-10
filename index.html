@@ -640,16 +640,24 @@
 
           <div class="system-status">
             <span class="status-dot"></span>
-            <span>9 Offline Tools Active</span>
+            <span>10 Offline Tools Active</span>
           </div>
         </div>
       </div>
       <h1>LAST WAR: SURVIVAL TOOLS & CALCULATORS</h1>
-      <p class="subtitle">Your central portal for Last War: Survival tools & calculators — featuring Radar Tasks Banking & VS Optimizer, Squad Targeting & 5v5 Combat Simulator, Secretary Buff & Arms Race Optimizer, Special Forces T10 Research, Season 1 Start Date Projection, Alliance Help & Survivor Optimizer, VS Friday Troop Training, Gold Zombie Spawner, and Taylor Hero Yield Simulator.</p>
+      <p class="subtitle">Your central portal for Last War: Survival tools & calculators — featuring Duel League Scenario & Path Analyzer, Radar Tasks Banking & VS Optimizer, Squad Targeting & 5v5 Combat Simulator, Secretary Buff & Arms Race Optimizer, Special Forces T10 Research, Season 1 Start Date Projection, Alliance Help & Survivor Optimizer, VS Friday Troop Training, Gold Zombie Spawner, and Taylor Hero Yield Simulator.</p>
     </header>
 
     <!-- Metrics Summary -->
     <div class="metrics-row">
+      <div class="metric-card" onclick="scrollToTool('card-duelleague')" title="Jump to Duel League Scenario & Path Analyzer">
+        <div class="metric-icon">🏆</div>
+        <div class="metric-info">
+          <div class="val">Duel League</div>
+          <div class="lbl">16-Alliance Swiss Analyzer</div>
+        </div>
+      </div>
+
       <div class="metric-card" onclick="scrollToTool('card-targeting')" title="Jump to Squad Targeting & Combat Simulator">
         <div class="metric-icon">⚔️</div>
         <div class="metric-info">
@@ -740,6 +748,31 @@
 
     <!-- Tools Grid -->
     <div class="tools-grid" id="toolsGrid">
+
+      <!-- Duel League Scenario & Path Analyzer -->
+      <div class="tool-card card-cyan" id="card-duelleague" data-category="duel events" data-title="duel league 16 alliance linear rank swiss tiebreaker win sequence scenario path analyzer promotion demotion week 1 2 3 4 standings">
+        <div>
+          <div class="tool-header">
+            <div class="tool-icon-wrapper">🏆</div>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <span class="tool-category-badge badge-duel">Alliance Duel</span>
+              <span class="tool-category-badge badge-events">League Season</span>
+            </div>
+          </div>
+          <h2>Duel League Scenario & Path Analyzer</h2>
+          <p class="description">Analyze any alliance rank (1–16) across 4 weeks of linear Swiss league play. Features exact deterministic win/loss sequence tracking, matchup previews, What-If simulator, and promotion/demotion outcome branches.</p>
+          <div class="features-list">
+            <span class="feature-tag">4-Week Swiss Engine</span>
+            <span class="feature-tag">What-If Simulator</span>
+            <span class="feature-tag">Promotion & Demotion Zones</span>
+            <span class="feature-tag">Editable Alliance Names</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <span class="status-text">✅ Live Interactive Tool</span>
+          <a href="vs-tools/duel-league-analyzer/index.html" class="btn-launch cyan">Launch Tool ➔</a>
+        </div>
+      </div>
 
       <!-- 0. Secretary Buff Time & Schedule Optimizer -->
       <div class="tool-card" id="card-secretary" data-category="events duel" data-title="secretary buff time schedule optimizer arms race vs alliance duel queue waitlist 5 minutes development science defense">
@@ -901,14 +934,11 @@
       </div>
 
       <!-- 7. Squad Targeting & 5v5 Combat Simulator -->
-      <div class="tool-card" id="card-targeting" data-category="mechanics duel" data-title="squad targeting 5v5 combat simulator hero positioning attack order line of sight casualty rerouting monte carlo win rate battle log">
+      <div class="tool-card" id="card-targeting" data-category="mechanics" data-title="squad targeting 5v5 combat simulator hero positioning attack order line of sight casualty rerouting monte carlo win rate battle log game mechanics">
         <div>
           <div class="tool-header">
             <div class="tool-icon-wrapper">⚔️</div>
-            <div style="display:flex; gap:6px; flex-wrap:wrap;">
-              <span class="tool-category-badge badge-mechanics">Game Mechanics</span>
-              <span class="tool-category-badge badge-duel">Combat & Duel</span>
-            </div>
+            <span class="tool-category-badge badge-mechanics">Game Mechanics</span>
           </div>
           <h2>Squad Targeting & Combat Simulator</h2>
           <p class="description">Interactive 5v5 battle visualizer and Monte Carlo combat simulator. Models line-of-sight targeting rules, front-to-back casualty rerouting, skill timers, energy generation, and backline sniper mechanics.</p>
