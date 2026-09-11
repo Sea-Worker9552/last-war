@@ -789,10 +789,10 @@
     .text-orange { color: var(--orange-primary) !important; }
     .text-muted { color: var(--text-muted) !important; }
 
-    /* DUAL BEFORE & AFTER RANGE SHIFT COMPARISON GAUGE WITH HIGH-CONTRAST LIGHT MODE GRID */
+    /* DUAL BEFORE & AFTER RANGE SHIFT COMPARISON GAUGE WITH TARGET BOSS PIN */
     .range-gauge-container {
       background: var(--gauge-bg);
-      padding: 18px;
+      padding: 20px;
       border-radius: 10px;
       margin-bottom: 16px;
       border: 1px solid var(--card-border);
@@ -802,7 +802,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 14px;
+      margin-bottom: 16px;
     }
 
     .gauge-sec-title {
@@ -839,7 +839,7 @@
 
     .gauge-stage {
       position: relative;
-      padding: 4px 0;
+      padding: 28px 0 6px 0; /* Padding top gives clean breathing room for floating pin badge */
     }
 
     .gauge-grid-lines {
@@ -862,16 +862,21 @@
 
     .dual-gauge-row {
       position: relative;
-      margin-bottom: 12px;
+      margin-bottom: 30px; /* Generous vertical separation between Before and After tracks */
       z-index: 2;
     }
 
+    .dual-gauge-row:last-child {
+      margin-bottom: 6px;
+    }
+
     .gauge-row-label {
-      font-size: 0.78rem;
+      font-size: 0.82rem;
       font-weight: 700;
-      margin-bottom: 4px;
+      margin-bottom: 8px;
       display: flex;
       justify-content: space-between;
+      align-items: center;
     }
 
     .gauge-row-label.gold { color: var(--gold-primary); }
@@ -880,11 +885,11 @@
 
     .gauge-track {
       position: relative;
-      height: 16px;
+      height: 18px;
       background: rgba(148, 163, 184, 0.2);
       border: 1px solid var(--card-border);
-      border-radius: 8px;
-      overflow: hidden;
+      border-radius: 9px;
+      overflow: visible; /* Allows boss pin dot & badge to float cleanly */
     }
 
     [data-theme="light"] .gauge-track {
@@ -894,7 +899,8 @@
 
     .gauge-bar {
       position: absolute;
-      height: 100%;
+      top: 0;
+      bottom: 0;
       border-radius: 8px;
       transition: width 0.3s ease, left 0.3s ease;
     }
@@ -918,13 +924,56 @@
       background: #94a3b8;
     }
 
+    /* TARGET BOSS MARKER PIN / DOT (PULSING DOT VERTICALLY CENTERED IN TRACK, BADGE FLOATING ABOVE) */
+    .boss-pin-marker {
+      position: absolute;
+      top: 50%; /* Vertically centers the marker dot inside the 18px track */
+      transform: translate(-50%, -50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 10;
+      pointer-events: none;
+      transition: left 0.3s ease;
+    }
+
+    .boss-pin-label {
+      position: absolute;
+      bottom: 20px; /* Badge floats cleanly above the top edge of the track */
+      font-size: 0.7rem;
+      font-weight: 800;
+      white-space: nowrap;
+      background: var(--cyan-primary);
+      color: #ffffff;
+      padding: 2px 7px;
+      border-radius: 5px;
+      box-shadow: 0 3px 10px rgba(6, 182, 212, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+    }
+
+    .boss-pin-dot {
+      width: 14px;
+      height: 14px;
+      background: var(--cyan-primary);
+      border: 2px solid #ffffff;
+      border-radius: 50%;
+      box-shadow: 0 0 12px rgba(6, 182, 212, 0.9);
+      animation: pulseDot 2s infinite;
+    }
+
+    @keyframes pulseDot {
+      0% { box-shadow: 0 0 0 0 rgba(6, 182, 212, 0.8); }
+      70% { box-shadow: 0 0 0 8px rgba(6, 182, 212, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(6, 182, 212, 0); }
+    }
+
     /* 5-Increment Shared Axis ticks */
     .gauge-axis-container {
       position: relative;
       height: 24px;
-      margin-top: 10px;
+      margin-top: 14px;
       border-top: 1px solid var(--card-border);
-      padding-top: 4px;
+      padding-top: 6px;
     }
 
     .axis-tick {
@@ -1481,7 +1530,7 @@
               </div>
             </div>
 
-            <!-- DUAL BEFORE & AFTER RANGE SHIFT COMPARISON GAUGE WITH HIGH-CONTRAST LIGHT MODE GRID -->
+            <!-- DUAL BEFORE & AFTER RANGE SHIFT COMPARISON GAUGE WITH TARGET BOSS PIN -->
             <div class="range-gauge-container">
               <div class="gauge-title-row">
                 <span class="gauge-sec-title">📍 SPAWNING WINDOW SHIFT COMPARISON</span>
@@ -1492,21 +1541,26 @@
                 <!-- Vertical Grid Lines -->
                 <div class="gauge-grid-lines" id="gaugeGridLines"></div>
 
-                <!-- BEFORE TRACK -->
+                <!-- BEFORE ACTION SPAWNING RANGE -->
                 <div class="dual-gauge-row">
                   <div class="gauge-row-label gold">
-                    <span>BEFORE RANGE TRACK:</span>
+                    <span>Before Action Spawning Range:</span>
                     <strong id="gaugeBeforeStr">15 ~ 35 (Lvl 30)</strong>
                   </div>
                   <div class="gauge-track">
                     <div class="gauge-bar gold" id="gaugeBarBefore" style="left:20%; width:40%;"></div>
+                    <!-- TARGET BOSS KILLED MARKER PIN (DOT VERTICALLY CENTERED IN TRACK, BADGE FLOATING ABOVE) -->
+                    <div class="boss-pin-marker" id="bossPinMarker" style="left: 60%;">
+                      <div class="boss-pin-label" id="bossPinLabel">🎯 Boss Lvl 35</div>
+                      <div class="boss-pin-dot"></div>
+                    </div>
                   </div>
                 </div>
 
-                <!-- AFTER TRACK -->
+                <!-- AFTER ACTION SPAWNING RANGE -->
                 <div class="dual-gauge-row">
                   <div class="gauge-row-label orange" id="gaugeAfterLabel">
-                    <span>AFTER RANGE TRACK:</span>
+                    <span>After Action Spawning Range:</span>
                     <strong id="gaugeAfterStr">25 ~ 45 (Lvl 40)</strong>
                   </div>
                   <div class="gauge-track">
@@ -1651,6 +1705,8 @@
       const gaugeAfterLabel = document.getElementById("gaugeAfterLabel");
       const gaugeShiftBadge = document.getElementById("gaugeShiftBadge");
       const gaugeAxis = document.getElementById("gaugeAxis");
+      const bossPinMarker = document.getElementById("bossPinMarker");
+      const bossPinLabel = document.getElementById("bossPinLabel");
 
       const matrixTbody = document.getElementById("matrixTbody");
 
@@ -1823,9 +1879,9 @@
         resAfterRange.textContent = "Range: " + newMinSpawn + " ~ " + newMaxSpawn;
         resBreakdown.innerHTML = res.badge + "<br>" + res.desc;
 
-        // DUAL RANGE SHIFT GAUGE CALCULATION WITH HIGH CONTRAST AXIS & GRIDLINES
-        var minLvlVal = Math.min(currentMinSpawn, newMinSpawn);
-        var maxLvlVal = Math.max(currentMaxSpawn, newMaxSpawn);
+        // DUAL RANGE SHIFT GAUGE CALCULATION WITH TARGET BOSS MARKER
+        var minLvlVal = Math.min(currentMinSpawn, newMinSpawn, bossLevel);
+        var maxLvlVal = Math.max(currentMaxSpawn, newMaxSpawn, bossLevel);
 
         var overallMin = Math.max(5, Math.floor((minLvlVal - 5) / 5) * 5);
         var overallMax = Math.max(overallMin + 25, Math.ceil((maxLvlVal + 5) / 5) * 5);
@@ -1837,9 +1893,20 @@
         var afterLeft = ((newMinSpawn - overallMin) / totalSpan) * 100;
         var afterWidth = ((newMaxSpawn - newMinSpawn) / totalSpan) * 100;
 
+        var bossPct = ((bossLevel - overallMin) / totalSpan) * 100;
+        bossPct = Math.max(0, Math.min(100, bossPct));
+
         if (gaugeBarBefore) {
           gaugeBarBefore.style.left = beforeLeft + "%";
           gaugeBarBefore.style.width = beforeWidth + "%";
+        }
+
+        if (bossPinMarker) {
+          bossPinMarker.style.left = bossPct + "%";
+        }
+
+        if (bossPinLabel) {
+          bossPinLabel.textContent = "🎯 Boss Lvl " + bossLevel;
         }
 
         if (gaugeBarAfter) {
