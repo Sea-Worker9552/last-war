@@ -3,114 +3,87 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Last War: Survival • Drone VS Pacing & Upgrade Dashboard</title>
+  <title>Last War: Survival • Tools & Calculators Hub</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      /* Dark Theme (Default) */
-      --bg-dark: #070b14;
-      --bg-body: #0b1120;
-      --bg-panel: rgba(30, 41, 59, 0.75);
-      --bg-panel-solid: #1e293b;
-      --bg-card: rgba(15, 23, 42, 0.75);
-      --bg-card-hover: rgba(30, 41, 59, 0.9);
-      --bg-input: #0f172a;
-      
-      --border-color: rgba(255, 255, 255, 0.12);
-      --border-subtle: rgba(255, 255, 255, 0.07);
-      --border-focus: #f59e0b;
-      
-      --slider-track: rgba(255, 255, 255, 0.16);
-      --slider-thumb-border: #0f172a;
-      
+      /* Dark Theme Default */
+      --bg-dark: #0b1120;
+      --bg-tactical: radial-gradient(circle at 20% 15%, rgba(234, 179, 8, 0.07) 0%, transparent 50%),
+                      radial-gradient(circle at 80% 75%, rgba(6, 182, 212, 0.08) 0%, transparent 50%),
+                      linear-gradient(180deg, #070b14 0%, #0b1120 100%);
+      --hero-bg: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95));
+      --hero-border: rgba(234, 179, 8, 0.35);
+      --hero-title-color: #ffffff;
+      --panel-bg: rgba(30, 41, 59, 0.75);
+      --panel-border: rgba(255, 255, 255, 0.1);
+      --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      --card-hover-shadow: 0 16px 35px rgba(0, 0, 0, 0.4);
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
-      --text-dim: #64748b;
-      --text-white: #ffffff;
       
-      --gold: #f59e0b;
+      --controls-bg: rgba(30, 41, 59, 0.6);
+      --filter-btn-bg: rgba(15, 23, 42, 0.6);
+      --filter-btn-border: rgba(255, 255, 255, 0.12);
+      
+      --input-bg: rgba(15, 23, 42, 0.8);
+      --input-border: rgba(255, 255, 255, 0.15);
+      --input-color: #ffffff;
+      
+      --icon-bg: rgba(15, 23, 42, 0.6);
+      --icon-border: rgba(255, 255, 255, 0.1);
+      
+      --feature-tag-bg: rgba(15, 23, 42, 0.7);
+      --feature-tag-text: #cbd5e1;
+      --feature-tag-border: rgba(255, 255, 255, 0.08);
+      
+      --footer-border: rgba(255, 255, 255, 0.08);
+
+      --gold-primary: #eab308;
       --gold-light: #fef08a;
-      --gold-bg: rgba(245, 158, 11, 0.12);
-      --gold-border: rgba(245, 158, 11, 0.35);
-      
-      --cyan: #06b6d4;
+      --cyan-primary: #06b6d4;
       --cyan-light: #cffaff;
-      --cyan-bg: rgba(6, 182, 212, 0.12);
-      --cyan-border: rgba(6, 182, 212, 0.35);
-      
-      --green: #10b981;
-      --green-light: #a7f3d0;
-      --green-bg: rgba(16, 185, 129, 0.12);
-      --green-border: rgba(16, 185, 129, 0.35);
-      
-      --red: #ef4444;
-      --red-bg: rgba(239, 68, 68, 0.12);
-      --red-border: rgba(239, 68, 68, 0.35);
-      
-      --purple: #a855f7;
-      --purple-bg: rgba(168, 85, 247, 0.12);
-      --purple-border: rgba(168, 85, 247, 0.35);
-      
-      --font-sans: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
-      
-      --radius-sm: 6px;
-      --radius-md: 10px;
-      --radius-lg: 14px;
-      --radius-xl: 20px;
-      
-      --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.25);
-      --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.35);
-      --shadow-lg: 0 16px 36px rgba(0, 0, 0, 0.5);
+      --orange-primary: #f97316;
+      --red-accent: #ef4444;
+      --green-accent: #22c55e;
+      --purple-accent: #a855f7;
+      --font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
 
+    /* Light Theme Custom Properties */
     html[data-theme="light"] {
-      --bg-dark: #f8fafc;
-      --bg-body: #f1f5f9;
-      --bg-panel: rgba(255, 255, 255, 0.95);
-      --bg-panel-solid: #ffffff;
-      --bg-card: #ffffff;
-      --bg-card-hover: #f8fafc;
-      --bg-input: #ffffff;
-      
-      --border-color: #cbd5e1;
-      --border-subtle: #e2e8f0;
-      --border-focus: #d97706;
-      
-      --slider-track: #cbd5e1;
-      --slider-thumb-border: #ffffff;
-      
+      --bg-dark: #f1f5f9;
+      --bg-tactical: radial-gradient(circle at 20% 15%, rgba(234, 179, 8, 0.12) 0%, transparent 50%),
+                      radial-gradient(circle at 80% 75%, rgba(6, 182, 212, 0.12) 0%, transparent 50%),
+                      linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
+      --hero-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(241, 245, 249, 0.98));
+      --hero-border: rgba(234, 179, 8, 0.5);
+      --hero-title-color: #0f172a;
+      --panel-bg: rgba(255, 255, 255, 0.88);
+      --panel-border: rgba(148, 163, 184, 0.3);
+      --card-shadow: 0 10px 25px rgba(148, 163, 184, 0.15);
+      --card-hover-shadow: 0 16px 35px rgba(148, 163, 184, 0.25);
       --text-main: #0f172a;
       --text-muted: #475569;
-      --text-dim: #64748b;
-      --text-white: #0f172a;
       
-      --gold: #d97706;
-      --gold-bg: rgba(217, 119, 6, 0.1);
-      --gold-border: rgba(217, 119, 6, 0.35);
+      --controls-bg: rgba(255, 255, 255, 0.75);
+      --filter-btn-bg: rgba(241, 245, 249, 0.9);
+      --filter-btn-border: rgba(203, 213, 225, 0.8);
       
-      --cyan: #0891b2;
-      --cyan-bg: rgba(8, 145, 178, 0.1);
-      --cyan-border: rgba(8, 145, 178, 0.35);
+      --input-bg: #ffffff;
+      --input-border: #cbd5e1;
+      --input-color: #0f172a;
       
-      --green: #059669;
-      --green-bg: rgba(5, 150, 105, 0.1);
-      --green-border: rgba(5, 150, 105, 0.35);
+      --icon-bg: rgba(241, 245, 249, 0.9);
+      --icon-border: rgba(203, 213, 225, 0.7);
       
-      --red: #dc2626;
-      --red-bg: rgba(220, 38, 38, 0.1);
-      --red-border: rgba(220, 38, 38, 0.35);
+      --feature-tag-bg: #e2e8f0;
+      --feature-tag-text: #334155;
+      --feature-tag-border: rgba(203, 213, 225, 0.8);
       
-      --purple: #9333ea;
-      --purple-bg: rgba(147, 51, 234, 0.1);
-      --purple-border: rgba(147, 51, 234, 0.35);
-      
-      --shadow-sm: 0 4px 12px rgba(148, 163, 184, 0.18);
-      --shadow-md: 0 8px 24px rgba(148, 163, 184, 0.22);
-      --shadow-lg: 0 16px 36px rgba(148, 163, 184, 0.28);
+      --footer-border: rgba(203, 213, 225, 0.6);
     }
 
     * {
@@ -120,112 +93,110 @@
     }
 
     body {
-      background-color: var(--bg-body);
-      background-image: 
-        radial-gradient(circle at 15% 10%, rgba(245, 158, 11, 0.06) 0%, transparent 40%),
-        radial-gradient(circle at 85% 20%, rgba(6, 182, 212, 0.06) 0%, transparent 40%),
-        radial-gradient(circle at 50% 80%, rgba(16, 185, 129, 0.04) 0%, transparent 50%);
+      background-color: var(--bg-dark);
       color: var(--text-main);
-      font-family: var(--font-sans);
-      line-height: 1.5;
+      font-family: var(--font-family);
+      line-height: 1.6;
+      padding: 32px 16px;
       min-height: 100vh;
-      padding: 24px 16px 60px;
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
 
-    .container {
-      max-width: 1240px;
+    .tactical-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: var(--bg-tactical);
+      z-index: -1;
+      transition: background 0.3s ease;
+    }
+
+    .app-container {
+      max-width: 1180px;
       margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
     }
 
-    /* Top Navigation Bar */
-    .header {
+    /* Hero Header Banner */
+    .hero-header {
+      background: var(--hero-bg);
+      border: 1px solid var(--hero-border);
+      border-radius: 16px;
+      padding: 36px 32px;
+      box-shadow: var(--card-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      position: relative;
+      overflow: hidden;
+      transition: background 0.3s ease, border-color 0.3s ease;
+    }
+
+    .hero-header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -10%;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(234, 179, 8, 0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .header-top {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      margin-bottom: 12px;
       flex-wrap: wrap;
-      gap: 16px;
-      margin-bottom: 24px;
-      padding-bottom: 20px;
-      border-bottom: 1px solid var(--border-subtle);
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
       gap: 12px;
     }
 
-    .brand-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: var(--radius-md);
-      background: linear-gradient(135deg, #f59e0b, #d97706);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #ffffff;
+    .hub-badge {
+      font-size: 0.78rem;
       font-weight: 800;
-      font-size: 22px;
-      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.4);
-    }
-
-    .brand-text h1 {
-      font-size: 22px;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      color: var(--text-main);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .badge-sub {
-      font-size: 11px;
-      font-weight: 700;
+      letter-spacing: 1.8px;
+      color: var(--gold-primary);
+      background: rgba(234, 179, 8, 0.12);
+      border: 1px solid rgba(234, 179, 8, 0.4);
+      padding: 5px 16px;
+      border-radius: 20px;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
-      padding: 2px 8px;
-      border-radius: 999px;
-      background: var(--gold-bg);
-      color: var(--gold);
-      border: 1px solid var(--gold-border);
     }
 
-    .brand-text p {
-      font-size: 13px;
-      color: var(--text-muted);
-      margin-top: 2px;
-    }
-
-    .header-actions {
+    .header-right-controls {
       display: flex;
       align-items: center;
       gap: 12px;
+      flex-wrap: wrap;
     }
 
-    /* 3-Way Theme Switcher */
+    /* Theme Switcher Controls */
     .theme-switcher {
-      display: flex;
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
+      display: inline-flex;
+      background: var(--icon-bg);
+      border: 1px solid var(--icon-border);
       padding: 3px;
+      border-radius: 10px;
       gap: 2px;
+      align-items: center;
     }
 
     .theme-btn {
-      border: none;
       background: transparent;
+      border: 1px solid transparent;
       color: var(--text-muted);
-      font-size: 12px;
-      font-weight: 600;
-      padding: 5px 10px;
-      border-radius: 6px;
+      font-family: var(--font-family);
+      font-size: 0.76rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 7px;
       cursor: pointer;
+      transition: all 0.2s ease;
       display: flex;
       align-items: center;
       gap: 4px;
-      transition: all 0.15s ease;
     }
 
     .theme-btn:hover {
@@ -233,2977 +204,932 @@
     }
 
     .theme-btn.active {
-      background: var(--bg-panel-solid);
-      color: var(--gold);
-      font-weight: 700;
-      box-shadow: var(--shadow-sm);
-      border: 1px solid var(--border-subtle);
+      background: var(--panel-bg);
+      color: var(--text-main);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      border-color: var(--panel-border);
     }
 
-    .btn {
-      display: inline-flex;
+    .system-status {
+      font-size: 0.8rem;
+      color: var(--green-accent);
+      font-weight: 700;
+      display: flex;
       align-items: center;
       gap: 6px;
-      padding: 8px 14px;
-      border-radius: var(--radius-md);
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      border: 1px solid var(--border-color);
-      background: var(--bg-card);
-      color: var(--text-main);
+      background: rgba(34, 197, 94, 0.1);
+      padding: 4px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(34, 197, 94, 0.25);
     }
 
-    .btn:hover {
-      background: var(--bg-card-hover);
-      border-color: var(--border-focus);
-      transform: translateY(-1px);
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, var(--gold), #d97706);
-      color: #ffffff;
-      border: none;
-      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
-    }
-
-    .btn-primary:hover {
-      background: linear-gradient(135deg, #fbbf24, #d97706);
-      box-shadow: 0 6px 16px rgba(245, 158, 11, 0.4);
-      color: #ffffff;
-    }
-
-    /* Layout Grids */
-    .top-dashboard-grid {
-      display: grid;
-      grid-template-columns: 360px 1fr;
-      gap: 24px;
-      align-items: stretch;
-      margin-bottom: 24px;
-    }
-
-    @media (max-width: 1024px) {
-      .top-dashboard-grid {
-        grid-template-columns: 1fr;
-        align-items: start;
-      }
-    }
-
-    .analytics-panel {
-      display: flex;
-      flex-direction: column;
-      min-width: 0;
-      height: 100%;
-    }
-
-    .table-panel-fullwidth {
-      width: 100%;
-    }
-
-    /* Panels */
-    .panel {
-      background: var(--bg-panel);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-xl);
-      padding: 20px;
-      box-shadow: var(--shadow-sm);
-    }
-
-    .panel-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 16px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid var(--border-subtle);
-    }
-
-    .panel-title {
-      font-size: 15px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      color: var(--text-main);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .panel-title span.dot {
+    .status-dot {
       width: 8px;
       height: 8px;
+      background-color: var(--green-accent);
       border-radius: 50%;
-      background: var(--gold);
-      display: inline-block;
+      box-shadow: 0 0 8px var(--green-accent);
     }
 
-    /* Controls & Form Inputs */
-    .control-group {
-      margin-bottom: 16px;
-    }
-
-    .control-group:last-child {
-      margin-bottom: 0;
-    }
-
-    .control-label {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-main);
+    .hero-header h1 {
+      font-size: 2.3rem;
+      font-weight: 800;
+      color: var(--hero-title-color);
+      letter-spacing: -0.5px;
       margin-bottom: 6px;
     }
 
-    .control-badge {
-      font-family: var(--font-mono);
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--gold);
-      background: var(--gold-bg);
-      padding: 1px 6px;
-      border-radius: 4px;
-      border: 1px solid var(--gold-border);
+    .hero-header p.subtitle {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      max-width: 800px;
     }
 
-    .input-row {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
-
-    .form-input {
-      width: 100%;
-      background: var(--bg-input);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      padding: 9px 12px;
-      font-size: 14px;
-      font-family: var(--font-mono);
-      color: var(--text-main);
-      transition: all 0.2s ease;
-    }
-
-    .form-input:focus {
-      outline: none;
-      border-color: var(--border-focus);
-      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
-    }
-
-    /* Range Slider with High-Contrast Track and Thumb */
-    .range-slider {
-      width: 100%;
-      height: 8px;
-      border-radius: 4px;
-      background: var(--slider-track);
-      outline: none;
-      appearance: none;
-      -webkit-appearance: none;
-      margin: 10px 0 4px;
-      cursor: pointer;
-      border: 1px solid var(--border-subtle);
-      transition: background 0.2s ease;
-    }
-
-    .range-slider::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      background: var(--gold);
-      border: 2px solid var(--slider-thumb-border);
-      cursor: pointer;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
-      transition: transform 0.15s ease, background 0.15s ease;
-    }
-
-    .range-slider::-moz-range-thumb {
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      background: var(--gold);
-      border: 2px solid var(--slider-thumb-border);
-      cursor: pointer;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
-      transition: transform 0.15s ease, background 0.15s ease;
-    }
-
-    .range-slider::-webkit-slider-thumb:hover,
-    .range-slider::-moz-range-thumb:hover {
-      transform: scale(1.15);
-      background: #fbbf24;
-    }
-
-    .presets-container {
+    /* Quick Stats Metrics Row */
+    .metrics-row {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-top: 14px;
-      padding-top: 14px;
-      border-top: 1px solid var(--border-subtle);
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
     }
 
-    .preset-btn {
-      padding: 8px 10px;
-      border-radius: var(--radius-sm);
-      font-size: 11px;
-      font-weight: 600;
-      text-align: center;
-      background: var(--bg-card);
-      border: 1px solid var(--border-subtle);
-      color: var(--text-muted);
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .preset-btn:hover {
-      background: var(--gold-bg);
-      border-color: var(--gold-border);
-      color: var(--gold);
-    }
-
-    /* KPI Summary Cards Grid */
-    .kpi-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 14px;
-      margin-bottom: 20px;
-    }
-
-    .kpi-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-lg);
-      padding: 14px 16px;
-      position: relative;
-      overflow: hidden;
-      transition: transform 0.2s ease;
-    }
-
-    .kpi-card:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-sm);
-    }
-
-    .kpi-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 3px;
-      background: var(--gold);
-      opacity: 0.8;
-    }
-
-    .kpi-card.cyan::before { background: var(--cyan); }
-    .kpi-card.green::before { background: var(--green); }
-    .kpi-card.purple::before { background: var(--purple); }
-
-    .kpi-label {
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--text-muted);
-      margin-bottom: 4px;
-    }
-
-    .kpi-value {
-      font-size: 22px;
-      font-weight: 800;
-      font-family: var(--font-sans);
-      color: var(--text-main);
-      display: flex;
-      align-items: baseline;
-      gap: 6px;
-    }
-
-    .kpi-sub {
-      font-size: 11px;
-      color: var(--text-dim);
-      margin-top: 2px;
-      font-family: var(--font-mono);
-    }
-
-    /* Strategy Notice Banner */
-    .strategy-banner {
-      background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(6, 182, 212, 0.08));
-      border: 1px solid var(--gold-border);
-      border-radius: var(--radius-md);
-      padding: 10px 14px;
-      margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 12px;
-      color: var(--text-main);
-    }
-
-    .strategy-banner-icon {
-      font-size: 18px;
-    }
-
-    /* Analytics / Charts Section */
-    .charts-grid {
-      display: flex;
-      flex-direction: column;
-      flex: 1;
-      gap: 14px;
-      margin-bottom: 0;
-      min-height: 0;
-    }
-
-    .chart-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-lg);
-      padding: 14px 16px;
-      display: flex;
-      flex-direction: column;
-      flex: 1;
-      min-height: 0;
-    }
-
-    .chart-title {
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--text-main);
-      margin-bottom: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-shrink: 0;
-    }
-
-    .chart-container {
-      position: relative;
-      flex: 1;
-      min-height: 235px;
-      height: 100%;
-      width: 100%;
-    }
-
-    /* Table Controls & Search */
-    .table-toolbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-bottom: 14px;
-    }
-
-    .table-stats {
-      font-size: 13px;
-      color: var(--text-muted);
-    }
-
-    .table-stats strong {
-      color: var(--text-main);
-    }
-
-    .table-actions {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
-
-    /* Interactive Ledger Table */
-    .table-wrapper {
-      width: 100%;
-      overflow-x: auto;
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-lg);
-      background: var(--bg-card);
-      max-height: 720px;
-      overflow-y: auto;
-    }
-
-    table.ledger-table {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
-      font-size: 12.5px;
-      text-align: left;
-    }
-
-    table.ledger-table th {
-      background: rgba(15, 23, 42, 0.98);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      color: var(--text-muted);
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      padding: 10px 10px;
-      border-bottom: 2px solid var(--border-color);
-      white-space: nowrap;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
-    }
-
-    html[data-theme="light"] table.ledger-table th {
-      background: rgba(226, 232, 240, 0.98);
-      color: #475569;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    }
-
-    table.ledger-table td {
-      padding: 8px 10px;
-      border-bottom: 1px solid var(--border-subtle);
-      white-space: nowrap;
-      vertical-align: middle;
-    }
-
-    table.ledger-table td.cell-upgrades {
-      white-space: normal;
-      min-width: 150px;
-      max-width: 210px;
-    }
-
-    .upgrade-lines-container {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .upgrade-line {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text-main);
-      line-height: 1.3;
-      white-space: nowrap;
-    }
-
-    table.ledger-table tbody tr {
-      transition: background 0.15s ease;
-    }
-
-    table.ledger-table tbody tr:hover {
-      background: rgba(245, 158, 11, 0.04);
-    }
-
-    table.ledger-table tbody tr.milestone-row {
-      background: rgba(245, 158, 11, 0.08);
-      font-weight: 600;
-    }
-
-    table.ledger-table tbody tr.deficit-row {
-      background: rgba(239, 68, 68, 0.06);
-    }
-
-    /* Hoverable Tooltip Trigger on Cells */
-    .tooltip-cell {
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 3px 6px;
-      border-radius: var(--radius-sm);
-      transition: all 0.15s ease;
-    }
-
-    .tooltip-cell:hover {
-      background: rgba(245, 158, 11, 0.15);
-    }
-
-    /* Fixed Floating Tooltip Overlay */
-    .floating-vs-tooltip {
-      position: fixed;
-      display: none;
-      z-index: 9999;
-      pointer-events: none;
-      background: var(--bg-panel-solid);
-      border: 1px solid var(--gold-border);
-      border-radius: var(--radius-md);
-      padding: 12px 16px;
-      color: var(--text-main);
-      font-size: 12px;
-      font-family: var(--font-sans);
-      white-space: nowrap;
-      box-shadow: 0 14px 36px rgba(0, 0, 0, 0.55);
-      transition: opacity 0.1s ease;
-    }
-
-    html[data-theme="light"] .floating-vs-tooltip {
-      background: #ffffff;
-      border: 1px solid #cbd5e1;
-      box-shadow: 0 14px 36px rgba(148, 163, 184, 0.35);
-      color: #0f172a;
-    }
-
-    .vs-tooltip-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 20px;
-      margin-bottom: 5px;
-    }
-
-    .vs-tooltip-row:last-child {
-      margin-bottom: 0;
-      margin-top: 6px;
-      padding-top: 6px;
-      border-top: 1px solid var(--border-subtle);
-      font-weight: 700;
-    }
-
-    /* Badges */
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      font-size: 11px;
-      font-weight: 700;
-      font-family: var(--font-mono);
-      padding: 2px 8px;
-      border-radius: 6px;
-    }
-
-    .badge-gold {
-      background: var(--gold-bg);
-      color: var(--gold);
-      border: 1px solid var(--gold-border);
-    }
-
-    .badge-green {
-      background: var(--green-bg);
-      color: var(--green);
-      border: 1px solid var(--green-border);
-    }
-
-    .badge-red {
-      background: var(--red-bg);
-      color: var(--red);
-      border: 1px solid var(--red-border);
-    }
-
-    .badge-cyan {
-      background: var(--cyan-bg);
-      color: var(--cyan);
-      border: 1px solid var(--cyan-border);
-    }
-
-    .badge-purple {
-      background: var(--purple-bg);
-      color: var(--purple);
-      border: 1px solid var(--purple-border);
-    }
-
-    .num-mono {
-      font-family: var(--font-mono);
-    }
-
-    .positive-val { color: var(--green); }
-    .negative-val { color: var(--red); }
-
-    /* Unlock Reference Modal */
-    .modal-backdrop {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.7);
-      backdrop-filter: blur(4px);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 100;
-      padding: 16px;
-    }
-
-    .modal-backdrop.active {
-      display: flex;
-    }
-
-    .modal-dialog {
-      background: var(--bg-panel-solid);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-xl);
-      max-width: 680px;
-      width: 100%;
-      max-height: 85vh;
-      display: flex;
-      flex-direction: column;
-      box-shadow: var(--shadow-lg);
-      overflow: hidden;
-    }
-
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    .metric-card {
+      background: var(--panel-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--panel-border);
+      border-radius: 12px;
       padding: 16px 20px;
-      border-bottom: 1px solid var(--border-color);
-    }
-
-    .modal-body {
-      padding: 20px;
-      overflow-y: auto;
-    }
-
-    .unlock-item {
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      padding: 10px 12px;
-      background: var(--bg-card);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
-      margin-bottom: 8px;
-      font-size: 13px;
-    }
-
-    /* Custom Drone Training Action & Modal Styles */
-    .btn-custom-week {
-      padding: 4px 10px;
-      font-size: 11px;
-      font-weight: 700;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--border-color);
-      background: var(--bg-card);
-      color: var(--text-muted);
+      gap: 16px;
       cursor: pointer;
-      transition: all 0.15s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      white-space: nowrap;
-      font-family: var(--font-sans);
-    }
-    .btn-custom-week:hover {
-      border-color: var(--cyan);
-      color: var(--text-main);
-      background: var(--bg-card-hover);
-    }
-    .btn-custom-week.active {
-      background: var(--gold-bg);
-      border-color: var(--gold);
-      color: var(--gold);
-    }
-    table.ledger-table tbody tr.custom-override-row {
-      background: rgba(245, 158, 11, 0.09) !important;
-      border-left: 3px solid var(--gold);
-    }
-    .badge-custom-override {
-      background: var(--gold-bg);
-      color: var(--gold);
-      border: 1px solid var(--gold-border);
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-size: 10px;
-      font-weight: 700;
-      font-family: var(--font-mono);
-      display: inline-flex;
-      align-items: center;
-      gap: 3px;
-    }
-
-    .custom-modal-section {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-lg);
-      padding: 14px 16px;
-    }
-    .segment-rail-container {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-top: 10px;
-    }
-    .segment-pips-grid {
-      display: flex;
-      gap: 6px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-    .segment-pip {
-      flex: 1;
-      min-width: 32px;
-      height: 42px;
-      border-radius: var(--radius-sm);
-      background: var(--bg-input);
-      border: 2px solid var(--border-color);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      font-size: 11px;
-      font-weight: 700;
-      font-family: var(--font-mono);
-      color: var(--text-dim);
-      cursor: pointer;
-      transition: all 0.15s ease;
       user-select: none;
-      position: relative;
-    }
-    .segment-pip:hover:not(.disabled) {
-      border-color: var(--cyan);
-      color: var(--text-main);
-      transform: translateY(-2px);
-    }
-    .segment-pip.disabled {
-      opacity: 0.35;
-      cursor: not-allowed;
-    }
-    .segment-pip.filled {
-      background: var(--cyan-bg);
-      border-color: var(--cyan);
-      color: var(--cyan);
-      box-shadow: 0 0 10px rgba(6, 182, 212, 0.35);
-    }
-    .segment-pip.milestone-pip {
-      border-color: var(--gold-border);
-    }
-    .segment-pip.milestone-pip.filled {
-      background: var(--gold-bg);
-      border-color: var(--gold);
-      color: var(--gold);
-      box-shadow: 0 0 12px rgba(245, 158, 11, 0.45);
-    }
-    .pip-sub {
-      font-size: 8px;
-      font-weight: 600;
-      opacity: 0.8;
-      margin-top: 1px;
-    }
-    .stepper-btn {
-      padding: 5px 10px;
-      font-size: 11px;
-      font-weight: 700;
-      font-family: var(--font-sans);
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--border-color);
-      background: var(--bg-card);
-      color: var(--text-main);
-      cursor: pointer;
-      transition: all 0.15s ease;
-    }
-    .stepper-btn:hover:not(:disabled) {
-      border-color: var(--cyan);
-      background: var(--bg-card-hover);
-    }
-    .stepper-btn:disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    /* Multi-Level Journey Breadcrumb */
-    .journey-roadmap {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      flex-wrap: wrap;
-      background: var(--bg-input);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
-      padding: 8px 10px;
-      margin-bottom: 12px;
+    .metric-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--gold-primary);
+      box-shadow: 0 8px 24px rgba(234, 179, 8, 0.18);
     }
-    .journey-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 4px 8px;
-      border-radius: var(--radius-sm);
-      font-size: 11px;
-      font-weight: 700;
-      font-family: var(--font-sans);
-      border: 1px solid var(--border-color);
-      background: var(--bg-card);
-      color: var(--text-muted);
-      transition: all 0.15s ease;
-      user-select: none;
-    }
-    .journey-chip.interactive {
-      cursor: pointer;
-    }
-    .journey-chip.interactive:hover {
-      border-color: var(--cyan);
-      color: var(--text-main);
+
+    .metric-card:active {
       transform: translateY(-1px);
     }
-    .journey-chip.start-chip {
-      background: rgba(148, 163, 184, 0.12);
-      border-color: var(--border-color);
-      color: var(--text-muted);
-    }
-    .journey-chip.completed-chip {
-      background: var(--green-bg);
-      border-color: var(--green-border);
-      color: var(--green);
-    }
-    .journey-chip.completed-chip:hover {
-      border-color: var(--green);
-      box-shadow: 0 0 8px rgba(16, 185, 129, 0.3);
-    }
-    .journey-chip.target-chip {
-      background: var(--gold-bg);
-      border-color: var(--gold);
-      color: var(--gold);
-      box-shadow: 0 0 10px rgba(245, 158, 11, 0.25);
-    }
-    .journey-arrow {
-      color: var(--text-dim);
-      font-size: 11px;
+
+    @keyframes cardPulseHighlight {
+      0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(234, 179, 8, 0.7);
+        border-color: var(--gold-primary);
+      }
+      35% {
+        transform: scale(1.02);
+        box-shadow: 0 0 30px 6px rgba(234, 179, 8, 0.45);
+        border-color: var(--gold-primary);
+      }
+      70% {
+        transform: scale(1.01);
+        box-shadow: 0 0 20px 3px rgba(234, 179, 8, 0.3);
+        border-color: var(--gold-primary);
+      }
+      100% {
+        transform: scale(1);
+        box-shadow: var(--card-shadow);
+        border-color: var(--panel-border);
+      }
     }
 
-    .budget-alert-box {
-      padding: 10px 14px;
-      border-radius: var(--radius-md);
-      font-size: 12px;
-      font-weight: 600;
+    .card-highlight-pulse {
+      animation: cardPulseHighlight 1.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .metric-icon {
+      font-size: 1.8rem;
+      background: var(--icon-bg);
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .budget-alert-box.ok {
-      background: var(--green-bg);
-      border: 1px solid var(--green-border);
-      color: var(--green);
-    }
-    .budget-alert-box.deficit {
-      background: var(--red-bg);
-      border: 1px solid var(--red-border);
-      color: var(--red);
+      justify-content: center;
+      border: 1px solid var(--icon-border);
     }
 
-    .modal-preview-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-      margin-top: 8px;
-    }
-    @media (max-width: 600px) {
-      .modal-preview-grid { grid-template-columns: 1fr; }
-    }
-    .preview-stat-card {
-      background: var(--bg-input);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
-      padding: 10px 12px;
-    }
-    .preview-stat-lbl {
-      font-size: 10px;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 2px;
-      font-weight: 700;
-    }
-    .preview-stat-val {
-      font-size: 15px;
+    .metric-info .val {
+      font-size: 1.25rem;
       font-weight: 800;
-      font-family: var(--font-mono);
       color: var(--text-main);
     }
 
-    /* Toast Notification */
-    .toast {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      padding: 12px 18px;
-      background: #1e293b;
-      border: 1px solid var(--gold);
-      color: #ffffff;
-      border-radius: var(--radius-md);
-      font-size: 13px;
+    .metric-info .lbl {
+      font-size: 0.78rem;
+      color: var(--text-muted);
       font-weight: 600;
-      box-shadow: var(--shadow-lg);
-      transform: translateY(100px);
-      opacity: 0;
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-      z-index: 200;
-      display: flex;
-      align-items: center;
-      gap: 8px;
     }
 
-    .toast.show {
-      transform: translateY(0);
-      opacity: 1;
+    /* Filter & Search Bar */
+    .controls-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      background: var(--controls-bg);
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: 1px solid var(--panel-border);
+      transition: background 0.3s ease, border-color 0.3s ease;
+    }
+
+    .filter-tags {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      background: var(--filter-btn-bg);
+      border: 1px solid var(--filter-btn-border);
+      color: var(--text-muted);
+      font-family: var(--font-family);
+      font-size: 0.85rem;
+      font-weight: 700;
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .filter-btn:hover {
+      color: var(--text-main);
+      border-color: var(--panel-border);
+    }
+
+    .filter-btn.active {
+      background: var(--gold-primary);
+      color: #000000;
+      border-color: var(--gold-primary);
+      box-shadow: 0 4px 12px rgba(234, 179, 8, 0.25);
+    }
+
+    .search-box {
+      position: relative;
+      min-width: 240px;
+      flex: 1;
+      max-width: 320px;
+    }
+
+    .search-box input {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      border-radius: 8px;
+      color: var(--input-color);
+      font-family: var(--font-family);
+      font-size: 0.88rem;
+      padding: 9px 12px 9px 36px;
+      outline: none;
+      transition: border-color 0.2s ease, background 0.3s ease;
+    }
+
+    .search-box input:focus {
+      border-color: var(--cyan-primary);
+      box-shadow: 0 0 10px rgba(6, 182, 212, 0.2);
+    }
+
+    .search-box::before {
+      content: '🔍';
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.85rem;
+      opacity: 0.7;
+    }
+
+    /* Tools Grid Layout */
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 24px;
+    }
+
+    .tool-card {
+      background: var(--panel-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--panel-border);
+      border-radius: 14px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: var(--card-shadow);
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, background 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tool-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(234, 179, 8, 0.5);
+      box-shadow: var(--card-hover-shadow), 0 0 20px rgba(234, 179, 8, 0.1);
+    }
+
+    .tool-card.card-cyan:hover {
+      border-color: rgba(6, 182, 212, 0.6);
+      box-shadow: var(--card-hover-shadow), 0 0 20px rgba(6, 182, 212, 0.15);
+    }
+
+    .tool-card.card-purple:hover {
+      border-color: rgba(168, 85, 247, 0.6);
+      box-shadow: var(--card-hover-shadow), 0 0 20px rgba(168, 85, 247, 0.15);
+    }
+
+    .tool-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+
+    .tool-icon-wrapper {
+      font-size: 2rem;
+      background: var(--icon-bg);
+      border: 1px solid var(--icon-border);
+      width: 54px;
+      height: 54px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .tool-category-badge {
+      font-size: 0.7rem;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      text-transform: uppercase;
+    }
+
+    .badge-tech {
+      background: rgba(234, 179, 8, 0.15);
+      color: var(--gold-primary);
+      border: 1px solid rgba(234, 179, 8, 0.4);
+    }
+
+    .badge-duel {
+      background: rgba(6, 182, 212, 0.15);
+      color: var(--cyan-primary);
+      border: 1px solid rgba(6, 182, 212, 0.4);
+    }
+
+    .badge-events {
+      background: rgba(249, 115, 22, 0.15);
+      color: var(--orange-primary);
+      border: 1px solid rgba(249, 115, 22, 0.4);
+    }
+
+    .badge-heroes {
+      background: rgba(168, 85, 247, 0.15);
+      color: var(--purple-accent);
+      border: 1px solid rgba(168, 85, 247, 0.4);
+    }
+
+    .badge-mechanics {
+      background: rgba(249, 115, 22, 0.15);
+      color: var(--orange-primary);
+      border: 1px solid rgba(249, 115, 22, 0.4);
+    }
+
+    .badge-survivors {
+      background: rgba(168, 85, 247, 0.15);
+      color: var(--purple-accent);
+      border: 1px solid rgba(168, 85, 247, 0.4);
+    }
+
+    .tool-card h2 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 8px;
+    }
+
+    .tool-card p.description {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 18px;
+      line-height: 1.5;
+    }
+
+    .features-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 22px;
+    }
+
+    .feature-tag {
+      font-size: 0.76rem;
+      font-weight: 600;
+      color: var(--feature-tag-text);
+      background: var(--feature-tag-bg);
+      border: 1px solid var(--feature-tag-border);
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid var(--footer-border);
+      padding-top: 16px;
+      margin-top: auto;
+    }
+
+    .btn-launch {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--gold-primary);
+      color: #000000;
+      font-family: var(--font-family);
+      font-weight: 800;
+      font-size: 0.9rem;
+      padding: 10px 18px;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(234, 179, 8, 0.25);
+    }
+
+    .btn-launch:hover {
+      background: var(--gold-light);
+      transform: translateX(2px);
+      box-shadow: 0 6px 16px rgba(234, 179, 8, 0.4);
+    }
+
+    .btn-launch.cyan {
+      background: var(--cyan-primary);
+      color: #000000;
+      box-shadow: 0 4px 12px rgba(6, 182, 212, 0.25);
+    }
+
+    .btn-launch.cyan:hover {
+      background: var(--cyan-light);
+      box-shadow: 0 6px 16px rgba(6, 182, 212, 0.4);
+    }
+
+    .btn-launch.purple {
+      background: var(--purple-accent);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(168, 85, 247, 0.25);
+    }
+
+    .btn-launch.purple:hover {
+      background: #c084fc;
+      box-shadow: 0 6px 16px rgba(168, 85, 247, 0.4);
+    }
+
+    .btn-launch.orange {
+      background: var(--orange-primary);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(249, 115, 22, 0.25);
+    }
+
+    .btn-launch.orange:hover {
+      background: #fb923c;
+      box-shadow: 0 6px 16px rgba(249, 115, 22, 0.4);
+    }
+
+    .status-text {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    /* Footer */
+    .hub-footer {
+      text-align: center;
+      padding: 24px 0 12px;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      border-top: 1px solid var(--footer-border);
+      margin-top: 20px;
     }
   </style>
 </head>
 <body>
+  <div class="tactical-bg"></div>
 
-  <div class="container">
-    <!-- Header -->
-    <header class="header">
-      <div class="brand">
-        <div class="brand-icon">⚡</div>
-        <div class="brand-text">
-          <h1>Last War: Drone VS Pacing <span class="badge-sub">Level 60–300</span></h1>
-          <p>Minimize weekly upgrades to hit exactly 7.2M VS, maximize weeks to bank Drone Parts</p>
+  <div class="app-container">
+    <!-- Hero Header -->
+    <header class="hero-header">
+      <div class="header-top">
+        <span class="hub-badge">⚡ LAST WAR: SURVIVAL • TOOLS & CALCULATORS HUB</span>
+        
+        <div class="header-right-controls">
+          <!-- Theme Switcher -->
+          <div class="theme-switcher" role="radiogroup" aria-label="Color Theme Switcher">
+            <button class="theme-btn" data-theme-val="light" onclick="setTheme('light')" title="Light Mode">☀️ Light</button>
+            <button class="theme-btn" data-theme-val="dark" onclick="setTheme('dark')" title="Dark Mode">🌙 Dark</button>
+            <button class="theme-btn" data-theme-val="system" onclick="setTheme('system')" title="System Preference">💻 System</button>
+          </div>
+
+          <div class="system-status">
+            <span class="status-dot"></span>
+            <span>11 Offline Tools Active</span>
+          </div>
         </div>
       </div>
-      <div class="header-actions">
-        <button class="btn" id="btnUnlockModal" title="View Skills & Skin Milestones">
-          🏆 Unlocks Guide
-        </button>
-        <!-- 3-Way Theme Switcher -->
-        <div class="theme-switcher" role="radiogroup" aria-label="Color Theme Switcher">
-          <button class="theme-btn" data-theme-val="light" title="Light Theme">☀️ Light</button>
-          <button class="theme-btn" data-theme-val="dark" title="Dark Theme">🌙 Dark</button>
-          <button class="theme-btn active" data-theme-val="system" title="System Theme">💻 System</button>
-        </div>
-      </div>
+      <h1>LAST WAR: SURVIVAL TOOLS & CALCULATORS</h1>
+      <p class="subtitle">Your central portal for Last War: Survival tools & calculators — featuring Drone VS Pacing & Upgrade Dashboard, Duel League Scenario & Path Analyzer, Radar Tasks Banking & VS Optimizer, Squad Targeting & 5v5 Combat Simulator, Secretary Buff & Arms Race Optimizer, Special Forces T10 Research, Season 1 Start Date Projection, Alliance Help & Survivor Optimizer, VS Friday Troop Training, Gold Zombie Spawner, and Taylor Hero Yield Simulator.</p>
     </header>
 
-    <!-- Top Section: Simulation Setup (Left) + Analytics & Charts (Right) -->
-    <div class="top-dashboard-grid">
-      
-      <!-- Left Sidebar: Controls & Inputs -->
-      <aside class="panel setup-panel">
-        <div class="panel-header">
-          <div class="panel-title"><span class="dot"></span> Simulation Setup</div>
-          <button class="btn" id="btnResetDefaults" style="padding: 4px 8px; font-size: 11px;">Reset</button>
-        </div>
-
-        <div class="control-group">
-          <label class="control-label" for="pacingMode">
-            Pacing Strategy
-          </label>
-          <select id="pacingMode" class="form-input" style="font-family: var(--font-sans); font-size: 13px;">
-            <option value="minimal" selected>🎯 Minimal Pacing (Stretch BD & Max Bank)</option>
-            <option value="whole_level">📦 Whole Level Milestones</option>
-          </select>
-        </div>
-
-        <div class="control-group">
-          <label class="control-label" for="startLevel">
-            Current Drone Level (Completed)
-            <span class="control-badge" id="badgeStartLevel">100</span>
-          </label>
-          <div class="input-row">
-            <input type="text" inputmode="numeric" id="startLevel" class="form-input" value="100">
-          </div>
-          <input type="range" id="sliderStartLevel" class="range-slider" min="60" max="250" value="100">
-          <p style="font-size: 11px; color: var(--text-dim); margin-top: 4px;">Simulation starts upgrading towards Level <span id="lblNextLevel">101</span></p>
-        </div>
-
-        <div class="control-group">
-          <label class="control-label" for="startBankParts">
-            Starting Banked Drone Parts
-            <span class="control-badge" id="badgeBankParts">0 DP</span>
-          </label>
-          <input type="text" inputmode="numeric" id="startBankParts" class="form-input" value="0">
-        </div>
-
-        <div class="control-group">
-          <label class="control-label" for="weeklyIncome">
-            Weekly Drone Parts Income
-            <span class="control-badge" id="badgeWeeklyIncome">250 / wk</span>
-          </label>
-          <input type="text" inputmode="numeric" id="weeklyIncome" class="form-input" value="250">
-          <input type="range" id="sliderWeeklyIncome" class="range-slider" min="50" max="600" step="10" value="250">
-        </div>
-
-        <div class="control-group">
-          <label class="control-label" for="otherTasksPts">
-            Other Tasks Points (Radar/Skill Chip Chests/Resource Gathering)
-            <span class="control-badge" id="badgeOtherTasks">2,000,000</span>
-          </label>
-          <input type="text" inputmode="numeric" id="otherTasksPts" class="form-input" value="2,000,000">
-          <p style="font-size: 11px; color: var(--text-dim); margin-top: 4px;">80 Radar tasks × 25,000 = 2,000,000</p>
-        </div>
-
-        <div class="control-group">
-          <label class="control-label" for="targetVsPts">
-            Target Monday VS Points
-            <span class="control-badge" id="badgeTargetVs">7,200,000</span>
-          </label>
-          <input type="text" inputmode="numeric" id="targetVsPts" class="form-input" value="7,200,000">
-        </div>
-
-        <div class="control-group">
-          <label class="control-label" for="targetGoalLevel">
-            Simulation Target Goal
-            <span class="control-badge" id="badgeTargetGoal">Lvl 125</span>
-          </label>
-          <select id="targetGoalLevel" class="form-input">
-            <option value="115">Level 115 Milestone</option>
-            <option value="120">Level 120 Milestone</option>
-            <option value="125" selected>Level 125 Milestone</option>
-            <option value="130">Level 130 Milestone</option>
-            <option value="135">Level 135 Milestone</option>
-            <option value="140">Level 140 Milestone</option>
-            <option value="145">Level 145 Milestone</option>
-            <option value="150">Level 150 (TD-4 Phantom Skin)</option>
-            <option value="160">Level 160 Milestone</option>
-            <option value="170">Level 170 Milestone</option>
-            <option value="180">Level 180 Milestone</option>
-            <option value="190">Level 190 Milestone</option>
-            <option value="200">Level 200 (TD-5 Destroyer Skin)</option>
-            <option value="225">Level 225 Milestone</option>
-            <option value="250">Level 250 (TD-6 Colossus Skin)</option>
-            <option value="275">Level 275 Milestone</option>
-            <option value="300">Level 300 (Max Endgame)</option>
-            <option value="custom_weeks_26">Fixed 26 Weeks (6 Months)</option>
-            <option value="custom_weeks_52">Fixed 52 Weeks (1 Year)</option>
-            <option value="custom_weeks_104">Fixed 104 Weeks (2 Years)</option>
-          </select>
-        </div>
-
-        <!-- Presets -->
-        <div class="presets-container">
-          <button class="preset-btn" data-preset="lvl70">Lvl 70 Early Push</button>
-          <button class="preset-btn" data-preset="lvl100">Lvl 100 → 125 F2P</button>
-          <button class="preset-btn" data-preset="lvl125">Lvl 125 → 150 Push</button>
-          <button class="preset-btn" data-preset="lvl150">Lvl 151+ S1 Endgame</button>
-        </div>
-      </aside>
-
-      <!-- Right: Analytics, KPIs & Charts -->
-      <section class="analytics-panel">
-        
-        <!-- Strategy Description Banner -->
-        <div class="strategy-banner" id="strategyBanner">
-          <div class="strategy-banner-icon" id="strategyBannerIcon">🎯</div>
-          <div id="strategyBannerContent">
-            <strong>Minimal VS Point Pacing Enabled:</strong> Upgrades only the exact segments needed to clear 7.2M each Monday, stretching Battle Data across more weeks so your Drone Parts (+250/wk) can naturally accumulate without delays.
-          </div>
-        </div>
-
-        <!-- KPI Summary Cards -->
-        <div class="kpi-grid">
-          <div class="kpi-card">
-            <div class="kpi-label" id="kpiWeeksLabel">Weeks Stretched (Goal)</div>
-            <div class="kpi-value" id="kpiWeeks">19 <span style="font-size: 14px; color: var(--text-muted);">Weeks</span></div>
-            <div class="kpi-sub" id="kpiMonths">~4.4 Months of 9/9 Clears</div>
-          </div>
-
-          <div class="kpi-card cyan">
-            <div class="kpi-label">Total Parts Required</div>
-            <div class="kpi-value" id="kpiPartsNeeded">3,300 <span style="font-size: 14px; color: var(--cyan);">DP</span></div>
-            <div class="kpi-sub" id="kpiPartsBanked">Banked: 1,450 DP Buffer</div>
-          </div>
-
-          <div class="kpi-card green">
-            <div class="kpi-label">9/9 Chest Success</div>
-            <div class="kpi-value" id="kpiSuccessRate">100%</div>
-            <div class="kpi-sub" id="kpiSuccessRatio">18 / 18 Weeks at 7.2M+</div>
-          </div>
-
-          <div class="kpi-card purple">
-            <div class="kpi-label">Battle Data Consumed</div>
-            <div class="kpi-value" id="kpiBattleData">14.2M</div>
-            <div class="kpi-sub" id="kpiPointsGenerated">85.2M VS Points Generated</div>
-          </div>
-        </div>
-
-        <!-- Visual Charts Grid -->
-        <div class="charts-grid">
-          <div class="chart-card">
-            <div class="chart-title">
-              <span>📈 Drone Level & Banked Parts</span>
-              <span class="badge badge-gold" id="chart1Badge">Dual Projection</span>
-            </div>
-            <div class="chart-container">
-              <canvas id="chartProgression"></canvas>
-            </div>
-          </div>
-
-          <div class="chart-card">
-            <div class="chart-title">
-              <span>⚔️ Weekly Monday VS Points</span>
-              <span class="badge badge-green">Target 7.2M Line</span>
-            </div>
-            <div class="chart-container">
-              <canvas id="chartVsPoints"></canvas>
-            </div>
-          </div>
-        </div>
-
-      </section>
-
-    </div>
-
-    <!-- Bottom Section: Full-Width Table Toolbar & Ledger Panel -->
-    <main class="panel table-panel-fullwidth" style="padding: 16px;">
-      <div class="table-toolbar">
-        <div class="table-stats">
-          Showing <strong id="lblTotalWeeks">25</strong> simulated weeks from <strong id="lblFromTo">Lvl 100 → Lvl 125</strong>
-        </div>
-        <div class="table-actions">
-          <button class="btn" id="btnResetAllOverrides" onclick="resetAllCustomOverrides()" title="Clear all custom weekly overrides and restore auto minimal pacing">
-            🔄 Reset All Overrides
-          </button>
-          <button class="btn" id="btnCopyMarkdown" title="Copy table as Markdown">
-            📋 Copy Markdown
-          </button>
-          <button class="btn btn-primary" id="btnDownloadCsv" title="Download table as CSV">
-            📥 Export CSV
-          </button>
+    <!-- Metrics Summary -->
+    <div class="metrics-row">
+      <div class="metric-card" onclick="scrollToTool('card-drone')" title="Jump to Drone VS Pacing & Upgrade Dashboard">
+        <div class="metric-icon">🛸</div>
+        <div class="metric-info">
+          <div class="val">Drone Pacing</div>
+          <div class="lbl">VS Thursday & Parts ROI</div>
         </div>
       </div>
 
-      <!-- Weekly Ledger Table -->
-      <div class="table-wrapper">
-        <table class="ledger-table" id="ledgerTable">
-          <thead>
-            <tr>
-              <th>Week</th>
-              <th>Start Lvl</th>
-              <th>Upgrades Completed</th>
-              <th>End Lvl</th>
-              <th>Drone Parts Change <br><span style="font-size: 9px; font-weight: normal;">(+Gain / -Spent)</span></th>
-              <th>Parts Ending Balance</th>
-              <th>Battle Data XP</th>
-              <th>Total Monday VS Pts <br><span style="font-size: 9px; font-weight: normal;">(Hover for Breakdown)</span></th>
-              <th>VS Status</th>
-              <th style="min-width: 140px;">Custom Training</th>
-            </tr>
-          </thead>
-          <tbody id="ledgerTableBody">
-            <!-- Injected via JavaScript -->
-          </tbody>
-        </table>
+      <div class="metric-card" onclick="scrollToTool('card-duelleague')" title="Jump to Duel League Scenario & Path Analyzer">
+        <div class="metric-icon">🏆</div>
+        <div class="metric-info">
+          <div class="val">Duel League</div>
+          <div class="lbl">16-Alliance Swiss Analyzer</div>
+        </div>
       </div>
-    </main>
-  </div>
 
-  <!-- Floating Dynamic Tooltip Element -->
-  <div id="floatingVsTooltip" class="floating-vs-tooltip"></div>
-
-  <!-- Unlocks Guide Modal -->
-  <div class="modal-backdrop" id="unlockModalBackdrop">
-    <div class="modal-dialog">
-      <div class="modal-header">
-        <div class="panel-title">🏆 Drone Special Milestones & Unlocks</div>
-        <button class="btn" id="btnCloseModal" style="padding: 4px 8px;">✕</button>
+      <div class="metric-card" onclick="scrollToTool('card-radar')" title="Jump to Radar Tasks Banking & VS Optimizer">
+        <div class="metric-icon">📡</div>
+        <div class="metric-info">
+          <div class="val">Radar Banking</div>
+          <div class="lbl">VS Stash Optimizer</div>
+        </div>
       </div>
-      <div class="modal-body" id="modalUnlockList">
-        <!-- Injected via JavaScript -->
+
+      <div class="metric-card" onclick="scrollToTool('card-targeting')" title="Jump to Squad Targeting & Combat Simulator">
+        <div class="metric-icon">⚔️</div>
+        <div class="metric-info">
+          <div class="val">5v5 Targeting</div>
+          <div class="lbl">Combat & Monte Carlo</div>
+        </div>
+      </div>
+
+      <div class="metric-card" onclick="scrollToTool('card-season1')" title="Jump to Season 1 Start Date Projection">
+        <div class="metric-icon">🎯</div>
+        <div class="metric-info">
+          <div class="val">Aug 17 / Sept 14</div>
+          <div class="lbl">Season 1 Start (S#2258)</div>
+        </div>
+      </div>
+
+      <div class="metric-card" onclick="scrollToTool('card-secretary')" title="Jump to Secretary Buff & Schedule Optimizer">
+        <div class="metric-icon">🎖️</div>
+        <div class="metric-info">
+          <div class="val">Secretary Buff</div>
+          <div class="lbl">Arms Race & VS Sync</div>
+        </div>
+      </div>
+
+      <div class="metric-card" onclick="scrollToTool('card-specialforces')" title="Jump to Special Forces & T10 Research Dashboard">
+        <div class="metric-icon">🛡️</div>
+        <div class="metric-info">
+          <div class="val">T10 Tech</div>
+          <div class="lbl">Special Forces Tree</div>
+        </div>
+      </div>
+
+      <div class="metric-card" onclick="scrollToTool('card-alliancehelp')" title="Jump to Alliance Help & Survivor Optimizer">
+        <div class="metric-icon">🏛️</div>
+        <div class="metric-info">
+          <div class="val">Alliance Help</div>
+          <div class="lbl">Survivor Optimizer</div>
+        </div>
+      </div>
+
+      <div class="metric-card" onclick="scrollToTool('card-vsfriday')" title="Jump to VS Friday Troop Training Dashboard">
+        <div class="metric-icon">⚡</div>
+        <div class="metric-info">
+          <div class="val">VS Friday</div>
+          <div class="lbl">Troop Training Points</div>
+        </div>
+      </div>
+
+      <div class="metric-card" onclick="scrollToTool('card-goldzombie')" title="Jump to Gold Zombie Boss Spawning Guide">
+        <div class="metric-icon">🧟</div>
+        <div class="metric-info">
+          <div class="val">Level 5 ~ 100</div>
+          <div class="lbl">Zombie Boss Spawns</div>
+        </div>
+      </div>
+
+      <div class="metric-card" onclick="scrollToTool('card-taylor')" title="Jump to Taylor ROI & Daily Yield Simulator">
+        <div class="metric-icon">💎</div>
+        <div class="metric-info">
+          <div class="val">1 ~ 365 Days</div>
+          <div class="lbl">Taylor ROI & Payouts</div>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Custom Drone Training Modal -->
-  <div class="modal-backdrop" id="customTrainingModalBackdrop">
-    <div class="modal-dialog" style="max-width: 620px;">
-      <div class="modal-header">
-        <div style="display: flex; flex-direction: column; gap: 2px;">
-          <div class="panel-title" id="customModalTitle" style="font-size: 16px; font-weight: 800; color: var(--gold);">
-            ✏️ Custom Drone Training — Week 1 Inspector
+    <!-- Filter & Search Bar -->
+    <div class="controls-bar">
+      <div class="filter-tags">
+        <button class="filter-btn active" onclick="filterCategory('all', this)">All Dashboards</button>
+        <button class="filter-btn" onclick="filterCategory('tech', this)">Tech & Research</button>
+        <button class="filter-btn" onclick="filterCategory('survivors', this)">Survivors</button>
+        <button class="filter-btn" onclick="filterCategory('duel', this)">Alliance Duel</button>
+        <button class="filter-btn" onclick="filterCategory('events', this)">Events & Strategy</button>
+        <button class="filter-btn" onclick="filterCategory('mechanics', this)">Game Mechanics</button>
+      </div>
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Search dashboards or features..." oninput="searchTools()">
+      </div>
+    </div>
+
+    <!-- Tools Grid -->
+    <div class="tools-grid" id="toolsGrid">
+
+      <!-- Drone VS Pacing & Upgrade Dashboard -->
+      <div class="tool-card card-cyan" id="card-drone" data-category="duel tech" data-title="drone vs pacing upgrade dashboard parts combat data components levels 150 vs thursday day 4 alliance duel chest milestones progression trajectory">
+        <div>
+          <div class="tool-header">
+            <div class="tool-icon-wrapper">🛸</div>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <span class="tool-category-badge badge-duel">Alliance Duel</span>
+              <span class="tool-category-badge badge-tech">Drone & Tech</span>
+            </div>
           </div>
-          <div style="font-size: 11px; color: var(--text-muted);" id="customModalSubtitle">
-            Manually configure exact level and segments to advance this week.
+          <h2>Drone VS Pacing & Upgrade Dashboard</h2>
+          <p class="description">Calculate Drone Parts & Combat Data requirements across all 150+ levels. Optimize VS Thursday (Drone Day) point scoring, model weekly Parts income vs burn rate, and forecast milestone breakthrough dates.</p>
+          <div class="features-list">
+            <span class="feature-tag">Levels 1–150+ Progression</span>
+            <span class="feature-tag">VS Thursday Day 4 Points</span>
+            <span class="feature-tag">Weekly Income vs Burn</span>
+            <span class="feature-tag">Milestone Date Forecaster</span>
+            <span class="feature-tag">Parts ROI Matrix</span>
           </div>
         </div>
-        <button class="btn" onclick="closeCustomTrainingModal()" style="padding: 4px 8px;">✕</button>
+        <div class="card-footer">
+          <span class="status-text">✅ Live Interactive Tool</span>
+          <a href="vs-tools/drone-pacing-calculator/index.html" class="btn-launch cyan">Launch Tool ➔</a>
+        </div>
       </div>
 
-      <div class="modal-body" style="padding: 16px 20px; display: flex; flex-direction: column; gap: 14px;">
-        
-        <!-- Top Banner: Starting State & Available Bank -->
-        <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
-          <div>
-            <span style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Week Starting Position:</span>
-            <div style="font-size: 14px; font-weight: 800; color: var(--text-main);" id="modalWeekStartPos">Lvl 100 (Seg 0/5)</div>
-          </div>
-          <div>
-            <span style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Available Bank (+Income):</span>
-            <div style="font-size: 14px; font-weight: 800; color: var(--cyan);" id="modalWeekAvailBank">250 DP Available</div>
-          </div>
-        </div>
-
-        <!-- Level & Segment Advancement Section -->
-        <div class="custom-modal-section">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <label style="font-size: 12px; font-weight: 700; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.5px;">
-              🎯 Target Ending Position for Week
-            </label>
-            <span class="badge badge-gold" id="modalAdvancementBadge">+0 Segments</span>
-          </div>
-
-          <!-- Target Level Dropdown / Steppers -->
-          <div style="display: flex; gap: 10px; align-items: flex-end; margin-bottom: 12px;">
-            <div style="flex: 1;">
-              <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Target Ending Level:</label>
-              <select id="modalTargetLevelSelect" class="form-input" style="padding: 8px 10px; font-size: 13px; font-weight: 700; width: 100%;">
-                <!-- Populated dynamically -->
-              </select>
-            </div>
-            <div>
-              <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Level Adjust:</label>
-              <div style="display: flex; gap: 4px;">
-                <button class="stepper-btn" id="btnModalLevelDec" onclick="adjustModalTargetLevel(-1)" title="Decrease 1 level">−1 Level</button>
-                <button class="stepper-btn" id="btnModalLevelInc" onclick="adjustModalTargetLevel(1)" title="Advance 1 level">+1 Level</button>
-              </div>
+      <!-- Duel League Scenario & Path Analyzer -->
+      <div class="tool-card card-cyan" id="card-duelleague" data-category="duel events" data-title="duel league 16 alliance linear rank swiss tiebreaker win sequence scenario path analyzer promotion demotion week 1 2 3 4 standings">
+        <div>
+          <div class="tool-header">
+            <div class="tool-icon-wrapper">🏆</div>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <span class="tool-category-badge badge-duel">Alliance Duel</span>
+              <span class="tool-category-badge badge-events">League Season</span>
             </div>
           </div>
-
-          <!-- Multi-Level Journey Breadcrumb Roadmap -->
-          <div>
-            <div style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 5px; letter-spacing: 0.5px;">
-              🗺️ Upgrade Progression Roadmap:
-            </div>
-            <div class="journey-roadmap" id="modalJourneyRoadmap">
-              <!-- Injected dynamically: Start, Completed Levels, and Target Chips -->
-            </div>
-          </div>
-
-          <!-- Visual Segment Rail (In-Game Style) -->
-          <div class="segment-rail-container">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-              <span style="font-size: 11px; font-weight: 700; color: var(--text-muted);" id="modalSegmentRailLabel">
-                Segments for Level 111 (0 / 14 Completed):
-              </span>
-              <div style="display: flex; gap: 4px;">
-                <button class="stepper-btn" style="padding: 3px 8px; font-size: 11px;" id="btnModalSegDec" onclick="adjustModalTargetSegment(-1)" title="Decrease 1 segment">−1 Seg</button>
-                <button class="stepper-btn" style="padding: 3px 8px; font-size: 11px;" id="btnModalSegInc" onclick="adjustModalTargetSegment(1)" title="Advance 1 segment">+1 Seg</button>
-                <button class="stepper-btn" style="padding: 3px 8px; font-size: 11px;" id="btnModalSegMax" onclick="snapModalToLevel(modalTargetLevel, getTotalSegmentsForLevel(modalTargetLevel))" title="Complete all segments of this level">Max Segs (Full)</button>
-              </div>
-            </div>
-
-            <!-- Pips Grid -->
-            <div class="segment-pips-grid" id="modalSegmentPipsGrid">
-              <!-- Injected dynamically: Clickable pips 1..N -->
-            </div>
+          <h2>Duel League Scenario & Path Analyzer</h2>
+          <p class="description">Analyze any alliance rank (1–16) across 4 weeks of linear Swiss league play. Features exact deterministic win/loss sequence tracking, matchup previews, What-If simulator, and promotion/demotion outcome branches.</p>
+          <div class="features-list">
+            <span class="feature-tag">4-Week Swiss Engine</span>
+            <span class="feature-tag">What-If Simulator</span>
+            <span class="feature-tag">Promotion & Demotion Zones</span>
+            <span class="feature-tag">Editable Alliance Names</span>
           </div>
         </div>
-
-        <!-- Budget Validation & Snap Box -->
-        <div id="modalBudgetAlert" class="budget-alert-box ok">
-          <div id="modalBudgetText">
-            ✓ Within available budget (Spent: 0 / 250 DP)
-          </div>
-          <button class="btn btn-primary" id="btnSnapMaxAffordable" onclick="snapModalToMaxAffordable()" style="padding: 4px 8px; font-size: 11px; display: none;">
-            🎯 Snap to Max Affordable
-          </button>
+        <div class="card-footer">
+          <span class="status-text">✅ Live Interactive Tool</span>
+          <a href="vs-tools/duel-league-analyzer/index.html" class="btn-launch cyan">Launch Tool ➔</a>
         </div>
-
-        <!-- Live Outcome Preview Card -->
-        <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 14px;">
-          <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px;">
-            📊 Live Week Outcome Preview
-          </div>
-          
-          <div class="modal-preview-grid">
-            <div class="preview-stat-card">
-              <div class="preview-stat-lbl">Drone Parts Spent</div>
-              <div class="preview-stat-val" id="prevPartsSpent">0 DP</div>
-              <div style="font-size: 10px; color: var(--cyan); margin-top: 2px;" id="prevEndingBank">Ending Bank: 250 DP</div>
-            </div>
-
-            <div class="preview-stat-card">
-              <div class="preview-stat-lbl">Battle Data XP</div>
-              <div class="preview-stat-val" style="color: var(--purple);" id="prevBattleData">0 XP</div>
-              <div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;" id="prevBdPoints">0 VS Pts from BD</div>
-            </div>
-
-            <div class="preview-stat-card">
-              <div class="preview-stat-lbl">Total Monday VS Points</div>
-              <div class="preview-stat-val" id="prevTotalVs">2.00M</div>
-              <div style="font-size: 10px; margin-top: 2px;" id="prevChestBadge">
-                <span class="badge badge-red">⚠ Short</span>
-              </div>
-            </div>
-
-            <div class="preview-stat-card">
-              <div class="preview-stat-lbl">Upgrades Completed</div>
-              <div style="font-size: 12px; font-weight: 600; color: var(--text-main); line-height: 1.3;" id="prevUpgradeDesc">
-                Waiting for Drone Parts (+Banked)
-              </div>
-            </div>
-          </div>
-
-          <!-- Special Unlock Alert if triggered -->
-          <div id="prevUnlockAlert" style="display: none; margin-top: 10px; padding: 8px 10px; background: var(--purple-bg); border: 1px solid var(--purple-border); border-radius: var(--radius-sm); font-size: 11px; color: var(--purple); font-weight: 700;">
-            🏆 Unlocks: Skill Level 5
-          </div>
-        </div>
-
       </div>
 
-      <!-- Modal Footer Actions -->
-      <div style="padding: 12px 20px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: var(--bg-panel-solid); gap: 10px; flex-wrap: wrap;">
-        <button class="btn" id="btnResetModalWeek" onclick="resetCurrentModalWeek()" style="color: var(--red);">
-          🔄 Reset Week to Auto
-        </button>
-        <div style="display: flex; gap: 8px;">
-          <button class="btn" onclick="closeCustomTrainingModal()">Cancel</button>
-          <button class="btn btn-primary" id="btnSaveModalOverride" onclick="saveCustomTrainingOverride()">
-            💾 Save Week Override
-          </button>
+      <!-- 0. Secretary Buff Time & Schedule Optimizer -->
+      <div class="tool-card" id="card-secretary" data-category="events duel" data-title="secretary buff time schedule optimizer arms race vs alliance duel queue waitlist 5 minutes development science defense">
+        <div>
+          <div class="tool-header">
+            <div class="tool-icon-wrapper">🎖️</div>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <span class="tool-category-badge badge-events">Events & Timing</span>
+              <span class="tool-category-badge badge-duel">Alliance Duel</span>
+            </div>
+          </div>
+          <h2>Secretary Buff Time & Schedule Optimizer</h2>
+          <p class="description">Calculate exact Secretary turn times across active slots (0–50) and waitlist applications (0–50). Features live dual clocks (Server UTC & Local), 7-day Arms Race event sync, and reverse planners.</p>
+          <div class="features-list">
+            <span class="feature-tag">Dual Clocks (UTC & Local)</span>
+            <span class="feature-tag">5-Min Slot Turnover</span>
+            <span class="feature-tag">Arms Race & VS Synergy</span>
+            <span class="feature-tag">Reverse Target Planner</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <span class="status-text">✅ Live Interactive Tool</span>
+          <a href="tools/secretary_buff_calculator.html" class="btn-launch">Launch Tool ➔</a>
+        </div>
+      </div>
+
+      <!-- 1. Special Forces & T10 Research Dashboard -->
+      <div class="tool-card" id="card-specialforces" data-category="tech" data-title="special forces t10 research dashboard valor badges rss speedup budgeting rush">
+        <div>
+          <div class="tool-header">
+            <div class="tool-icon-wrapper">🛡️</div>
+            <span class="tool-category-badge badge-tech">Tech & Research</span>
+          </div>
+          <h2>Special Forces & T10 Research Dashboard</h2>
+          <p class="description">Interactive Special Forces & T10 research tree calculator. Calculate and budget Valor Badges, RSS requirements, speedups, and optimal milestone rush paths for T10 troops.</p>
+          <div class="features-list">
+            <span class="feature-tag">T10 Research Tree</span>
+            <span class="feature-tag">Valor Badges & RSS</span>
+            <span class="feature-tag">Weekly Valor Budgeting</span>
+            <span class="feature-tag">Speedup & Rush ROI</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <span class="status-text">✅ Interactive Tool</span>
+          <a href="tools/special_forces_dashboard.html" class="btn-launch">Launch Tool ➔</a>
+        </div>
+      </div>
+
+      <!-- 2. Alliance Center Help & Survivor Optimizer -->
+      <div class="tool-card" id="card-alliancehelp" data-category="survivors tech" data-title="alliance help survivor optimizer breakeven dashboard survivor ur ssr 0.5% flat build time construction research survivors optimizer lineup solver">
+        <div>
+          <div class="tool-header">
+            <div class="tool-icon-wrapper">🏛️</div>
+            <span class="tool-category-badge badge-survivors">Survivors</span>
+          </div>
+          <h2>Alliance Help & Survivor Optimizer</h2>
+          <p class="description">Compare Survivor setups (UR vs SSR) to optimize construction and research speedups. Model 0.5% vs flat time reductions, auto-solve optimal lineups, and calculate exact build breakeven curves.</p>
+          <div class="features-list">
+            <span class="feature-tag">Optimal Lineup Solver</span>
+            <span class="feature-tag">Survivor Setup (UR vs SSR)</span>
+            <span class="feature-tag">0.5% vs Flat Time</span>
+            <span class="feature-tag">Breakeven Curve</span>
+            <span class="feature-tag">Speedup Optimizer</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <span class="status-text">✅ Interactive Optimizer</span>
+          <a href="tools/survivor-configuration-optimizer/alliance_help_survivor_optimizer.html" class="btn-launch">Launch Optimizer ➔</a>
+        </div>
+      </div>
+
+      <!-- 3. Last War Training Dashboard -->
+      <div class="tool-card card-cyan" id="card-vsfriday" data-category="duel" data-title="last war training dashboard vs friday troop promotion speedup points">
+        <div>
+          <div class="tool-header">
+            <div class="tool-icon-wrapper">⚡</div>
+            <span class="tool-category-badge badge-duel">Alliance Duel</span>
+          </div>
+          <h2>VS Friday Troop Training Dashboard</h2>
+          <p class="description">Alliance Duel Friday training & promotion points calculator. Compare troop tier promotion vs direct training to maximize points per speedup minute.</p>
+          <div class="features-list">
+            <span class="feature-tag">VS Friday Points</span>
+            <span class="feature-tag">Promotion vs Direct</span>
+            <span class="feature-tag">Tier 1 ~ 10 Efficiency</span>
+            <span class="feature-tag">Speedup Optimizer</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <span class="status-text">✅ Interactive Tool</span>
+          <a href="vs-tools/vs-friday-calculator.html" class="btn-launch cyan">Launch Tool ➔</a>
+        </div>
+      </div>
+
+      <!-- 4. Gold Zombie Boss Spawning Guide -->
+      <div class="tool-card" id="card-goldzombie" data-category="mechanics events" data-title="gold zombie boss spawning rules guide simulator level freeze game mechanics">
+        <div>
+          <div class="tool-header">
+            <div class="tool-icon-wrapper">🧟</div>
+            <span class="tool-category-badge badge-mechanics">Game Mechanics</span>
+          </div>
+          <h2>Gold Zombie Boss Spawning Guide</h2>
+          <p class="description">Official Support Rules visualizer and live simulator. Models Rule 1 (Summon & Slay) and Rule 2 (+5 Rally Leader) escalation combos with Level Freeze tactics.</p>
+          <div class="features-list">
+            <span class="feature-tag">2-Tab Guide & Calc</span>
+            <span class="feature-tag">Rule 1 + 2 Combo</span>
+            <span class="feature-tag">Live Spawning Matrix</span>
+            <span class="feature-tag">Level Freeze Secret</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <span class="status-text">✅ 2-Tab Visual Tool</span>
+          <a href="tools/gold_zombie_boss_level_tool.html" class="btn-launch orange">Launch Tool ➔</a>
+        </div>
+      </div>
+
+      <!-- 5. Taylor ROI & Daily Yield Payout Simulator -->
+      <div class="tool-card card-purple" id="card-taylor" data-category="survivors" data-title="taylor roi daily yield payout simulator hero survivor investment chest drops 365 days survivors">
+        <div>
+          <div class="tool-header">
+            <div class="tool-icon-wrapper">💎</div>
+            <span class="tool-category-badge badge-survivors">Survivors</span>
+          </div>
+          <h2>Taylor ROI & Daily Yield Simulator</h2>
+          <p class="description">Interactive UR Taylor investment & payout calculator. Adjust timeframe sliders (1~365 days) to model star upgrade costs vs expected RSS, speedup, and shard yield ROI.</p>
+          <div class="features-list">
+            <span class="feature-tag">Dynamic Timeframe (1~365d)</span>
+            <span class="feature-tag">Daily Chest Payouts</span>
+            <span class="feature-tag">Upgrade Cost vs Yield</span>
+            <span class="feature-tag">Payback & ROI Period</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <span class="status-text">✅ Interactive Simulator</span>
+          <a href="tools/taylor_30day_summary_table.html" class="btn-launch purple">Launch Tool ➔</a>
+        </div>
+      </div>
+
+      <!-- 6. Season 1 Start Date & Group Projection Dossier -->
+      <div class="tool-card" id="card-season1" data-category="events" data-title="season 1 start date projection server 2258 cohort 16 32 64 group transition cadence cpt hedge raw database deceleration svg chart crimson plague">
+        <div>
+          <div class="tool-header">
+            <div class="tool-icon-wrapper">🎯</div>
+            <span class="tool-category-badge badge-events">Season 1 Strategy</span>
+          </div>
+          <h2>Season 1 Start Date & Group Projection</h2>
+          <p class="description">Empirical group transition forecast for Server #2258. Analyzes server release deceleration across 2,304 servers, historical 16 vs 32 cohort dynamics (#2213 case study), and Day 114–120 age ceiling triggers.</p>
+          <div class="features-list">
+            <span class="feature-tag">55% 16-Server (Aug 17)</span>
+            <span class="feature-tag">35% 32-Server (Sept 14)</span>
+            <span class="feature-tag">Deceleration SVG Chart</span>
+            <span class="feature-tag">2,304 Server Index</span>
+            <span class="feature-tag">Day 114–120 Limits</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <span class="status-text">✅ 6-Tab Empirical Dossier</span>
+          <a href="tools/lastwar_season1_analysis.html" class="btn-launch">Launch Dossier ➔</a>
+        </div>
+      </div>
+
+      <!-- 7. Squad Targeting & 5v5 Combat Simulator -->
+      <div class="tool-card" id="card-targeting" data-category="mechanics" data-title="squad targeting 5v5 combat simulator hero positioning attack order line of sight casualty rerouting monte carlo win rate battle log game mechanics">
+        <div>
+          <div class="tool-header">
+            <div class="tool-icon-wrapper">⚔️</div>
+            <span class="tool-category-badge badge-mechanics">Game Mechanics</span>
+          </div>
+          <h2>Squad Targeting & Combat Simulator</h2>
+          <p class="description">Interactive 5v5 battle visualizer and Monte Carlo combat simulator. Models line-of-sight targeting rules, front-to-back casualty rerouting, skill timers, energy generation, and backline sniper mechanics.</p>
+          <div class="features-list">
+            <span class="feature-tag">5v5 Targeting Raycasts</span>
+            <span class="feature-tag">Casualty Rerouting</span>
+            <span class="feature-tag">Monte Carlo (1,000x)</span>
+            <span class="feature-tag">Skill & Energy Timers</span>
+            <span class="feature-tag">Hero Stat Presets</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <span class="status-text">✅ Live Interactive Simulator</span>
+          <a href="tools/squad-targeting-combat-simulator.html" class="btn-launch cyan">Launch Simulator ➔</a>
+        </div>
+      </div>
+
+      <!-- 8. Radar Tasks Banking Calculator & VS Strategy Planner -->
+      <div class="tool-card" id="card-radar" data-category="duel events" data-title="radar tasks banking calculator vs duel points alliance monday wednesday friday taylor daily chests 6 hours n-1 capacity timer freeze">
+        <div>
+          <div class="tool-header">
+            <div class="tool-icon-wrapper">📡</div>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <span class="tool-category-badge badge-duel">Alliance Duel</span>
+              <span class="tool-category-badge badge-events">Strategy</span>
+            </div>
+          </div>
+          <h2>Radar Tasks Banking Calculator</h2>
+          <p class="description">Master the <strong>n−1 capacity rule</strong> to eliminate 6-hour refresh timer freezes. Optimize radar task reserves on Sunday, Tuesday, and Thursday to dominate VS Duel point days (Monday, Wednesday, Friday) and guarantee Taylor daily chests.</p>
+          <div class="features-list">
+            <span class="feature-tag">n−1 Safe Bank (Levels 1–17)</span>
+            <span class="feature-tag">Taylor 4★/5★ Chest Sync</span>
+            <span class="feature-tag">Mon→Wed Carryover Optimizer</span>
+            <span class="feature-tag">7-Day VS Duel Simulator</span>
+            <span class="feature-tag">6h Refresh Cycle Clock</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <span class="status-text">✅ Live Interactive Tool</span>
+          <a href="vs-tools/radar-banking-calculator/index.html" class="btn-launch orange">Launch Tool ➔</a>
         </div>
       </div>
 
     </div>
+
+    <!-- Footer -->
+    <footer class="hub-footer">
+      <p>Last War: Survival • Tools & Calculators Hub • powered by bananas 🍌 • Last Updated: 8/24/26</p>
+    </footer>
   </div>
 
-  <!-- Toast Notification -->
-  <div class="toast" id="toastMessage">📋 Table copied to clipboard!</div>
-
-  <!-- COMPLETE EMBEDDED DATASET & SIMULATION ENGINE -->
   <script>
-    const DRONE_DATA = {"levels": [{"level": 1, "droneParts": 0, "battleData": 5000, "requiresDroneParts": false, "segmentBattleData": 1250}, {"level": 2, "droneParts": 0, "battleData": 5000, "requiresDroneParts": false, "segmentBattleData": 1250}, {"level": 3, "droneParts": 0, "battleData": 5000, "requiresDroneParts": false, "segmentBattleData": 1250}, {"level": 4, "droneParts": 0, "battleData": 5000, "requiresDroneParts": false, "segmentBattleData": 1250}, {"level": 5, "droneParts": 5, "battleData": 11250, "requiresDroneParts": true, "segmentParts": 1, "segmentBattleData": 2250}, {"level": 6, "droneParts": 0, "battleData": 6000, "requiresDroneParts": false, "segmentBattleData": 1500}, {"level": 7, "droneParts": 0, "battleData": 6000, "requiresDroneParts": false, "segmentBattleData": 1500}, {"level": 8, "droneParts": 0, "battleData": 6000, "requiresDroneParts": false, "segmentBattleData": 1500}, {"level": 9, "droneParts": 0, "battleData": 6000, "requiresDroneParts": false, "segmentBattleData": 1500}, {"level": 10, "droneParts": 10, "battleData": 15000, "requiresDroneParts": true, "segmentParts": 2, "segmentBattleData": 3000}, {"level": 11, "droneParts": 0, "battleData": 11200, "requiresDroneParts": false, "segmentBattleData": 2800}, {"level": 12, "droneParts": 0, "battleData": 11200, "requiresDroneParts": false, "segmentBattleData": 2800}, {"level": 13, "droneParts": 0, "battleData": 11200, "requiresDroneParts": false, "segmentBattleData": 2800}, {"level": 14, "droneParts": 0, "battleData": 11200, "requiresDroneParts": false, "segmentBattleData": 2800}, {"level": 15, "droneParts": 20, "battleData": 18750, "requiresDroneParts": true, "segmentParts": 4, "segmentBattleData": 3750}, {"level": 16, "droneParts": 0, "battleData": 18000, "requiresDroneParts": false, "segmentBattleData": 4500}, {"level": 17, "droneParts": 0, "battleData": 18000, "requiresDroneParts": false, "segmentBattleData": 4500}, {"level": 18, "droneParts": 0, "battleData": 18000, "requiresDroneParts": false, "segmentBattleData": 4500}, {"level": 19, "droneParts": 0, "battleData": 18000, "requiresDroneParts": false, "segmentBattleData": 4500}, {"level": 20, "droneParts": 30, "battleData": 22500, "requiresDroneParts": true, "segmentParts": 6, "segmentBattleData": 4500}, {"level": 21, "droneParts": 0, "battleData": 26250, "requiresDroneParts": false, "segmentBattleData": 5250}, {"level": 22, "droneParts": 0, "battleData": 26250, "requiresDroneParts": false, "segmentBattleData": 5250}, {"level": 23, "droneParts": 0, "battleData": 26250, "requiresDroneParts": false, "segmentBattleData": 5250}, {"level": 24, "droneParts": 0, "battleData": 26250, "requiresDroneParts": false, "segmentBattleData": 5250}, {"level": 25, "droneParts": 40, "battleData": 26250, "requiresDroneParts": true, "segmentParts": 8, "segmentBattleData": 5250}, {"level": 26, "droneParts": 0, "battleData": 30000, "requiresDroneParts": false, "segmentBattleData": 6000}, {"level": 27, "droneParts": 0, "battleData": 30000, "requiresDroneParts": false, "segmentBattleData": 6000}, {"level": 28, "droneParts": 0, "battleData": 30000, "requiresDroneParts": false, "segmentBattleData": 6000}, {"level": 29, "droneParts": 0, "battleData": 30000, "requiresDroneParts": false, "segmentBattleData": 6000}, {"level": 30, "droneParts": 50, "battleData": 30000, "requiresDroneParts": true, "segmentParts": 10, "skillUnlock": 1, "segmentBattleData": 6000}, {"level": 31, "droneParts": 0, "battleData": 75000, "requiresDroneParts": false, "segmentBattleData": 15000}, {"level": 32, "droneParts": 0, "battleData": 75000, "requiresDroneParts": false, "segmentBattleData": 15000}, {"level": 33, "droneParts": 0, "battleData": 75000, "requiresDroneParts": false, "segmentBattleData": 15000}, {"level": 34, "droneParts": 0, "battleData": 75000, "requiresDroneParts": false, "segmentBattleData": 15000}, {"level": 35, "droneParts": 60, "battleData": 37500, "requiresDroneParts": true, "segmentParts": 12, "segmentBattleData": 7500}, {"level": 36, "droneParts": 0, "battleData": 75000, "requiresDroneParts": false, "segmentBattleData": 15000}, {"level": 37, "droneParts": 0, "battleData": 75000, "requiresDroneParts": false, "segmentBattleData": 15000}, {"level": 38, "droneParts": 0, "battleData": 75000, "requiresDroneParts": false, "segmentBattleData": 15000}, {"level": 39, "droneParts": 0, "battleData": 75000, "requiresDroneParts": false, "segmentBattleData": 15000}, {"level": 40, "droneParts": 80, "battleData": 37500, "requiresDroneParts": true, "segmentParts": 16, "segmentBattleData": 7500}, {"level": 41, "droneParts": 0, "battleData": 75000, "requiresDroneParts": false, "segmentBattleData": 15000}, {"level": 42, "droneParts": 0, "battleData": 75000, "requiresDroneParts": false, "segmentBattleData": 15000}, {"level": 43, "droneParts": 0, "battleData": 75000, "requiresDroneParts": false, "segmentBattleData": 15000}, {"level": 44, "droneParts": 0, "battleData": 75000, "requiresDroneParts": false, "segmentBattleData": 15000}, {"level": 45, "droneParts": 100, "battleData": 37500, "requiresDroneParts": true, "segmentParts": 20, "segmentBattleData": 7500}, {"level": 46, "droneParts": 0, "battleData": 75000, "requiresDroneParts": false, "segmentBattleData": 15000}, {"level": 47, "droneParts": 0, "battleData": 75000, "requiresDroneParts": false, "segmentBattleData": 15000}, {"level": 48, "droneParts": 0, "battleData": 75000, "requiresDroneParts": false, "segmentBattleData": 15000}, {"level": 49, "droneParts": 0, "battleData": 75000, "requiresDroneParts": false, "segmentBattleData": 15000}, {"level": 50, "droneParts": 120, "battleData": 37500, "requiresDroneParts": true, "segmentParts": 24, "skillUnlock": 2, "segmentBattleData": 7500}, {"level": 51, "droneParts": 0, "battleData": 135000, "requiresDroneParts": false, "segmentBattleData": 22500}, {"level": 52, "droneParts": 0, "battleData": 135000, "requiresDroneParts": false, "segmentBattleData": 22500}, {"level": 53, "droneParts": 0, "battleData": 135000, "requiresDroneParts": false, "segmentBattleData": 22500}, {"level": 54, "droneParts": 0, "battleData": 135000, "requiresDroneParts": false, "segmentBattleData": 22500}, {"level": 55, "droneParts": 140, "battleData": 45000, "requiresDroneParts": true, "segmentParts": 28, "segmentBattleData": 9000}, {"level": 56, "droneParts": 0, "battleData": 135000, "requiresDroneParts": false, "segmentBattleData": 22500}, {"level": 57, "droneParts": 0, "battleData": 135000, "requiresDroneParts": false, "segmentBattleData": 22500}, {"level": 58, "droneParts": 0, "battleData": 135000, "requiresDroneParts": false, "segmentBattleData": 22500}, {"level": 59, "droneParts": 0, "battleData": 135000, "requiresDroneParts": false, "segmentBattleData": 22500}, {"level": 60, "droneParts": 160, "battleData": 45000, "requiresDroneParts": true, "segmentParts": 32, "segmentBattleData": 9000}, {"level": 61, "droneParts": 0, "battleData": 157500, "requiresDroneParts": false, "segmentBattleData": 22500}, {"level": 62, "droneParts": 0, "battleData": 157500, "requiresDroneParts": false, "segmentBattleData": 22500}, {"level": 63, "droneParts": 0, "battleData": 157500, "requiresDroneParts": false, "segmentBattleData": 22500}, {"level": 64, "droneParts": 0, "battleData": 157500, "requiresDroneParts": false, "segmentBattleData": 22500}, {"level": 65, "droneParts": 180, "battleData": 45000, "requiresDroneParts": true, "segmentParts": 36, "segmentBattleData": 9000}, {"level": 66, "droneParts": 0, "battleData": 157500, "requiresDroneParts": false, "segmentBattleData": 22500}, {"level": 67, "droneParts": 0, "battleData": 157500, "requiresDroneParts": false, "segmentBattleData": 22500}, {"level": 68, "droneParts": 0, "battleData": 157500, "requiresDroneParts": false, "segmentBattleData": 22500}, {"level": 69, "droneParts": 0, "battleData": 157500, "requiresDroneParts": false, "segmentBattleData": 22500}, {"level": 70, "droneParts": 200, "battleData": 45000, "requiresDroneParts": true, "segmentParts": 40, "skillUnlock": 3, "segmentBattleData": 9000}, {"level": 71, "droneParts": 0, "battleData": 200000, "requiresDroneParts": false, "segmentBattleData": 25000}, {"level": 72, "droneParts": 0, "battleData": 200000, "requiresDroneParts": false, "segmentBattleData": 25000}, {"level": 73, "droneParts": 0, "battleData": 200000, "requiresDroneParts": false, "segmentBattleData": 25000}, {"level": 74, "droneParts": 0, "battleData": 200000, "requiresDroneParts": false, "segmentBattleData": 25000}, {"level": 75, "droneParts": 250, "battleData": 52500, "requiresDroneParts": true, "segmentParts": 50, "segmentBattleData": 10500}, {"level": 76, "droneParts": 0, "battleData": 200000, "requiresDroneParts": false, "segmentBattleData": 25000}, {"level": 77, "droneParts": 0, "battleData": 200000, "requiresDroneParts": false, "segmentBattleData": 25000}, {"level": 78, "droneParts": 0, "battleData": 200000, "requiresDroneParts": false, "segmentBattleData": 25000}, {"level": 79, "droneParts": 0, "battleData": 200000, "requiresDroneParts": false, "segmentBattleData": 25000}, {"level": 80, "droneParts": 300, "battleData": 52500, "requiresDroneParts": true, "segmentParts": 60, "segmentBattleData": 10500}, {"level": 81, "droneParts": 0, "battleData": 225000, "requiresDroneParts": false, "segmentBattleData": 25000}, {"level": 82, "droneParts": 0, "battleData": 225000, "requiresDroneParts": false, "segmentBattleData": 25000}, {"level": 83, "droneParts": 0, "battleData": 225000, "requiresDroneParts": false, "segmentBattleData": 25000}, {"level": 84, "droneParts": 0, "battleData": 225000, "requiresDroneParts": false, "segmentBattleData": 25000}, {"level": 85, "droneParts": 350, "battleData": 52500, "requiresDroneParts": true, "segmentParts": 70, "segmentBattleData": 10500}, {"level": 86, "droneParts": 0, "battleData": 225000, "requiresDroneParts": false, "segmentBattleData": 25000}, {"level": 87, "droneParts": 0, "battleData": 225000, "requiresDroneParts": false, "segmentBattleData": 25000}, {"level": 88, "droneParts": 0, "battleData": 225000, "requiresDroneParts": false, "segmentBattleData": 25000}, {"level": 89, "droneParts": 0, "battleData": 225000, "requiresDroneParts": false, "segmentBattleData": 25000}, {"level": 90, "droneParts": 400, "battleData": 52500, "requiresDroneParts": true, "segmentParts": 80, "skillUnlock": 4, "segmentBattleData": 10500}, {"level": 91, "droneParts": 0, "battleData": 300000, "requiresDroneParts": false, "segmentBattleData": 30000}, {"level": 92, "droneParts": 0, "battleData": 300000, "requiresDroneParts": false, "segmentBattleData": 30000}, {"level": 93, "droneParts": 0, "battleData": 300000, "requiresDroneParts": false, "segmentBattleData": 30000}, {"level": 94, "droneParts": 0, "battleData": 300000, "requiresDroneParts": false, "segmentBattleData": 30000}, {"level": 95, "droneParts": 450, "battleData": 60000, "requiresDroneParts": true, "segmentParts": 90, "segmentBattleData": 12000}, {"level": 96, "droneParts": 0, "battleData": 300000, "requiresDroneParts": false, "segmentBattleData": 30000}, {"level": 97, "droneParts": 0, "battleData": 300000, "requiresDroneParts": false, "segmentBattleData": 30000}, {"level": 98, "droneParts": 0, "battleData": 300000, "requiresDroneParts": false, "segmentBattleData": 30000}, {"level": 99, "droneParts": 0, "battleData": 300000, "requiresDroneParts": false, "segmentBattleData": 30000}, {"level": 100, "droneParts": 500, "battleData": 60000, "requiresDroneParts": true, "segmentParts": 100, "segmentBattleData": 12000}, {"level": 101, "droneParts": 0, "battleData": 375000, "requiresDroneParts": false, "segmentBattleData": 31250}, {"level": 102, "droneParts": 0, "battleData": 375000, "requiresDroneParts": false, "segmentBattleData": 31250}, {"level": 103, "droneParts": 0, "battleData": 375000, "requiresDroneParts": false, "segmentBattleData": 31250}, {"level": 104, "droneParts": 0, "battleData": 375000, "requiresDroneParts": false, "segmentBattleData": 31250}, {"level": 105, "droneParts": 600, "battleData": 75000, "requiresDroneParts": true, "segmentParts": 120, "segmentBattleData": 15000}, {"level": 106, "droneParts": 0, "battleData": 375000, "requiresDroneParts": false, "segmentBattleData": 31250}, {"level": 107, "droneParts": 0, "battleData": 375000, "requiresDroneParts": false, "segmentBattleData": 31250}, {"level": 108, "droneParts": 0, "battleData": 375000, "requiresDroneParts": false, "segmentBattleData": 31250}, {"level": 109, "droneParts": 0, "battleData": 375000, "requiresDroneParts": false, "segmentBattleData": 31250}, {"level": 110, "droneParts": 700, "battleData": 75000, "requiresDroneParts": true, "segmentParts": 140, "skillUnlock": 5, "segmentBattleData": 15000}, {"level": 111, "droneParts": 0, "battleData": 1080800, "requiresDroneParts": false, "segmentBattleData": 77200}, {"level": 112, "droneParts": 0, "battleData": 1080800, "requiresDroneParts": false, "segmentBattleData": 77200}, {"level": 113, "droneParts": 0, "battleData": 1080800, "requiresDroneParts": false, "segmentBattleData": 77200}, {"level": 114, "droneParts": 0, "battleData": 1080800, "requiresDroneParts": false, "segmentBattleData": 77200}, {"level": 115, "droneParts": 800, "battleData": 180000, "requiresDroneParts": true, "segmentParts": 160, "segmentBattleData": 36000}, {"level": 116, "droneParts": 0, "battleData": 1080800, "requiresDroneParts": false, "segmentBattleData": 77200}, {"level": 117, "droneParts": 0, "battleData": 1080800, "requiresDroneParts": false, "segmentBattleData": 77200}, {"level": 118, "droneParts": 0, "battleData": 1080800, "requiresDroneParts": false, "segmentBattleData": 77200}, {"level": 119, "droneParts": 0, "battleData": 1080800, "requiresDroneParts": false, "segmentBattleData": 77200}, {"level": 120, "droneParts": 1000, "battleData": 180000, "requiresDroneParts": true, "segmentParts": 200, "segmentBattleData": 36000}, {"level": 121, "droneParts": 0, "battleData": 1260800, "requiresDroneParts": false, "segmentBattleData": 78800}, {"level": 122, "droneParts": 0, "battleData": 1260800, "requiresDroneParts": false, "segmentBattleData": 78800}, {"level": 123, "droneParts": 0, "battleData": 1260800, "requiresDroneParts": false, "segmentBattleData": 78800}, {"level": 124, "droneParts": 0, "battleData": 1260800, "requiresDroneParts": false, "segmentBattleData": 78800}, {"level": 125, "droneParts": 1500, "battleData": 210000, "requiresDroneParts": true, "segmentParts": 300, "segmentBattleData": 42000}, {"level": 126, "droneParts": 0, "battleData": 1260800, "requiresDroneParts": false, "segmentBattleData": 78800}, {"level": 127, "droneParts": 0, "battleData": 1260800, "requiresDroneParts": false, "segmentBattleData": 78800}, {"level": 128, "droneParts": 0, "battleData": 1260800, "requiresDroneParts": false, "segmentBattleData": 78800}, {"level": 129, "droneParts": 0, "battleData": 1260800, "requiresDroneParts": false, "segmentBattleData": 78800}, {"level": 130, "droneParts": 2000, "battleData": 210000, "requiresDroneParts": true, "segmentParts": 400, "segmentBattleData": 42000}, {"level": 131, "droneParts": 0, "battleData": 1681200, "requiresDroneParts": false, "segmentBattleData": 93400}, {"level": 132, "droneParts": 0, "battleData": 1681200, "requiresDroneParts": false, "segmentBattleData": 93400}, {"level": 133, "droneParts": 0, "battleData": 1681200, "requiresDroneParts": false, "segmentBattleData": 93400}, {"level": 134, "droneParts": 0, "battleData": 1681200, "requiresDroneParts": false, "segmentBattleData": 93400}, {"level": 135, "droneParts": 3000, "battleData": 240000, "requiresDroneParts": true, "segmentParts": 600, "segmentBattleData": 48000}, {"level": 136, "droneParts": 0, "battleData": 1681200, "requiresDroneParts": false, "segmentBattleData": 93400}, {"level": 137, "droneParts": 0, "battleData": 1681200, "requiresDroneParts": false, "segmentBattleData": 93400}, {"level": 138, "droneParts": 0, "battleData": 1681200, "requiresDroneParts": false, "segmentBattleData": 93400}, {"level": 139, "droneParts": 0, "battleData": 1681200, "requiresDroneParts": false, "segmentBattleData": 93400}, {"level": 140, "droneParts": 4000, "battleData": 240000, "requiresDroneParts": true, "segmentParts": 800, "segmentBattleData": 48000}, {"level": 141, "droneParts": 0, "battleData": 2100000, "requiresDroneParts": false, "segmentBattleData": 105000}, {"level": 142, "droneParts": 0, "battleData": 2100000, "requiresDroneParts": false, "segmentBattleData": 105000}, {"level": 143, "droneParts": 0, "battleData": 2100000, "requiresDroneParts": false, "segmentBattleData": 105000}, {"level": 144, "droneParts": 0, "battleData": 2100000, "requiresDroneParts": false, "segmentBattleData": 105000}, {"level": 145, "droneParts": 5000, "battleData": 300000, "requiresDroneParts": true, "segmentParts": 1000, "segmentBattleData": 60000}, {"level": 146, "droneParts": 0, "battleData": 2100000, "requiresDroneParts": false, "segmentBattleData": 105000}, {"level": 147, "droneParts": 0, "battleData": 2100000, "requiresDroneParts": false, "segmentBattleData": 105000}, {"level": 148, "droneParts": 0, "battleData": 2100000, "requiresDroneParts": false, "segmentBattleData": 105000}, {"level": 149, "droneParts": 0, "battleData": 2100000, "requiresDroneParts": false, "segmentBattleData": 105000}, {"level": 150, "droneParts": 500, "battleData": 900000, "requiresDroneParts": true, "segmentParts": 100, "segmentBattleData": 180000}, {"level": 151, "droneParts": 500, "battleData": 900000, "requiresDroneParts": true, "segmentParts": 100, "segmentBattleData": 180000}, {"level": 152, "droneParts": 500, "battleData": 900000, "requiresDroneParts": true, "segmentParts": 100, "segmentBattleData": 180000}, {"level": 153, "droneParts": 500, "battleData": 900000, "requiresDroneParts": true, "segmentParts": 100, "segmentBattleData": 180000}, {"level": 154, "droneParts": 500, "battleData": 900000, "requiresDroneParts": true, "segmentParts": 100, "segmentBattleData": 180000}, {"level": 155, "droneParts": 500, "battleData": 900000, "requiresDroneParts": true, "segmentParts": 100, "segmentBattleData": 180000}, {"level": 156, "droneParts": 500, "battleData": 900000, "requiresDroneParts": true, "segmentParts": 100, "segmentBattleData": 180000}, {"level": 157, "droneParts": 500, "battleData": 900000, "requiresDroneParts": true, "segmentParts": 100, "segmentBattleData": 180000}, {"level": 158, "droneParts": 500, "battleData": 900000, "requiresDroneParts": true, "segmentParts": 100, "segmentBattleData": 180000}, {"level": 159, "droneParts": 500, "battleData": 900000, "requiresDroneParts": true, "segmentParts": 100, "segmentBattleData": 180000}, {"level": 160, "droneParts": 600, "battleData": 1080000, "requiresDroneParts": true, "segmentParts": 120, "segmentBattleData": 216000}, {"level": 161, "droneParts": 600, "battleData": 1080000, "requiresDroneParts": true, "segmentParts": 120, "segmentBattleData": 216000}, {"level": 162, "droneParts": 600, "battleData": 1080000, "requiresDroneParts": true, "segmentParts": 120, "segmentBattleData": 216000}, {"level": 163, "droneParts": 600, "battleData": 1080000, "requiresDroneParts": true, "segmentParts": 120, "segmentBattleData": 216000}, {"level": 164, "droneParts": 600, "battleData": 1080000, "requiresDroneParts": true, "segmentParts": 120, "segmentBattleData": 216000}, {"level": 165, "droneParts": 600, "battleData": 1080000, "requiresDroneParts": true, "segmentParts": 120, "segmentBattleData": 216000}, {"level": 166, "droneParts": 600, "battleData": 1080000, "requiresDroneParts": true, "segmentParts": 120, "segmentBattleData": 216000}, {"level": 167, "droneParts": 600, "battleData": 1080000, "requiresDroneParts": true, "segmentParts": 120, "segmentBattleData": 216000}, {"level": 168, "droneParts": 600, "battleData": 1080000, "requiresDroneParts": true, "segmentParts": 120, "segmentBattleData": 216000}, {"level": 169, "droneParts": 600, "battleData": 1080000, "requiresDroneParts": true, "segmentParts": 120, "segmentBattleData": 216000}, {"level": 170, "droneParts": 700, "battleData": 1260000, "requiresDroneParts": true, "segmentParts": 140, "segmentBattleData": 252000}, {"level": 171, "droneParts": 700, "battleData": 1260000, "requiresDroneParts": true, "segmentParts": 140, "segmentBattleData": 252000}, {"level": 172, "droneParts": 700, "battleData": 1260000, "requiresDroneParts": true, "segmentParts": 140, "segmentBattleData": 252000}, {"level": 173, "droneParts": 700, "battleData": 1260000, "requiresDroneParts": true, "segmentParts": 140, "segmentBattleData": 252000}, {"level": 174, "droneParts": 700, "battleData": 1260000, "requiresDroneParts": true, "segmentParts": 140, "segmentBattleData": 252000}, {"level": 175, "droneParts": 700, "battleData": 1260000, "requiresDroneParts": true, "segmentParts": 140, "segmentBattleData": 252000}, {"level": 176, "droneParts": 700, "battleData": 1260000, "requiresDroneParts": true, "segmentParts": 140, "segmentBattleData": 252000}, {"level": 177, "droneParts": 700, "battleData": 1260000, "requiresDroneParts": true, "segmentParts": 140, "segmentBattleData": 252000}, {"level": 178, "droneParts": 700, "battleData": 1260000, "requiresDroneParts": true, "segmentParts": 140, "segmentBattleData": 252000}, {"level": 179, "droneParts": 700, "battleData": 1260000, "requiresDroneParts": true, "segmentParts": 140, "segmentBattleData": 252000}, {"level": 180, "droneParts": 800, "battleData": 1440000, "requiresDroneParts": true, "segmentParts": 160, "segmentBattleData": 288000}, {"level": 181, "droneParts": 800, "battleData": 1440000, "requiresDroneParts": true, "segmentParts": 160, "segmentBattleData": 288000}, {"level": 182, "droneParts": 800, "battleData": 1440000, "requiresDroneParts": true, "segmentParts": 160, "segmentBattleData": 288000}, {"level": 183, "droneParts": 800, "battleData": 1440000, "requiresDroneParts": true, "segmentParts": 160, "segmentBattleData": 288000}, {"level": 184, "droneParts": 800, "battleData": 1440000, "requiresDroneParts": true, "segmentParts": 160, "segmentBattleData": 288000}, {"level": 185, "droneParts": 800, "battleData": 1440000, "requiresDroneParts": true, "segmentParts": 160, "segmentBattleData": 288000}, {"level": 186, "droneParts": 800, "battleData": 1440000, "requiresDroneParts": true, "segmentParts": 160, "segmentBattleData": 288000}, {"level": 187, "droneParts": 800, "battleData": 1440000, "requiresDroneParts": true, "segmentParts": 160, "segmentBattleData": 288000}, {"level": 188, "droneParts": 800, "battleData": 1440000, "requiresDroneParts": true, "segmentParts": 160, "segmentBattleData": 288000}, {"level": 189, "droneParts": 800, "battleData": 1440000, "requiresDroneParts": true, "segmentParts": 160, "segmentBattleData": 288000}, {"level": 190, "droneParts": 900, "battleData": 1620000, "requiresDroneParts": true, "segmentParts": 180, "segmentBattleData": 324000}, {"level": 191, "droneParts": 900, "battleData": 1620000, "requiresDroneParts": true, "segmentParts": 180, "segmentBattleData": 324000}, {"level": 192, "droneParts": 900, "battleData": 1620000, "requiresDroneParts": true, "segmentParts": 180, "segmentBattleData": 324000}, {"level": 193, "droneParts": 900, "battleData": 1620000, "requiresDroneParts": true, "segmentParts": 180, "segmentBattleData": 324000}, {"level": 194, "droneParts": 900, "battleData": 1620000, "requiresDroneParts": true, "segmentParts": 180, "segmentBattleData": 324000}, {"level": 195, "droneParts": 900, "battleData": 1620000, "requiresDroneParts": true, "segmentParts": 180, "segmentBattleData": 324000}, {"level": 196, "droneParts": 900, "battleData": 1620000, "requiresDroneParts": true, "segmentParts": 180, "segmentBattleData": 324000}, {"level": 197, "droneParts": 900, "battleData": 1620000, "requiresDroneParts": true, "segmentParts": 180, "segmentBattleData": 324000}, {"level": 198, "droneParts": 900, "battleData": 1620000, "requiresDroneParts": true, "segmentParts": 180, "segmentBattleData": 324000}, {"level": 199, "droneParts": 900, "battleData": 1620000, "requiresDroneParts": true, "segmentParts": 180, "segmentBattleData": 324000}, {"level": 200, "droneParts": 1000, "battleData": 1800000, "requiresDroneParts": true, "segmentParts": 200, "segmentBattleData": 360000}, {"level": 201, "droneParts": 1000, "battleData": 1800000, "requiresDroneParts": true, "segmentParts": 200, "segmentBattleData": 360000}, {"level": 202, "droneParts": 1000, "battleData": 1800000, "requiresDroneParts": true, "segmentParts": 200, "segmentBattleData": 360000}, {"level": 203, "droneParts": 1000, "battleData": 1800000, "requiresDroneParts": true, "segmentParts": 200, "segmentBattleData": 360000}, {"level": 204, "droneParts": 1000, "battleData": 1800000, "requiresDroneParts": true, "segmentParts": 200, "segmentBattleData": 360000}, {"level": 205, "droneParts": 1000, "battleData": 1800000, "requiresDroneParts": true, "segmentParts": 200, "segmentBattleData": 360000}, {"level": 206, "droneParts": 1000, "battleData": 1800000, "requiresDroneParts": true, "segmentParts": 200, "segmentBattleData": 360000}, {"level": 207, "droneParts": 1000, "battleData": 1800000, "requiresDroneParts": true, "segmentParts": 200, "segmentBattleData": 360000}, {"level": 208, "droneParts": 1000, "battleData": 1800000, "requiresDroneParts": true, "segmentParts": 200, "segmentBattleData": 360000}, {"level": 209, "droneParts": 1000, "battleData": 1800000, "requiresDroneParts": true, "segmentParts": 200, "segmentBattleData": 360000}, {"level": 210, "droneParts": 1100, "battleData": 1980000, "requiresDroneParts": true, "segmentParts": 220, "segmentBattleData": 396000}, {"level": 211, "droneParts": 1100, "battleData": 1980000, "requiresDroneParts": true, "segmentParts": 220, "segmentBattleData": 396000}, {"level": 212, "droneParts": 1100, "battleData": 1980000, "requiresDroneParts": true, "segmentParts": 220, "segmentBattleData": 396000}, {"level": 213, "droneParts": 1100, "battleData": 1980000, "requiresDroneParts": true, "segmentParts": 220, "segmentBattleData": 396000}, {"level": 214, "droneParts": 1100, "battleData": 1980000, "requiresDroneParts": true, "segmentParts": 220, "segmentBattleData": 396000}, {"level": 215, "droneParts": 1100, "battleData": 1980000, "requiresDroneParts": true, "segmentParts": 220, "segmentBattleData": 396000}, {"level": 216, "droneParts": 1100, "battleData": 1980000, "requiresDroneParts": true, "segmentParts": 220, "segmentBattleData": 396000}, {"level": 217, "droneParts": 1100, "battleData": 1980000, "requiresDroneParts": true, "segmentParts": 220, "segmentBattleData": 396000}, {"level": 218, "droneParts": 1100, "battleData": 1980000, "requiresDroneParts": true, "segmentParts": 220, "segmentBattleData": 396000}, {"level": 219, "droneParts": 1100, "battleData": 1980000, "requiresDroneParts": true, "segmentParts": 220, "segmentBattleData": 396000}, {"level": 220, "droneParts": 1200, "battleData": 2160000, "requiresDroneParts": true, "segmentParts": 240, "segmentBattleData": 432000}, {"level": 221, "droneParts": 1200, "battleData": 2160000, "requiresDroneParts": true, "segmentParts": 240, "segmentBattleData": 432000}, {"level": 222, "droneParts": 1200, "battleData": 2160000, "requiresDroneParts": true, "segmentParts": 240, "segmentBattleData": 432000}, {"level": 223, "droneParts": 1200, "battleData": 2160000, "requiresDroneParts": true, "segmentParts": 240, "segmentBattleData": 432000}, {"level": 224, "droneParts": 1200, "battleData": 2160000, "requiresDroneParts": true, "segmentParts": 240, "segmentBattleData": 432000}, {"level": 225, "droneParts": 1200, "battleData": 2160000, "requiresDroneParts": true, "segmentParts": 240, "segmentBattleData": 432000}, {"level": 226, "droneParts": 1200, "battleData": 2160000, "requiresDroneParts": true, "segmentParts": 240, "segmentBattleData": 432000}, {"level": 227, "droneParts": 1200, "battleData": 2160000, "requiresDroneParts": true, "segmentParts": 240, "segmentBattleData": 432000}, {"level": 228, "droneParts": 1200, "battleData": 2160000, "requiresDroneParts": true, "segmentParts": 240, "segmentBattleData": 432000}, {"level": 229, "droneParts": 1200, "battleData": 2160000, "requiresDroneParts": true, "segmentParts": 240, "segmentBattleData": 432000}, {"level": 230, "droneParts": 1300, "battleData": 2340000, "requiresDroneParts": true, "segmentParts": 260, "segmentBattleData": 468000}, {"level": 231, "droneParts": 1300, "battleData": 2340000, "requiresDroneParts": true, "segmentParts": 260, "segmentBattleData": 468000}, {"level": 232, "droneParts": 1300, "battleData": 2340000, "requiresDroneParts": true, "segmentParts": 260, "segmentBattleData": 468000}, {"level": 233, "droneParts": 1300, "battleData": 2340000, "requiresDroneParts": true, "segmentParts": 260, "segmentBattleData": 468000}, {"level": 234, "droneParts": 1300, "battleData": 2340000, "requiresDroneParts": true, "segmentParts": 260, "segmentBattleData": 468000}, {"level": 235, "droneParts": 1300, "battleData": 2340000, "requiresDroneParts": true, "segmentParts": 260, "segmentBattleData": 468000}, {"level": 236, "droneParts": 1300, "battleData": 2340000, "requiresDroneParts": true, "segmentParts": 260, "segmentBattleData": 468000}, {"level": 237, "droneParts": 1300, "battleData": 2340000, "requiresDroneParts": true, "segmentParts": 260, "segmentBattleData": 468000}, {"level": 238, "droneParts": 1300, "battleData": 2340000, "requiresDroneParts": true, "segmentParts": 260, "segmentBattleData": 468000}, {"level": 239, "droneParts": 1300, "battleData": 2340000, "requiresDroneParts": true, "segmentParts": 260, "segmentBattleData": 468000}, {"level": 240, "droneParts": 1400, "battleData": 2520000, "requiresDroneParts": true, "segmentParts": 280, "segmentBattleData": 504000}, {"level": 241, "droneParts": 1400, "battleData": 2520000, "requiresDroneParts": true, "segmentParts": 280, "segmentBattleData": 504000}, {"level": 242, "droneParts": 1400, "battleData": 2520000, "requiresDroneParts": true, "segmentParts": 280, "segmentBattleData": 504000}, {"level": 243, "droneParts": 1400, "battleData": 2520000, "requiresDroneParts": true, "segmentParts": 280, "segmentBattleData": 504000}, {"level": 244, "droneParts": 1400, "battleData": 2520000, "requiresDroneParts": true, "segmentParts": 280, "segmentBattleData": 504000}, {"level": 245, "droneParts": 1400, "battleData": 2520000, "requiresDroneParts": true, "segmentParts": 280, "segmentBattleData": 504000}, {"level": 246, "droneParts": 1400, "battleData": 2520000, "requiresDroneParts": true, "segmentParts": 280, "segmentBattleData": 504000}, {"level": 247, "droneParts": 1400, "battleData": 2520000, "requiresDroneParts": true, "segmentParts": 280, "segmentBattleData": 504000}, {"level": 248, "droneParts": 1400, "battleData": 2520000, "requiresDroneParts": true, "segmentParts": 280, "segmentBattleData": 504000}, {"level": 249, "droneParts": 1400, "battleData": 2520000, "requiresDroneParts": true, "segmentParts": 280, "segmentBattleData": 504000}, {"level": 250, "droneParts": 2000, "battleData": 3800000, "requiresDroneParts": true, "segmentParts": 400, "segmentBattleData": 760000}, {"level": 251, "droneParts": 2000, "battleData": 3800000, "requiresDroneParts": true, "segmentParts": 400, "segmentBattleData": 760000}, {"level": 252, "droneParts": 2000, "battleData": 3800000, "requiresDroneParts": true, "segmentParts": 400, "segmentBattleData": 760000}, {"level": 253, "droneParts": 2000, "battleData": 3800000, "requiresDroneParts": true, "segmentParts": 400, "segmentBattleData": 760000}, {"level": 254, "droneParts": 2000, "battleData": 3800000, "requiresDroneParts": true, "segmentParts": 400, "segmentBattleData": 760000}, {"level": 255, "droneParts": 2250, "battleData": 4500000, "requiresDroneParts": true, "segmentParts": 450, "segmentBattleData": 900000}, {"level": 256, "droneParts": 2250, "battleData": 4500000, "requiresDroneParts": true, "segmentParts": 450, "segmentBattleData": 900000}, {"level": 257, "droneParts": 2250, "battleData": 4500000, "requiresDroneParts": true, "segmentParts": 450, "segmentBattleData": 900000}, {"level": 258, "droneParts": 2250, "battleData": 4500000, "requiresDroneParts": true, "segmentParts": 450, "segmentBattleData": 900000}, {"level": 259, "droneParts": 2250, "battleData": 4500000, "requiresDroneParts": true, "segmentParts": 450, "segmentBattleData": 900000}, {"level": 260, "droneParts": 2500, "battleData": 5250000, "requiresDroneParts": true, "segmentParts": 500, "segmentBattleData": 1050000}, {"level": 261, "droneParts": 2500, "battleData": 5250000, "requiresDroneParts": true, "segmentParts": 500, "segmentBattleData": 1050000}, {"level": 262, "droneParts": 2500, "battleData": 5250000, "requiresDroneParts": true, "segmentParts": 500, "segmentBattleData": 1050000}, {"level": 263, "droneParts": 2500, "battleData": 5250000, "requiresDroneParts": true, "segmentParts": 500, "segmentBattleData": 1050000}, {"level": 264, "droneParts": 2500, "battleData": 5250000, "requiresDroneParts": true, "segmentParts": 500, "segmentBattleData": 1050000}, {"level": 265, "droneParts": 2750, "battleData": 6050000, "requiresDroneParts": true, "segmentParts": 550, "segmentBattleData": 1210000}, {"level": 266, "droneParts": 2750, "battleData": 6050000, "requiresDroneParts": true, "segmentParts": 550, "segmentBattleData": 1210000}, {"level": 267, "droneParts": 2750, "battleData": 6050000, "requiresDroneParts": true, "segmentParts": 550, "segmentBattleData": 1210000}, {"level": 268, "droneParts": 2750, "battleData": 6050000, "requiresDroneParts": true, "segmentParts": 550, "segmentBattleData": 1210000}, {"level": 269, "droneParts": 2750, "battleData": 6050000, "requiresDroneParts": true, "segmentParts": 550, "segmentBattleData": 1210000}, {"level": 270, "droneParts": 3000, "battleData": 6900000, "requiresDroneParts": true, "segmentParts": 600, "segmentBattleData": 1380000}, {"level": 271, "droneParts": 3000, "battleData": 6900000, "requiresDroneParts": true, "segmentParts": 600, "segmentBattleData": 1380000}, {"level": 272, "droneParts": 3000, "battleData": 6900000, "requiresDroneParts": true, "segmentParts": 600, "segmentBattleData": 1380000}, {"level": 273, "droneParts": 3000, "battleData": 6900000, "requiresDroneParts": true, "segmentParts": 600, "segmentBattleData": 1380000}, {"level": 274, "droneParts": 3000, "battleData": 6900000, "requiresDroneParts": true, "segmentParts": 600, "segmentBattleData": 1380000}, {"level": 275, "droneParts": 3250, "battleData": 7800000, "requiresDroneParts": true, "segmentParts": 650, "segmentBattleData": 1560000}, {"level": 276, "droneParts": 3250, "battleData": 7800000, "requiresDroneParts": true, "segmentParts": 650, "segmentBattleData": 1560000}, {"level": 277, "droneParts": 3250, "battleData": 7800000, "requiresDroneParts": true, "segmentParts": 650, "segmentBattleData": 1560000}, {"level": 278, "droneParts": 3250, "battleData": 7800000, "requiresDroneParts": true, "segmentParts": 650, "segmentBattleData": 1560000}, {"level": 279, "droneParts": 3250, "battleData": 7800000, "requiresDroneParts": true, "segmentParts": 650, "segmentBattleData": 1560000}, {"level": 280, "droneParts": 3500, "battleData": 8750000, "requiresDroneParts": true, "segmentParts": 700, "segmentBattleData": 1750000}, {"level": 281, "droneParts": 3500, "battleData": 8750000, "requiresDroneParts": true, "segmentParts": 700, "segmentBattleData": 1750000}, {"level": 282, "droneParts": 3500, "battleData": 8750000, "requiresDroneParts": true, "segmentParts": 700, "segmentBattleData": 1750000}, {"level": 283, "droneParts": 3500, "battleData": 8750000, "requiresDroneParts": true, "segmentParts": 700, "segmentBattleData": 1750000}, {"level": 284, "droneParts": 3500, "battleData": 8750000, "requiresDroneParts": true, "segmentParts": 700, "segmentBattleData": 1750000}, {"level": 285, "droneParts": 3750, "battleData": 9375000, "requiresDroneParts": true, "segmentParts": 750, "segmentBattleData": 1875000}, {"level": 286, "droneParts": 3750, "battleData": 9375000, "requiresDroneParts": true, "segmentParts": 750, "segmentBattleData": 1875000}, {"level": 287, "droneParts": 3750, "battleData": 9375000, "requiresDroneParts": true, "segmentParts": 750, "segmentBattleData": 1875000}, {"level": 288, "droneParts": 3750, "battleData": 9375000, "requiresDroneParts": true, "segmentParts": 750, "segmentBattleData": 1875000}, {"level": 289, "droneParts": 3750, "battleData": 9375000, "requiresDroneParts": true, "segmentParts": 750, "segmentBattleData": 1875000}, {"level": 290, "droneParts": 4000, "battleData": 10000000, "requiresDroneParts": true, "segmentParts": 800, "segmentBattleData": 2000000}, {"level": 291, "droneParts": 4000, "battleData": 10000000, "requiresDroneParts": true, "segmentParts": 800, "segmentBattleData": 2000000}, {"level": 292, "droneParts": 4000, "battleData": 10000000, "requiresDroneParts": true, "segmentParts": 800, "segmentBattleData": 2000000}, {"level": 293, "droneParts": 4000, "battleData": 10000000, "requiresDroneParts": true, "segmentParts": 800, "segmentBattleData": 2000000}, {"level": 294, "droneParts": 4000, "battleData": 10000000, "requiresDroneParts": true, "segmentParts": 800, "segmentBattleData": 2000000}, {"level": 295, "droneParts": 4250, "battleData": 10625000, "requiresDroneParts": true, "segmentParts": 850, "segmentBattleData": 2125000}, {"level": 296, "droneParts": 4250, "battleData": 10625000, "requiresDroneParts": true, "segmentParts": 850, "segmentBattleData": 2125000}, {"level": 297, "droneParts": 4250, "battleData": 10625000, "requiresDroneParts": true, "segmentParts": 850, "segmentBattleData": 2125000}, {"level": 298, "droneParts": 4250, "battleData": 10625000, "requiresDroneParts": true, "segmentParts": 850, "segmentBattleData": 2125000}, {"level": 299, "droneParts": 4250, "battleData": 10625000, "requiresDroneParts": true, "segmentParts": 850, "segmentBattleData": 2125000}, {"level": 300, "droneParts": 4500, "battleData": 11250000, "requiresDroneParts": true, "segmentParts": 4500, "segmentBattleData": 11250000}], "unlocks": [{"level": 1, "description": "TD-1 'Pathfinder' drone skin unlocks"}, {"level": 31, "description": "Skill Level 1 unlocks"}, {"level": 50, "description": "TD-2 'Blaster' drone skin unlocks"}, {"level": 51, "description": "Skill Level 2 unlocks"}, {"level": 71, "description": "Skill Level 3 unlocks"}, {"level": 91, "description": "Skill Level 4 unlocks"}, {"level": 100, "description": "TD-3 'Silver Knight' drone skin unlocks"}, {"level": 111, "description": "Skill Level 5 unlocks"}, {"level": 150, "description": "TD-4 'Phantom' drone skin unlocks"}, {"level": 200, "description": "TD-5 'Destroyer' drone skin unlocks"}, {"level": 250, "description": "TD-6 'Colossus' drone skin unlocks"}, {"level": 251, "description": "Tactical Weapon research required to progress past level 250"}]};
+    let currentCategory = 'all';
+    let currentThemeMode = localStorage.getItem('theme-mode') || 'system';
 
-    // Global App State
-    let chartProgInstance = null;
-    let chartVsInstance = null;
-    let simulationResults = [];
-
-    // Helper: Number formatters & Parsers
-    function parseCleanInt(val, fallback = 0) {
-      if (typeof val === 'number') return Math.round(val);
-      if (!val) return fallback;
-      const cleaned = val.toString().replace(/,/g, '').trim();
-      const parsed = parseInt(cleaned, 10);
-      return isNaN(parsed) ? fallback : parsed;
-    }
-
-    function formatNumber(num) {
-      if (num === null || num === undefined || isNaN(num)) return '0';
-      return new Intl.NumberFormat('en-US').format(Math.round(num));
-    }
-
-    function formatShort(num) {
-      if (num === null || num === undefined || isNaN(num)) return '0';
-      if (Math.abs(num) >= 1000000) {
-        return (num / 1000000).toFixed(2).replace(/\.00$/, '') + 'M';
-      }
-      if (Math.abs(num) >= 1000) {
-        return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'k';
-      }
-      return num.toString();
-    }
-
-    // Default Settings Definition
-    const DEFAULT_SETTINGS = {
-      pacingMode: 'minimal',
-      startLevel: 100,
-      startBankParts: 0,
-      weeklyIncome: 250,
-      otherTasksPts: 2000000,
-      targetVsPts: 7200000,
-      targetGoalLevel: '125'
-    };
-
-    function loadSavedSettings() {
-      try {
-        const raw = localStorage.getItem('drone-vs-pacing-settings');
-        if (raw) {
-          return { ...DEFAULT_SETTINGS, ...JSON.parse(raw) };
-        }
-      } catch (e) {
-        console.warn('Failed to load settings from localStorage:', e);
-      }
-      return DEFAULT_SETTINGS;
-    }
-
-    function saveSettings() {
-      try {
-        const settings = {
-          pacingMode: document.getElementById('pacingMode')?.value || 'minimal',
-          startLevel: parseCleanInt(document.getElementById('startLevel')?.value, 100),
-          startBankParts: parseCleanInt(document.getElementById('startBankParts')?.value, 0),
-          weeklyIncome: parseCleanInt(document.getElementById('weeklyIncome')?.value, 250),
-          otherTasksPts: parseCleanInt(document.getElementById('otherTasksPts')?.value, 2000000),
-          targetVsPts: parseCleanInt(document.getElementById('targetVsPts')?.value, 7200000),
-          targetGoalLevel: document.getElementById('targetGoalLevel')?.value || '125'
-        };
-        localStorage.setItem('drone-vs-pacing-settings', JSON.stringify(settings));
-      } catch (e) {
-        console.warn('Failed to save settings to localStorage:', e);
-      }
-    }
-
-    function applySettingsToForm(settings) {
-      if (document.getElementById('pacingMode')) document.getElementById('pacingMode').value = settings.pacingMode;
-      if (document.getElementById('startLevel')) document.getElementById('startLevel').value = settings.startLevel;
-      if (document.getElementById('sliderStartLevel')) document.getElementById('sliderStartLevel').value = settings.startLevel;
-      if (document.getElementById('startBankParts')) document.getElementById('startBankParts').value = formatNumber(settings.startBankParts);
-      if (document.getElementById('weeklyIncome')) document.getElementById('weeklyIncome').value = formatNumber(settings.weeklyIncome);
-      if (document.getElementById('sliderWeeklyIncome')) document.getElementById('sliderWeeklyIncome').value = settings.weeklyIncome;
-      if (document.getElementById('otherTasksPts')) document.getElementById('otherTasksPts').value = formatNumber(settings.otherTasksPts);
-      if (document.getElementById('targetVsPts')) document.getElementById('targetVsPts').value = formatNumber(settings.targetVsPts);
-      if (document.getElementById('targetGoalLevel')) document.getElementById('targetGoalLevel').value = settings.targetGoalLevel;
-
-      updateBadges();
-      runSimulation();
-      saveSettings();
-    }
-
-    // Build flattened segment list for levels 1 to 300
-    function buildSegmentList() {
-      const segments = [];
-      DRONE_DATA.levels.forEach(lvlData => {
-        const lvl = lvlData.level;
-        const totalBD = lvlData.battleData || 0;
-        const totalDP = lvlData.droneParts || 0;
-        const segBD = lvlData.segmentBattleData || totalBD;
-        const segDP = lvlData.segmentParts || 0;
-
-        let numSegs = 1;
-        if (segDP > 0) {
-          numSegs = Math.round(totalDP / segDP);
-        } else if (segBD > 0) {
-          numSegs = Math.round(totalBD / segBD);
-        }
-        numSegs = Math.max(1, numSegs);
-
-        for (let s = 1; s <= numSegs; s++) {
-          segments.push({
-            level: lvl,
-            segmentIndex: s,
-            totalSegments: numSegs,
-            droneParts: segDP,
-            battleData: segBD,
-            requiresDroneParts: (lvlData.requiresDroneParts === true) && segDP > 0,
-            isLevelComplete: (s === numSegs)
-          });
-        }
-      });
-      return segments;
-    }
-
-    const ALL_SEGMENTS = buildSegmentList();
-
-    // Helper: Condense upgrades into concise ranges with explicit segment numbers (e.g. seg 1/5, segs 2–3/5, seg 4/5)
-    function getUpgradeDescData(upgradedSegments) {
-      if (!upgradedSegments || upgradedSegments.length === 0) {
-        return {
-          text: "Waiting for Drone Parts (+Banked)",
-          items: ["Waiting for Drone Parts (+Banked)"]
-        };
-      }
-
-      const lvlList = [];
-      let curLvlObj = null;
-
-      upgradedSegments.forEach(s => {
-        if (!curLvlObj || curLvlObj.level !== s.level) {
-          curLvlObj = {
-            level: s.level,
-            minSeg: s.segmentIndex,
-            maxSeg: s.segmentIndex,
-            count: 0,
-            total: s.totalSegments,
-            dp: 0,
-            requiresDroneParts: s.requiresDroneParts
-          };
-          lvlList.push(curLvlObj);
-        }
-        curLvlObj.maxSeg = Math.max(curLvlObj.maxSeg, s.segmentIndex);
-        curLvlObj.count++;
-        curLvlObj.dp += (s.droneParts || 0);
-      });
-
-      lvlList.forEach(l => {
-        l.isFull = (l.count === l.total);
-      });
-
-      const items = [];
-      let i = 0;
-
-      while (i < lvlList.length) {
-        const item = lvlList[i];
-
-        if (item.isFull) {
-          let j = i;
-          let totalDpInRange = 0;
-          while (j < lvlList.length && lvlList[j].isFull && (lvlList[j].level === lvlList[j-1]?.level + 1 || j === i)) {
-            totalDpInRange += lvlList[j].dp;
-            j++;
-          }
-
-          const startLvl = lvlList[i].level;
-          const endLvl = lvlList[j - 1].level;
-
-          let rangeStr = "";
-          if (startLvl === endLvl) {
-            rangeStr = `Lvl ${startLvl} (Full`;
-          } else {
-            rangeStr = `Lvl ${startLvl}–${endLvl} (Full`;
-          }
-
-          if (totalDpInRange > 0) {
-            rangeStr += `, ${formatNumber(totalDpInRange)} DP)`;
-          } else {
-            rangeStr += `)`;
-          }
-
-          items.push(rangeStr);
-          i = j;
-        } else {
-          let segRangeStr = "";
-          if (item.minSeg === item.maxSeg) {
-            segRangeStr = `seg ${item.minSeg}/${item.total}`;
-          } else {
-            segRangeStr = `segs ${item.minSeg}–${item.maxSeg}/${item.total}`;
-          }
-
-          let partStr = `Lvl ${item.level} (${segRangeStr}`;
-          if (item.dp > 0) {
-            partStr += `, ${formatNumber(item.dp)} DP)`;
-          } else {
-            partStr += `)`;
-          }
-          items.push(partStr);
-          i++;
-        }
-      }
-
-      return {
-        text: items.join(" + "),
-        items: items
-      };
-    }
-
-    function formatUpgradeDesc(upgradedSegments) {
-      return getUpgradeDescData(upgradedSegments).text;
-    }
-
-    // Weekly Drone Overrides Map: { weekNum: { targetLevel: number, targetSegment: number } }
-    let weeklyDroneOverrides = {};
-
-    function loadSavedOverrides() {
-      try {
-        const raw = localStorage.getItem('drone-vs-pacing-overrides');
-        if (raw) {
-          weeklyDroneOverrides = JSON.parse(raw);
-        }
-      } catch (e) {
-        console.warn('Failed to load overrides from localStorage:', e);
-      }
-    }
-
-    function saveOverrides() {
-      try {
-        localStorage.setItem('drone-vs-pacing-overrides', JSON.stringify(weeklyDroneOverrides));
-      } catch (e) {
-        console.warn('Failed to save overrides to localStorage:', e);
-      }
-    }
-
-    // Modal Global State
-    let activeModalWeek = null;
-    let modalStartSegIdx = 0;
-    let modalStartLevel = 100;
-    let modalStartSegment = 0;
-    let modalAvailBank = 0;
-    let modalTargetLevel = 100;
-    let modalTargetSegment = 0;
-
-    function getTotalSegmentsForLevel(lvl) {
-      const lvlData = DRONE_DATA.levels.find(l => l.level === lvl);
-      if (!lvlData) return 5;
-      const totalBD = lvlData.battleData || 0;
-      const totalDP = lvlData.droneParts || 0;
-      const segBD = lvlData.segmentBattleData || totalBD;
-      const segDP = lvlData.segmentParts || 0;
-
-      let numSegs = 1;
-      if (segDP > 0) {
-        numSegs = Math.round(totalDP / segDP);
-      } else if (segBD > 0) {
-        numSegs = Math.round(totalBD / segBD);
-      }
-      return Math.max(1, numSegs);
-    }
-
-    // Simulation Engine: Minimal Pacing with Segment Accuracy, Full Integer Levels, & Weekly Overrides
-    function runSimulation() {
-      try {
-        const startLvl = parseCleanInt(document.getElementById('startLevel')?.value, 100);
-        const startBank = parseCleanInt(document.getElementById('startBankParts')?.value, 0);
-        const weeklyInc = parseCleanInt(document.getElementById('weeklyIncome')?.value, 250);
-        const otherTasks = parseCleanInt(document.getElementById('otherTasksPts')?.value, 2000000);
-        const targetVs = parseCleanInt(document.getElementById('targetVsPts')?.value, 7200000);
-        const targetGoal = document.getElementById('targetGoalLevel')?.value || '125';
-        const pacingMode = document.getElementById('pacingMode')?.value || 'minimal';
-
-        let goalLevel = 125;
-        let maxWeeks = 400;
-        if (targetGoal.startsWith('custom_weeks_')) {
-          maxWeeks = parseInt(targetGoal.replace('custom_weeks_', ''));
-          goalLevel = 300;
-        } else {
-          goalLevel = parseInt(targetGoal) || 125;
-          maxWeeks = Math.max(250, (goalLevel - startLvl) * 5 + 50);
-        }
-
-        let segIdx = ALL_SEGMENTS.findIndex(s => s.level === startLvl + 1);
-        if (segIdx === -1) segIdx = 0;
-
-        let currentBank = startBank;
-        let currentCompletedLevel = startLvl;
-        let currentCompletedSegment = 0;
-        const weeks = [];
-
-        let weekNum = 1;
-        let totalPartsConsumed = 0;
-        let totalBattleDataConsumed = 0;
-
-        while (weekNum <= maxWeeks) {
-          if (segIdx >= ALL_SEGMENTS.length) break;
-          if (currentCompletedLevel >= goalLevel && !targetGoal.startsWith('custom_weeks_') && !weeklyDroneOverrides[weekNum]) {
-            break;
-          }
-
-          // Start of week: Add weekly income
-          currentBank += weeklyInc;
-
-          let partsSpent = 0;
-          let weekBattleData = 0;
-          let weekDronePartsPts = 0;
-          let weekBattleDataPts = 0;
-          let upgradedSegments = [];
-
-          const startLevelThisWeek = currentCompletedLevel;
-          const startSegmentThisWeek = currentCompletedSegment;
-          const startSegIdxThisWeek = segIdx;
-
-          const hasOverride = !!weeklyDroneOverrides[weekNum];
-          const override = weeklyDroneOverrides[weekNum];
-
-          if (hasOverride) {
-            let targetSegIdx = startSegIdxThisWeek;
-            if (override.targetLevel === startLevelThisWeek && override.targetSegment === startSegmentThisWeek) {
-              targetSegIdx = startSegIdxThisWeek;
-            } else {
-              let foundIdx = ALL_SEGMENTS.findIndex(s => s.level === override.targetLevel && s.segmentIndex === override.targetSegment);
-              if (foundIdx !== -1) {
-                targetSegIdx = foundIdx + 1;
-              } else if (override.targetLevel > ALL_SEGMENTS[ALL_SEGMENTS.length - 1].level) {
-                targetSegIdx = ALL_SEGMENTS.length;
-              }
-            }
-
-            while (segIdx < targetSegIdx && segIdx < ALL_SEGMENTS.length) {
-              const seg = ALL_SEGMENTS[segIdx];
-              if (seg.requiresDroneParts && seg.droneParts > 0) {
-                if (currentBank < seg.droneParts) {
-                  break;
-                }
-                currentBank -= seg.droneParts;
-                partsSpent += seg.droneParts;
-                weekDronePartsPts += seg.droneParts * 5000;
-              }
-
-              weekBattleData += seg.battleData;
-              weekBattleDataPts += seg.battleData * 6;
-              upgradedSegments.push(seg);
-
-              if (seg.isLevelComplete) {
-                currentCompletedLevel = seg.level;
-                currentCompletedSegment = 0;
-              } else {
-                currentCompletedLevel = seg.level - 1;
-                currentCompletedSegment = seg.segmentIndex;
-              }
-
-              segIdx++;
-            }
-          } else {
-            while (segIdx < ALL_SEGMENTS.length) {
-              const seg = ALL_SEGMENTS[segIdx];
-              if (currentCompletedLevel >= goalLevel && !targetGoal.startsWith('custom_weeks_')) break;
-
-              if (seg.requiresDroneParts && seg.droneParts > 0) {
-                if (currentBank < seg.droneParts) {
-                  break;
-                }
-                currentBank -= seg.droneParts;
-                partsSpent += seg.droneParts;
-                weekDronePartsPts += seg.droneParts * 5000;
-              }
-
-              weekBattleData += seg.battleData;
-              weekBattleDataPts += seg.battleData * 6;
-              upgradedSegments.push(seg);
-
-              if (seg.isLevelComplete) {
-                currentCompletedLevel = seg.level;
-                currentCompletedSegment = 0;
-              } else {
-                currentCompletedLevel = seg.level - 1;
-                currentCompletedSegment = seg.segmentIndex;
-              }
-
-              segIdx++;
-
-              const currentTotalMondayPts = otherTasks + weekBattleDataPts + weekDronePartsPts;
-
-              if (pacingMode === 'minimal') {
-                if (currentTotalMondayPts >= targetVs) {
-                  break;
-                }
-              } else {
-                if (seg.isLevelComplete && currentTotalMondayPts >= targetVs) {
-                  break;
-                }
-              }
-            }
-          }
-
-          const endLevelThisWeek = currentCompletedLevel;
-          const endSegmentThisWeek = currentCompletedSegment;
-          const totalMondayPts = otherTasks + weekBattleDataPts + weekDronePartsPts;
-          const isSuccess = (totalMondayPts >= targetVs) || (targetVs - totalMondayPts <= 150000);
-
-          totalPartsConsumed += partsSpent;
-          totalBattleDataConsumed += weekBattleData;
-
-          const upgradeData = getUpgradeDescData(upgradedSegments);
-
-          const unlocksThisWeek = [];
-          upgradedSegments.forEach(s => {
-            if (s.isLevelComplete) {
-              const u = DRONE_DATA.unlocks.find(u => u.level === s.level || u.level === s.level + 1);
-              if (u && !unlocksThisWeek.some(x => x.level === u.level)) {
-                unlocksThisWeek.push(u);
-              }
-            }
-          });
-
-          weeks.push({
-            week: weekNum,
-            startLevel: startLevelThisWeek,
-            startSegment: startSegmentThisWeek,
-            startSegIdx: startSegIdxThisWeek,
-            endLevel: endLevelThisWeek,
-            endSegment: endSegmentThisWeek,
-            endSegIdx: segIdx,
-            partsGain: weeklyInc,
-            partsSpent: partsSpent,
-            partsEndingBalance: currentBank,
-            battleData: weekBattleData,
-            battleDataPts: weekBattleDataPts,
-            dronePartsPts: weekDronePartsPts,
-            otherTasksPts: otherTasks,
-            totalVsPts: totalMondayPts,
-            targetVs: targetVs,
-            isSuccess: isSuccess,
-            deficit: Math.max(0, targetVs - totalMondayPts),
-            upgradeDesc: upgradeData.text,
-            upgradeItems: upgradeData.items,
-            unlocksThisWeek: unlocksThisWeek,
-            isCustom: hasOverride,
-            customOverride: override
-          });
-
-          weekNum++;
-        }
-
-        simulationResults = weeks;
-        updateUI(weeks, totalPartsConsumed, totalBattleDataConsumed, startLvl, goalLevel);
-      } catch (err) {
-        console.error("Simulation error:", err);
-      }
-    }
-
-    // Update UI Elements
-    function updateUI(weeks, totalParts, totalBD, startLvl, goalLvl) {
-      renderStrategyBanner();
-      renderKPICards(weeks, totalParts, totalBD, goalLvl);
-      renderTable(weeks, startLvl, goalLvl);
-      renderCharts(weeks);
-    }
-
-    function renderStrategyBanner() {
-      const bannerIcon = document.getElementById('strategyBannerIcon');
-      const bannerContent = document.getElementById('strategyBannerContent');
-      const pacingMode = document.getElementById('pacingMode')?.value || 'minimal';
-      const weeklyInc = parseCleanInt(document.getElementById('weeklyIncome')?.value, 250);
-
-      if (!bannerContent) return;
-
-      if (pacingMode === 'whole_level') {
-        if (bannerIcon) bannerIcon.innerText = '📦';
-        bannerContent.innerHTML = `<strong>Whole Level Milestones Enabled:</strong> Never stops mid-level; completes entire levels each Monday once 7.2M is reachable. Faster progression when Battle Data and Drone Parts (+${formatNumber(weeklyInc)}/wk) are available, but expends resources in larger bursts.`;
-      } else {
-        if (bannerIcon) bannerIcon.innerText = '🎯';
-        bannerContent.innerHTML = `<strong>Minimal VS Point Pacing Enabled:</strong> Upgrades only the exact segments needed to clear 7.2M each Monday, stretching Battle Data across more weeks so your Drone Parts (+${formatNumber(weeklyInc)}/wk) can naturally accumulate without delays.`;
-      }
-    }
-
-    function renderKPICards(weeks, totalParts, totalBD, goalLvl) {
-      const totalWeeks = weeks.length;
-      const successCount = weeks.filter(w => w.isSuccess).length;
-      const successRate = totalWeeks > 0 ? Math.round((successCount / totalWeeks) * 100) : 0;
-      const finalBank = totalWeeks > 0 ? weeks[weeks.length - 1].partsEndingBalance : 0;
-      const pacingMode = document.getElementById('pacingMode')?.value || 'minimal';
-
-      const elWeeksLabel = document.getElementById('kpiWeeksLabel');
-      if (elWeeksLabel) {
-        elWeeksLabel.innerText = (pacingMode === 'whole_level') ? 'Weeks to Goal' : 'Weeks Stretched (Goal)';
-      }
-
-      const elWeeks = document.getElementById('kpiWeeks');
-      if (elWeeks) elWeeks.innerHTML = `${totalWeeks} <span style="font-size: 14px; color: var(--text-muted);">Weeks</span>`;
-      
-      const elMonths = document.getElementById('kpiMonths');
-      if (elMonths) elMonths.innerText = `~${(totalWeeks / 4.33).toFixed(1)} Months of 9/9 Clears`;
-
-      const elParts = document.getElementById('kpiPartsNeeded');
-      if (elParts) elParts.innerHTML = `${formatNumber(totalParts)} <span style="font-size: 14px; color: var(--cyan);">DP</span>`;
-      
-      const elBanked = document.getElementById('kpiPartsBanked');
-      if (elBanked) elBanked.innerText = `Banked: ${formatNumber(finalBank)} DP Remaining`;
-
-      const elRate = document.getElementById('kpiSuccessRate');
-      if (elRate) elRate.innerText = `${successRate}%`;
-      
-      const elRatio = document.getElementById('kpiSuccessRatio');
-      if (elRatio) elRatio.innerText = `${successCount} / ${totalWeeks} Weeks at 7.2M+`;
-
-      const elBD = document.getElementById('kpiBattleData');
-      if (elBD) elBD.innerText = `${formatShort(totalBD)}`;
-      
-      const elPtsGen = document.getElementById('kpiPointsGenerated');
-      if (elPtsGen) elPtsGen.innerText = `${formatShort(totalBD * 6)} VS Points from BD`;
-    }
-
-    function renderTable(weeks, startLvl, goalLvl) {
-      const tbody = document.getElementById('ledgerTableBody');
-      if (!tbody) return;
-      tbody.innerHTML = '';
-
-      const elTotalWeeks = document.getElementById('lblTotalWeeks');
-      if (elTotalWeeks) elTotalWeeks.innerText = weeks.length;
-
-      const lastWeek = weeks[weeks.length - 1];
-      const endLvlStr = lastWeek ? `Lvl ${lastWeek.endLevel}` : `Lvl ${goalLvl}`;
-      const elFromTo = document.getElementById('lblFromTo');
-      if (elFromTo) elFromTo.innerText = `Lvl ${startLvl} → ${endLvlStr}`;
-
-      weeks.forEach(w => {
-        const isMilestoneWeek = w.partsSpent > 0;
-        const isCustom = !!w.isCustom;
-        const tr = document.createElement('tr');
-        if (isMilestoneWeek) tr.classList.add('milestone-row');
-        if (!w.isSuccess) tr.classList.add('deficit-row');
-        if (isCustom) tr.classList.add('custom-override-row');
-
-        // Drone parts change string
-        let changeHtml = '';
-        if (w.partsSpent > 0) {
-          changeHtml = `<span class="positive-val">+${formatNumber(w.partsGain)}</span> / <span class="negative-val">-${formatNumber(w.partsSpent)}</span>`;
-        } else {
-          changeHtml = `<span class="positive-val">+${formatNumber(w.partsGain)}</span> / <span style="color: var(--text-dim);">-0</span>`;
-        }
-
-        // Chest Status Badge
-        let statusHtml = '';
-        if (w.isSuccess) {
-          statusHtml = `<span class="badge badge-green">✓ 9/9 (${formatShort(w.totalVsPts)})</span>`;
-        } else {
-          statusHtml = `<span class="badge badge-red">⚠ Short -${formatShort(w.deficit)}</span>`;
-        }
-
-        // Special milestone tag if any
-        let upgradeLinesHtml = '';
-        if (w.upgradeItems && w.upgradeItems.length > 0 && w.upgradeDesc !== "Waiting for Drone Parts (+Banked)") {
-          upgradeLinesHtml = w.upgradeItems.map(it => `<div class="upgrade-line">• ${it}</div>`).join('');
-        } else {
-          upgradeLinesHtml = `<span style="color: var(--text-dim);">${w.upgradeDesc}</span>`;
-        }
-
-        let upgradeBadge = `<div class="upgrade-lines-container">${upgradeLinesHtml}</div>`;
-        if (w.unlocksThisWeek.length > 0) {
-          const u = w.unlocksThisWeek[0];
-          upgradeBadge += `<div class="badge badge-purple" style="margin-top:4px; display: inline-block;">🏆 ${u.description}</div>`;
-        }
-
-        // Breakdown tooltip payload with comma separated figures
-        const tooltipPayload = `
-          <div style="font-weight:700; margin-bottom: 6px; color: var(--gold); border-bottom: 1px solid var(--border-subtle); padding-bottom: 4px;">
-            Week ${w.week} Monday VS Breakdown ${isCustom ? '(Custom Overridden)' : ''}
-          </div>
-          <div class="vs-tooltip-row">
-            <span style="color: var(--purple);">🔹 Drone Battle Data (×6):</span>
-            <span class="num-mono" style="font-weight:600;">${formatNumber(w.battleDataPts)} pts</span>
-          </div>
-          <div class="vs-tooltip-row">
-            <span style="color: var(--cyan);">🔸 Drone Parts (×5k):</span>
-            <span class="num-mono" style="font-weight:600;">${formatNumber(w.dronePartsPts)} pts</span>
-          </div>
-          <div class="vs-tooltip-row">
-            <span style="color: var(--text-muted);">🎯 Other Tasks (Radar/Skill Chip Chests/Resource Gathering):</span>
-            <span class="num-mono" style="font-weight:600;">${formatNumber(w.otherTasksPts)} pts</span>
-          </div>
-          <div class="vs-tooltip-row">
-            <span style="color: var(--text-main);">⚡ Total Monday Points:</span>
-            <span class="num-mono" style="color: ${w.isSuccess ? 'var(--green)' : 'var(--red)'}; font-weight:800;">${formatNumber(w.totalVsPts)} pts</span>
-          </div>
-        `;
-
-        // Custom Training Action Cell
-        const customBtnLabel = isCustom ? '✏️ Custom Active' : '✏️ Custom Training';
-        const customBtnClass = isCustom ? 'btn-custom-week active' : 'btn-custom-week';
-
-        let customBadgeHtml = '';
-        if (isCustom) {
-          if (w.startLevel === w.endLevel && w.startSegment === w.endSegment) {
-            customBadgeHtml = `<div style="margin-top: 3px;"><span class="badge-custom-override">🛡️ Held (0 Upgrades)</span></div>`;
-          } else {
-            const override = weeklyDroneOverrides[w.week];
-            if (override) {
-              const totSegs = getTotalSegmentsForLevel(override.targetLevel);
-              const segStr = override.targetSegment < totSegs ? ` (${override.targetSegment}/${totSegs})` : ' (Full)';
-              customBadgeHtml = `<div style="margin-top: 3px;"><span class="badge-custom-override">✏️ Target Lvl ${override.targetLevel}${segStr}</span></div>`;
-            } else {
-              const targetLvl = w.endSegment > 0 ? w.endLevel + 1 : w.endLevel;
-              const totSegs = getTotalSegmentsForLevel(targetLvl);
-              const segStr = w.endSegment > 0 ? ` (${w.endSegment}/${totSegs})` : ' (Full)';
-              customBadgeHtml = `<div style="margin-top: 3px;"><span class="badge-custom-override">✏️ Target Lvl ${targetLvl}${segStr}</span></div>`;
-            }
-          }
-        }
-
-        const actionCellHtml = `
-          <div style="display: flex; flex-direction: column; align-items: flex-start;">
-            <button class="${customBtnClass}" onclick="openCustomTrainingModal(${w.week})" title="Customize drone level & segments for Week ${w.week}">
-              ${customBtnLabel}
-            </button>
-            ${customBadgeHtml}
-          </div>
-        `;
-
-        const startLvlDisplay = w.startSegment > 0 ? `${w.startLevel}.${w.startSegment}` : `${w.startLevel}`;
-        const endLvlDisplay = w.endSegment > 0 ? `${w.endLevel}.${w.endSegment}` : `${w.endLevel}`;
-
-        tr.innerHTML = `
-          <td><strong style="color: var(--gold);">W${w.week}</strong></td>
-          <td class="num-mono" style="font-weight:600;">${startLvlDisplay}</td>
-          <td class="cell-upgrades">${upgradeBadge}</td>
-          <td class="num-mono" style="font-weight:700;">${endLvlDisplay}</td>
-          <td class="num-mono">${changeHtml}</td>
-          <td class="num-mono" style="font-weight:700; color: ${w.partsEndingBalance >= 500 ? 'var(--cyan)' : 'var(--text-main)'};">
-            ${formatNumber(w.partsEndingBalance)}
-          </td>
-          <td class="num-mono" style="color: var(--purple); font-weight: 600;">
-            ${w.battleData > 0 ? formatShort(w.battleData) : '<span style="color: var(--text-dim);">-</span>'}
-          </td>
-          <td>
-            <div class="tooltip-cell" data-vs-tooltip="${encodeURIComponent(tooltipPayload)}">
-              <span class="num-mono" style="font-weight:800; color: ${w.isSuccess ? 'var(--green)' : 'var(--red)'};">
-                ${formatShort(w.totalVsPts)} <span style="font-size: 10px; opacity: 0.7;">ℹ️</span>
-              </span>
-            </div>
-          </td>
-          <td>
-            <div class="tooltip-cell" data-vs-tooltip="${encodeURIComponent(tooltipPayload)}">
-              ${statusHtml}
-            </div>
-          </td>
-          <td>${actionCellHtml}</td>
-        `;
-
-        tbody.appendChild(tr);
-      });
-
-      attachFloatingTooltips();
-    }
-
-    // Modal Interactive Logic: Custom Drone Training Inspector
-    function openCustomTrainingModal(weekNum) {
-      const weekData = simulationResults.find(w => w.week === weekNum);
-      if (!weekData) return;
-
-      activeModalWeek = weekNum;
-      modalStartSegIdx = weekData.startSegIdx;
-      modalStartLevel = weekData.startLevel;
-      modalStartSegment = weekData.startSegment || 0;
-      modalAvailBank = weekData.partsEndingBalance + weekData.partsSpent;
-
-      document.getElementById('customModalTitle').innerText = `✏️ Custom Drone Training — Week ${weekNum} Inspector`;
-
-      if (weeklyDroneOverrides[weekNum]) {
-        modalTargetLevel = weeklyDroneOverrides[weekNum].targetLevel;
-        modalTargetSegment = weeklyDroneOverrides[weekNum].targetSegment;
-      } else {
-        if (weekData.endSegment > 0) {
-          modalTargetLevel = weekData.endLevel + 1;
-          modalTargetSegment = weekData.endSegment;
-        } else if (weekData.endLevel === weekData.startLevel && (weekData.endSegment || 0) === (weekData.startSegment || 0)) {
-          modalTargetLevel = weekData.startLevel;
-          modalTargetSegment = weekData.startSegment || 0;
-        } else {
-          modalTargetLevel = weekData.endLevel;
-          modalTargetSegment = getTotalSegmentsForLevel(weekData.endLevel);
-        }
-      }
-
-      // Starting position banner
-      const startSegsTotal = getTotalSegmentsForLevel(modalStartLevel + 1);
-      const startSegStr = modalStartSegment > 0 ? `Seg ${modalStartSegment}/${startSegsTotal}` : `0/${startSegsTotal}`;
-      document.getElementById('modalWeekStartPos').innerText = `Lvl ${modalStartLevel} (${startSegStr})`;
-      document.getElementById('modalWeekAvailBank').innerText = `${formatNumber(modalAvailBank)} DP Available`;
-
-      populateModalTargetLevelSelect();
-      renderModalPickerAndPreview();
-
-      const modalBackdrop = document.getElementById('customTrainingModalBackdrop');
-      if (modalBackdrop) modalBackdrop.classList.add('active');
-    }
-
-    function closeCustomTrainingModal() {
-      const modalBackdrop = document.getElementById('customTrainingModalBackdrop');
-      if (modalBackdrop) modalBackdrop.classList.remove('active');
-      activeModalWeek = null;
-    }
-
-    function populateModalTargetLevelSelect() {
-      const select = document.getElementById('modalTargetLevelSelect');
-      if (!select) return;
-      select.innerHTML = '';
-
-      const minLvl = modalStartLevel;
-      const maxLvl = Math.min(300, modalStartLevel + 35);
-
-      for (let l = minLvl; l <= maxLvl; l++) {
-        const opt = document.createElement('option');
-        opt.value = l;
-        const totalSegs = getTotalSegmentsForLevel(l);
-        const lvlObj = DRONE_DATA.levels.find(x => x.level === l);
-        const isMilestone = lvlObj?.requiresDroneParts && lvlObj?.droneParts > 0;
-        const dpBadge = isMilestone ? ` • ${formatNumber(lvlObj.droneParts)} DP` : '';
-        
-        if (l === modalStartLevel) {
-          opt.textContent = `Lvl ${l} (Current Starting Level)`;
-        } else {
-          opt.textContent = `Lvl ${l} (${totalSegs} segs${dpBadge})`;
-        }
-        select.appendChild(opt);
-      }
-
-      select.value = modalTargetLevel;
-      select.onchange = (e) => {
-        modalTargetLevel = parseInt(e.target.value, 10);
-        if (modalTargetLevel === modalStartLevel) {
-          modalTargetSegment = modalStartSegment;
-        } else {
-          const totalSegs = getTotalSegmentsForLevel(modalTargetLevel);
-          modalTargetSegment = totalSegs;
-        }
-        renderModalPickerAndPreview();
-      };
-    }
-
-    function snapModalToLevel(lvl, seg) {
-      modalTargetLevel = Math.max(modalStartLevel, Math.min(300, lvl));
-      const totSegs = getTotalSegmentsForLevel(modalTargetLevel);
-      modalTargetSegment = Math.max(0, Math.min(totSegs, seg));
-      renderModalPickerAndPreview();
-    }
-
-    function renderModalPickerAndPreview() {
-      const select = document.getElementById('modalTargetLevelSelect');
-      if (select && select.value != modalTargetLevel) {
-        select.value = modalTargetLevel;
-      }
-
-      const btnLvlDec = document.getElementById('btnModalLevelDec');
-      const btnLvlInc = document.getElementById('btnModalLevelInc');
-      if (btnLvlDec) btnLvlDec.disabled = (modalTargetLevel <= modalStartLevel);
-      if (btnLvlInc) btnLvlInc.disabled = (modalTargetLevel >= 300);
-
-      // Render Visual Segment Rail
-      const pipsGrid = document.getElementById('modalSegmentPipsGrid');
-      const railLabel = document.getElementById('modalSegmentRailLabel');
-      
-      let railLvl = modalTargetLevel === modalStartLevel ? modalStartLevel + 1 : modalTargetLevel;
-      railLvl = Math.min(300, railLvl);
-      const totalSegsInRail = getTotalSegmentsForLevel(railLvl);
-      const railLvlObj = DRONE_DATA.levels.find(x => x.level === railLvl);
-      const isMilestoneRail = railLvlObj?.requiresDroneParts && railLvlObj?.droneParts > 0;
-
-      if (railLabel) {
-        if (modalTargetLevel === modalStartLevel) {
-          railLabel.innerText = `Segments for Level ${railLvl} (${modalStartSegment} / ${totalSegsInRail} Completed):`;
-        } else {
-          railLabel.innerText = `Segments for Level ${railLvl} (${modalTargetSegment} / ${totalSegsInRail} Completed):`;
-        }
-      }
-
-      if (pipsGrid) {
-        pipsGrid.innerHTML = '';
-        for (let i = 1; i <= totalSegsInRail; i++) {
-          const pip = document.createElement('div');
-          pip.className = 'segment-pip';
-          if (isMilestoneRail) pip.classList.add('milestone-pip');
-
-          let isFilled = false;
-          let isDisabled = false;
-
-          if (modalTargetLevel === modalStartLevel) {
-            isFilled = (i <= modalStartSegment);
-            if (i <= modalStartSegment) isDisabled = true;
-          } else {
-            isFilled = (i <= modalTargetSegment);
-          }
-
-          if (isFilled) pip.classList.add('filled');
-          if (isDisabled) pip.classList.add('disabled');
-
-          const segPartsCost = (isMilestoneRail && railLvlObj?.segmentParts) ? `${railLvlObj.segmentParts} DP` : 'XP';
-          pip.innerHTML = `<span>${i}</span><span class="pip-sub">${segPartsCost}</span>`;
-
-          pip.onclick = () => {
-            if (modalTargetLevel === modalStartLevel) {
-              if (i > modalStartSegment) {
-                modalTargetLevel = railLvl;
-                modalTargetSegment = i;
-              }
-            } else {
-              if (modalTargetSegment === i) {
-                modalTargetSegment = i - 1;
-                if (modalTargetSegment === 0 && modalTargetLevel > modalStartLevel + 1) {
-                  modalTargetLevel--;
-                  modalTargetSegment = getTotalSegmentsForLevel(modalTargetLevel);
-                } else if (modalTargetSegment === 0 && modalTargetLevel === modalStartLevel + 1) {
-                  modalTargetLevel = modalStartLevel;
-                  modalTargetSegment = modalStartSegment;
-                }
-              } else {
-                modalTargetSegment = i;
-              }
-            }
-            renderModalPickerAndPreview();
-          };
-
-          pipsGrid.appendChild(pip);
-        }
-      }
-
-      // Render Multi-Level Journey Breadcrumb Roadmap
-      const roadmapContainer = document.getElementById('modalJourneyRoadmap');
-      if (roadmapContainer) {
-        roadmapContainer.innerHTML = '';
-
-        // Start Chip
-        const startChip = document.createElement('div');
-        startChip.className = 'journey-chip start-chip interactive';
-        startChip.title = 'Click to reset target to week starting position (Hold Week)';
-        const startStr = modalStartSegment > 0 ? `Lvl ${modalStartLevel} (Seg ${modalStartSegment})` : `Lvl ${modalStartLevel}`;
-        startChip.innerHTML = `🚩 Start: ${startStr}`;
-        startChip.onclick = () => snapModalToLevel(modalStartLevel, modalStartSegment);
-        roadmapContainer.appendChild(startChip);
-
-        if (modalTargetLevel === modalStartLevel && modalTargetSegment === modalStartSegment) {
-          const arrow = document.createElement('span');
-          arrow.className = 'journey-arrow';
-          arrow.innerText = '➔';
-          roadmapContainer.appendChild(arrow);
-
-          const holdChip = document.createElement('div');
-          holdChip.className = 'journey-chip target-chip';
-          holdChip.innerHTML = `🛡️ Hold Week (0 Upgrades)`;
-          roadmapContainer.appendChild(holdChip);
-        } else {
-          // Traversed intermediate levels: from modalStartLevel + 1 up to modalTargetLevel - 1
-          for (let l = modalStartLevel + 1; l < modalTargetLevel; l++) {
-            const arrow = document.createElement('span');
-            arrow.className = 'journey-arrow';
-            arrow.innerText = '➔';
-            roadmapContainer.appendChild(arrow);
-
-            const totSegs = getTotalSegmentsForLevel(l);
-            const lvlObj = DRONE_DATA.levels.find(x => x.level === l);
-            const isMilestone = lvlObj?.requiresDroneParts && lvlObj?.droneParts > 0;
-            const dpTag = isMilestone ? `<span style="color: var(--gold); font-size: 9px; font-weight: 800;"> • ${formatNumber(lvlObj.droneParts)} DP</span>` : '';
-
-            const compChip = document.createElement('div');
-            compChip.className = 'journey-chip completed-chip interactive';
-            compChip.title = `Click to snap target to completed Level ${l}`;
-            compChip.innerHTML = `✓ Lvl ${l} Full (${totSegs}/${totSegs})${dpTag}`;
-            compChip.onclick = () => snapModalToLevel(l, totSegs);
-            roadmapContainer.appendChild(compChip);
-          }
-
-          // Active Target Ending Chip
-          const arrow = document.createElement('span');
-          arrow.className = 'journey-arrow';
-          arrow.innerText = '➔';
-          roadmapContainer.appendChild(arrow);
-
-          const targetTotalSegs = getTotalSegmentsForLevel(modalTargetLevel);
-          const isTargetFull = (modalTargetSegment === targetTotalSegs);
-          const targetLvlObj = DRONE_DATA.levels.find(x => x.level === modalTargetLevel);
-          const isTargetMilestone = targetLvlObj?.requiresDroneParts && targetLvlObj?.droneParts > 0;
-          const targetDpTag = isTargetMilestone && isTargetFull ? `<span style="color: var(--gold); font-size: 9px; font-weight: 800;"> • ${formatNumber(targetLvlObj.droneParts)} DP</span>` : '';
-
-          const targetChip = document.createElement('div');
-          targetChip.className = 'journey-chip target-chip';
-          if (!isTargetFull) {
-            targetChip.classList.add('interactive');
-            targetChip.title = `Click to complete Level ${modalTargetLevel} (${targetTotalSegs}/${targetTotalSegs} Full)`;
-            targetChip.onclick = () => snapModalToLevel(modalTargetLevel, targetTotalSegs);
-          }
-          const targetStr = isTargetFull 
-            ? `Lvl ${modalTargetLevel} Full (${targetTotalSegs}/${targetTotalSegs})` 
-            : `Lvl ${modalTargetLevel} (Seg ${modalTargetSegment}/${targetTotalSegs})`;
-          targetChip.innerHTML = `🎯 Target: ${targetStr}${targetDpTag}`;
-          roadmapContainer.appendChild(targetChip);
-        }
-      }
-
-      // Calculate outcome from modalStartSegIdx to target
-      let targetSegIdx = modalStartSegIdx;
-      if (modalTargetLevel === modalStartLevel && modalTargetSegment === modalStartSegment) {
-        targetSegIdx = modalStartSegIdx;
-      } else {
-        let foundIdx = ALL_SEGMENTS.findIndex(s => s.level === modalTargetLevel && s.segmentIndex === modalTargetSegment);
-        if (foundIdx !== -1) {
-          targetSegIdx = foundIdx + 1;
-        } else if (modalTargetLevel > ALL_SEGMENTS[ALL_SEGMENTS.length - 1].level) {
-          targetSegIdx = ALL_SEGMENTS.length;
-        }
-      }
-
-      let simPartsSpent = 0;
-      let simBDSpent = 0;
-      let simSegments = [];
-
-      for (let idx = modalStartSegIdx; idx < targetSegIdx && idx < ALL_SEGMENTS.length; idx++) {
-        const seg = ALL_SEGMENTS[idx];
-        if (seg.requiresDroneParts && seg.droneParts > 0) {
-          simPartsSpent += seg.droneParts;
-        }
-        simBDSpent += seg.battleData;
-        simSegments.push(seg);
-      }
-
-      const otherTasks = parseCleanInt(document.getElementById('otherTasksPts')?.value, 2000000);
-      const targetVs = parseCleanInt(document.getElementById('targetVsPts')?.value, 7200000);
-      const totalVs = otherTasks + (simBDSpent * 6) + (simPartsSpent * 5000);
-      const isSuccess = (totalVs >= targetVs) || (targetVs - totalVs <= 150000);
-
-      const partsDeficit = simPartsSpent - modalAvailBank;
-      const budgetAlert = document.getElementById('modalBudgetAlert');
-      const budgetText = document.getElementById('modalBudgetText');
-      const btnSnap = document.getElementById('btnSnapMaxAffordable');
-      const btnSave = document.getElementById('btnSaveModalOverride');
-
-      if (partsDeficit > 0) {
-        if (budgetAlert) {
-          budgetAlert.className = 'budget-alert-box deficit';
-        }
-        if (budgetText) {
-          budgetText.innerText = `⚠️ Insufficient Drone Parts: Need +${formatNumber(partsDeficit)} more DP (Required: ${formatNumber(simPartsSpent)} DP, Available: ${formatNumber(modalAvailBank)} DP)`;
-        }
-        if (btnSnap) btnSnap.style.display = 'inline-block';
-        if (btnSave) btnSave.disabled = true;
-      } else {
-        if (budgetAlert) {
-          budgetAlert.className = 'budget-alert-box ok';
-        }
-        if (budgetText) {
-          budgetText.innerText = `✓ Within available budget (Spent: ${formatNumber(simPartsSpent)} / ${formatNumber(modalAvailBank)} DP | Remaining: ${formatNumber(modalAvailBank - simPartsSpent)} DP)`;
-        }
-        if (btnSnap) btnSnap.style.display = 'none';
-        if (btnSave) btnSave.disabled = false;
-      }
-
-      // Update Preview Card Stats
-      const elPrevParts = document.getElementById('prevPartsSpent');
-      if (elPrevParts) elPrevParts.innerText = `${formatNumber(simPartsSpent)} DP`;
-
-      const elPrevBank = document.getElementById('prevEndingBank');
-      if (elPrevBank) elPrevBank.innerText = `Ending Bank: ${formatNumber(modalAvailBank - simPartsSpent)} DP`;
-
-      const elPrevBD = document.getElementById('prevBattleData');
-      if (elPrevBD) elPrevBD.innerText = simBDSpent > 0 ? formatShort(simBDSpent) : '0 XP';
-
-      const elPrevBDPts = document.getElementById('prevBdPoints');
-      if (elPrevBDPts) elPrevBDPts.innerText = `${formatShort(simBDSpent * 6)} VS Pts from BD`;
-
-      const elPrevVs = document.getElementById('prevTotalVs');
-      if (elPrevVs) elPrevVs.innerText = `${formatShort(totalVs)}`;
-
-      const elPrevChest = document.getElementById('prevChestBadge');
-      if (elPrevChest) {
-        elPrevChest.innerHTML = isSuccess 
-          ? `<span class="badge badge-green">✓ 9/9 Cleared (${formatNumber(totalVs)} pts)</span>`
-          : `<span class="badge badge-red">⚠ Short -${formatShort(targetVs - totalVs)}</span>`;
-      }
-
-      const elPrevDesc = document.getElementById('prevUpgradeDesc');
-      if (elPrevDesc) {
-        const descData = getUpgradeDescData(simSegments);
-        if (descData.items.length > 1) {
-          elPrevDesc.innerHTML = descData.items.map(it => `<div>• ${it}</div>`).join('');
-        } else {
-          elPrevDesc.innerText = descData.text;
-        }
-      }
-
-      const elBadgeAdv = document.getElementById('modalAdvancementBadge');
-      if (elBadgeAdv) {
-        if (simSegments.length === 0) {
-          elBadgeAdv.innerText = '🛡️ Hold Week (0 Upgrades)';
-          elBadgeAdv.className = 'badge badge-cyan';
-        } else {
-          let fullLevels = 0;
-          let leftoverSegs = 0;
-          if (modalTargetLevel === modalStartLevel) {
-            leftoverSegs = modalTargetSegment - modalStartSegment;
-          } else {
-            for (let l = modalStartLevel + 1; l < modalTargetLevel; l++) {
-              fullLevels++;
-            }
-            const targetTotal = getTotalSegmentsForLevel(modalTargetLevel);
-            if (modalTargetSegment === targetTotal) {
-              fullLevels++;
-              leftoverSegs = 0;
-            } else {
-              leftoverSegs = modalTargetSegment;
-            }
-          }
-
-          let advText = '';
-          if (fullLevels > 0 && leftoverSegs > 0) {
-            advText = `+${fullLevels} Level${fullLevels > 1 ? 's' : ''} & ${leftoverSegs} Segs (+${simSegments.length} Segs)`;
-          } else if (fullLevels > 0) {
-            advText = `+${fullLevels} Full Level${fullLevels > 1 ? 's' : ''} (+${simSegments.length} Segs)`;
-          } else {
-            advText = `+${leftoverSegs} Segment${leftoverSegs > 1 ? 's' : ''}`;
-          }
-
-          elBadgeAdv.innerText = advText;
-          elBadgeAdv.className = 'badge badge-gold';
-        }
-      }
-
-      // Check for unlock alerts
-      const unlockAlert = document.getElementById('prevUnlockAlert');
-      if (unlockAlert) {
-        const unlocks = [];
-        simSegments.forEach(s => {
-          if (s.isLevelComplete) {
-            const u = DRONE_DATA.unlocks.find(u => u.level === s.level || u.level === s.level + 1);
-            if (u && !unlocks.some(x => x.level === u.level)) unlocks.push(u);
-          }
-        });
-
-        if (unlockAlert) {
-          if (unlocks.length > 0) {
-            unlockAlert.style.display = 'block';
-            unlockAlert.innerHTML = `🏆 ${unlocks.map(u => u.description).join(" • ")}`;
-          } else {
-            unlockAlert.style.display = 'none';
-          }
-        }
-      }
-    }
-
-    function adjustModalTargetLevel(delta) {
-      if (delta > 0) {
-        if (modalTargetLevel === modalStartLevel && modalTargetSegment === modalStartSegment) {
-          modalTargetLevel = Math.min(300, modalStartLevel + 1);
-          modalTargetSegment = getTotalSegmentsForLevel(modalTargetLevel);
-        } else {
-          const curTotal = getTotalSegmentsForLevel(modalTargetLevel);
-          const isFull = (modalTargetSegment === curTotal);
-          
-          if (!isFull) {
-            // If current level is partially complete (e.g. 11/14), snap to 100% full (14/14)
-            modalTargetSegment = curTotal;
-          } else {
-            // If already full, advance to next level full
-            modalTargetLevel = Math.min(300, modalTargetLevel + 1);
-            modalTargetSegment = getTotalSegmentsForLevel(modalTargetLevel);
-          }
-        }
-      } else if (delta < 0) {
-        if (modalTargetLevel <= modalStartLevel + 1) {
-          modalTargetLevel = modalStartLevel;
-          modalTargetSegment = modalStartSegment;
-        } else {
-          modalTargetLevel = Math.max(modalStartLevel, modalTargetLevel - 1);
-          modalTargetSegment = getTotalSegmentsForLevel(modalTargetLevel);
-        }
-      }
-      renderModalPickerAndPreview();
-    }
-
-    function adjustModalTargetSegment(delta) {
-      let idx = -1;
-      if (modalTargetLevel === modalStartLevel && modalTargetSegment === modalStartSegment) {
-        idx = modalStartSegIdx - 1;
-      } else {
-        idx = ALL_SEGMENTS.findIndex(s => s.level === modalTargetLevel && s.segmentIndex === modalTargetSegment);
-      }
-
-      let newIdx = idx + delta;
-      if (newIdx < modalStartSegIdx) {
-        modalTargetLevel = modalStartLevel;
-        modalTargetSegment = modalStartSegment;
-      } else {
-        newIdx = Math.min(ALL_SEGMENTS.length - 1, newIdx);
-        const s = ALL_SEGMENTS[newIdx];
-        modalTargetLevel = s.level;
-        modalTargetSegment = s.segmentIndex;
-      }
-      renderModalPickerAndPreview();
-    }
-
-    function snapModalToMaxAffordable() {
-      let spent = 0;
-      let bestIdx = modalStartSegIdx - 1;
-
-      for (let i = modalStartSegIdx; i < ALL_SEGMENTS.length; i++) {
-        const seg = ALL_SEGMENTS[i];
-        if (seg.requiresDroneParts && seg.droneParts > 0) {
-          if (spent + seg.droneParts > modalAvailBank) break;
-          spent += seg.droneParts;
-        }
-        bestIdx = i;
-      }
-
-      if (bestIdx < modalStartSegIdx) {
-        modalTargetLevel = modalStartLevel;
-        modalTargetSegment = modalStartSegment;
-      } else {
-        const s = ALL_SEGMENTS[bestIdx];
-        modalTargetLevel = s.level;
-        modalTargetSegment = s.segmentIndex;
-      }
-      renderModalPickerAndPreview();
-    }
-
-    function saveCustomTrainingOverride() {
-      if (activeModalWeek === null) return;
-      weeklyDroneOverrides[activeModalWeek] = {
-        targetLevel: modalTargetLevel,
-        targetSegment: modalTargetSegment
-      };
-      const wk = activeModalWeek;
-      saveOverrides();
-      closeCustomTrainingModal();
-      runSimulation();
-      showToast(`💾 Week ${wk} custom drone training override saved!`);
-    }
-
-    function resetCurrentModalWeek() {
-      if (activeModalWeek === null) return;
-      const wk = activeModalWeek;
-      delete weeklyDroneOverrides[wk];
-      saveOverrides();
-      closeCustomTrainingModal();
-      runSimulation();
-      showToast(`🔄 Week ${wk} reset to auto minimal pacing.`);
-    }
-
-    function resetAllCustomOverrides() {
-      weeklyDroneOverrides = {};
-      saveOverrides();
-      runSimulation();
-      showToast('🔄 All custom weekly overrides cleared!');
-    }
-
-    // Attach fixed floating tooltips with viewport boundary collision handling
-    function attachFloatingTooltips() {
-      const tipBox = document.getElementById('floatingVsTooltip');
-      if (!tipBox) return;
-
-      document.querySelectorAll('[data-vs-tooltip]').forEach(el => {
-        el.addEventListener('mouseenter', (e) => {
-          const raw = el.getAttribute('data-vs-tooltip');
-          if (!raw) return;
-          tipBox.innerHTML = decodeURIComponent(raw);
-          tipBox.style.display = 'block';
-          positionTooltip(el, tipBox);
-        });
-
-        el.addEventListener('mousemove', (e) => {
-          positionTooltip(el, tipBox);
-        });
-
-        el.addEventListener('mouseleave', () => {
-          tipBox.style.display = 'none';
-        });
-      });
-    }
-
-    function positionTooltip(el, tipBox) {
-      const rect = el.getBoundingClientRect();
-      const tipRect = tipBox.getBoundingClientRect();
-
-      let top = rect.top - tipRect.height - 8;
-      if (top < 10) {
-        top = rect.bottom + 8;
-      }
-
-      let left = rect.left + (rect.width / 2) - (tipRect.width / 2);
-      if (left < 12) left = 12;
-      if (left + tipRect.width > window.innerWidth - 12) {
-        left = window.innerWidth - tipRect.width - 12;
-      }
-
-      tipBox.style.top = `${top}px`;
-      tipBox.style.left = `${left}px`;
-    }
-
-    function renderCharts(weeks) {
-      if (typeof Chart === 'undefined') {
-        console.warn("Chart.js not loaded yet or blocked.");
-        return;
-      }
-
-      try {
-        const labels = weeks.map(w => `W${w.week}`);
-        const levels = weeks.map(w => w.endLevel);
-        const partsBank = weeks.map(w => w.partsEndingBalance);
-        const vsPoints = weeks.map(w => w.totalVsPts / 1000000);
-        const targetLine = weeks.map(w => w.targetVs / 1000000);
-
-        // Chart 1: Progression
-        const canvasProg = document.getElementById('chartProgression');
-        if (canvasProg) {
-          const ctxProg = canvasProg.getContext('2d');
-          if (chartProgInstance) chartProgInstance.destroy();
-
-          chartProgInstance = new Chart(ctxProg, {
-            type: 'line',
-            data: {
-              labels: labels,
-              datasets: [
-                {
-                  label: 'Drone Level (Completed)',
-                  data: levels,
-                  borderColor: '#f59e0b',
-                  backgroundColor: 'rgba(245, 158, 11, 0.1)',
-                  borderWidth: 2.5,
-                  tension: 0.2,
-                  yAxisID: 'yLevel'
-                },
-                {
-                  label: 'Banked Drone Parts',
-                  data: partsBank,
-                  borderColor: '#06b6d4',
-                  backgroundColor: 'rgba(6, 182, 212, 0.1)',
-                  borderWidth: 2,
-                  borderDash: [4, 4],
-                  tension: 0.2,
-                  yAxisID: 'yParts'
-                }
-              ]
-            },
-            options: {
-              responsive: true,
-              maintainAspectRatio: false,
-              interaction: { mode: 'index', intersect: false },
-              plugins: {
-                legend: { position: 'top', labels: { boxWidth: 12, font: { size: 11 } } },
-                tooltip: {
-                  callbacks: {
-                    label: function(context) {
-                      if (context.dataset.yAxisID === 'yLevel') {
-                        return ` Drone Level: ${context.raw}`;
-                      }
-                      return ` Banked Parts: ${formatNumber(context.raw)}`;
-                    }
-                  }
-                }
-              },
-              scales: {
-                x: { grid: { display: false } },
-                yLevel: {
-                  type: 'linear',
-                  position: 'left',
-                  title: { display: true, text: 'Level', font: { size: 10 } }
-                },
-                yParts: {
-                  type: 'linear',
-                  position: 'right',
-                  grid: { drawOnChartArea: false },
-                  title: { display: true, text: 'Drone Parts', font: { size: 10 } }
-                }
-              }
-            }
-          });
-        }
-
-        // Chart 2: VS Points
-        const canvasVs = document.getElementById('chartVsPoints');
-        if (canvasVs) {
-          const ctxVs = canvasVs.getContext('2d');
-          if (chartVsInstance) chartVsInstance.destroy();
-
-          chartVsInstance = new Chart(ctxVs, {
-            type: 'bar',
-            data: {
-              labels: labels,
-              datasets: [
-                {
-                  type: 'line',
-                  label: '7.2M Target',
-                  data: targetLine,
-                  borderColor: '#ef4444',
-                  borderWidth: 2,
-                  borderDash: [5, 5],
-                  pointRadius: 0,
-                  fill: false
-                },
-                {
-                  type: 'bar',
-                  label: 'Monday VS Points (M)',
-                  data: vsPoints,
-                  backgroundColor: weeks.map(w => w.isSuccess ? 'rgba(16, 185, 129, 0.7)' : 'rgba(239, 68, 68, 0.7)'),
-                  borderColor: weeks.map(w => w.isSuccess ? '#10b981' : '#ef4444'),
-                  borderWidth: 1,
-                  borderRadius: 4
-                }
-              ]
-            },
-            options: {
-              responsive: true,
-              maintainAspectRatio: false,
-              plugins: {
-                legend: { position: 'top', labels: { boxWidth: 12, font: { size: 11 } } },
-                tooltip: {
-                  callbacks: {
-                    label: function(context) {
-                      return ` Total VS: ${context.raw.toFixed(2)}M Points`;
-                    }
-                  }
-                }
-              },
-              scales: {
-                x: { grid: { display: false } },
-                y: {
-                  beginAtZero: true,
-                  title: { display: true, text: 'VS Points (Millions)', font: { size: 10 } }
-                }
-              }
-            }
-          });
-        }
-      } catch (err) {
-        console.error("Chart rendering error:", err);
-      }
-    }
-
-    // Modal List Populator
-    function populateUnlockList() {
-      const container = document.getElementById('modalUnlockList');
-      if (!container) return;
-      container.innerHTML = '';
-      DRONE_DATA.unlocks.forEach(u => {
-        const item = document.createElement('div');
-        item.className = 'unlock-item';
-        const desc = u.description || '';
-        let badgeClass = 'badge-purple';
-        let typeStr = 'UNLOCK';
-        if (desc.includes('skin')) {
-          badgeClass = 'badge-gold';
-          typeStr = 'SKIN';
-        } else if (desc.includes('Skill')) {
-          badgeClass = 'badge-cyan';
-          typeStr = 'SKILL';
-        } else if (desc.includes('research')) {
-          badgeClass = 'badge-red';
-          typeStr = 'RESEARCH';
-        }
-
-        item.innerHTML = `
-          <div>
-            <strong style="color: var(--gold);">Level ${u.level}:</strong> 
-            <span style="color: var(--text-main); margin-left: 6px;">${u.description}</span>
-          </div>
-          <span class="badge ${badgeClass}">${typeStr}</span>
-        `;
-        container.appendChild(item);
-      });
-    }
-
-    // Theme Management: Resolves 'system' into 'light' or 'dark' attribute for identical styling
-    let userThemeMode = localStorage.getItem('theme-mode') || 'system';
-
+    /* Theme Switcher Logic */
     function setTheme(mode) {
-      userThemeMode = mode;
+      currentThemeMode = mode;
       localStorage.setItem('theme-mode', mode);
-      applyTheme(mode);
+      applyTheme();
     }
 
-    function applyTheme(mode) {
+    function applyTheme() {
+      const root = document.documentElement;
       const buttons = document.querySelectorAll('.theme-btn');
+
       buttons.forEach(btn => {
         const val = btn.getAttribute('data-theme-val');
-        btn.classList.toggle('active', val === mode);
+        if (val === currentThemeMode) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
       });
 
-      let effectiveTheme = mode;
-      if (mode === 'system') {
-        const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        effectiveTheme = isDark ? 'dark' : 'light';
+      if (currentThemeMode === 'system') {
+        const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        root.setAttribute('data-theme', systemDark ? 'dark' : 'light');
+      } else {
+        root.setAttribute('data-theme', currentThemeMode);
       }
-
-      document.documentElement.setAttribute('data-theme', effectiveTheme);
-      runSimulation();
     }
 
-    // Listen for OS system theme changes
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-      if (userThemeMode === 'system') {
-        applyTheme('system');
+      if (currentThemeMode === 'system') {
+        applyTheme();
       }
     });
 
-    // Export Utilities
-    function copyMarkdown() {
-      if (simulationResults.length === 0) return;
-      let md = '| Week | Start Lvl | Upgrades Completed | End Lvl | Drone Parts Change | Bank Balance | Battle Data XP | Total Monday VS | Status | Custom Overrides |\n';
-      md += '| :---: | :---: | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |\n';
+    // Initialize Theme
+    applyTheme();
 
-      simulationResults.forEach(w => {
-        const statusStr = w.isSuccess ? '9/9 (Pass)' : `Short (-${formatShort(w.deficit)})`;
-        const changeStr = `+${formatNumber(w.partsGain)} / -${formatNumber(w.partsSpent)}`;
-        const customNote = w.isCustom ? (w.startLevel === w.endLevel && w.startSegment === w.endSegment ? 'Held (0 Upgrades)' : `Target Lvl ${w.endLevel}.${w.endSegment}`) : 'Auto';
-        md += `| W${w.week} | ${w.startLevel} | ${w.upgradeDesc} | ${w.endLevel} | ${changeStr} | ${formatNumber(w.partsEndingBalance)} | ${formatShort(w.battleData)} | ${formatShort(w.totalVsPts)} | ${statusStr} | ${customNote} |\n`;
-      });
-
-      navigator.clipboard.writeText(md).then(() => {
-        showToast('📋 Markdown table copied to clipboard!');
-      });
+    /* Filter & Search Logic */
+    function filterCategory(cat, btn) {
+      currentCategory = cat;
+      const buttons = document.querySelectorAll('.filter-btn');
+      buttons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      applyFilters();
     }
 
-    function downloadCsv() {
-      if (simulationResults.length === 0) return;
-      let csv = 'Week,Start Level,Upgrades,End Level,Parts Gained,Parts Spent,Ending Bank,Battle Data XP,Battle Data Points,Drone Parts Points,Other Tasks Points,Total VS Points,Success Status,Custom Training\n';
-
-      simulationResults.forEach(w => {
-        const customNote = w.isCustom ? (w.startLevel === w.endLevel && w.startSegment === w.endSegment ? 'HELD' : `CUSTOM_LVL_${w.endLevel}_SEG_${w.endSegment}`) : 'AUTO';
-        csv += `W${w.week},"${w.startLevel}","${w.upgradeDesc}","${w.endLevel}",${w.partsGain},${w.partsSpent},${w.partsEndingBalance},${w.battleData},${w.battleDataPts},${w.dronePartsPts},${w.otherTasksPts},${w.totalVsPts},${w.isSuccess ? 'PASS' : 'FAIL'},"${customNote}"\n`;
-      });
-
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = `drone_vs_pacing_projection_${new Date().toISOString().slice(0, 10)}.csv`;
-      link.click();
-      showToast('📥 CSV file downloaded successfully!');
+    function searchTools() {
+      applyFilters();
     }
 
-    function showToast(msg) {
-      const toast = document.getElementById('toastMessage');
-      if (!toast) return;
-      toast.innerText = msg;
-      toast.classList.add('show');
-      setTimeout(() => { toast.classList.remove('show'); }, 3000);
-    }
+    function applyFilters() {
+      const query = document.getElementById('searchInput').value.toLowerCase().trim();
+      const cards = document.querySelectorAll('.tool-card');
 
-    // Presets
-    const PRESETS = {
-      lvl70: { pacingMode: 'minimal', startLevel: 70, startBankParts: 0, weeklyIncome: 250, otherTasksPts: 2000000, targetVsPts: 7200000, targetGoalLevel: '100' },
-      lvl100: { pacingMode: 'minimal', startLevel: 100, startBankParts: 0, weeklyIncome: 250, otherTasksPts: 2000000, targetVsPts: 7200000, targetGoalLevel: '125' },
-      lvl110: { pacingMode: 'minimal', startLevel: 110, startBankParts: 0, weeklyIncome: 250, otherTasksPts: 2000000, targetVsPts: 7200000, targetGoalLevel: '125' },
-      lvl125: { pacingMode: 'minimal', startLevel: 125, startBankParts: 450, weeklyIncome: 280, otherTasksPts: 2000000, targetVsPts: 7200000, targetGoalLevel: '150' },
-      lvl150: { pacingMode: 'minimal', startLevel: 151, startBankParts: 500, weeklyIncome: 300, otherTasksPts: 2000000, targetVsPts: 7200000, targetGoalLevel: '200' }
-    };
+      cards.forEach(card => {
+        const cat = card.getAttribute('data-category');
+        const title = card.getAttribute('data-title');
 
-    function applyPreset(key) {
-      const p = PRESETS[key];
-      if (!p) return;
-      applySettingsToForm(p);
-      showToast(`⚡ Applied preset: ${key.toUpperCase()}`);
-    }
+        const matchesCat = (currentCategory === 'all' || cat.split(' ').includes(currentCategory));
+        const matchesQuery = (query === '' || title.includes(query) || card.textContent.toLowerCase().includes(query));
 
-    function updateBadges() {
-      const elStart = document.getElementById('startLevel');
-      const sLvl = elStart ? parseCleanInt(elStart.value, 60) : 60;
-      const sBank = parseCleanInt(document.getElementById('startBankParts')?.value, 0);
-      const wInc = parseCleanInt(document.getElementById('weeklyIncome')?.value, 250);
-      const oTasks = parseCleanInt(document.getElementById('otherTasksPts')?.value, 2000000);
-      const tVs = parseCleanInt(document.getElementById('targetVsPts')?.value, 7200000);
-      const tGoal = document.getElementById('targetGoalLevel');
-
-      const bLvl = document.getElementById('badgeStartLevel');
-      if (bLvl) bLvl.innerText = sLvl;
-
-      const lblNext = document.getElementById('lblNextLevel');
-      if (lblNext) lblNext.innerText = sLvl + 1;
-
-      const bBank = document.getElementById('badgeBankParts');
-      if (bBank) bBank.innerText = `${formatNumber(sBank)} DP`;
-
-      const bInc = document.getElementById('badgeWeeklyIncome');
-      if (bInc) bInc.innerText = `${formatNumber(wInc)} / wk`;
-
-      const bOther = document.getElementById('badgeOtherTasks');
-      if (bOther) bOther.innerText = `${formatShort(oTasks)}`;
-
-      const bTarget = document.getElementById('badgeTargetVs');
-      if (bTarget) bTarget.innerText = `${formatShort(tVs)}`;
-
-      const bGoal = document.getElementById('badgeTargetGoal');
-      if (bGoal && tGoal && tGoal.options[tGoal.selectedIndex]) {
-        const text = tGoal.options[tGoal.selectedIndex].text;
-        bGoal.innerText = text.split(' ')[0] + ' ' + (text.split(' ')[1] || '');
-      }
-    }
-
-    // App Initializer function
-    function initApp() {
-      populateUnlockList();
-      applyTheme(userThemeMode);
-
-      // Load Saved Overrides and Settings
-      loadSavedOverrides();
-      const saved = loadSavedSettings();
-      applySettingsToForm(saved);
-
-      // Theme toggle buttons
-      document.querySelectorAll('.theme-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          setTheme(btn.getAttribute('data-theme-val'));
-        });
-      });
-
-      // Synchronize Sliders and Inputs
-      const startLevelInput = document.getElementById('startLevel');
-      const startLevelSlider = document.getElementById('sliderStartLevel');
-      if (startLevelInput && startLevelSlider) {
-        startLevelInput.addEventListener('input', () => {
-          const val = parseCleanInt(startLevelInput.value, 60);
-          startLevelSlider.value = val;
-          updateBadges();
-          runSimulation();
-          saveSettings();
-        });
-        startLevelInput.addEventListener('blur', () => {
-          startLevelInput.value = parseCleanInt(startLevelInput.value, 60);
-        });
-        startLevelSlider.addEventListener('input', () => {
-          startLevelInput.value = startLevelSlider.value;
-          updateBadges();
-          runSimulation();
-          saveSettings();
-        });
-      }
-
-      const weeklyIncomeInput = document.getElementById('weeklyIncome');
-      const weeklyIncomeSlider = document.getElementById('sliderWeeklyIncome');
-      if (weeklyIncomeInput && weeklyIncomeSlider) {
-        weeklyIncomeInput.addEventListener('input', () => {
-          const val = parseCleanInt(weeklyIncomeInput.value, 250);
-          weeklyIncomeSlider.value = val;
-          updateBadges();
-          runSimulation();
-          saveSettings();
-        });
-        weeklyIncomeInput.addEventListener('blur', () => {
-          weeklyIncomeInput.value = formatNumber(parseCleanInt(weeklyIncomeInput.value, 250));
-        });
-        weeklyIncomeSlider.addEventListener('input', () => {
-          weeklyIncomeInput.value = formatNumber(weeklyIncomeSlider.value);
-          updateBadges();
-          runSimulation();
-          saveSettings();
-        });
-      }
-
-      ['startBankParts', 'otherTasksPts', 'targetVsPts'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-          el.addEventListener('input', () => {
-            updateBadges();
-            runSimulation();
-            saveSettings();
-          });
-          el.addEventListener('blur', () => {
-            el.value = formatNumber(parseCleanInt(el.value, 0));
-          });
+        if (matchesCat && matchesQuery) {
+          card.style.display = 'flex';
+        } else {
+          card.style.display = 'none';
         }
       });
-
-      ['pacingMode', 'targetGoalLevel'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-          el.addEventListener('change', () => {
-            updateBadges();
-            runSimulation();
-            saveSettings();
-          });
-        }
-      });
-
-      // Preset buttons
-      document.querySelectorAll('.preset-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          applyPreset(btn.dataset.preset);
-        });
-      });
-
-      // Reset Defaults
-      const btnReset = document.getElementById('btnResetDefaults');
-      if (btnReset) {
-        btnReset.addEventListener('click', () => {
-          weeklyDroneOverrides = {};
-          saveOverrides();
-          applySettingsToForm(DEFAULT_SETTINGS);
-          showToast('↺ Reset settings and overrides to defaults');
-        });
-      }
-
-      // Modal Triggers: Unlock Guide Modal
-      const modalBackdrop = document.getElementById('unlockModalBackdrop');
-      const btnModal = document.getElementById('btnUnlockModal');
-      const btnClose = document.getElementById('btnCloseModal');
-
-      if (btnModal && modalBackdrop) {
-        btnModal.addEventListener('click', () => {
-          modalBackdrop.classList.add('active');
-        });
-      }
-      if (btnClose && modalBackdrop) {
-        btnClose.addEventListener('click', () => {
-          modalBackdrop.classList.remove('active');
-        });
-      }
-      if (modalBackdrop) {
-        modalBackdrop.addEventListener('click', (e) => {
-          if (e.target === modalBackdrop) modalBackdrop.classList.remove('active');
-        });
-      }
-
-      // Modal Triggers: Custom Training Modal Backdrop Click
-      const customModalBackdrop = document.getElementById('customTrainingModalBackdrop');
-      if (customModalBackdrop) {
-        customModalBackdrop.addEventListener('click', (e) => {
-          if (e.target === customModalBackdrop) closeCustomTrainingModal();
-        });
-      }
-
-      // Global Keyboard Shortcut: Escape to close modals
-      window.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-          closeCustomTrainingModal();
-          if (modalBackdrop) modalBackdrop.classList.remove('active');
-        }
-      });
-
-      // Export Buttons
-      const btnMd = document.getElementById('btnCopyMarkdown');
-      if (btnMd) btnMd.addEventListener('click', copyMarkdown);
-
-      const btnCsv = document.getElementById('btnDownloadCsv');
-      if (btnCsv) btnCsv.addEventListener('click', downloadCsv);
     }
 
-    // Execute immediately and on DOM load
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initApp);
-    } else {
-      initApp();
+    /* Quick Jump from Metric Cards */
+    function scrollToTool(cardId) {
+      const targetCard = document.getElementById(cardId);
+      if (!targetCard) return;
+
+      // Auto-reset search query if active
+      const searchInput = document.getElementById('searchInput');
+      if (searchInput && searchInput.value.trim() !== '') {
+        searchInput.value = '';
+      }
+
+      // Auto-reset filter to 'all' if the card is currently hidden by an active category filter
+      const cardCat = targetCard.getAttribute('data-category') || '';
+      if (currentCategory !== 'all' && !cardCat.split(' ').includes(currentCategory)) {
+        currentCategory = 'all';
+        const buttons = document.querySelectorAll('.filter-btn');
+        buttons.forEach(b => b.classList.remove('active'));
+        if (buttons[0]) buttons[0].classList.add('active');
+      }
+
+      applyFilters();
+
+      // Smooth scroll target card into view
+      targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+      // Trigger high-visibility pulse highlight animation
+      targetCard.classList.remove('card-highlight-pulse');
+      void targetCard.offsetWidth; // Force CSS reflow
+      targetCard.classList.add('card-highlight-pulse');
+
+      setTimeout(() => {
+        targetCard.classList.remove('card-highlight-pulse');
+      }, 1700);
     }
   </script>
 </body>
