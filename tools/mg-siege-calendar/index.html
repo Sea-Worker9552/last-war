@@ -873,6 +873,25 @@ html[data-theme="light"] .toast-msg {
   gap: 4px;
 }
 
+.day-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 8px;
+}
+
+.day-sub-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.mobile-only-btn {
+  display: none;
+}
+
 .day-server-date {
   font-size: 1.15rem;
   font-weight: 800;
@@ -916,6 +935,29 @@ html[data-theme="light"] .toast-msg {
   align-items: center;
   gap: 14px;
   flex-wrap: wrap;
+}
+
+.step-header-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.step-name-box {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.step-time-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.time-sub-paren {
+  font-size: 0.75rem;
+  color: var(--text-muted);
 }
 
 .step-num-pill {
@@ -1616,18 +1658,31 @@ html[data-theme="light"] .toast-msg {
 
   .day-timeline-card {
     grid-template-columns: 1fr;
-    gap: 12px;
+    gap: 8px;
+    padding: 12px 14px;
   }
 
-  .day-action-block {
-    text-align: left;
+  .desktop-only-action {
+    display: none !important;
   }
 
-  .btn-inspect {
-    width: 100%;
-    min-height: 42px;
-    text-align: center;
-    justify-content: center;
+  .mobile-only-btn {
+    display: inline-flex !important;
+    align-items: center;
+    padding: 2px 8px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    border-radius: 4px;
+    background: rgba(30, 41, 59, 0.85);
+    border: 1px solid var(--border-subtle);
+    color: var(--gold-primary);
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.15s;
+  }
+
+  .mobile-only-btn:hover {
+    background: rgba(51, 65, 85, 1);
   }
 }
 
@@ -1838,27 +1893,129 @@ html[data-theme="light"] .toast-msg {
     }
   }
 
-  /* Timeline Step Rows Wrapping for Narrow Screens */
+  /* Compact Timeline Card for Mobile */
+  .day-info-block {
+    border-bottom: 1px solid var(--border-subtle);
+    padding-bottom: 6px;
+    gap: 3px;
+  }
+
+  .day-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .day-sub-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .day-server-date {
+    font-size: 1.05rem;
+  }
+
+  .day-local-date {
+    font-size: 0.78rem;
+  }
+
+  .day-timeline-card.is-today {
+    padding-top: 24px;
+  }
+
+  .event-sequence-block {
+    gap: 6px;
+  }
+
   .event-step-row {
+    display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
+    background: rgba(15, 23, 42, 0.4);
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    padding: 6px 10px;
+    gap: 4px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .event-step-row.off-day-row {
+    background: transparent;
+    border: none;
+    padding: 2px 0;
+  }
+
+  .step-header-line {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 6px;
+  }
+
+  .step-name-box {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .step-name-box .step-num-pill {
+    width: 18px;
+    height: 18px;
+    font-size: 0.65rem;
+    flex-shrink: 0;
+  }
+
+  .step-name-box .step-event-name {
+    font-size: 0.85rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .step-name-box .step-event-name .tank-icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .step-time-line {
+    display: flex;
+    align-items: center;
     gap: 6px;
     width: 100%;
   }
 
-  .step-time-box {
+  .step-time-line .step-time-box {
     width: 100%;
     box-sizing: border-box;
-    justify-content: space-between;
-  }
-
-  .step-event-name {
-    width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap;
-    gap: 4px;
+    padding: 3px 8px;
+    font-size: 0.76rem;
+    min-height: 26px;
+    background: rgba(15, 23, 42, 0.7);
+  }
+
+  .level-tag {
+    font-size: 0.68rem;
+    padding: 1px 6px;
+    white-space: nowrap;
+  }
+
+  .legend-pill.badge-siege {
+    font-size: 0.68rem;
+    padding: 1px 6px;
+    white-space: nowrap;
   }
 
   .legend-row {
@@ -1886,6 +2043,24 @@ html[data-theme="light"] .toast-msg {
 
   .current-period-title {
     font-size: 0.95rem;
+  }
+
+  .day-timeline-card {
+    padding: 12px 12px;
+    gap: 10px;
+  }
+
+  .day-server-date {
+    font-size: 1.05rem;
+  }
+
+  .day-local-date {
+    font-size: 0.8rem;
+  }
+
+  .step-time-box {
+    font-size: 0.8rem;
+    padding: 6px 8px;
   }
 
   .month-days-grid {
@@ -2469,6 +2644,27 @@ html[data-theme="light"] .mobile-dot.dot-buster {
   box-shadow: none;
 }
 
+html[data-theme="light"] .mobile-only-btn {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #b45309;
+}
+
+html[data-theme="light"] .mobile-only-btn:hover {
+  background: #e2e8f0;
+}
+
+html[data-theme="light"] .event-step-row {
+  background: #f8fafc;
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+html[data-theme="light"] .step-time-line .step-time-box {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.1);
+  color: #0f172a;
+}
+
   </style>
 </head>
 <body>
@@ -2546,8 +2742,8 @@ html[data-theme="light"] .mobile-dot.dot-buster {
           <span class="current-period-title" id="period-title">September 2026</span>
         </div>
 
-        <!-- Mobile Alliance Settings Accordion Toggle -->
-        <button class="mobile-settings-toggle-bar" id="mobile-settings-toggle" aria-expanded="false" aria-controls="collapsible-settings-panel" type="button">
+        <!-- Mobile Alliance Settings Accordion Toggle (Defaults to Expanded) -->
+        <button class="mobile-settings-toggle-bar is-expanded" id="mobile-settings-toggle" aria-expanded="true" aria-controls="collapsible-settings-panel" type="button">
           <div class="settings-toggle-left">
             <span class="settings-toggle-icon">⚙️</span>
             <span class="settings-toggle-title">Alliance Settings</span>
@@ -2556,8 +2752,8 @@ html[data-theme="light"] .mobile-dot.dot-buster {
           <span class="settings-toggle-chevron" id="settings-toggle-chevron">▼</span>
         </button>
 
-        <!-- Right Configuration Settings (Collapsible on Mobile) -->
-        <div class="settings-group collapsible-settings" id="collapsible-settings-panel">
+        <!-- Right Configuration Settings (Collapsible on Mobile, Expanded by Default) -->
+        <div class="settings-group collapsible-settings is-open" id="collapsible-settings-panel">
           <!-- Base MG Level -->
           <div class="setting-item">
             <label for="base-mg-level" class="setting-label">Base MG Level</label>
@@ -3243,9 +3439,14 @@ html[data-theme="light"] .mobile-dot.dot-buster {
 
       let leftHtml = `
         <div class="day-info-block">
-          <div class="day-server-date">${displayDayName}, ${dateFormatted}</div>
-          ${subtitleHtml}
-          <div class="${vsClass}">${vsDay.name}</div>
+          <div class="day-header-row">
+            <div class="day-server-date">${displayDayName}, ${dateFormatted}</div>
+            <button class="btn-inspect mobile-only-btn" data-action="inspect" title="View sequence protocol">Protocol ›</button>
+          </div>
+          <div class="day-sub-row">
+            ${subtitleHtml}
+            <div class="${vsClass}">${vsDay.name}</div>
+          </div>
         </div>
       `;
 
@@ -3260,86 +3461,107 @@ html[data-theme="light"] .mobile-dot.dot-buster {
         const siegeTimes = formatEventTimes(svtDay, siegeTiming.hours, siegeTiming.minutes);
 
         const mgTimeDisplay = timePerspectiveMode === 'svt'
-          ? `<span class="time-server">${mgTimes.svtTimeStr}</span> <span style="font-size:0.75rem; color:var(--text-muted);">(${mgTimes.localTimeStr})</span>`
-          : `<span class="time-local" style="font-weight:700;">${mgTimes.localTimeStr}</span> <span style="font-size:0.75rem; color:var(--text-muted);">(${mgTimes.svtTimeStr})</span>`;
+          ? `<span class="time-server">${mgTimes.svtTimeStr}</span> <span class="time-sub-paren">(${mgTimes.localTimeStr})</span>`
+          : `<span class="time-local" style="font-weight:700;">${mgTimes.localTimeStr}</span> <span class="time-sub-paren">(${mgTimes.svtTimeStr})</span>`;
 
         const siegeTimeDisplay = timePerspectiveMode === 'svt'
-          ? `<span class="time-server">${siegeTimes.svtTimeStr}</span> <span style="font-size:0.75rem; color:var(--text-muted);">(${siegeTimes.localTimeStr})</span>`
-          : `<span class="time-local" style="font-weight:700;">${siegeTimes.localTimeStr}</span> <span style="font-size:0.75rem; color:var(--text-muted);">(${siegeTimes.svtTimeStr})</span>`;
+          ? `<span class="time-server">${siegeTimes.svtTimeStr}</span> <span class="time-sub-paren">(${siegeTimes.localTimeStr})</span>`
+          : `<span class="time-local" style="font-weight:700;">${siegeTimes.localTimeStr}</span> <span class="time-sub-paren">(${siegeTimes.svtTimeStr})</span>`;
 
         const mgShiftPill = mgTiming.isShifted ? `<span class="shift-tag-pill">${mgTiming.shiftTag}</span>` : '';
         const siegeShiftPill = siegeTiming.isShifted ? `<span class="shift-tag-pill">${siegeTiming.shiftTag}</span>` : '';
 
         centerHtml += `
           <div class="event-step-row">
-            <span class="step-num-pill">1</span>
-            <span class="step-event-name draggable-event" draggable="true" data-event-type="mg" title="Drag to another day to recalibrate MG cycle (every 2 days)"><span class="drag-handle-icon">⠿</span>${TANK_ICON_SVG} Marshal's Guard</span>
-            <span class="level-tag ${mgInfo.isUnset ? 'unselected' : (mgInfo.isReduced ? 'reduced' : 'normal')}" ${mgInfo.isUnset ? 'data-action="focus-level" title="Click to select Base MG Level"' : ''}>${mgInfo.levelDisplay}</span>
-            <div class="step-time-box">
-              ${mgTimeDisplay}
+            <div class="step-header-line">
+              <div class="step-name-box">
+                <span class="step-num-pill">1</span>
+                <span class="step-event-name draggable-event" draggable="true" data-event-type="mg" title="Drag to another day to recalibrate MG cycle (every 2 days)"><span class="drag-handle-icon">⠿</span>${TANK_ICON_SVG} Marshal's Guard</span>
+              </div>
+              <span class="level-tag ${mgInfo.isUnset ? 'unselected' : (mgInfo.isReduced ? 'reduced' : 'normal')}" ${mgInfo.isUnset ? 'data-action="focus-level" title="Click to select Base MG Level"' : ''}>${mgInfo.levelDisplay}</span>
             </div>
-            ${mgShiftPill}
+            <div class="step-time-line">
+              <div class="step-time-box">
+                ${mgTimeDisplay}
+              </div>
+              ${mgShiftPill}
+            </div>
           </div>
           <div class="event-step-row">
-            <span class="step-num-pill">2</span>
-            <span class="step-event-name draggable-event" draggable="true" data-event-type="siege" title="Drag to another day to recalibrate Zombie Siege cycle (every 3 days)"><span class="drag-handle-icon">⠿</span>🧟 Zombie Siege</span>
-            <span class="legend-pill badge-siege">Alliance Defense</span>
-            <div class="step-time-box">
-              ${siegeTimeDisplay}
+            <div class="step-header-line">
+              <div class="step-name-box">
+                <span class="step-num-pill">2</span>
+                <span class="step-event-name draggable-event" draggable="true" data-event-type="siege" title="Drag to another day to recalibrate Zombie Siege cycle (every 3 days)"><span class="drag-handle-icon">⠿</span>🧟 Zombie Siege</span>
+              </div>
+              <span class="legend-pill badge-siege">Defense (+40m)</span>
             </div>
-            ${siegeShiftPill}
-            <span style="font-size:0.75rem; color: var(--green-joint); font-weight:600;">(40 min after MG)</span>
+            <div class="step-time-line">
+              <div class="step-time-box">
+                ${siegeTimeDisplay}
+              </div>
+              ${siegeShiftPill}
+            </div>
           </div>
         `;
       } else if (hasMg) {
         const mgTiming = getEventTimingForDay(svtDay, 'mg', false);
         const mgTimes = formatEventTimes(svtDay, mgTiming.hours, mgTiming.minutes);
         const mgTimeDisplay = timePerspectiveMode === 'svt'
-          ? `<span class="time-server">${mgTimes.svtTimeStr}</span> <span style="font-size:0.75rem; color:var(--text-muted);">(${mgTimes.localTimeStr})</span>`
-          : `<span class="time-local" style="font-weight:700;">${mgTimes.localTimeStr}</span> <span style="font-size:0.75rem; color:var(--text-muted);">(${mgTimes.svtTimeStr})</span>`;
+          ? `<span class="time-server">${mgTimes.svtTimeStr}</span> <span class="time-sub-paren">(${mgTimes.localTimeStr})</span>`
+          : `<span class="time-local" style="font-weight:700;">${mgTimes.localTimeStr}</span> <span class="time-sub-paren">(${mgTimes.svtTimeStr})</span>`;
 
         const mgShiftPill = mgTiming.isShifted ? `<span class="shift-tag-pill">${mgTiming.shiftTag}</span>` : '';
 
         centerHtml += `
           <div class="event-step-row">
-            <span class="step-num-pill">★</span>
-            <span class="step-event-name draggable-event" draggable="true" data-event-type="mg" title="Drag to another day to recalibrate MG cycle (every 2 days)"><span class="drag-handle-icon">⠿</span>${TANK_ICON_SVG} Marshal's Guard</span>
-            <span class="level-tag ${mgInfo.isUnset ? 'unselected' : (mgInfo.isReduced ? 'reduced' : 'normal')}" ${mgInfo.isUnset ? 'data-action="focus-level" title="Click to select Base MG Level"' : ''}>${mgInfo.levelDisplay}</span>
-            <div class="step-time-box">
-              ${mgTimeDisplay}
+            <div class="step-header-line">
+              <div class="step-name-box">
+                <span class="step-num-pill">★</span>
+                <span class="step-event-name draggable-event" draggable="true" data-event-type="mg" title="Drag to another day to recalibrate MG cycle (every 2 days)"><span class="drag-handle-icon">⠿</span>${TANK_ICON_SVG} Marshal's Guard</span>
+              </div>
+              <span class="level-tag ${mgInfo.isUnset ? 'unselected' : (mgInfo.isReduced ? 'reduced' : 'normal')}" ${mgInfo.isUnset ? 'data-action="focus-level" title="Click to select Base MG Level"' : ''}>${mgInfo.levelDisplay}</span>
             </div>
-            ${mgShiftPill}
-            <span style="font-size:0.75rem; color: var(--text-muted);">${mgInfo.reason}</span>
+            <div class="step-time-line">
+              <div class="step-time-box">
+                ${mgTimeDisplay}
+              </div>
+              ${mgShiftPill}
+            </div>
           </div>
         `;
       } else if (hasSiege) {
         const siegeTiming = getEventTimingForDay(svtDay, 'siege', false);
         const siegeTimes = formatEventTimes(svtDay, siegeTiming.hours, siegeTiming.minutes);
         const siegeTimeDisplay = timePerspectiveMode === 'svt'
-          ? `<span class="time-server">${siegeTimes.svtTimeStr}</span> <span style="font-size:0.75rem; color:var(--text-muted);">(${siegeTimes.localTimeStr})</span>`
-          : `<span class="time-local" style="font-weight:700;">${siegeTimes.localTimeStr}</span> <span style="font-size:0.75rem; color:var(--text-muted);">(${siegeTimes.svtTimeStr})</span>`;
+          ? `<span class="time-server">${siegeTimes.svtTimeStr}</span> <span class="time-sub-paren">(${siegeTimes.localTimeStr})</span>`
+          : `<span class="time-local" style="font-weight:700;">${siegeTimes.localTimeStr}</span> <span class="time-sub-paren">(${siegeTimes.svtTimeStr})</span>`;
 
         const siegeShiftPill = siegeTiming.isShifted ? `<span class="shift-tag-pill">${siegeTiming.shiftTag}</span>` : '';
 
         centerHtml += `
           <div class="event-step-row">
-            <span class="step-num-pill">★</span>
-            <span class="step-event-name draggable-event" draggable="true" data-event-type="siege" title="Drag to another day to recalibrate Zombie Siege cycle (every 3 days)"><span class="drag-handle-icon">⠿</span>🧟 Zombie Siege</span>
-            <span class="legend-pill badge-siege">Alliance Defense</span>
-            <div class="step-time-box">
-              ${siegeTimeDisplay}
+            <div class="step-header-line">
+              <div class="step-name-box">
+                <span class="step-num-pill">★</span>
+                <span class="step-event-name draggable-event" draggable="true" data-event-type="siege" title="Drag to another day to recalibrate Zombie Siege cycle (every 3 days)"><span class="drag-handle-icon">⠿</span>🧟 Zombie Siege</span>
+              </div>
+              <span class="legend-pill badge-siege">Alliance Defense</span>
             </div>
-            ${siegeShiftPill}
-            <span style="font-size:0.75rem; color: var(--text-muted);">Solo Event Day</span>
+            <div class="step-time-line">
+              <div class="step-time-box">
+                ${siegeTimeDisplay}
+              </div>
+              ${siegeShiftPill}
+            </div>
           </div>
         `;
       } else {
         const isSunday = svtDay.getUTCDay() === 0;
         const offDayMsg = isSunday
-          ? "💤 Rest Day: No Marshal's Guard or Zombie Siege scheduled. Rest, recover, and prepare for the new VS week!"
+          ? "💤 Rest Day: No Marshal's Guard or Zombie Siege scheduled. Rest and recover!"
           : "💤 No Marshal's Guard or Zombie Siege scheduled. Focus on VS Duel milestones!";
         centerHtml += `
-          <div class="event-step-row">
+          <div class="event-step-row off-day-row">
             <span class="off-day-text">${offDayMsg}</span>
           </div>
         `;
@@ -3372,17 +3594,19 @@ html[data-theme="light"] .mobile-dot.dot-buster {
 
       // Right Action
       const rightHtml = `
-        <div class="day-action-block">
+        <div class="day-action-block desktop-only-action">
           <button class="btn-inspect" data-action="inspect">View Protocol</button>
         </div>
       `;
 
       card.innerHTML = leftHtml + centerHtml + rightHtml;
 
-      // Click event for modal
-      card.querySelector('.btn-inspect').addEventListener('click', (e) => {
-        e.stopPropagation();
-        openDayModal(displayDay, svtDay);
+      // Click events for inspect buttons
+      card.querySelectorAll('.btn-inspect').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          openDayModal(displayDay, svtDay);
+        });
       });
 
       card.addEventListener('click', () => {
@@ -4079,14 +4303,27 @@ html[data-theme="light"] .mobile-dot.dot-buster {
     themeLightBtn.addEventListener('click', () => applyThemeMode('light'));
     themeDarkBtn.addEventListener('click', () => applyThemeMode('dark'));
 
-    // Mobile Alliance Settings Accordion Toggle
+    // Mobile Alliance Settings Accordion Toggle (Defaults to Expanded)
     const mobileSettingsToggle = document.getElementById('mobile-settings-toggle');
     const collapsibleSettings = document.getElementById('collapsible-settings-panel');
     if (mobileSettingsToggle && collapsibleSettings) {
+      // Defaults to expanded unless user explicitly chose to collapse it
+      const isCollapsed = safeGetStorage('settings-collapsed', 'false') === 'true';
+      if (isCollapsed) {
+        mobileSettingsToggle.classList.remove('is-expanded');
+        collapsibleSettings.classList.remove('is-open');
+        mobileSettingsToggle.setAttribute('aria-expanded', 'false');
+      } else {
+        mobileSettingsToggle.classList.add('is-expanded');
+        collapsibleSettings.classList.add('is-open');
+        mobileSettingsToggle.setAttribute('aria-expanded', 'true');
+      }
+
       mobileSettingsToggle.addEventListener('click', () => {
         const isExpanded = mobileSettingsToggle.classList.toggle('is-expanded');
         collapsibleSettings.classList.toggle('is-open', isExpanded);
         mobileSettingsToggle.setAttribute('aria-expanded', isExpanded);
+        safeSetStorage('settings-collapsed', isExpanded ? 'false' : 'true');
       });
     }
 
