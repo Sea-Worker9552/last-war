@@ -1,1 +1,3600 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Marshal's Guard & Zombie Siege Calendar | Last War: Survival</title>
+  <meta name="description" content="Tactical event rotation calendar for Marshal's Guard and Zombie Siege with dual Server (SVT) and Local Time schedules.">
 
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+:root {
+  --bg-main: #070b14;
+  --bg-surface: #0f172a;
+  --bg-card: rgba(30, 41, 59, 0.65);
+  --bg-card-hover: rgba(51, 65, 85, 0.7);
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-highlight: rgba(234, 179, 8, 0.35);
+
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --text-faint: #64748b;
+
+  --gold-primary: #eab308;
+  --gold-glow: rgba(234, 179, 8, 0.2);
+  --orange-warn: #f97316;
+  --orange-glow: rgba(249, 115, 22, 0.2);
+  --purple-siege: #a855f7;
+  --purple-glow: rgba(168, 85, 247, 0.2);
+  --green-joint: #10b981;
+  --green-glow: rgba(16, 185, 129, 0.2);
+  --blue-info: #0ea5e9;
+  --red-buster: #ef4444;
+
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-glow-gold: 0 0 20px rgba(234, 179, 8, 0.25);
+  --shadow-glow-green: 0 0 20px rgba(16, 185, 129, 0.25);
+}
+
+/* Light Theme Variables */
+html[data-theme="light"] {
+  --bg-main: #f1f5f9;
+  --bg-surface: #ffffff;
+  --bg-card: rgba(255, 255, 255, 0.85);
+  --bg-card-hover: rgba(241, 245, 249, 0.95);
+  --border-subtle: rgba(0, 0, 0, 0.1);
+  --border-highlight: rgba(202, 138, 4, 0.4);
+
+  --text-main: #0f172a;
+  --text-muted: #475569;
+  --text-faint: #64748b;
+
+  --gold-primary: #b45309;
+  --gold-glow: rgba(180, 83, 9, 0.15);
+  --orange-warn: #ea580c;
+  --orange-glow: rgba(234, 88, 12, 0.15);
+  --purple-siege: #7e22ce;
+  --purple-glow: rgba(126, 34, 206, 0.15);
+  --green-joint: #047857;
+  --green-glow: rgba(4, 120, 87, 0.15);
+  --blue-info: #0369a1;
+  --red-buster: #dc2626;
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 6px 18px rgba(0, 0, 0, 0.1);
+  --shadow-glow-gold: 0 0 16px rgba(180, 83, 9, 0.2);
+  --shadow-glow-green: 0 0 16px rgba(4, 120, 87, 0.2);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-main);
+  background-image: 
+    radial-gradient(circle at 15% 10%, rgba(234, 179, 8, 0.05) 0%, transparent 40%),
+    radial-gradient(circle at 85% 20%, rgba(168, 85, 247, 0.06) 0%, transparent 45%),
+    linear-gradient(180deg, #070b14 0%, #0c1322 100%);
+  color: var(--text-main);
+  min-height: 100vh;
+  line-height: 1.5;
+  padding-bottom: 60px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+html[data-theme="light"] body {
+  background-image: 
+    radial-gradient(circle at 15% 10%, rgba(217, 119, 6, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 85% 20%, rgba(147, 51, 234, 0.06) 0%, transparent 45%),
+    linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
+}
+
+/* Header */
+.app-header {
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-subtle);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  padding: 16px 24px;
+}
+
+.header-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.brand-block {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.game-badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: var(--gold-primary);
+  text-transform: uppercase;
+  background: rgba(234, 179, 8, 0.12);
+  border: 1px solid rgba(234, 179, 8, 0.3);
+  padding: 2px 8px;
+  border-radius: 4px;
+  width: fit-content;
+}
+
+.app-title {
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.5px;
+}
+
+.app-tagline {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+/* Live Clocks */
+.clocks-panel {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.clock-card {
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 8px 14px;
+  min-width: 175px;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.clock-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.clock-card:focus-visible {
+  outline: 2px solid var(--gold-primary);
+  outline-offset: 2px;
+}
+
+.server-clock-card {
+  border-left: 3px solid var(--gold-primary);
+}
+
+.local-clock-card {
+  border-left: 3px solid var(--blue-info);
+}
+
+.clock-card.active-time-mode {
+  background: rgba(30, 41, 59, 0.95);
+}
+
+.server-clock-card.active-time-mode {
+  border-color: var(--gold-primary);
+  box-shadow: 0 0 16px rgba(234, 179, 8, 0.35);
+}
+
+.local-clock-card.active-time-mode {
+  border-color: var(--blue-info);
+  box-shadow: 0 0 16px rgba(14, 165, 233, 0.35);
+}
+
+.clock-card:not(.active-time-mode) {
+  opacity: 0.68;
+}
+
+.clock-card:not(.active-time-mode):hover {
+  opacity: 0.95;
+}
+
+.active-view-tag {
+  display: none;
+  font-size: 0.58rem;
+  font-weight: 800;
+  padding: 1px 5px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-left: auto;
+}
+
+.server-clock-card .active-view-tag {
+  background: rgba(234, 179, 8, 0.25);
+  color: #fef08a;
+  border: 1px solid rgba(234, 179, 8, 0.5);
+}
+
+.local-clock-card .active-view-tag {
+  background: rgba(14, 165, 233, 0.25);
+  color: #bae6fd;
+  border: 1px solid rgba(14, 165, 233, 0.5);
+}
+
+.clock-card.active-time-mode .active-view-tag {
+  display: inline-block;
+}
+
+.clock-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 2px;
+}
+
+.live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.pulse-server {
+  background-color: var(--gold-primary);
+  box-shadow: 0 0 8px var(--gold-primary);
+}
+
+.pulse-local {
+  background-color: var(--blue-info);
+  box-shadow: 0 0 8px var(--blue-info);
+}
+
+.clock-time {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.clock-date {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+/* Theme Mode Toggle */
+.theme-switch-container {
+  display: flex;
+  align-items: center;
+}
+
+.theme-toggle-group {
+  display: flex;
+  background: rgba(15, 23, 42, 0.85);
+  padding: 3px;
+  border-radius: 8px;
+  border: 1px solid var(--border-subtle);
+}
+
+.theme-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.theme-btn:hover {
+  color: var(--text-main);
+}
+
+.theme-btn.active {
+  background: rgba(51, 65, 85, 0.7);
+  color: var(--gold-primary);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+html[data-theme="light"] .theme-toggle-group {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+html[data-theme="light"] .theme-btn.active {
+  background: #e2e8f0;
+  color: var(--gold-primary);
+}
+
+/* App Container */
+.app-container {
+  max-width: 1400px;
+  margin: 24px auto 0;
+  padding: 0 24px;
+}
+
+/* Controls Card */
+.controls-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 16px 20px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.controls-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+/* View Switcher */
+.view-switch-group {
+  display: flex;
+  background: rgba(30, 41, 59, 0.7);
+  padding: 3px;
+  border-radius: 8px;
+  border: 1px solid var(--border-subtle);
+}
+
+.view-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.view-btn:hover {
+  color: #fff;
+}
+
+.view-btn.active {
+  background: var(--bg-surface);
+  color: var(--gold-primary);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Period Navigation */
+.period-nav-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-arrow-btn, .nav-today-btn {
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.nav-arrow-btn:hover, .nav-today-btn:hover {
+  background: rgba(51, 65, 85, 0.9);
+  color: var(--gold-primary);
+  border-color: rgba(234, 179, 8, 0.4);
+}
+
+.nav-reset-btn {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #fca5a5;
+  font-family: var(--font-sans);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.nav-reset-btn:hover {
+  background: rgba(239, 68, 68, 0.25);
+  border-color: #ef4444;
+  color: #fff;
+}
+
+.current-period-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+  min-width: 190px;
+  text-align: center;
+  letter-spacing: -0.3px;
+}
+
+/* Settings Group */
+.settings-group {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.setting-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.setting-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.custom-select {
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid var(--border-subtle);
+  color: #fff;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 6px;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.custom-select:focus {
+  border-color: var(--gold-primary);
+}
+
+.custom-select.select-needs-action {
+  border-color: var(--orange-warn);
+  box-shadow: 0 0 10px var(--orange-glow);
+  animation: pulseAttention 2s infinite ease-in-out;
+}
+
+@keyframes pulseAttention {
+  0%, 100% {
+    box-shadow: 0 0 4px var(--orange-glow);
+    border-color: var(--orange-warn);
+  }
+  50% {
+    box-shadow: 0 0 14px rgba(249, 115, 22, 0.45);
+    border-color: #fb923c;
+  }
+}
+
+.tz-select {
+  max-width: 250px;
+}
+
+/* Legend Row */
+.legend-row {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-subtle);
+  align-items: center;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.legend-pill {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+/* Event Badges */
+.badge-mg {
+  background: rgba(234, 179, 8, 0.15);
+  color: #fef08a;
+  border: 1px solid rgba(234, 179, 8, 0.4);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Tank Icon (Desert Camo) */
+.tank-icon {
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+  display: inline-block;
+  flex-shrink: 0;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
+}
+
+.legend-pill .tank-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.cell-event-chip .tank-icon {
+  width: 15px;
+  height: 15px;
+}
+
+.step-event-name .tank-icon {
+  width: 22px;
+  height: 22px;
+}
+
+.modal-event-name .tank-icon {
+  width: 26px;
+  height: 26px;
+}
+
+.badge-reduced {
+  background: rgba(249, 115, 22, 0.15);
+  color: #fed7aa;
+  border: 1px solid rgba(249, 115, 22, 0.4);
+}
+
+.badge-siege {
+  background: rgba(168, 85, 247, 0.18);
+  color: #e9d5ff;
+  border: 1px solid rgba(168, 85, 247, 0.4);
+}
+
+.badge-joint {
+  background: rgba(16, 185, 129, 0.18);
+  color: #a7f3d0;
+  border: 1px solid rgba(16, 185, 129, 0.45);
+}
+
+.badge-off {
+  background: rgba(100, 116, 139, 0.15);
+  color: #cbd5e1;
+  border: 1px solid rgba(100, 116, 139, 0.3);
+}
+
+/* Drag & Drop Visuals */
+.draggable-event {
+  cursor: grab;
+  cursor: -webkit-grab;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: transform 0.15s ease, opacity 0.15s ease, box-shadow 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+}
+
+.draggable-event:hover {
+  filter: brightness(1.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.draggable-event:active {
+  cursor: grabbing;
+  cursor: -webkit-grabbing;
+}
+
+.draggable-event.is-dragging {
+  opacity: 0.35 !important;
+  transform: scale(0.96);
+}
+
+.drag-handle-icon {
+  display: inline-block;
+  opacity: 0.6;
+  margin-right: 4px;
+  font-size: 0.75rem;
+  letter-spacing: -1px;
+}
+
+.draggable-event:hover .drag-handle-icon {
+  opacity: 1;
+}
+
+/* Drop targets */
+.day-timeline-card.drop-target-hover,
+.month-day-cell.drop-target-hover {
+  outline: 2px dashed var(--gold-primary) !important;
+  outline-offset: -2px;
+  background: rgba(234, 179, 8, 0.16) !important;
+  box-shadow: 0 0 18px rgba(234, 179, 8, 0.35) !important;
+  transform: scale(1.01);
+}
+
+body.drag-active-siege .day-timeline-card.drop-target-hover,
+body.drag-active-siege .month-day-cell.drop-target-hover {
+  outline-color: var(--purple-siege) !important;
+  background: rgba(168, 85, 247, 0.18) !important;
+  box-shadow: 0 0 18px rgba(168, 85, 247, 0.35) !important;
+}
+
+/* Legend hint */
+.legend-drag-hint {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px dashed var(--border-subtle);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.drag-hint-icon {
+  font-size: 0.85rem;
+}
+
+/* Toast Banner */
+.toast-banner {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.toast-msg {
+  background: #0f172a;
+  border: 1px solid var(--border-subtle);
+  border-left: 4px solid var(--gold-primary);
+  color: #fff;
+  padding: 12px 18px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  box-shadow: var(--shadow-md);
+  animation: slideInToast 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  pointer-events: auto;
+  max-width: 420px;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.toast-msg.toast-siege {
+  border-left-color: var(--purple-siege);
+}
+
+.toast-msg.toast-reset {
+  border-left-color: var(--blue-info);
+}
+
+@keyframes slideInToast {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+html[data-theme="light"] .toast-msg {
+  background: #ffffff;
+  color: #0f172a;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* View Panels */
+.view-panel {
+  display: none;
+}
+
+.view-panel.active {
+  display: block;
+}
+
+/* ==========================================================================
+   WEEKLY TIMELINE VIEW
+   ========================================================================== */
+.weekly-timeline-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.day-timeline-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 16px 20px;
+  display: grid;
+  grid-template-columns: 240px 1fr auto;
+  gap: 20px;
+  align-items: center;
+  transition: transform 0.2s, border-color 0.2s, background 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.day-timeline-card:hover {
+  background: var(--bg-card-hover);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.day-timeline-card.is-today {
+  border-color: var(--gold-primary);
+  box-shadow: var(--shadow-glow-gold);
+  background: rgba(30, 41, 59, 0.85);
+}
+
+.day-timeline-card.is-today::before {
+  content: 'TODAY';
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: var(--gold-primary);
+  color: #000;
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 2px 10px;
+  border-bottom-right-radius: 8px;
+  letter-spacing: 0.5px;
+}
+
+.day-timeline-card.has-joint {
+  border-left: 4px solid var(--green-joint);
+}
+
+.day-timeline-card.has-mg-only {
+  border-left: 4px solid var(--gold-primary);
+}
+
+.day-timeline-card.has-siege-only {
+  border-left: 4px solid var(--purple-siege);
+}
+
+.day-timeline-card.is-off-day {
+  border-left: 4px solid #334155;
+  opacity: 0.75;
+}
+
+/* Day Info Block */
+.day-info-block {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.day-server-date {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.3px;
+}
+
+.day-local-date {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--blue-info);
+}
+
+.day-vs-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  background: rgba(15, 23, 42, 0.6);
+  padding: 2px 6px;
+  border-radius: 4px;
+  width: fit-content;
+  margin-top: 2px;
+}
+
+.day-vs-badge.is-buster {
+  color: #fca5a5;
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  font-weight: 800;
+}
+
+/* Event Sequence Block */
+.event-sequence-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.event-step-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.step-num-pill {
+  font-size: 0.7rem;
+  font-weight: 800;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.step-event-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.step-time-box {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid var(--border-subtle);
+  padding: 3px 8px;
+  border-radius: 4px;
+  color: #cbd5e1;
+}
+
+.step-time-box .time-server {
+  color: var(--gold-primary);
+  font-weight: 600;
+}
+
+.step-time-box .time-local {
+  color: var(--blue-info);
+  font-weight: 500;
+}
+
+.level-tag {
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.level-tag.normal {
+  background: rgba(234, 179, 8, 0.2);
+  color: var(--gold-primary);
+  border: 1px solid rgba(234, 179, 8, 0.4);
+}
+
+.level-tag.reduced {
+  background: rgba(249, 115, 22, 0.2);
+  color: var(--orange-warn);
+  border: 1px solid rgba(249, 115, 22, 0.4);
+}
+
+.level-tag.unselected {
+  background: rgba(249, 115, 22, 0.15);
+  color: var(--orange-warn);
+  border: 1px dashed rgba(249, 115, 22, 0.6);
+  cursor: pointer;
+  letter-spacing: 0.2px;
+}
+
+.off-day-text {
+  font-size: 0.9rem;
+  font-style: italic;
+  color: var(--text-faint);
+}
+
+/* Day Action Block */
+.day-action-block {
+  text-align: right;
+}
+
+.btn-inspect {
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-inspect:hover {
+  background: rgba(51, 65, 85, 1);
+  color: #fff;
+  border-color: var(--gold-primary);
+}
+
+/* ==========================================================================
+   MONTHLY GRID VIEW
+   ========================================================================== */
+.month-calendar-wrapper {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  box-shadow: var(--shadow-md);
+  -webkit-overflow-scrolling: touch;
+}
+
+.month-calendar-inner {
+  min-width: 980px;
+  width: 100%;
+}
+
+.month-day-headers {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  background: rgba(15, 23, 42, 0.95);
+  border-bottom: 1px solid var(--border-subtle);
+  width: 100%;
+}
+
+.day-header {
+  padding: 10px 8px;
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-main);
+  border-right: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.day-header:last-child {
+  border-right: none;
+}
+
+.day-header .header-sub {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.day-header.weekend-header {
+  background: rgba(30, 41, 59, 0.4);
+  color: #fed7aa;
+}
+
+.month-days-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  grid-auto-rows: minmax(130px, auto);
+  width: 100%;
+}
+
+.month-day-cell {
+  border-right: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: rgba(15, 23, 42, 0.4);
+  cursor: pointer;
+  transition: background 0.2s;
+  position: relative;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.month-day-cell:nth-child(7n) {
+  border-right: none;
+}
+
+.month-day-cell:hover {
+  background: rgba(30, 41, 59, 0.6);
+}
+
+.month-day-cell.outside-month {
+  background: repeating-linear-gradient(
+    -45deg,
+    rgba(15, 23, 42, 0.7),
+    rgba(15, 23, 42, 0.7) 10px,
+    rgba(10, 15, 28, 0.9) 10px,
+    rgba(10, 15, 28, 0.9) 20px
+  );
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+.month-day-cell.outside-month .cell-event-chip {
+  opacity: 0.55;
+  filter: grayscale(30%);
+}
+
+.month-day-cell.outside-month .cell-event-chip:hover {
+  opacity: 0.9;
+  filter: grayscale(0%);
+}
+
+.month-day-cell.is-weekend {
+  background: rgba(15, 23, 42, 0.6);
+}
+
+.month-day-cell.is-today-cell {
+  background: rgba(234, 179, 8, 0.08);
+  border: 1px solid var(--gold-primary);
+}
+
+.cell-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.cell-date-num {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1;
+}
+
+.outside-month-pill {
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: rgba(100, 116, 139, 0.3);
+  color: #94a3b8;
+  letter-spacing: -0.2px;
+  white-space: nowrap;
+}
+
+.cell-local-sub {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--blue-info);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cell-vs-badge {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  background: rgba(0, 0, 0, 0.3);
+  padding: 1px 4px;
+  border-radius: 3px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.cell-events-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cell-event-chip {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 4px 6px;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cell-event-chip.chip-mg {
+  background: rgba(234, 179, 8, 0.15);
+  color: #fef08a;
+  border-left: 3px solid var(--gold-primary);
+}
+
+.cell-event-chip.chip-mg.chip-reduced {
+  background: rgba(249, 115, 22, 0.15);
+  color: #fed7aa;
+  border-left: 3px solid var(--orange-warn);
+}
+
+.cell-event-chip.chip-siege {
+  background: rgba(168, 85, 247, 0.15);
+  color: #e9d5ff;
+  border-left: 3px solid var(--purple-siege);
+}
+
+.cell-event-chip.chip-joint-banner {
+  background: rgba(16, 185, 129, 0.2);
+  color: #a7f3d0;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-align: center;
+  justify-content: center;
+  text-transform: uppercase;
+}
+
+/* ==========================================================================
+   FOOTER & PROTOCOL
+   ========================================================================== */
+.app-footer {
+  margin-top: 32px;
+}
+
+.footer-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 20px 24px;
+}
+
+.footer-card h3 {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 16px;
+}
+
+.protocol-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.protocol-box {
+  background: rgba(30, 41, 59, 0.5);
+  border: 1px solid var(--border-subtle);
+  padding: 14px;
+  border-radius: 8px;
+}
+
+.protocol-box h4 {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--gold-primary);
+  margin-bottom: 6px;
+}
+
+.protocol-box p {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+/* Buster Shift Banner & Alert Box */
+.buster-shift-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  color: #fbbf24;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  margin-top: 8px;
+  line-height: 1.4;
+}
+
+.buster-shift-banner .buster-alert-icon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+[data-theme="light"] .buster-shift-banner {
+  background: #fef3c7;
+  border-color: #d97706;
+  color: #78350f;
+}
+
+.buster-shift-banner.is-warning {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.35);
+  color: #f87171;
+}
+
+[data-theme="light"] .buster-shift-banner.is-warning {
+  background: #fee2e2;
+  border-color: #dc2626;
+  color: #991b1b;
+}
+
+.modal-alert-box.buster-alert {
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+}
+
+[data-theme="light"] .modal-alert-box.buster-alert {
+  background: #fffbeb;
+  border-color: #d97706;
+  color: #78350f;
+}
+
+.modal-alert-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #fbbf24;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+[data-theme="light"] .modal-alert-title {
+  color: #92400e;
+}
+
+.modal-alert-desc {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+[data-theme="light"] .modal-alert-desc {
+  color: #78350f;
+}
+
+.chip-buster-shift {
+  border-color: rgba(245, 158, 11, 0.7) !important;
+}
+
+.shift-tag-pill {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+[data-theme="light"] .shift-tag-pill {
+  background: #fef3c7;
+  color: #78350f;
+  border-color: #d97706;
+}
+
+/* ==========================================================================
+   MODAL
+   ========================================================================== */
+.modal-backdrop {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-backdrop.active {
+  display: flex;
+}
+
+.day-detail-modal {
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 14px;
+  width: 100%;
+  max-width: 580px;
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  animation: modalFadeIn 0.2s ease-out;
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.modal-header {
+  background: rgba(30, 41, 59, 0.7);
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-title-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-server-day {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.modal-local-day {
+  font-size: 0.85rem;
+  color: var(--blue-info);
+  font-weight: 600;
+}
+
+.modal-close-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.5rem;
+  cursor: pointer;
+  line-height: 1;
+  transition: color 0.2s;
+}
+
+.modal-close-btn:hover {
+  color: #fff;
+}
+
+.modal-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modal-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.modal-section-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.modal-event-card {
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.modal-event-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-event-name {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.modal-time-detail {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: #cbd5e1;
+  background: rgba(15, 23, 42, 0.8);
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border-subtle);
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+  .day-timeline-card {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .controls-top-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .settings-group {
+    justify-content: space-between;
+  }
+  .clocks-panel {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+/* ==========================================================================
+   LIGHT THEME COMPONENT OVERRIDES (WCAG AA & AAA High-Contrast)
+   ========================================================================== */
+html[data-theme="light"] .app-header {
+  background: rgba(255, 255, 255, 0.95);
+  border-bottom-color: rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+html[data-theme="light"] .app-title {
+  color: #0f172a;
+}
+
+html[data-theme="light"] .app-tagline {
+  color: #475569;
+}
+
+html[data-theme="light"] .clock-card {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.12);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+html[data-theme="light"] .clock-card.active-time-mode {
+  background: #ffffff;
+}
+
+html[data-theme="light"] .server-clock-card.active-time-mode {
+  border-color: #b45309;
+  box-shadow: 0 0 16px rgba(180, 83, 9, 0.25);
+}
+
+html[data-theme="light"] .local-clock-card.active-time-mode {
+  border-color: #0369a1;
+  box-shadow: 0 0 16px rgba(3, 105, 161, 0.25);
+}
+
+html[data-theme="light"] .server-clock-card .active-view-tag {
+  background: #fef3c7;
+  color: #78350f;
+  border: 1px solid #d97706;
+}
+
+html[data-theme="light"] .local-clock-card .active-view-tag {
+  background: #e0f2fe;
+  color: #034e7b;
+  border: 1px solid #0284c7;
+}
+
+html[data-theme="light"] .clock-card:not(.active-time-mode) {
+  opacity: 0.65;
+  background: #f8fafc;
+}
+
+html[data-theme="light"] .clock-card:not(.active-time-mode):hover {
+  opacity: 0.95;
+  background: #ffffff;
+}
+
+html[data-theme="light"] .clock-title {
+  color: #475569;
+}
+
+html[data-theme="light"] .clock-time {
+  color: #0f172a;
+  font-weight: 800;
+}
+
+html[data-theme="light"] .clock-date {
+  color: #475569;
+}
+
+html[data-theme="light"] .theme-toggle-group {
+  background: #f1f5f9;
+  border-color: rgba(0, 0, 0, 0.12);
+}
+
+html[data-theme="light"] .theme-btn {
+  color: #475569;
+}
+
+html[data-theme="light"] .theme-btn:hover {
+  color: #0f172a;
+}
+
+html[data-theme="light"] .theme-btn.active {
+  background: #ffffff;
+  color: #b45309;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+html[data-theme="light"] .controls-card {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+html[data-theme="light"] .view-switch-group {
+  background: #f1f5f9;
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+html[data-theme="light"] .view-btn {
+  color: #475569;
+}
+
+html[data-theme="light"] .view-btn:hover {
+  color: #0f172a;
+}
+
+html[data-theme="light"] .view-btn.active {
+  background: #ffffff;
+  color: #b45309;
+  font-weight: 800;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+html[data-theme="light"] .nav-arrow-btn,
+html[data-theme="light"] .nav-today-btn {
+  background: #f8fafc;
+  border-color: rgba(0, 0, 0, 0.15);
+  color: #0f172a;
+}
+
+html[data-theme="light"] .nav-arrow-btn:hover,
+html[data-theme="light"] .nav-today-btn:hover {
+  background: #f1f5f9;
+  border-color: var(--gold-primary);
+  color: var(--gold-primary);
+}
+
+html[data-theme="light"] .nav-reset-btn {
+  background: #fee2e2;
+  color: #7f1d1d;
+  border-color: #fca5a5;
+  font-weight: 700;
+}
+
+html[data-theme="light"] .nav-reset-btn:hover {
+  background: #fecaca;
+  color: #450a0a;
+  border-color: #ef4444;
+}
+
+html[data-theme="light"] .current-period-title {
+  color: #0f172a;
+  font-weight: 800;
+}
+
+html[data-theme="light"] .setting-label {
+  color: #334155;
+}
+
+html[data-theme="light"] .custom-select {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.18);
+  color: #0f172a;
+}
+
+html[data-theme="light"] .custom-select.select-needs-action {
+  border-color: #ea580c;
+  box-shadow: 0 0 10px rgba(234, 88, 12, 0.25);
+}
+
+/* Legend High-Contrast Badges */
+html[data-theme="light"] .legend-row {
+  border-top-color: rgba(0, 0, 0, 0.1);
+}
+
+html[data-theme="light"] .legend-item {
+  color: #334155;
+  font-weight: 500;
+}
+
+html[data-theme="light"] .legend-drag-hint {
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  color: #1e293b;
+}
+
+html[data-theme="light"] .badge-mg {
+  background: #fef3c7;
+  color: #78350f;
+  border: 1px solid #d97706;
+  font-weight: 700;
+}
+
+html[data-theme="light"] .badge-reduced {
+  background: #ffedd5;
+  color: #7c2d12;
+  border: 1px solid #ea580c;
+  font-weight: 700;
+}
+
+html[data-theme="light"] .badge-siege {
+  background: #f3e8ff;
+  color: #6b21a8;
+  border: 1px solid #9333ea;
+  font-weight: 700;
+}
+
+html[data-theme="light"] .badge-joint {
+  background: #d1fae5;
+  color: #064e3b;
+  border: 1px solid #059669;
+  font-weight: 700;
+}
+
+html[data-theme="light"] .badge-off {
+  background: #f1f5f9;
+  color: #334155;
+  border: 1px solid #94a3b8;
+  font-weight: 700;
+}
+
+/* Timeline Cards */
+html[data-theme="light"] .day-timeline-card {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+html[data-theme="light"] .day-timeline-card:hover {
+  background: #fcfcfd;
+  border-color: rgba(0, 0, 0, 0.2);
+}
+
+html[data-theme="light"] .day-timeline-card.is-today {
+  background: #ffffff;
+  border-color: var(--gold-primary);
+  box-shadow: 0 0 14px rgba(180, 83, 9, 0.18);
+}
+
+html[data-theme="light"] .day-server-date {
+  color: #0f172a;
+}
+
+html[data-theme="light"] .day-vs-badge {
+  background: #f1f5f9;
+  color: #334155;
+  border: 1px solid #e2e8f0;
+}
+
+html[data-theme="light"] .step-event-name {
+  color: #0f172a;
+  font-weight: 700;
+}
+
+html[data-theme="light"] .step-time-box {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
+html[data-theme="light"] .step-time-box .time-server {
+  color: #78350f;
+  font-weight: 700;
+}
+
+html[data-theme="light"] .step-time-box .time-local {
+  color: #034e7b;
+  font-weight: 700;
+}
+
+html[data-theme="light"] .step-num-pill {
+  background: #e2e8f0;
+  color: #0f172a;
+  border: 1px solid #cbd5e1;
+  font-weight: 800;
+}
+
+html[data-theme="light"] .level-tag.normal {
+  background: #fef3c7;
+  color: #78350f;
+  border: 1px solid #d97706;
+  font-weight: 800;
+}
+
+html[data-theme="light"] .level-tag.reduced {
+  background: #ffedd5;
+  color: #7c2d12;
+  border: 1px solid #ea580c;
+  font-weight: 800;
+}
+
+html[data-theme="light"] .level-tag.unselected {
+  background: #fff7ed;
+  color: #c2410c;
+  border: 1.5px dashed #ea580c;
+}
+
+html[data-theme="light"] .off-day-text {
+  color: #64748b;
+}
+
+html[data-theme="light"] .btn-inspect {
+  background: #f8fafc;
+  border-color: rgba(0, 0, 0, 0.15);
+  color: #334155;
+}
+
+html[data-theme="light"] .btn-inspect:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+  border-color: var(--gold-primary);
+}
+
+/* Monthly Grid High-Contrast Chips */
+html[data-theme="light"] .month-calendar-wrapper {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+html[data-theme="light"] .month-day-headers {
+  background: #f8fafc;
+  border-bottom-color: rgba(0, 0, 0, 0.1);
+}
+
+html[data-theme="light"] .day-header {
+  color: #0f172a;
+  border-right-color: rgba(0, 0, 0, 0.08);
+}
+
+html[data-theme="light"] .day-header.weekend-header {
+  background: #fef3c7;
+  color: #78350f;
+}
+
+html[data-theme="light"] .month-day-cell {
+  background: #ffffff;
+  border-right-color: rgba(0, 0, 0, 0.08);
+  border-bottom-color: rgba(0, 0, 0, 0.08);
+}
+
+html[data-theme="light"] .month-day-cell:hover {
+  background: #f8fafc;
+}
+
+html[data-theme="light"] .month-day-cell.is-weekend {
+  background: #fcfcfd;
+}
+
+html[data-theme="light"] .month-day-cell.outside-month {
+  background: repeating-linear-gradient(
+    -45deg,
+    #f8fafc,
+    #f8fafc 10px,
+    #e2e8f0 10px,
+    #e2e8f0 20px
+  );
+  border-right-color: #cbd5e1;
+  border-bottom-color: #cbd5e1;
+}
+
+html[data-theme="light"] .month-day-cell.outside-month:hover {
+  background: repeating-linear-gradient(
+    -45deg,
+    #f1f5f9,
+    #f1f5f9 10px,
+    #cbd5e1 10px,
+    #cbd5e1 20px
+  );
+}
+
+html[data-theme="light"] .outside-month-pill {
+  background: #cbd5e1;
+  color: #1e293b;
+  font-weight: 800;
+  border: 1px solid #94a3b8;
+}
+
+html[data-theme="light"] .month-day-cell.outside-month .cell-local-sub {
+  color: #64748b;
+  font-weight: 500;
+}
+
+html[data-theme="light"] .month-day-cell.outside-month .cell-vs-badge {
+  background: #cbd5e1;
+  color: #475569;
+  font-weight: 600;
+}
+
+html[data-theme="light"] .month-day-cell.outside-month .cell-event-chip {
+  opacity: 0.55;
+  filter: grayscale(35%);
+}
+
+html[data-theme="light"] .month-day-cell.outside-month .cell-event-chip:hover {
+  opacity: 0.9;
+  filter: grayscale(0%);
+}
+
+html[data-theme="light"] .month-day-cell.is-today-cell {
+  background: #fefce8;
+  border-color: var(--gold-primary);
+}
+
+html[data-theme="light"] .cell-date-num {
+  color: #0f172a;
+  font-weight: 800;
+}
+
+html[data-theme="light"] .cell-vs-badge {
+  background: #f1f5f9;
+  color: #334155;
+  border: 1px solid #e2e8f0;
+}
+
+html[data-theme="light"] .cell-event-chip.chip-mg {
+  background: #fef3c7;
+  color: #78350f;
+  border: 1px solid #fde047;
+  border-left: 3.5px solid #b45309;
+  font-weight: 700;
+}
+
+html[data-theme="light"] .cell-event-chip.chip-mg.chip-reduced {
+  background: #ffedd5;
+  color: #7c2d12;
+  border: 1px solid #fed7aa;
+  border-left: 3.5px solid #ea580c;
+  font-weight: 700;
+}
+
+html[data-theme="light"] .cell-event-chip.chip-siege {
+  background: #f3e8ff;
+  color: #581c87;
+  border: 1px solid #e9d5ff;
+  border-left: 3.5px solid #7e22ce;
+  font-weight: 700;
+}
+
+html[data-theme="light"] .cell-event-chip.chip-joint-banner {
+  background: #d1fae5;
+  color: #064e3b;
+  border: 1px solid #6ee7b7;
+  font-weight: 800;
+}
+
+/* Footer & Protocol Box */
+html[data-theme="light"] .footer-card {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+html[data-theme="light"] .footer-card h3 {
+  color: #0f172a;
+}
+
+html[data-theme="light"] .protocol-box {
+  background: #f8fafc;
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+html[data-theme="light"] .protocol-step-num {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+/* Modal View */
+html[data-theme="light"] .day-detail-modal {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.15);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.15);
+}
+
+html[data-theme="light"] .modal-header {
+  background: #f8fafc;
+  border-bottom-color: rgba(0, 0, 0, 0.1);
+}
+
+html[data-theme="light"] .modal-server-day {
+  color: #0f172a;
+}
+
+html[data-theme="light"] .modal-close-btn {
+  color: #475569;
+}
+
+html[data-theme="light"] .modal-close-btn:hover {
+  color: #0f172a;
+  background: #e2e8f0;
+}
+
+html[data-theme="light"] .modal-section-title {
+  color: #334155;
+}
+
+html[data-theme="light"] .modal-event-card {
+  background: #f8fafc;
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+html[data-theme="light"] .modal-event-name {
+  color: #0f172a;
+  font-weight: 800;
+}
+
+html[data-theme="light"] .modal-time-detail {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.12);
+  color: #0f172a;
+}
+
+/* Toast Messages */
+html[data-theme="light"] .toast-msg {
+  background: #ffffff;
+  color: #0f172a;
+  border: 1px solid #cbd5e1;
+  border-left: 4px solid #b45309;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+html[data-theme="light"] .toast-msg.toast-reset {
+  border-left-color: #dc2626;
+}
+
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation & Header Bar -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand-block">
+        <div class="game-badge">LAST WAR: SURVIVAL</div>
+        <h1 class="app-title">Marshal's Guard & Zombie Siege Calendar</h1>
+        <p class="app-tagline">Automated 2-Day MG & 3-Day Siege Rotation • Dual Server (SVT) & Local Time • Weekend/Buster Level Adjustment</p>
+      </div>
+
+      <!-- Live Clocks & View Perspective Toggles -->
+      <div class="clocks-panel">
+        <div class="clock-card server-clock-card active-time-mode" id="btn-toggle-svt" role="button" tabindex="0" title="Click to display calendar in Server Time (SVT)">
+          <div class="clock-label">
+            <span class="live-dot pulse-server"></span> SERVER TIME (SVT)
+            <span class="active-view-tag">ACTIVE VIEW</span>
+          </div>
+          <div class="clock-time" id="server-clock-time">00:00:00 SVT</div>
+          <div class="clock-date" id="server-clock-date">Tuesday, Sep 15, 2026</div>
+        </div>
+
+        <div class="clock-card local-clock-card" id="btn-toggle-local" role="button" tabindex="0" title="Click to display calendar in Local Time">
+          <div class="clock-label">
+            <span class="live-dot pulse-local"></span> LOCAL TIME
+            <span class="active-view-tag">ACTIVE VIEW</span>
+          </div>
+          <div class="clock-time" id="local-clock-time">--:--:--</div>
+          <div class="clock-date" id="local-clock-date">--</div>
+        </div>
+
+        <!-- Theme Mode Switcher -->
+        <div class="theme-switch-container">
+          <div class="theme-toggle-group">
+            <button class="theme-btn active" id="theme-system-btn" data-theme="system" title="System Theme (Default)">
+              <span class="theme-btn-icon">🌓</span> System
+            </button>
+            <button class="theme-btn" id="theme-light-btn" data-theme="light" title="Light Theme">
+              <span class="theme-btn-icon">☀️</span> Light
+            </button>
+            <button class="theme-btn" id="theme-dark-btn" data-theme="dark" title="Dark Theme">
+              <span class="theme-btn-icon">🌙</span> Dark
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <div class="app-container">
+
+    <!-- Tactical Control Dashboard -->
+    <section class="controls-card">
+      <div class="controls-top-row">
+        
+        <!-- View Mode Switcher -->
+        <div class="view-switch-group">
+          <button class="view-btn active" id="btn-view-week" data-view="week">
+            <span class="btn-icon">📋</span> Weekly Timeline
+          </button>
+          <button class="view-btn" id="btn-view-month" data-view="month">
+            <span class="btn-icon">📅</span> Monthly Grid
+          </button>
+        </div>
+
+        <!-- Period Navigation -->
+        <div class="period-nav-group">
+          <button class="nav-arrow-btn" id="nav-prev" title="Previous period">◀</button>
+          <button class="nav-today-btn" id="nav-today">Today</button>
+          <button class="nav-arrow-btn" id="nav-next" title="Next period">▶</button>
+          <button class="nav-reset-btn" id="btn-reset-schedule" title="Reset MG & Siege rotation back to default (Tue MG / Wed Siege)">↺ Reset Rotation</button>
+          <span class="current-period-title" id="period-title">September 2026</span>
+        </div>
+
+        <!-- Right Configuration Settings -->
+        <div class="settings-group">
+          <!-- Base MG Level -->
+          <div class="setting-item">
+            <label for="base-mg-level" class="setting-label">Base MG Level</label>
+            <div class="select-wrapper">
+              <select id="base-mg-level" class="custom-select select-needs-action">
+                <option value="">-- Select Base Level --</option>
+                <option value="15">Level 15</option>
+                <option value="14">Level 14</option>
+                <option value="13">Level 13</option>
+                <option value="12">Level 12</option>
+                <option value="11">Level 11</option>
+                <option value="10">Level 10</option>
+                <option value="9">Level 9</option>
+                <option value="8">Level 8</option>
+                <option value="7">Level 7</option>
+                <option value="6">Level 6</option>
+                <option value="5">Level 5</option>
+                <option value="4">Level 4</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Saturday Buster Timing Selector -->
+          <div class="setting-item">
+            <label for="saturday-schedule" class="setting-label">Saturday Buster Timing</label>
+            <div class="select-wrapper">
+              <select id="saturday-schedule" class="custom-select">
+                <option value="late" selected>21:00 SVT (3h Before Next Reset)</option>
+                <option value="reset">00:10 SVT (Standard Reset)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Timezone Selector -->
+          <div class="setting-item tz-setting">
+            <label for="tz-select" class="setting-label">Local Timezone</label>
+            <div class="select-wrapper">
+              <select id="tz-select" class="custom-select tz-select">
+                <!-- Populated via JS -->
+              </select>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Quick Rules & Legend Banner -->
+      <div class="legend-row">
+        <div class="legend-item">
+          <span class="legend-pill badge-mg">
+            <svg class="tank-icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="width:16px;height:16px;margin-right:2px;">
+              <defs>
+                <linearGradient id="desertCamoGradLegend" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#fef08a"/>
+                  <stop offset="35%" stop-color="#eab308"/>
+                  <stop offset="70%" stop-color="#ca8a04"/>
+                  <stop offset="100%" stop-color="#854d0e"/>
+                </linearGradient>
+                <linearGradient id="treadGradLegend" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#475569"/>
+                  <stop offset="50%" stop-color="#1e293b"/>
+                  <stop offset="100%" stop-color="#0f172a"/>
+                </linearGradient>
+                <pattern id="camoSpotsLegend" x="0" y="0" width="8" height="8" patternUnits="userSpaceOnUse">
+                  <path d="M1 2 C2 1, 4 3, 5 2 C6 1, 7 3, 6 5 C5 6, 2 5, 1 2 Z" fill="#92400e" opacity="0.35"/>
+                  <circle cx="3" cy="6" r="1.5" fill="#fef08a" opacity="0.4"/>
+                </pattern>
+              </defs>
+              <rect x="18" y="11" width="11.5" height="2.5" rx="1" fill="#ca8a04" stroke="#78350f" stroke-width="0.75"/>
+              <rect x="27.5" y="10" width="2.5" height="4.5" rx="0.5" fill="#a16207" stroke="#78350f" stroke-width="0.5"/>
+              <rect x="2" y="18" width="24" height="9" rx="4.5" fill="url(#treadGradLegend)" stroke="#334155" stroke-width="0.8"/>
+              <circle cx="6" cy="22.5" r="2.2" fill="#64748b" stroke="#1e293b" stroke-width="0.6"/>
+              <circle cx="10.5" cy="22.5" r="2.2" fill="#64748b" stroke="#1e293b" stroke-width="0.6"/>
+              <circle cx="15" cy="22.5" r="2.2" fill="#64748b" stroke="#1e293b" stroke-width="0.6"/>
+              <circle cx="19.5" cy="22.5" r="2.2" fill="#64748b" stroke="#1e293b" stroke-width="0.6"/>
+              <path d="M3 19 L6 14 L21 14 L24 19 Z" fill="url(#desertCamoGradLegend)" stroke="#78350f" stroke-width="0.8"/>
+              <path d="M3 19 L6 14 L21 14 L24 19 Z" fill="url(#camoSpotsLegend)"/>
+              <path d="M7 14 L9 9 L18 9 L20 14 Z" fill="url(#desertCamoGradLegend)" stroke="#78350f" stroke-width="0.8"/>
+              <path d="M7 14 L9 9 L18 9 L20 14 Z" fill="url(#camoSpotsLegend)"/>
+              <ellipse cx="12" cy="8.5" rx="2.5" ry="1.2" fill="#ca8a04" stroke="#78350f" stroke-width="0.6"/>
+              <rect x="13.5" y="6" width="1" height="2.5" fill="#cbd5e1"/>
+              <polygon points="13.5,10.2 14.1,11.5 15.5,11.5 14.4,12.3 14.8,13.6 13.5,12.8 12.2,13.6 12.6,12.3 11.5,11.5 12.9,11.5" fill="#fff" opacity="0.95"/>
+            </svg>
+            Marshal's Guard
+          </span>
+          <span class="legend-desc">Every 2 Days • Starts Reset + 10m (00:10 SVT)</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-pill badge-reduced">MG Level Reduced</span>
+          <span class="legend-desc">-1 Level on Weekends & Enemy Buster Day</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-pill badge-siege">Zombie Siege</span>
+          <span class="legend-desc">Every 3 Days • Wed Start</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-pill badge-joint">Joint Event Day</span>
+          <span class="legend-desc">MG First ➔ Siege 40m later</span>
+        </div>
+        <div class="legend-item legend-drag-hint">
+          <span class="drag-hint-icon">🖐️</span>
+          <span class="legend-desc"><strong>Drag & Drop:</strong> Drag any event badge to recalibrate rotation</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Toast Notification Banner -->
+    <div class="toast-banner" id="toast-banner"></div>
+
+    <!-- Calendar Viewports -->
+    <main class="calendar-viewport">
+      
+      <!-- Weekly Timeline View -->
+      <section id="weekly-view" class="view-panel active">
+        <div class="weekly-timeline-grid" id="weekly-timeline-container">
+          <!-- Populated via JS -->
+        </div>
+      </section>
+
+      <!-- Monthly Grid View -->
+      <section id="monthly-view" class="view-panel">
+        <div class="month-calendar-wrapper">
+          <div class="month-calendar-inner">
+            <!-- Day of Week Headers (Clean, un-cluttered) -->
+            <div class="month-day-headers">
+              <div class="day-header weekend-header">Sun</div>
+              <div class="day-header weekend-header">Mon</div>
+              <div class="day-header">Tue</div>
+              <div class="day-header">Wed</div>
+              <div class="day-header">Thu</div>
+              <div class="day-header">Fri</div>
+              <div class="day-header weekend-header">Sat</div>
+            </div>
+            <!-- Days Matrix -->
+            <div class="month-days-grid" id="monthly-grid-container">
+              <!-- Populated via JS -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Alliance Coordination & Quick Info Footer -->
+    <footer class="app-footer">
+      <div class="footer-card">
+        <h3>⚔️ Alliance Execution Protocol</h3>
+        <div class="protocol-grid">
+          <div class="protocol-box">
+            <h4>1. Server Reset Timing</h4>
+            <p>Daily reset is at <strong>00:00:00 SVT</strong>. Events do not start immediately at reset to give members 10 minutes to log in, clear queues, and set radar.</p>
+          </div>
+          <div class="protocol-box">
+            <h4>2. Joint Day Priority</h4>
+            <p>On joint days, <strong>Marshal's Guard begins at 00:10 SVT</strong>. The defense/rally period lasts ~15-20 min. <strong>Zombie Siege is launched at 00:50 SVT (40 min after MG begins)</strong>.</p>
+          </div>
+          <div class="protocol-box">
+            <h4>3. Weekend & Buster Day Reductions</h4>
+            <p>Attendance is split during weekend nights and stamina is preserved for Buster Day. Base level automatically steps down by 1.</p>
+          </div>
+          <div class="protocol-box">
+            <h4>4. Buster Day (Saturday) Rescheduling</h4>
+            <p>Enemy Buster opens at reset (00:00 SVT) with aggressive cross-server PvP raids. Saturday events are shifted to <strong>21:00 SVT (3 hours before next reset)</strong> once Buster fighting calms down, so alliance defense and rally attendance remain strong.</p>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- Day Detail Modal -->
+  <div class="modal-backdrop" id="day-modal-backdrop">
+    <div class="day-detail-modal" id="day-detail-modal">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="modal-server-day" id="modal-server-day">Server Tuesday, Sep 15, 2026</span>
+          <span class="modal-local-day" id="modal-local-day">Local Time</span>
+        </div>
+        <button class="modal-close-btn" id="modal-close-btn" title="Close details modal">&times;</button>
+      </div>
+      <div class="modal-body" id="modal-body">
+        <!-- Injected via JS -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+/**
+ * Marshal's Guard & Zombie Siege Calendar
+ * Last War: Survival Alliance Planning Dashboard
+ */
+
+(function () {
+  'use strict';
+
+  // --- Constants & Reference Anchors ---
+  // Default MG Anchor: Tuesday, September 15, 2026 SVT (Day 0 of 2-day cycle)
+  // Default Siege Anchor: Wednesday, September 16, 2026 SVT (Day 0 of 3-day cycle)
+  const DEFAULT_MG_ANCHOR = new Date(Date.UTC(2026, 8, 15, 0, 0, 0)); // Month is 0-indexed (8 = Sep)
+  const DEFAULT_SIEGE_ANCHOR = new Date(Date.UTC(2026, 8, 16, 0, 0, 0));
+
+  // --- Safe LocalStorage Helpers ---
+  function safeGetStorage(key, fallback = null) {
+    try {
+      const val = localStorage.getItem(key);
+      return val !== null ? val : fallback;
+    } catch (e) {
+      return fallback;
+    }
+  }
+
+  function safeSetStorage(key, val) {
+    try {
+      localStorage.setItem(key, val);
+    } catch (e) {}
+  }
+
+  function safeRemoveStorage(key) {
+    try {
+      localStorage.removeItem(key);
+    } catch (e) {}
+  }
+
+  function loadStoredAnchor(key, defaultDate) {
+    const stored = safeGetStorage(key);
+    if (stored) {
+      const d = new Date(stored);
+      if (!isNaN(d.getTime())) return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), 0, 0, 0));
+    }
+    return defaultDate;
+  }
+
+  function isValidTimezone(tz) {
+    if (!tz || typeof tz !== 'string') return false;
+    try {
+      Intl.DateTimeFormat(undefined, { timeZone: tz });
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function loadStoredTimezone() {
+    const stored = safeGetStorage('user-tz-pref');
+    if (stored && isValidTimezone(stored)) {
+      return stored;
+    }
+    try {
+      const systemTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      if (isValidTimezone(systemTz)) return systemTz;
+    } catch (e) {}
+    return 'America/Los_Angeles';
+  }
+
+  function loadStoredBaseMgLevel() {
+    const stored = safeGetStorage('base-mg-level');
+    if (stored !== null && stored !== '') {
+      const val = parseInt(stored, 10);
+      if (!isNaN(val) && val >= 1 && val <= 30) {
+        return val;
+      }
+    }
+    return null;
+  }
+
+  let mgAnchorDate = loadStoredAnchor('mg-anchor-date', DEFAULT_MG_ANCHOR);
+  let siegeAnchorDate = loadStoredAnchor('siege-anchor-date', DEFAULT_SIEGE_ANCHOR);
+
+  // Custom Tactical Yellow / Desert Camo Tank Icon SVG
+  const TANK_ICON_SVG = `<svg class="tank-icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <defs>
+      <linearGradient id="desertCamoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#fef08a"/>
+        <stop offset="35%" stop-color="#eab308"/>
+        <stop offset="70%" stop-color="#ca8a04"/>
+        <stop offset="100%" stop-color="#854d0e"/>
+      </linearGradient>
+      <linearGradient id="treadGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#475569"/>
+        <stop offset="50%" stop-color="#1e293b"/>
+        <stop offset="100%" stop-color="#0f172a"/>
+      </linearGradient>
+      <pattern id="camoSpots" x="0" y="0" width="8" height="8" patternUnits="userSpaceOnUse">
+        <path d="M1 2 C2 1, 4 3, 5 2 C6 1, 7 3, 6 5 C5 6, 2 5, 1 2 Z" fill="#92400e" opacity="0.35"/>
+        <circle cx="3" cy="6" r="1.5" fill="#fef08a" opacity="0.4"/>
+      </pattern>
+    </defs>
+    <rect x="18" y="11" width="11.5" height="2.5" rx="1" fill="#ca8a04" stroke="#78350f" stroke-width="0.75"/>
+    <rect x="27.5" y="10" width="2.5" height="4.5" rx="0.5" fill="#a16207" stroke="#78350f" stroke-width="0.5"/>
+    <rect x="2" y="18" width="24" height="9" rx="4.5" fill="url(#treadGrad)" stroke="#334155" stroke-width="0.8"/>
+    <circle cx="6" cy="22.5" r="2.2" fill="#64748b" stroke="#1e293b" stroke-width="0.6"/>
+    <circle cx="10.5" cy="22.5" r="2.2" fill="#64748b" stroke="#1e293b" stroke-width="0.6"/>
+    <circle cx="15" cy="22.5" r="2.2" fill="#64748b" stroke="#1e293b" stroke-width="0.6"/>
+    <circle cx="19.5" cy="22.5" r="2.2" fill="#64748b" stroke="#1e293b" stroke-width="0.6"/>
+    <path d="M3 19 L6 14 L21 14 L24 19 Z" fill="url(#desertCamoGrad)" stroke="#78350f" stroke-width="0.8"/>
+    <path d="M3 19 L6 14 L21 14 L24 19 Z" fill="url(#camoSpots)"/>
+    <path d="M7 14 L9 9 L18 9 L20 14 Z" fill="url(#desertCamoGrad)" stroke="#78350f" stroke-width="0.8"/>
+    <path d="M7 14 L9 9 L18 9 L20 14 Z" fill="url(#camoSpots)"/>
+    <ellipse cx="12" cy="8.5" rx="2.5" ry="1.2" fill="#ca8a04" stroke="#78350f" stroke-width="0.6"/>
+    <rect x="13.5" y="6" width="1" height="2.5" fill="#cbd5e1"/>
+    <polygon points="13.5,10.2 14.1,11.5 15.5,11.5 14.4,12.3 14.8,13.6 13.5,12.8 12.2,13.6 12.6,12.3 11.5,11.5 12.9,11.5" fill="#fff" opacity="0.95"/>
+  </svg>`;
+
+  // VS Duel Days
+  const VS_DUEL_INFO = {
+    0: { dayNum: 7, name: 'Day 7: Rest Day', short: 'Rest Day', isBuster: false },
+    1: { dayNum: 1, name: 'Day 1: Radar & Base Expansion', short: 'Radar Training', isBuster: false },
+    2: { dayNum: 2, name: 'Day 2: Base Construction', short: 'Base Building', isBuster: false },
+    3: { dayNum: 3, name: 'Day 3: Tech Research', short: 'Tech Research', isBuster: false },
+    4: { dayNum: 4, name: 'Day 4: Hero Growth', short: 'Hero Training', isBuster: false },
+    5: { dayNum: 5, name: 'Day 5: Total Mobilization', short: 'Troop Training', isBuster: false },
+    6: { dayNum: 6, name: 'Day 6: Enemy Buster (Kill Event)', short: 'Enemy Buster', isBuster: true },
+  };
+
+  // State (Loaded from storage or sensible defaults)
+  let currentView = safeGetStorage('calendar-view-mode', 'week'); // 'week' | 'month'
+  if (currentView !== 'week' && currentView !== 'month') currentView = 'week';
+  let currentThemeMode = safeGetStorage('theme-mode-pref', 'system'); // 'system' | 'light' | 'dark'
+  let baseMgLevel = loadStoredBaseMgLevel(); // Loads persisted base level or null if unset
+  let selectedTimezone = loadStoredTimezone();
+  let timePerspectiveMode = safeGetStorage('time-perspective-mode', 'svt'); // 'svt' | 'local'
+  if (timePerspectiveMode !== 'svt' && timePerspectiveMode !== 'local') timePerspectiveMode = 'svt';
+  let saturdayBusterTiming = safeGetStorage('saturday-buster-timing', 'late'); // 'late' | 'reset'
+  if (saturdayBusterTiming !== 'late' && saturdayBusterTiming !== 'reset') saturdayBusterTiming = 'late';
+  
+  // Navigation tracking date (Server UTC date when in 'svt', or local date when in 'local')
+  let currentDate = new Date(Date.UTC(2026, 8, 15, 0, 0, 0));
+
+  // --- DOM Elements ---
+  const btnToggleSvt = document.getElementById('btn-toggle-svt');
+  const btnToggleLocal = document.getElementById('btn-toggle-local');
+
+  const btnViewWeek = document.getElementById('btn-view-week');
+  const btnViewMonth = document.getElementById('btn-view-month');
+  const weeklyView = document.getElementById('weekly-view');
+  const monthlyView = document.getElementById('monthly-view');
+  const weeklyContainer = document.getElementById('weekly-timeline-container');
+  const monthlyGrid = document.getElementById('monthly-grid-container');
+  const periodTitle = document.getElementById('period-title');
+
+  const navPrev = document.getElementById('nav-prev');
+  const navToday = document.getElementById('nav-today');
+  const navNext = document.getElementById('nav-next');
+  const btnResetSchedule = document.getElementById('btn-reset-schedule');
+  const toastBanner = document.getElementById('toast-banner');
+
+  const selectBaseLevel = document.getElementById('base-mg-level');
+  const selectSaturdaySchedule = document.getElementById('saturday-schedule');
+  const selectTz = document.getElementById('tz-select');
+
+  const themeSystemBtn = document.getElementById('theme-system-btn');
+  const themeLightBtn = document.getElementById('theme-light-btn');
+  const themeDarkBtn = document.getElementById('theme-dark-btn');
+
+  const serverClockTime = document.getElementById('server-clock-time');
+  const serverClockDate = document.getElementById('server-clock-date');
+  const localClockTime = document.getElementById('local-clock-time');
+  const localClockDate = document.getElementById('local-clock-date');
+
+  const modalBackdrop = document.getElementById('day-modal-backdrop');
+  const modalCloseBtn = document.getElementById('modal-close-btn');
+  const modalServerDay = document.getElementById('modal-server-day');
+  const modalLocalDay = document.getElementById('modal-local-day');
+  const modalBody = document.getElementById('modal-body');
+
+  // --- Common IANA Timezones ---
+  const TIMEZONE_LIST = [
+    { label: 'UTC (Coordinated Universal Time)', tz: 'UTC' },
+    { label: 'US / Pacific (PT) - Los Angeles', tz: 'America/Los_Angeles' },
+    { label: 'US / Mountain (MT) - Denver', tz: 'America/Denver' },
+    { label: 'US / Central (CT) - Chicago', tz: 'America/Chicago' },
+    { label: 'US / Eastern (ET) - New York', tz: 'America/New_York' },
+    { label: 'US / Hawaii - Honolulu', tz: 'Pacific/Honolulu' },
+    { label: 'US / Alaska - Anchorage', tz: 'America/Anchorage' },
+    { label: 'Europe / London (GMT/BST)', tz: 'Europe/London' },
+    { label: 'Europe / Paris / Berlin (CET/CEST)', tz: 'Europe/Paris' },
+    { label: 'Europe / Athens (EET)', tz: 'Europe/Athens' },
+    { label: 'Asia / Dubai (GST)', tz: 'Asia/Dubai' },
+    { label: 'Asia / India (IST)', tz: 'Asia/Kolkata' },
+    { label: 'Asia / Singapore / Taiwan (SGT/CST)', tz: 'Asia/Singapore' },
+    { label: 'Asia / Tokyo / Seoul (JST/KST)', tz: 'Asia/Tokyo' },
+    { label: 'Australia / Sydney (AEST/AEDT)', tz: 'Australia/Sydney' },
+    { label: 'Australia / Perth (AWST)', tz: 'Australia/Perth' },
+    { label: 'New Zealand / Auckland (NZST/NZDT)', tz: 'Pacific/Auckland' },
+    { label: 'South America / São Paulo (BRT)', tz: 'America/Sao_Paulo' },
+  ];
+
+  // --- Helper Functions: Date Math ---
+
+  function normalizeToUtcDay(date) {
+    return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), 0, 0, 0));
+  }
+
+  function getDaysDiff(d1, d2) {
+    const msDiff = normalizeToUtcDay(d1).getTime() - normalizeToUtcDay(d2).getTime();
+    return Math.round(msDiff / 86400000);
+  }
+
+  function addDays(date, days) {
+    const res = new Date(date.getTime());
+    res.setUTCDate(res.getUTCDate() + days);
+    return res;
+  }
+
+  // Event schedule predicates (based on Server SVT date)
+  function isMgDay(date) {
+    const diff = getDaysDiff(date, mgAnchorDate);
+    return ((diff % 2) + 2) % 2 === 0;
+  }
+
+  function isSiegeDay(date) {
+    const diff = getDaysDiff(date, siegeAnchorDate);
+    return ((diff % 3) + 3) % 3 === 0;
+  }
+
+  // Level reduction rule: Weekends (Sat, Sun, Mon SVT) and Buster Day (Sat SVT)
+  function isReducedMgDay(date) {
+    const dayOfWeek = date.getUTCDay(); // 0 = Sun, 1 = Mon, 6 = Sat
+    return dayOfWeek === 0 || dayOfWeek === 1 || dayOfWeek === 6;
+  }
+
+  function getMgLevelForDay(date) {
+    const isReduced = isReducedMgDay(date);
+    const dayOfWeek = date.getUTCDay();
+    const reason = isReduced 
+      ? (dayOfWeek === 6 
+          ? 'Reduced: Weekend & Enemy Buster Day' 
+          : (dayOfWeek === 0 ? 'Reduced: Rest Day (Weekend)' : 'Reduced: Weekend Night (Sunday Night US)'))
+      : 'Normal Base Level';
+
+    if (baseMgLevel === null) {
+      return {
+        level: null,
+        isReduced,
+        isUnset: true,
+        levelDisplay: isReduced ? 'Lv. ? (-1 Reduced)' : 'Select Base Lv',
+        chipDisplay: isReduced ? 'MG (Reduced -1)' : 'MG (Set Level)',
+        reason: isReduced ? `${reason} (Awaiting Base Level selection)` : 'Awaiting Base Level selection'
+      };
+    }
+
+    const calculatedLevel = isReduced ? Math.max(1, baseMgLevel - 1) : baseMgLevel;
+    return {
+      level: calculatedLevel,
+      isReduced,
+      isUnset: false,
+      levelDisplay: `Lv. ${calculatedLevel}${isReduced ? ' (Reduced)' : ''}`,
+      chipDisplay: `MG Lv.${calculatedLevel}`,
+      reason
+    };
+  }
+
+  // Extract YYYY-MM-DD for a UTC timestamp formatted in a given timezone
+  function getLocalDateKey(dateObj, tz) {
+    const parts = new Intl.DateTimeFormat('en-US', {
+      timeZone: tz,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    }).formatToParts(dateObj);
+    const m = parts.find(p => p.type === 'month').value;
+    const d = parts.find(p => p.type === 'day').value;
+    const y = parts.find(p => p.type === 'year').value;
+    return `${y}-${m}-${d}`;
+  }
+
+  // Given local year, month (1-12), day, find the SVT date whose reset/event lands on this local day
+  function findSvtDateForLocalDate(y, m, d, tz) {
+    const targetKey = `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    for (let offset = -2; offset <= 2; offset++) {
+      const candidateSvt = new Date(Date.UTC(y, m - 1, d + offset, 0, 0, 0));
+      // In Last War, reset is 00:00 SVT (02:00 UTC), MG starts at 00:10 SVT (02:10 UTC)
+      const worldTime = new Date(Date.UTC(candidateSvt.getUTCFullYear(), candidateSvt.getUTCMonth(), candidateSvt.getUTCDate(), 2, 10, 0));
+      if (getLocalDateKey(worldTime, tz) === targetKey) {
+        return candidateSvt;
+      }
+    }
+    // Fallback: candidate on same day
+    return new Date(Date.UTC(y, m - 1, d, 0, 0, 0));
+  }
+
+  function getTimezoneShortName(tz) {
+    try {
+      const parts = new Intl.DateTimeFormat('en-US', { timeZone: tz, timeZoneName: 'short' }).formatToParts(new Date());
+      const tzPart = parts.find(p => p.type === 'timeZoneName');
+      if (tzPart) return tzPart.value;
+    } catch (e) {}
+    return 'Local';
+  }
+
+  // Format exact event time in both SVT and local
+  function formatEventTimes(serverDate, hoursSvt, minutesSvt) {
+    // SVT reset is at 00:00, which corresponds to 02:00 UTC (SVT = UTC - 2 hours)
+    const worldEventTime = new Date(Date.UTC(
+      serverDate.getUTCFullYear(),
+      serverDate.getUTCMonth(),
+      serverDate.getUTCDate(),
+      hoursSvt + 2, minutesSvt, 0
+    ));
+
+    const svtTimeStr = `${String(hoursSvt).padStart(2, '0')}:${String(minutesSvt).padStart(2, '0')} SVT`;
+
+    const localTimeFormatter = new Intl.DateTimeFormat('en-US', {
+      timeZone: selectedTimezone,
+      weekday: 'short',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+      timeZoneName: 'short'
+    });
+
+    const localTimeOnlyFormatter = new Intl.DateTimeFormat('en-US', {
+      timeZone: selectedTimezone,
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    });
+
+    const localTimeStr = localTimeFormatter.format(worldEventTime);
+    const localTimeOnlyStr = localTimeOnlyFormatter.format(worldEventTime);
+
+    return {
+      worldEventTime,
+      svtTimeStr,
+      localTimeStr,
+      localTimeOnlyStr,
+      fullDisplay: `${svtTimeStr} (${localTimeStr})`
+    };
+  }
+
+  // Event Timing Resolver (resolves standard reset vs. Saturday Buster Day late shift)
+  function getEventTimingForDay(svtDay, eventType, isJoint) {
+    const isSaturday = svtDay.getUTCDay() === 6;
+    const isLate = isSaturday && saturdayBusterTiming === 'late';
+
+    if (isLate) {
+      if (eventType === 'mg') {
+        return {
+          hours: 21,
+          minutes: 0,
+          isShifted: true,
+          shiftTag: '21:00 SVT • Buster Shift (3h before reset)',
+          shortTag: '21:00 SVT (Buster Shift)'
+        };
+      } else if (eventType === 'siege') {
+        return {
+          hours: 21,
+          minutes: isJoint ? 40 : 0,
+          isShifted: true,
+          shiftTag: isJoint ? '21:40 SVT • Buster Shift (40m after MG)' : '21:00 SVT • Buster Shift (3h before reset)',
+          shortTag: isJoint ? '21:40 SVT (Buster Shift)' : '21:00 SVT (Buster Shift)'
+        };
+      }
+    }
+
+    if (eventType === 'mg') {
+      return {
+        hours: 0,
+        minutes: 10,
+        isShifted: false,
+        shiftTag: '00:10 SVT • Reset + 10m',
+        shortTag: '00:10 SVT'
+      };
+    } else if (eventType === 'siege') {
+      return {
+        hours: 0,
+        minutes: isJoint ? 50 : 10,
+        isShifted: false,
+        shiftTag: isJoint ? '00:50 SVT • Joint (40m after MG)' : '00:10 SVT • Reset + 10m',
+        shortTag: isJoint ? '00:50 SVT' : '00:10 SVT'
+      };
+    }
+  }
+
+  // --- Perspective Toggle Management ---
+  function updatePerspectiveToggleButtons() {
+    if (btnToggleSvt && btnToggleLocal) {
+      if (timePerspectiveMode === 'svt') {
+        btnToggleSvt.classList.add('active-time-mode');
+        btnToggleLocal.classList.remove('active-time-mode');
+      } else {
+        btnToggleSvt.classList.remove('active-time-mode');
+        btnToggleLocal.classList.add('active-time-mode');
+      }
+    }
+  }
+
+  function setTimePerspective(mode) {
+    if (timePerspectiveMode === mode) return;
+    timePerspectiveMode = mode;
+    safeSetStorage('time-perspective-mode', mode);
+    updatePerspectiveToggleButtons();
+    const tzShort = getTimezoneShortName(selectedTimezone);
+    showToast(
+      mode === 'svt'
+        ? '🌐 Switched calendar to Server Time (SVT)'
+        : `📍 Switched calendar to Local Time (${tzShort})`
+    );
+    renderCurrentView();
+  }
+
+  // --- Render Functions ---
+
+  function renderCurrentView() {
+    updatePerspectiveToggleButtons();
+    if (currentView === 'week') {
+      renderWeeklyView();
+    } else {
+      renderMonthlyView();
+    }
+  }
+
+  // --- WEEKLY TIMELINE ---
+  function renderWeeklyView() {
+    weeklyContainer.innerHTML = '';
+    const tzShort = getTimezoneShortName(selectedTimezone);
+
+    // Find start of week (Sunday before currentDate)
+    const dayOfWeek = currentDate.getUTCDay();
+    const weekStart = addDays(currentDate, -dayOfWeek);
+    const weekEnd = addDays(weekStart, 6);
+
+    // Update Title with mode indicator
+    const startMonthName = weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
+    const endMonthName = weekEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+    
+    if (timePerspectiveMode === 'svt') {
+      periodTitle.textContent = `${startMonthName} – ${endMonthName} • 🌐 Server Time (SVT)`;
+    } else {
+      periodTitle.textContent = `${startMonthName} – ${endMonthName} • 📍 Local Time (${tzShort})`;
+    }
+
+    const todaySvt = normalizeToUtcDay(new Date(Date.now() - 2 * 3600 * 1000));
+    const todayLocalKey = getLocalDateKey(new Date(), selectedTimezone);
+
+    for (let i = 0; i < 7; i++) {
+      const displayDay = addDays(weekStart, i);
+      let svtDay = displayDay;
+
+      if (timePerspectiveMode === 'local') {
+        svtDay = findSvtDateForLocalDate(
+          displayDay.getUTCFullYear(),
+          displayDay.getUTCMonth() + 1,
+          displayDay.getUTCDate(),
+          selectedTimezone
+        );
+      }
+
+      const isToday = timePerspectiveMode === 'svt'
+        ? getDaysDiff(displayDay, todaySvt) === 0
+        : getLocalDateKey(displayDay, 'UTC') === todayLocalKey;
+
+      const hasMg = isMgDay(svtDay);
+      const hasSiege = isSiegeDay(svtDay);
+      const isJoint = hasMg && hasSiege;
+      const isOff = !hasMg && !hasSiege;
+
+      const vsDay = VS_DUEL_INFO[svtDay.getUTCDay()];
+      const mgInfo = getMgLevelForDay(svtDay);
+
+      // Card Element
+      const card = document.createElement('div');
+      card.className = `day-timeline-card ${isToday ? 'is-today' : ''} ${isJoint ? 'has-joint' : (hasMg ? 'has-mg-only' : (hasSiege ? 'has-siege-only' : 'is-off-day'))}`;
+
+      // Left Day Info
+      const displayDayName = displayDay.toLocaleDateString('en-US', { weekday: 'long', timeZone: 'UTC' });
+      const dateFormatted = displayDay.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
+      const vsClass = vsDay.isBuster ? 'day-vs-badge is-buster' : 'day-vs-badge';
+
+      let subtitleHtml = '';
+      if (timePerspectiveMode === 'svt') {
+        const mgTimesPreview = formatEventTimes(svtDay, 0, 10);
+        subtitleHtml = `<div class="day-local-date">Local: ${mgTimesPreview.localTimeStr}</div>`;
+      } else {
+        const svtDayName = svtDay.toLocaleDateString('en-US', { weekday: 'short', timeZone: 'UTC' });
+        subtitleHtml = `<div class="day-local-date">Server Session: ${svtDayName} 00:00 SVT</div>`;
+      }
+
+      let leftHtml = `
+        <div class="day-info-block">
+          <div class="day-server-date">${displayDayName}, ${dateFormatted}</div>
+          ${subtitleHtml}
+          <div class="${vsClass}">${vsDay.name}</div>
+        </div>
+      `;
+
+      // Center Event Sequence
+      let centerHtml = '<div class="event-sequence-block">';
+
+      if (isJoint) {
+        // Joint Day
+        const mgTiming = getEventTimingForDay(svtDay, 'mg', true);
+        const siegeTiming = getEventTimingForDay(svtDay, 'siege', true);
+        const mgTimes = formatEventTimes(svtDay, mgTiming.hours, mgTiming.minutes);
+        const siegeTimes = formatEventTimes(svtDay, siegeTiming.hours, siegeTiming.minutes);
+
+        const mgTimeDisplay = timePerspectiveMode === 'svt'
+          ? `<span class="time-server">${mgTimes.svtTimeStr}</span> <span style="font-size:0.75rem; color:var(--text-muted);">(${mgTimes.localTimeStr})</span>`
+          : `<span class="time-local" style="font-weight:700;">${mgTimes.localTimeStr}</span> <span style="font-size:0.75rem; color:var(--text-muted);">(${mgTimes.svtTimeStr})</span>`;
+
+        const siegeTimeDisplay = timePerspectiveMode === 'svt'
+          ? `<span class="time-server">${siegeTimes.svtTimeStr}</span> <span style="font-size:0.75rem; color:var(--text-muted);">(${siegeTimes.localTimeStr})</span>`
+          : `<span class="time-local" style="font-weight:700;">${siegeTimes.localTimeStr}</span> <span style="font-size:0.75rem; color:var(--text-muted);">(${siegeTimes.svtTimeStr})</span>`;
+
+        const mgShiftPill = mgTiming.isShifted ? `<span class="shift-tag-pill">${mgTiming.shiftTag}</span>` : '';
+        const siegeShiftPill = siegeTiming.isShifted ? `<span class="shift-tag-pill">${siegeTiming.shiftTag}</span>` : '';
+
+        centerHtml += `
+          <div class="event-step-row">
+            <span class="step-num-pill">1</span>
+            <span class="step-event-name draggable-event" draggable="true" data-event-type="mg" title="Drag to another day to recalibrate MG cycle (every 2 days)"><span class="drag-handle-icon">⠿</span>${TANK_ICON_SVG} Marshal's Guard</span>
+            <span class="level-tag ${mgInfo.isUnset ? 'unselected' : (mgInfo.isReduced ? 'reduced' : 'normal')}" ${mgInfo.isUnset ? 'data-action="focus-level" title="Click to select Base MG Level"' : ''}>${mgInfo.levelDisplay}</span>
+            <div class="step-time-box">
+              ${mgTimeDisplay}
+            </div>
+            ${mgShiftPill}
+          </div>
+          <div class="event-step-row">
+            <span class="step-num-pill">2</span>
+            <span class="step-event-name draggable-event" draggable="true" data-event-type="siege" title="Drag to another day to recalibrate Zombie Siege cycle (every 3 days)"><span class="drag-handle-icon">⠿</span>🧟 Zombie Siege</span>
+            <span class="legend-pill badge-siege">Alliance Defense</span>
+            <div class="step-time-box">
+              ${siegeTimeDisplay}
+            </div>
+            ${siegeShiftPill}
+            <span style="font-size:0.75rem; color: var(--green-joint); font-weight:600;">(40 min after MG)</span>
+          </div>
+        `;
+      } else if (hasMg) {
+        const mgTiming = getEventTimingForDay(svtDay, 'mg', false);
+        const mgTimes = formatEventTimes(svtDay, mgTiming.hours, mgTiming.minutes);
+        const mgTimeDisplay = timePerspectiveMode === 'svt'
+          ? `<span class="time-server">${mgTimes.svtTimeStr}</span> <span style="font-size:0.75rem; color:var(--text-muted);">(${mgTimes.localTimeStr})</span>`
+          : `<span class="time-local" style="font-weight:700;">${mgTimes.localTimeStr}</span> <span style="font-size:0.75rem; color:var(--text-muted);">(${mgTimes.svtTimeStr})</span>`;
+
+        const mgShiftPill = mgTiming.isShifted ? `<span class="shift-tag-pill">${mgTiming.shiftTag}</span>` : '';
+
+        centerHtml += `
+          <div class="event-step-row">
+            <span class="step-num-pill">★</span>
+            <span class="step-event-name draggable-event" draggable="true" data-event-type="mg" title="Drag to another day to recalibrate MG cycle (every 2 days)"><span class="drag-handle-icon">⠿</span>${TANK_ICON_SVG} Marshal's Guard</span>
+            <span class="level-tag ${mgInfo.isUnset ? 'unselected' : (mgInfo.isReduced ? 'reduced' : 'normal')}" ${mgInfo.isUnset ? 'data-action="focus-level" title="Click to select Base MG Level"' : ''}>${mgInfo.levelDisplay}</span>
+            <div class="step-time-box">
+              ${mgTimeDisplay}
+            </div>
+            ${mgShiftPill}
+            <span style="font-size:0.75rem; color: var(--text-muted);">${mgInfo.reason}</span>
+          </div>
+        `;
+      } else if (hasSiege) {
+        const siegeTiming = getEventTimingForDay(svtDay, 'siege', false);
+        const siegeTimes = formatEventTimes(svtDay, siegeTiming.hours, siegeTiming.minutes);
+        const siegeTimeDisplay = timePerspectiveMode === 'svt'
+          ? `<span class="time-server">${siegeTimes.svtTimeStr}</span> <span style="font-size:0.75rem; color:var(--text-muted);">(${siegeTimes.localTimeStr})</span>`
+          : `<span class="time-local" style="font-weight:700;">${siegeTimes.localTimeStr}</span> <span style="font-size:0.75rem; color:var(--text-muted);">(${siegeTimes.svtTimeStr})</span>`;
+
+        const siegeShiftPill = siegeTiming.isShifted ? `<span class="shift-tag-pill">${siegeTiming.shiftTag}</span>` : '';
+
+        centerHtml += `
+          <div class="event-step-row">
+            <span class="step-num-pill">★</span>
+            <span class="step-event-name draggable-event" draggable="true" data-event-type="siege" title="Drag to another day to recalibrate Zombie Siege cycle (every 3 days)"><span class="drag-handle-icon">⠿</span>🧟 Zombie Siege</span>
+            <span class="legend-pill badge-siege">Alliance Defense</span>
+            <div class="step-time-box">
+              ${siegeTimeDisplay}
+            </div>
+            ${siegeShiftPill}
+            <span style="font-size:0.75rem; color: var(--text-muted);">Solo Event Day</span>
+          </div>
+        `;
+      } else {
+        const isSunday = svtDay.getUTCDay() === 0;
+        const offDayMsg = isSunday
+          ? "💤 Rest Day: No Marshal's Guard or Zombie Siege scheduled. Rest, recover, and prepare for the new VS week!"
+          : "💤 No Marshal's Guard or Zombie Siege scheduled. Focus on VS Duel milestones!";
+        centerHtml += `
+          <div class="event-step-row">
+            <span class="off-day-text">${offDayMsg}</span>
+          </div>
+        `;
+      }
+
+      // Buster Day conflict advisory banner for Saturday events
+      if (svtDay.getUTCDay() === 6 && (hasMg || hasSiege)) {
+        if (saturdayBusterTiming === 'late') {
+          centerHtml += `
+            <div class="buster-shift-banner">
+              <span class="buster-alert-icon">🛡️</span>
+              <div>
+                <strong>Buster Day Conflict Avoidance:</strong> Saturday events shifted to <strong>21:00 SVT (3h before Sunday reset)</strong> so members can focus on Enemy Buster PvP & shields at reset.
+              </div>
+            </div>
+          `;
+        } else {
+          centerHtml += `
+            <div class="buster-shift-banner is-warning">
+              <span class="buster-alert-icon">⚠️</span>
+              <div>
+                <strong>Buster Opening Conflict:</strong> Set to 00:10 SVT, which clashes directly with the Enemy Buster rush. Recommend shifting to <strong>21:00 SVT</strong>.
+              </div>
+            </div>
+          `;
+        }
+      }
+
+      centerHtml += '</div>';
+
+      // Right Action
+      const rightHtml = `
+        <div class="day-action-block">
+          <button class="btn-inspect" data-action="inspect">View Protocol</button>
+        </div>
+      `;
+
+      card.innerHTML = leftHtml + centerHtml + rightHtml;
+
+      // Click event for modal
+      card.querySelector('.btn-inspect').addEventListener('click', (e) => {
+        e.stopPropagation();
+        openDayModal(displayDay, svtDay);
+      });
+
+      card.addEventListener('click', () => {
+        openDayModal(displayDay, svtDay);
+      });
+
+      // Quick focus dropdown if level is unset
+      card.querySelectorAll('[data-action="focus-level"]').forEach(tag => {
+        tag.addEventListener('click', (e) => {
+          e.stopPropagation();
+          selectBaseLevel.focus();
+        });
+      });
+
+      // Drag & drop drop-target handlers on timeline card
+      card.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        card.classList.add('drop-target-hover');
+      });
+
+      card.addEventListener('dragleave', () => {
+        card.classList.remove('drop-target-hover');
+      });
+
+      card.addEventListener('drop', (e) => {
+        e.preventDefault();
+        card.classList.remove('drop-target-hover');
+        try {
+          const raw = e.dataTransfer.getData('text/plain');
+          if (raw) {
+            const data = JSON.parse(raw);
+            if (data.eventType) {
+              recalibrateEventSchedule(data.eventType, displayDay, svtDay);
+            }
+          }
+        } catch (err) {
+          console.error('Drop error:', err);
+        }
+      });
+
+      // Draggable items within card
+      card.querySelectorAll('.draggable-event').forEach(dragEl => {
+        dragEl.addEventListener('dragstart', (e) => {
+          const type = dragEl.getAttribute('data-event-type');
+          e.dataTransfer.setData('text/plain', JSON.stringify({
+            eventType: type,
+            sourceTimestamp: displayDay.getTime()
+          }));
+          e.dataTransfer.effectAllowed = 'move';
+          dragEl.classList.add('is-dragging');
+          document.body.classList.add(type === 'mg' ? 'drag-active-mg' : 'drag-active-siege');
+        });
+
+        dragEl.addEventListener('dragend', () => {
+          dragEl.classList.remove('is-dragging');
+          document.body.classList.remove('drag-active-mg', 'drag-active-siege');
+          document.querySelectorAll('.drop-target-hover').forEach(el => el.classList.remove('drop-target-hover'));
+        });
+      });
+
+      weeklyContainer.appendChild(card);
+    }
+  }
+
+  // --- MONTHLY GRID ---
+  function renderMonthlyView() {
+    monthlyGrid.innerHTML = '';
+    const tzShort = getTimezoneShortName(selectedTimezone);
+
+    const year = currentDate.getUTCFullYear();
+    const month = currentDate.getUTCMonth();
+
+    // Month name title with mode indicator
+    const monthFormatter = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' });
+    const monthTitle = monthFormatter.format(currentDate);
+
+    if (timePerspectiveMode === 'svt') {
+      periodTitle.textContent = `${monthTitle} • 🌐 Server Time (SVT)`;
+    } else {
+      periodTitle.textContent = `${monthTitle} • 📍 Local Time (${tzShort})`;
+    }
+
+    // First day of current month
+    const firstDayOfMonth = new Date(Date.UTC(year, month, 1, 0, 0, 0));
+    const startingDayOfWeek = firstDayOfMonth.getUTCDay(); // 0 = Sun
+
+    // Calendar grid starts on the Sunday on or before the 1st
+    const startDate = addDays(firstDayOfMonth, -startingDayOfWeek);
+
+    const todaySvt = normalizeToUtcDay(new Date(Date.now() - 2 * 3600 * 1000));
+    const todayLocalKey = getLocalDateKey(new Date(), selectedTimezone);
+
+    // Generate 35 or 42 cells (5 or 6 weeks)
+    for (let i = 0; i < 35; i++) {
+      const displayDay = addDays(startDate, i);
+      const isOutsideMonth = displayDay.getUTCMonth() !== month;
+      const dayOfWeek = displayDay.getUTCDay();
+
+      let svtDay = displayDay;
+      if (timePerspectiveMode === 'local') {
+        svtDay = findSvtDateForLocalDate(
+          displayDay.getUTCFullYear(),
+          displayDay.getUTCMonth() + 1,
+          displayDay.getUTCDate(),
+          selectedTimezone
+        );
+      }
+
+      const isToday = timePerspectiveMode === 'svt'
+        ? getDaysDiff(displayDay, todaySvt) === 0
+        : getLocalDateKey(displayDay, 'UTC') === todayLocalKey;
+
+      const isReduced = isReducedMgDay(svtDay);
+      const isWeekend = isReduced;
+
+      const hasMg = isMgDay(svtDay);
+      const hasSiege = isSiegeDay(svtDay);
+      const isJoint = hasMg && hasSiege;
+
+      const mgInfo = getMgLevelForDay(svtDay);
+      const vsDay = VS_DUEL_INFO[svtDay.getUTCDay()];
+
+      const cell = document.createElement('div');
+      cell.className = `month-day-cell ${isOutsideMonth ? 'outside-month' : ''} ${isWeekend ? 'is-weekend' : ''} ${isToday ? 'is-today-cell' : ''}`;
+      cell.setAttribute('data-day-timestamp', displayDay.getTime());
+
+      const monthShort = displayDay.toLocaleDateString('en-US', { month: 'short', timeZone: 'UTC' });
+      const dateDisplayHtml = isOutsideMonth
+        ? `<span class="outside-month-pill">${monthShort} ${displayDay.getUTCDate()}</span>`
+        : `<span class="cell-date-num">${displayDay.getUTCDate()}</span>`;
+
+      let cellHtml = `
+        <div class="cell-top-bar">
+          ${dateDisplayHtml}
+          <span class="cell-vs-badge">${vsDay.short}</span>
+        </div>
+        <div class="cell-events-list">
+      `;
+
+      if (isJoint) {
+        cellHtml += `<div class="cell-event-chip chip-joint-banner">⚔️ JOINT EVENT DAY</div>`;
+      }
+
+      if (hasMg) {
+        const mgTiming = getEventTimingForDay(svtDay, 'mg', isJoint);
+        const mgTimes = formatEventTimes(svtDay, mgTiming.hours, mgTiming.minutes);
+        const chipTimeStr = timePerspectiveMode === 'svt' ? mgTimes.svtTimeStr : mgTimes.localTimeOnlyStr;
+        const shiftStar = mgTiming.isShifted ? ' ★' : '';
+        cellHtml += `
+          <div class="cell-event-chip chip-mg draggable-event ${mgInfo.isReduced ? 'chip-reduced' : ''} ${mgTiming.isShifted ? 'chip-buster-shift' : ''}" draggable="true" data-event-type="mg" title="${mgTiming.isShifted ? 'Shifted to 21:00 SVT (3h before reset) to avoid Buster rush' : 'Drag to another day to recalibrate MG cycle (every 2 days)'}">
+            <span style="display:inline-flex;align-items:center;gap:4px;"><span class="drag-handle-icon">⠿</span>${TANK_ICON_SVG}${mgInfo.chipDisplay}${shiftStar}</span>
+            <span>${chipTimeStr}</span>
+          </div>
+        `;
+      }
+
+      if (hasSiege) {
+        const siegeTiming = getEventTimingForDay(svtDay, 'siege', isJoint);
+        const siegeTimes = formatEventTimes(svtDay, siegeTiming.hours, siegeTiming.minutes);
+        const chipTimeStr = timePerspectiveMode === 'svt' ? siegeTimes.svtTimeStr : siegeTimes.localTimeOnlyStr;
+        const shiftStar = siegeTiming.isShifted ? ' ★' : '';
+        cellHtml += `
+          <div class="cell-event-chip chip-siege draggable-event ${siegeTiming.isShifted ? 'chip-buster-shift' : ''}" draggable="true" data-event-type="siege" title="${siegeTiming.isShifted ? 'Shifted to avoid Buster rush' : 'Drag to another day to recalibrate Zombie Siege cycle (every 3 days)'}">
+            <span><span class="drag-handle-icon">⠿</span>Zombie Siege${shiftStar}</span>
+            <span>${chipTimeStr}</span>
+          </div>
+        `;
+      }
+
+      cellHtml += `</div>`;
+      cell.innerHTML = cellHtml;
+
+      cell.addEventListener('click', () => {
+        openDayModal(displayDay, svtDay);
+      });
+
+      // Drag & drop drop-target handlers on month day cell
+      cell.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        cell.classList.add('drop-target-hover');
+      });
+
+      cell.addEventListener('dragleave', () => {
+        cell.classList.remove('drop-target-hover');
+      });
+
+      cell.addEventListener('drop', (e) => {
+        e.preventDefault();
+        cell.classList.remove('drop-target-hover');
+        try {
+          const raw = e.dataTransfer.getData('text/plain');
+          if (raw) {
+            const data = JSON.parse(raw);
+            if (data.eventType) {
+              recalibrateEventSchedule(data.eventType, displayDay, svtDay);
+            }
+          }
+        } catch (err) {
+          console.error('Drop error:', err);
+        }
+      });
+
+      // Draggable items within cell
+      cell.querySelectorAll('.draggable-event').forEach(dragEl => {
+        dragEl.addEventListener('dragstart', (e) => {
+          e.stopPropagation();
+          const type = dragEl.getAttribute('data-event-type');
+          e.dataTransfer.setData('text/plain', JSON.stringify({
+            eventType: type,
+            sourceTimestamp: displayDay.getTime()
+          }));
+          e.dataTransfer.effectAllowed = 'move';
+          dragEl.classList.add('is-dragging');
+          document.body.classList.add(type === 'mg' ? 'drag-active-mg' : 'drag-active-siege');
+        });
+
+        dragEl.addEventListener('dragend', (e) => {
+          e.stopPropagation();
+          dragEl.classList.remove('is-dragging');
+          document.body.classList.remove('drag-active-mg', 'drag-active-siege');
+          document.querySelectorAll('.drop-target-hover').forEach(el => el.classList.remove('drop-target-hover'));
+        });
+
+        dragEl.addEventListener('click', (e) => {
+          e.stopPropagation();
+          openDayModal(displayDay, svtDay);
+        });
+      });
+
+      monthlyGrid.appendChild(cell);
+    }
+  }
+
+  // --- Day Detail Modal ---
+  function openDayModal(displayDay, svtDay) {
+    const svtDateFormatted = svtDay.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+    const svtDayName = svtDay.toLocaleDateString('en-US', { weekday: 'long', timeZone: 'UTC' });
+    
+    const localTimesPreview = formatEventTimes(svtDay, 0, 10);
+    const localDateFormatted = displayDay.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+    const localDayName = displayDay.toLocaleDateString('en-US', { weekday: 'long', timeZone: 'UTC' });
+    const tzShort = getTimezoneShortName(selectedTimezone);
+
+    modalServerDay.textContent = `Server: ${svtDayName}, ${svtDateFormatted} (00:00 SVT Reset)`;
+    modalLocalDay.textContent = `Local: ${localDayName}, ${localDateFormatted} (${tzShort})`;
+
+    const hasMg = isMgDay(svtDay);
+    const hasSiege = isSiegeDay(svtDay);
+    const isJoint = hasMg && hasSiege;
+    const mgInfo = hasMg ? getMgLevelForDay(svtDay) : null;
+    const vsDay = VS_DUEL_INFO[svtDay.getUTCDay()];
+
+    let html = `
+      <div class="modal-section">
+        <div class="modal-section-title">VS Duel Arms Race Context</div>
+        <div class="modal-day-badge">${vsDay.name}</div>
+        <p style="font-size:0.85rem; color:var(--text-muted); margin-top:8px;">
+          ${vsDay.isBuster 
+            ? '🔥 <strong>Enemy Buster Day (Kill Event):</strong> High danger zone. Marshal’s Guard is automatically reduced by 1 level to reduce alliance member casualty risk and conserve troops.' 
+            : 'Standard duel day. Coordinate troop queues, tech buffs, and stamina usage prior to event start.'}
+        </p>
+      </div>
+    `;
+
+    let busterModalAlert = '';
+    if (svtDay.getUTCDay() === 6 && (hasMg || hasSiege)) {
+      busterModalAlert = `
+        <div class="modal-alert-box buster-alert">
+          <div class="modal-alert-title">⚔️ Enemy Buster (Kill Event) Day Coordination</div>
+          <div class="modal-alert-desc">
+            Enemy Buster begins aggressively at server reset (00:00 SVT) with cross-server warzone invasions. ${saturdayBusterTiming === 'late'
+              ? 'To prevent troops being divided between PvP defense/raids and alliance events, Saturday events are <strong>shifted to 21:00 SVT (3 hours before next reset)</strong> once Buster fighting calms down.'
+              : 'Events are currently set to <strong>00:10 SVT (Standard Reset)</strong>, which clashes directly with Enemy Buster opening. You can switch to 21:00 SVT in the settings dropdown at the top.'}
+          </div>
+        </div>
+      `;
+    }
+
+    if (isJoint) {
+      const mgTiming = getEventTimingForDay(svtDay, 'mg', true);
+      const siegeTiming = getEventTimingForDay(svtDay, 'siege', true);
+      const mgTimes = formatEventTimes(svtDay, mgTiming.hours, mgTiming.minutes);
+      const siegeTimes = formatEventTimes(svtDay, siegeTiming.hours, siegeTiming.minutes);
+
+      html = busterModalAlert + html + `
+        <div class="modal-section">
+          <div class="modal-section-title">Sequence Protocol (Joint Event Day)</div>
+          
+          <div class="modal-event-card" style="border-left: 4px solid var(--gold-primary);">
+            <div class="modal-event-header">
+              <span class="modal-event-name" style="display:inline-flex;align-items:center;gap:6px;">1. ${TANK_ICON_SVG} Marshal's Guard</span>
+              <span class="level-tag ${mgInfo.isUnset ? 'unselected' : (mgInfo.isReduced ? 'reduced' : 'normal')}">${mgInfo.isUnset ? 'Select Base Level' : mgInfo.levelDisplay}</span>
+            </div>
+            <div class="modal-time-detail">
+              <span>Server: ${mgTimes.svtTimeStr} (${mgTiming.shiftTag})</span>
+              <span>Local: ${mgTimes.localTimeStr}</span>
+            </div>
+            <p style="font-size:0.82rem; color:${mgInfo.isUnset ? 'var(--orange-warn)' : 'var(--text-muted)'};">
+              ${mgInfo.isUnset ? '⚠️ Base MG level is not selected yet. Choose a base level at the top of the page.' : mgInfo.reason + `. Rallies begin promptly at ${mgTimes.svtTimeStr} to finish before Zombie Siege launches.`}
+            </p>
+          </div>
+
+          <div class="modal-event-card" style="border-left: 4px solid var(--purple-siege); margin-top: 10px;">
+            <div class="modal-event-header">
+              <span class="modal-event-name">2. Zombie Siege</span>
+              <span class="legend-pill badge-siege">Alliance Defense</span>
+            </div>
+            <div class="modal-time-detail">
+              <span>Server: ${siegeTimes.svtTimeStr} (${siegeTiming.shiftTag})</span>
+              <span>Local: ${siegeTimes.localTimeStr}</span>
+            </div>
+            <p style="font-size:0.82rem; color:var(--text-muted);">
+              Begins 40 minutes after Marshal's Guard start to ensure all players have their squads returned and reinforced.
+            </p>
+          </div>
+        </div>
+      `;
+    } else if (hasMg) {
+      const mgTiming = getEventTimingForDay(svtDay, 'mg', false);
+      const mgTimes = formatEventTimes(svtDay, mgTiming.hours, mgTiming.minutes);
+      html = busterModalAlert + html + `
+        <div class="modal-section">
+          <div class="modal-section-title">Scheduled Event</div>
+          <div class="modal-event-card" style="border-left: 4px solid var(--gold-primary);">
+            <div class="modal-event-header">
+              <span class="modal-event-name" style="display:inline-flex;align-items:center;gap:6px;">${TANK_ICON_SVG} Marshal's Guard</span>
+              <span class="level-tag ${mgInfo.isUnset ? 'unselected' : (mgInfo.isReduced ? 'reduced' : 'normal')}">${mgInfo.isUnset ? 'Select Base Level' : mgInfo.levelDisplay}</span>
+            </div>
+            <div class="modal-time-detail">
+              <span>Server: ${mgTimes.svtTimeStr} (${mgTiming.shiftTag})</span>
+              <span>Local: ${mgTimes.localTimeStr}</span>
+            </div>
+            <p style="font-size:0.82rem; color:${mgInfo.isUnset ? 'var(--orange-warn)' : 'var(--text-muted)'}; margin-top:4px;">
+              ${mgInfo.isUnset ? '⚠️ Base MG level is not selected yet. Choose a base level in the dropdown at the top.' : mgInfo.reason + `. Commences at ${mgTimes.svtTimeStr}.`}
+            </p>
+          </div>
+        </div>
+      `;
+    } else if (hasSiege) {
+      const siegeTiming = getEventTimingForDay(svtDay, 'siege', false);
+      const siegeTimes = formatEventTimes(svtDay, siegeTiming.hours, siegeTiming.minutes);
+      html = busterModalAlert + html + `
+        <div class="modal-section">
+          <div class="modal-section-title">Scheduled Event</div>
+          <div class="modal-event-card" style="border-left: 4px solid var(--purple-siege);">
+            <div class="modal-event-header">
+              <span class="modal-event-name">🧟 Zombie Siege</span>
+              <span class="legend-pill badge-siege">Alliance Defense</span>
+            </div>
+            <div class="modal-time-detail">
+              <span>Server: ${siegeTimes.svtTimeStr} (${siegeTiming.shiftTag})</span>
+              <span>Local: ${siegeTimes.localTimeStr}</span>
+            </div>
+            <p style="font-size:0.82rem; color:var(--text-muted); margin-top:4px;">
+              Solo Zombie Siege day. Defend alliance headquarters against escalating zombie waves.
+            </p>
+          </div>
+        </div>
+      `;
+    } else {
+      const isSunday = svtDay.getUTCDay() === 0;
+      const sectionTitle = isSunday ? 'Rest Day' : 'Off-Day';
+      const sectionDesc = isSunday
+        ? "Sunday is an Alliance Rest Day. Neither Marshal's Guard nor Zombie Siege occurs on this day. Alliance energy can be dedicated to rest, recovery, and preparation for the upcoming VS Duel week."
+        : "Neither Marshal's Guard nor Zombie Siege occurs on this day. Alliance energy can be dedicated entirely to VS duel arms race milestones and gathering.";
+      html += `
+        <div class="modal-section">
+          <div class="modal-section-title">${sectionTitle}</div>
+          <p style="font-size:0.9rem; color:var(--text-muted); margin-top:6px;">
+            ${sectionDesc}
+          </p>
+        </div>
+      `;
+    }
+
+    modalBody.innerHTML = html;
+    modalBackdrop.classList.add('active');
+  }
+
+  function closeModal() {
+    modalBackdrop.classList.remove('active');
+  }
+
+  // --- Clock & Realtime Display ---
+  function updateLiveClocks() {
+    const now = new Date();
+
+    // Server time: UTC - 2 hours
+    const serverTimeMs = now.getTime() - 2 * 3600 * 1000;
+    const serverDate = new Date(serverTimeMs);
+
+    const svtHours = String(serverDate.getUTCHours()).padStart(2, '0');
+    const svtMinutes = String(serverDate.getUTCMinutes()).padStart(2, '0');
+    const svtSeconds = String(serverDate.getUTCSeconds()).padStart(2, '0');
+    serverClockTime.textContent = `${svtHours}:${svtMinutes}:${svtSeconds} SVT`;
+
+    const svtDayName = serverDate.toLocaleDateString('en-US', { weekday: 'long', timeZone: 'UTC' });
+    const svtDateStr = serverDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+    serverClockDate.textContent = `${svtDayName}, ${svtDateStr}`;
+
+    // Local time in selected timezone
+    const localTimeFormatter = new Intl.DateTimeFormat('en-US', {
+      timeZone: selectedTimezone,
+      hour: 'numeric',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true
+    });
+    localClockTime.textContent = localTimeFormatter.format(now);
+
+    const localDateFormatter = new Intl.DateTimeFormat('en-US', {
+      timeZone: selectedTimezone,
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+      timeZoneName: 'short'
+    });
+    localClockDate.textContent = localDateFormatter.format(now);
+  }
+
+  // --- Initialize Timezone Dropdown ---
+  function initTimezoneSelect() {
+    selectTz.innerHTML = '';
+
+    let found = TIMEZONE_LIST.some(item => item.tz === selectedTimezone);
+    if (!found) {
+      TIMEZONE_LIST.unshift({
+        label: `Current: ${selectedTimezone}`,
+        tz: selectedTimezone
+      });
+    }
+
+    TIMEZONE_LIST.forEach(item => {
+      const opt = document.createElement('option');
+      opt.value = item.tz;
+      opt.textContent = item.label;
+      if (item.tz === selectedTimezone) {
+        opt.selected = true;
+      }
+      selectTz.appendChild(opt);
+    });
+    selectTz.value = selectedTimezone;
+
+    selectTz.addEventListener('change', (e) => {
+      selectedTimezone = e.target.value;
+      safeSetStorage('user-tz-pref', selectedTimezone);
+      updateLiveClocks();
+      renderCurrentView();
+    });
+  }
+
+  // --- Initialize Base MG Level ---
+  function initBaseMgLevel() {
+    baseMgLevel = loadStoredBaseMgLevel();
+    if (selectBaseLevel) {
+      if (baseMgLevel !== null) {
+        let hasOption = Array.from(selectBaseLevel.options).some(o => o.value === String(baseMgLevel));
+        if (!hasOption) {
+          const customOpt = document.createElement('option');
+          customOpt.value = String(baseMgLevel);
+          customOpt.textContent = `Level ${baseMgLevel}`;
+          selectBaseLevel.appendChild(customOpt);
+        }
+        selectBaseLevel.value = String(baseMgLevel);
+        selectBaseLevel.classList.remove('select-needs-action');
+      } else {
+        selectBaseLevel.value = '';
+        selectBaseLevel.classList.add('select-needs-action');
+      }
+    }
+  }
+
+  // --- Toast Notifications ---
+  let toastTimeout = null;
+  function showToast(messageHtml, extraClass = '') {
+    if (toastTimeout) clearTimeout(toastTimeout);
+    toastBanner.innerHTML = `<div class="toast-msg ${extraClass}">${messageHtml}</div>`;
+    toastTimeout = setTimeout(() => {
+      toastBanner.innerHTML = '';
+    }, 4500);
+  }
+
+  // --- Reset Schedule Button Visibility ---
+  function updateResetButtonVisibility() {
+    if (btnResetSchedule) {
+      const isCustom = mgAnchorDate.getTime() !== DEFAULT_MG_ANCHOR.getTime() ||
+                       siegeAnchorDate.getTime() !== DEFAULT_SIEGE_ANCHOR.getTime();
+      btnResetSchedule.style.display = isCustom ? 'inline-flex' : 'none';
+    }
+  }
+
+  function recalibrateEventSchedule(eventType, displayTargetDate, svtTargetDate) {
+    // Determine the SVT anchor date
+    const targetUtc = normalizeToUtcDay(svtTargetDate || displayTargetDate);
+    const dateFormatted = targetUtc.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
+    const dayName = targetUtc.toLocaleDateString('en-US', { weekday: 'long', timeZone: 'UTC' });
+
+    if (eventType === 'mg') {
+      mgAnchorDate = targetUtc;
+      safeSetStorage('mg-anchor-date', mgAnchorDate.toISOString());
+      showToast(`🛡️ <strong>Marshal's Guard</strong> recalibrated to <strong>${dayName}, ${dateFormatted}</strong> (repeats every 2 days)`);
+    } else if (eventType === 'siege') {
+      siegeAnchorDate = targetUtc;
+      safeSetStorage('siege-anchor-date', siegeAnchorDate.toISOString());
+      showToast(`🧟 <strong>Zombie Siege</strong> recalibrated to <strong>${dayName}, ${dateFormatted}</strong> (repeats every 3 days)`, 'toast-siege');
+    }
+
+    updateResetButtonVisibility();
+    renderCurrentView();
+  }
+
+  function resetScheduleToDefault() {
+    mgAnchorDate = DEFAULT_MG_ANCHOR;
+    siegeAnchorDate = DEFAULT_SIEGE_ANCHOR;
+    safeRemoveStorage('mg-anchor-date');
+    safeRemoveStorage('siege-anchor-date');
+    updateResetButtonVisibility();
+    showToast('↺ Schedule reset to default rotation (Tue MG / Wed Siege)', 'toast-reset');
+    renderCurrentView();
+  }
+
+  // --- Theme Mode Management ---
+  function getSystemPreferredTheme() {
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+
+  function applyThemeMode(mode) {
+    currentThemeMode = mode;
+    let resolvedTheme = mode;
+    if (mode === 'system') {
+      resolvedTheme = getSystemPreferredTheme();
+    }
+    document.documentElement.setAttribute('data-theme', resolvedTheme);
+
+    [themeSystemBtn, themeLightBtn, themeDarkBtn].forEach(btn => {
+      if (btn) btn.classList.remove('active');
+    });
+
+    if (mode === 'system' && themeSystemBtn) themeSystemBtn.classList.add('active');
+    else if (mode === 'light' && themeLightBtn) themeLightBtn.classList.add('active');
+    else if (mode === 'dark' && themeDarkBtn) themeDarkBtn.classList.add('active');
+
+    safeSetStorage('theme-mode-pref', mode);
+  }
+
+  if (window.matchMedia) {
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+      if (currentThemeMode === 'system') {
+        applyThemeMode('system');
+      }
+    });
+  }
+
+  // --- Event Listeners Setup ---
+  function setupEventListeners() {
+    // Clock toggles
+    if (btnToggleSvt) {
+      btnToggleSvt.addEventListener('click', () => setTimePerspective('svt'));
+      btnToggleSvt.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          setTimePerspective('svt');
+        }
+      });
+    }
+
+    if (btnToggleLocal) {
+      btnToggleLocal.addEventListener('click', () => setTimePerspective('local'));
+      btnToggleLocal.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          setTimePerspective('local');
+        }
+      });
+    }
+
+    // View switcher
+    btnViewWeek.addEventListener('click', () => {
+      currentView = 'week';
+      safeSetStorage('calendar-view-mode', 'week');
+      btnViewWeek.classList.add('active');
+      btnViewMonth.classList.remove('active');
+      weeklyView.classList.add('active');
+      monthlyView.classList.remove('active');
+      renderCurrentView();
+    });
+
+    btnViewMonth.addEventListener('click', () => {
+      currentView = 'month';
+      safeSetStorage('calendar-view-mode', 'month');
+      btnViewMonth.classList.add('active');
+      btnViewWeek.classList.remove('active');
+      monthlyView.classList.add('active');
+      weeklyView.classList.remove('active');
+      renderCurrentView();
+    });
+
+    // Period Navigation
+    navPrev.addEventListener('click', () => {
+      if (currentView === 'week') {
+        currentDate = addDays(currentDate, -7);
+      } else {
+        currentDate = new Date(Date.UTC(currentDate.getUTCFullYear(), currentDate.getUTCMonth() - 1, 1, 0, 0, 0));
+      }
+      renderCurrentView();
+    });
+
+    navNext.addEventListener('click', () => {
+      if (currentView === 'week') {
+        currentDate = addDays(currentDate, 7);
+      } else {
+        currentDate = new Date(Date.UTC(currentDate.getUTCFullYear(), currentDate.getUTCMonth() + 1, 1, 0, 0, 0));
+      }
+      renderCurrentView();
+    });
+
+    navToday.addEventListener('click', () => {
+      if (timePerspectiveMode === 'svt') {
+        currentDate = normalizeToUtcDay(new Date(Date.now() - 2 * 3600 * 1000));
+      } else {
+        const nowLocalParts = new Intl.DateTimeFormat('en-US', {
+          timeZone: selectedTimezone,
+          year: 'numeric',
+          month: 'numeric',
+          day: 'numeric'
+        }).formatToParts(new Date());
+        const y = parseInt(nowLocalParts.find(p => p.type === 'year').value, 10);
+        const m = parseInt(nowLocalParts.find(p => p.type === 'month').value, 10);
+        const d = parseInt(nowLocalParts.find(p => p.type === 'day').value, 10);
+        currentDate = new Date(Date.UTC(y, m - 1, d, 0, 0, 0));
+      }
+      renderCurrentView();
+    });
+
+    // Reset schedule rotation
+    if (btnResetSchedule) {
+      btnResetSchedule.addEventListener('click', resetScheduleToDefault);
+    }
+
+    // Base MG Level
+    selectBaseLevel.addEventListener('change', (e) => {
+      const val = parseInt(e.target.value, 10);
+      if (!isNaN(val)) {
+        baseMgLevel = val;
+        safeSetStorage('base-mg-level', String(baseMgLevel));
+        selectBaseLevel.classList.remove('select-needs-action');
+        showToast(`Base MG Level updated to <strong>Level ${baseMgLevel}</strong> (saved)`);
+      } else {
+        baseMgLevel = null;
+        safeRemoveStorage('base-mg-level');
+        selectBaseLevel.classList.add('select-needs-action');
+        showToast('Base MG Level cleared (prompting selection)');
+      }
+      renderCurrentView();
+    });
+
+    // Saturday Buster Timing
+    if (selectSaturdaySchedule) {
+      selectSaturdaySchedule.value = saturdayBusterTiming;
+      selectSaturdaySchedule.addEventListener('change', (e) => {
+        saturdayBusterTiming = e.target.value;
+        safeSetStorage('saturday-buster-timing', saturdayBusterTiming);
+        const msg = saturdayBusterTiming === 'late'
+          ? '🛡️ Saturday events shifted to <strong>21:00 SVT (3h before Sunday reset)</strong>'
+          : '⚠️ Saturday events set to <strong>00:10 SVT (Standard Reset)</strong>';
+        showToast(msg);
+        renderCurrentView();
+      });
+    }
+
+    // Themes
+    themeSystemBtn.addEventListener('click', () => applyThemeMode('system'));
+    themeLightBtn.addEventListener('click', () => applyThemeMode('light'));
+    themeDarkBtn.addEventListener('click', () => applyThemeMode('dark'));
+
+    // Modal
+    modalCloseBtn.addEventListener('click', closeModal);
+    modalBackdrop.addEventListener('click', (e) => {
+      if (e.target === modalBackdrop) closeModal();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modalBackdrop.classList.contains('active')) {
+        closeModal();
+      }
+    });
+  }
+
+  // --- Bootstrap ---
+  function init() {
+    const savedTheme = safeGetStorage('theme-mode-pref', 'system');
+    applyThemeMode(savedTheme);
+
+    // Initialize View Mode
+    if (currentView === 'month') {
+      btnViewMonth.classList.add('active');
+      btnViewWeek.classList.remove('active');
+      monthlyView.classList.add('active');
+      weeklyView.classList.remove('active');
+    } else {
+      btnViewWeek.classList.add('active');
+      btnViewMonth.classList.remove('active');
+      weeklyView.classList.add('active');
+      monthlyView.classList.remove('active');
+    }
+
+    if (selectSaturdaySchedule) {
+      selectSaturdaySchedule.value = saturdayBusterTiming;
+    }
+
+    updateResetButtonVisibility();
+    initBaseMgLevel();
+    initTimezoneSelect();
+    setupEventListeners();
+    updateLiveClocks();
+    setInterval(updateLiveClocks, 1000);
+    renderCurrentView();
+  }
+
+  init();
+})();
+
+  </script>
+</body>
+</html>
