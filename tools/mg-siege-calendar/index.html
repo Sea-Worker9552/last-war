@@ -26,7 +26,7 @@
 
   --gold-primary: #eab308;
   --gold-glow: rgba(234, 179, 8, 0.2);
-  --orange-warn: #f97316;
+  --orange-warn: #fb923c;
   --orange-glow: rgba(249, 115, 22, 0.2);
   --purple-siege: #a855f7;
   --purple-glow: rgba(168, 85, 247, 0.2);
@@ -510,6 +510,72 @@ html[data-theme="light"] .theme-btn.active {
   max-width: 250px;
 }
 
+/* Mobile Alliance Settings Accordion Bar (Desktop: Hidden) */
+.mobile-settings-toggle-bar {
+  display: none;
+}
+
+.settings-summary-pill {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: rgba(234, 179, 8, 0.18);
+  color: #fef08a;
+  border: 1px solid rgba(234, 179, 8, 0.4);
+  white-space: nowrap;
+}
+
+.settings-summary-pill.needs-attention {
+  background: rgba(249, 115, 22, 0.2);
+  color: #fed7aa;
+  border-color: rgba(249, 115, 22, 0.5);
+}
+
+/* Mobile Month Dots (Desktop: Hidden) */
+.cell-mobile-dots {
+  display: none;
+}
+
+.mobile-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.mobile-dot.dot-mg {
+  background: #facc15;
+  box-shadow: 0 0 5px rgba(234, 179, 8, 0.7);
+}
+
+.mobile-dot.dot-mg.dot-reduced {
+  background: #fb923c;
+  box-shadow: 0 0 5px rgba(249, 115, 22, 0.7);
+}
+
+.mobile-dot.dot-siege {
+  background: #c084fc;
+  box-shadow: 0 0 5px rgba(168, 85, 247, 0.7);
+}
+
+.mobile-dot.dot-joint {
+  background: #34d399;
+  border: 1px solid #10b981;
+  box-shadow: 0 0 5px rgba(16, 185, 129, 0.7);
+}
+
+.mobile-dot.dot-buster {
+  background: #f87171;
+  box-shadow: 0 0 5px rgba(239, 68, 68, 0.7);
+}
+
+/* Modal Drag Handle (Desktop: Hidden) */
+.modal-drag-handle {
+  display: none;
+}
+
 /* Legend Row */
 .legend-row {
   display: flex;
@@ -747,14 +813,20 @@ html[data-theme="light"] .toast-msg {
   grid-template-columns: 240px 1fr auto;
   gap: 20px;
   align-items: center;
-  transition: transform 0.2s, border-color 0.2s, background 0.2s;
+  transition: transform 0.15s ease, border-color 0.2s, background 0.2s;
   position: relative;
   overflow: hidden;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .day-timeline-card:hover {
   background: var(--bg-card-hover);
   border-color: rgba(255, 255, 255, 0.15);
+}
+
+.day-timeline-card:active {
+  transform: scale(0.995);
 }
 
 .day-timeline-card.is-today {
@@ -898,20 +970,20 @@ html[data-theme="light"] .toast-msg {
 
 .level-tag.normal {
   background: rgba(234, 179, 8, 0.2);
-  color: var(--gold-primary);
-  border: 1px solid rgba(234, 179, 8, 0.4);
+  color: #fef08a;
+  border: 1px solid rgba(234, 179, 8, 0.5);
 }
 
 .level-tag.reduced {
-  background: rgba(249, 115, 22, 0.2);
-  color: var(--orange-warn);
-  border: 1px solid rgba(249, 115, 22, 0.4);
+  background: rgba(249, 115, 22, 0.22);
+  color: #fed7aa;
+  border: 1px solid rgba(249, 115, 22, 0.5);
 }
 
 .level-tag.unselected {
-  background: rgba(249, 115, 22, 0.15);
-  color: var(--orange-warn);
-  border: 1px dashed rgba(249, 115, 22, 0.6);
+  background: rgba(249, 115, 22, 0.18);
+  color: #fed7aa;
+  border: 1px dashed rgba(249, 115, 22, 0.7);
   cursor: pointer;
   letter-spacing: 0.2px;
 }
@@ -1436,22 +1508,393 @@ html[data-theme="light"] .toast-msg {
   justify-content: space-between;
 }
 
-/* Responsive adjustments */
+/* ==========================================================================
+   RESPONSIVE ADJUSTMENTS (Tablet & Mobile Optimized)
+   ========================================================================== */
 @media (max-width: 900px) {
+  .app-container {
+    padding: 0 16px;
+    margin-top: 16px;
+  }
+
+  .controls-top-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .view-switch-group {
+    width: 100%;
+  }
+
+  .view-btn {
+    flex: 1;
+    justify-content: center;
+    min-height: 44px;
+  }
+
+  .period-nav-group {
+    width: 100%;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .nav-arrow-btn, .nav-today-btn, .nav-reset-btn {
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .current-period-title {
+    width: 100%;
+    order: 3;
+    margin-top: 4px;
+    font-size: 1.05rem;
+    text-align: center;
+  }
+
+  /* Alliance Settings Accordion */
+  .mobile-settings-toggle-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    background: rgba(30, 41, 59, 0.85);
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: var(--text-main);
+    font-family: var(--font-sans);
+    cursor: pointer;
+    min-height: 46px;
+    box-sizing: border-box;
+    transition: background 0.2s, border-color 0.2s;
+  }
+
+  .mobile-settings-toggle-bar:hover, .mobile-settings-toggle-bar:focus-visible {
+    background: rgba(51, 65, 85, 0.95);
+    border-color: rgba(234, 179, 8, 0.4);
+  }
+
+  .settings-toggle-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .settings-toggle-title {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .settings-toggle-chevron {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    transition: transform 0.25s ease;
+  }
+
+  .mobile-settings-toggle-bar.is-expanded .settings-toggle-chevron {
+    transform: rotate(180deg);
+  }
+
+  .settings-group.collapsible-settings {
+    display: none;
+    width: 100%;
+    flex-direction: column;
+    gap: 12px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .settings-group.collapsible-settings.is-open {
+    display: flex !important;
+  }
+
   .day-timeline-card {
     grid-template-columns: 1fr;
     gap: 12px;
   }
-  .controls-top-row {
-    flex-direction: column;
-    align-items: stretch;
+
+  .day-action-block {
+    text-align: left;
   }
-  .settings-group {
-    justify-content: space-between;
+
+  .btn-inspect {
+    width: 100%;
+    min-height: 42px;
+    text-align: center;
+    justify-content: center;
   }
+}
+
+@media (max-width: 768px) {
+  /* Header & Dual Clocks (Side-by-side 50/50 split) */
+  .app-header {
+    padding: 10px 0;
+  }
+
+  .header-container {
+    padding: 0 14px;
+    gap: 10px;
+  }
+
+  .brand-block {
+    width: 100%;
+  }
+
+  .app-title {
+    font-size: 1.18rem;
+    letter-spacing: -0.3px;
+    line-height: 1.25;
+  }
+
+  .app-tagline {
+    display: none; /* Hide on mobile to preserve vertical space */
+  }
+
   .clocks-panel {
     width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .clock-card {
+    min-width: 0;
+    width: 100%;
+    padding: 8px 10px;
+    box-sizing: border-box;
+    border-radius: 8px;
+  }
+
+  .clock-label {
+    font-size: 0.62rem;
+    letter-spacing: 0.3px;
+  }
+
+  .clock-time {
+    font-size: 0.95rem;
+  }
+
+  .clock-date {
+    font-size: 0.65rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .active-view-tag {
+    font-size: 0.52rem;
+    padding: 1px 4px;
+  }
+
+  .theme-switch-container {
+    grid-column: 1 / -1;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 2px;
+  }
+
+  .theme-toggle-group {
+    width: 100%;
+    display: flex;
+  }
+
+  .theme-btn {
+    flex: 1;
+    justify-content: center;
+    padding: 6px 4px;
+    font-size: 0.72rem;
+    min-height: 38px;
+  }
+
+  /* Compact 7-Column Month Grid (Zero horizontal scroll) */
+  .month-calendar-wrapper {
+    overflow-x: hidden;
+  }
+
+  .month-calendar-inner {
+    min-width: 100% !important;
+    width: 100% !important;
+  }
+
+  .month-day-headers {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+
+  .day-header {
+    padding: 6px 1px;
+    font-size: 0.72rem;
+    min-width: 0;
+  }
+
+  .day-header .header-sub {
+    display: none;
+  }
+
+  .month-days-grid {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    grid-auto-rows: minmax(64px, auto);
+  }
+
+  .month-day-cell {
+    padding: 4px 2px;
+    gap: 2px;
+    min-height: 64px;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  .cell-top-bar {
+    justify-content: center;
+    width: 100%;
+    gap: 2px;
+  }
+
+  .cell-date-num {
+    font-size: 0.85rem;
+  }
+
+  .outside-month-pill {
+    font-size: 0.62rem;
+    padding: 1px 3px;
+  }
+
+  .cell-vs-badge {
+    display: none; /* Hidden on mini mobile cells to keep uncluttered */
+  }
+
+  .cell-events-list {
+    display: none; /* Replaced by colored event dots */
+  }
+
+  .cell-mobile-dots {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    margin-top: 4px;
+    flex-wrap: wrap;
+    max-width: 100%;
+  }
+
+  /* Mobile Slide-Up Bottom Sheet Modal */
+  .modal-backdrop {
+    padding: 0;
+    align-items: flex-end; /* Bottom sheet align */
+  }
+
+  .day-detail-modal {
+    max-width: 100%;
+    width: 100%;
+    max-height: 88vh;
+    border-radius: 18px 18px 0 0;
+    border-bottom: none;
+    display: flex;
+    flex-direction: column;
+    animation: slideUpSheet 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    padding-bottom: env(safe-area-inset-bottom, 16px);
+  }
+
+  .modal-drag-handle {
+    display: block;
+    width: 44px;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 3px;
+    margin: 10px auto 4px;
+    cursor: grab;
+    flex-shrink: 0;
+  }
+
+  .modal-header {
+    padding: 12px 16px;
+  }
+
+  .modal-server-day {
+    font-size: 1.05rem;
+  }
+
+  .modal-body {
+    padding: 14px 16px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    max-height: calc(88vh - 75px);
+  }
+
+  @keyframes slideUpSheet {
+    from {
+      transform: translateY(100%);
+      opacity: 0.8;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  /* Timeline Step Rows Wrapping for Narrow Screens */
+  .event-step-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    width: 100%;
+  }
+
+  .step-time-box {
+    width: 100%;
+    box-sizing: border-box;
     justify-content: space-between;
+  }
+
+  .step-event-name {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .legend-row {
+    gap: 8px 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-container {
+    padding: 0 10px;
+    margin-top: 10px;
+  }
+
+  .controls-card {
+    padding: 10px 12px;
+  }
+
+  .clock-time {
+    font-size: 0.88rem;
+  }
+
+  .clock-date {
+    font-size: 0.6rem;
+  }
+
+  .current-period-title {
+    font-size: 0.95rem;
+  }
+
+  .month-days-grid {
+    grid-auto-rows: minmax(58px, auto);
+  }
+
+  .month-day-cell {
+    min-height: 58px;
+    padding: 3px 1px;
   }
 }
 
@@ -1973,6 +2416,59 @@ html[data-theme="light"] .toast-msg.toast-reset {
   border-left-color: #dc2626;
 }
 
+/* Mobile Component Light Theme Overrides */
+html[data-theme="light"] .mobile-settings-toggle-bar {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.12);
+  color: #0f172a;
+}
+
+html[data-theme="light"] .settings-toggle-title {
+  color: #0f172a;
+}
+
+html[data-theme="light"] .settings-summary-pill {
+  background: #fef3c7;
+  color: #78350f;
+  border-color: #d97706;
+}
+
+html[data-theme="light"] .settings-summary-pill.needs-attention {
+  background: #ffedd5;
+  color: #7c2d12;
+  border-color: #ea580c;
+}
+
+html[data-theme="light"] .modal-drag-handle {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+html[data-theme="light"] .mobile-dot.dot-mg {
+  background: #b45309;
+  box-shadow: none;
+}
+
+html[data-theme="light"] .mobile-dot.dot-mg.dot-reduced {
+  background: #ea580c;
+  box-shadow: none;
+}
+
+html[data-theme="light"] .mobile-dot.dot-siege {
+  background: #7e22ce;
+  box-shadow: none;
+}
+
+html[data-theme="light"] .mobile-dot.dot-joint {
+  background: #047857;
+  border: 1.5px solid #065f46;
+  box-shadow: none;
+}
+
+html[data-theme="light"] .mobile-dot.dot-buster {
+  background: #dc2626;
+  box-shadow: none;
+}
+
   </style>
 </head>
 <body>
@@ -2050,8 +2546,18 @@ html[data-theme="light"] .toast-msg.toast-reset {
           <span class="current-period-title" id="period-title">September 2026</span>
         </div>
 
-        <!-- Right Configuration Settings -->
-        <div class="settings-group">
+        <!-- Mobile Alliance Settings Accordion Toggle -->
+        <button class="mobile-settings-toggle-bar" id="mobile-settings-toggle" aria-expanded="false" aria-controls="collapsible-settings-panel" type="button">
+          <div class="settings-toggle-left">
+            <span class="settings-toggle-icon">⚙️</span>
+            <span class="settings-toggle-title">Alliance Settings</span>
+            <span class="settings-summary-pill" id="settings-summary-pill">MG Lv. -- • Buster 21:00</span>
+          </div>
+          <span class="settings-toggle-chevron" id="settings-toggle-chevron">▼</span>
+        </button>
+
+        <!-- Right Configuration Settings (Collapsible on Mobile) -->
+        <div class="settings-group collapsible-settings" id="collapsible-settings-panel">
           <!-- Base MG Level -->
           <div class="setting-item">
             <label for="base-mg-level" class="setting-label">Base MG Level</label>
@@ -2225,6 +2731,7 @@ html[data-theme="light"] .toast-msg.toast-reset {
   <!-- Day Detail Modal -->
   <div class="modal-backdrop" id="day-modal-backdrop">
     <div class="day-detail-modal" id="day-detail-modal">
+      <div class="modal-drag-handle" id="modal-drag-handle" aria-hidden="true"></div>
       <div class="modal-header">
         <div class="modal-title-group">
           <span class="modal-server-day" id="modal-server-day">Server Tuesday, Sep 15, 2026</span>
@@ -2367,7 +2874,11 @@ html[data-theme="light"] .toast-msg.toast-reset {
   };
 
   // State (Loaded from storage or sensible defaults)
-  let currentView = safeGetStorage('calendar-view-mode', 'week'); // 'week' | 'month'
+  const storedView = safeGetStorage('calendar-view-mode', null);
+  let currentView = storedView;
+  if (!currentView) {
+    currentView = (typeof window !== 'undefined' && window.innerWidth && window.innerWidth <= 768) ? 'week' : 'week';
+  }
   if (currentView !== 'week' && currentView !== 'month') currentView = 'week';
   let currentThemeMode = safeGetStorage('theme-mode-pref', 'system'); // 'system' | 'light' | 'dark'
   let baseMgLevel = loadStoredBaseMgLevel(); // Loads persisted base level or null if unset
@@ -3004,11 +3515,28 @@ html[data-theme="light"] .toast-msg.toast-reset {
         ? `<span class="outside-month-pill">${monthShort} ${displayDay.getUTCDate()}</span>`
         : `<span class="cell-date-num">${displayDay.getUTCDate()}</span>`;
 
+      // Mobile colored tactical event dots
+      let mobileDotsHtml = '<div class="cell-mobile-dots">';
+      if (isJoint) {
+        mobileDotsHtml += `<span class="mobile-dot dot-joint" title="Joint Event Day"></span>`;
+      }
+      if (hasMg) {
+        mobileDotsHtml += `<span class="mobile-dot dot-mg ${mgInfo.isReduced ? 'dot-reduced' : ''}" title="Marshal\'s Guard"></span>`;
+      }
+      if (hasSiege) {
+        mobileDotsHtml += `<span class="mobile-dot dot-siege" title="Zombie Siege"></span>`;
+      }
+      if (vsDay.isBuster) {
+        mobileDotsHtml += `<span class="mobile-dot dot-buster" title="Enemy Buster Day"></span>`;
+      }
+      mobileDotsHtml += '</div>';
+
       let cellHtml = `
         <div class="cell-top-bar">
           ${dateDisplayHtml}
           <span class="cell-vs-badge">${vsDay.short}</span>
         </div>
+        ${mobileDotsHtml}
         <div class="cell-events-list">
       `;
 
@@ -3527,6 +4055,7 @@ html[data-theme="light"] .toast-msg.toast-reset {
         selectBaseLevel.classList.add('select-needs-action');
         showToast('Base MG Level cleared (prompting selection)');
       }
+      updateSettingsSummaryPill();
       renderCurrentView();
     });
 
@@ -3540,6 +4069,7 @@ html[data-theme="light"] .toast-msg.toast-reset {
           ? '🛡️ Saturday events shifted to <strong>21:00 SVT (3h before Sunday reset)</strong>'
           : '⚠️ Saturday events set to <strong>00:10 SVT (Standard Reset)</strong>';
         showToast(msg);
+        updateSettingsSummaryPill();
         renderCurrentView();
       });
     }
@@ -3548,6 +4078,17 @@ html[data-theme="light"] .toast-msg.toast-reset {
     themeSystemBtn.addEventListener('click', () => applyThemeMode('system'));
     themeLightBtn.addEventListener('click', () => applyThemeMode('light'));
     themeDarkBtn.addEventListener('click', () => applyThemeMode('dark'));
+
+    // Mobile Alliance Settings Accordion Toggle
+    const mobileSettingsToggle = document.getElementById('mobile-settings-toggle');
+    const collapsibleSettings = document.getElementById('collapsible-settings-panel');
+    if (mobileSettingsToggle && collapsibleSettings) {
+      mobileSettingsToggle.addEventListener('click', () => {
+        const isExpanded = mobileSettingsToggle.classList.toggle('is-expanded');
+        collapsibleSettings.classList.toggle('is-open', isExpanded);
+        mobileSettingsToggle.setAttribute('aria-expanded', isExpanded);
+      });
+    }
 
     // Modal
     modalCloseBtn.addEventListener('click', closeModal);
@@ -3559,6 +4100,41 @@ html[data-theme="light"] .toast-msg.toast-reset {
         closeModal();
       }
     });
+
+    // Modal Drag Handle & Touch-to-dismiss for Mobile Bottom Sheet
+    const modalDragHandle = document.getElementById('modal-drag-handle');
+    if (modalDragHandle) {
+      modalDragHandle.addEventListener('click', closeModal);
+    }
+    const modalContent = document.getElementById('day-detail-modal');
+    if (modalContent) {
+      let touchStartY = 0;
+      modalContent.addEventListener('touchstart', (e) => {
+        touchStartY = e.touches[0].clientY;
+      }, { passive: true });
+      modalContent.addEventListener('touchmove', (e) => {
+        const touchCurrentY = e.touches[0].clientY;
+        const diffY = touchCurrentY - touchStartY;
+        // If swiping down from the header/drag handle area and modal body is at top
+        if (diffY > 75 && modalBody.scrollTop <= 0) {
+          closeModal();
+        }
+      }, { passive: true });
+    }
+  }
+
+  // --- Alliance Settings Mobile Summary Pill ---
+  function updateSettingsSummaryPill() {
+    const pill = document.getElementById('settings-summary-pill');
+    if (!pill) return;
+    const levelText = baseMgLevel ? `MG Lv. ${baseMgLevel}` : 'MG Lv. --';
+    const busterText = saturdayBusterTiming === 'late' ? 'Buster 21:00' : 'Buster Reset';
+    pill.textContent = `${levelText} • ${busterText}`;
+    if (!baseMgLevel) {
+      pill.classList.add('needs-attention');
+    } else {
+      pill.classList.remove('needs-attention');
+    }
   }
 
   // --- Bootstrap ---
@@ -3586,6 +4162,7 @@ html[data-theme="light"] .toast-msg.toast-reset {
     updateResetButtonVisibility();
     initBaseMgLevel();
     initTimezoneSelect();
+    updateSettingsSummaryPill();
     setupEventListeners();
     updateLiveClocks();
     setInterval(updateLiveClocks, 1000);
