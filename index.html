@@ -640,16 +640,24 @@
 
           <div class="system-status">
             <span class="status-dot"></span>
-            <span>11 Offline Tools Active</span>
+            <span>12 Offline Tools Active</span>
           </div>
         </div>
       </div>
       <h1>LAST WAR: SURVIVAL TOOLS & CALCULATORS</h1>
-      <p class="subtitle">Your central portal for Last War: Survival tools & calculators — featuring Drone VS Pacing & Upgrade Dashboard, Duel League Scenario & Path Analyzer, Radar Tasks Banking & VS Optimizer, Squad Targeting & 5v5 Combat Simulator, Secretary Buff & Arms Race Optimizer, Special Forces T10 Research, Season 1 Start Date Projection, Alliance Help & Survivor Optimizer, VS Friday Troop Training, Gold Zombie Spawner, and Taylor Hero Yield Simulator.</p>
+      <p class="subtitle">Your central portal for Last War: Survival tools & calculators — featuring Marshal's Guard & Zombie Siege Calendar, Drone VS Pacing & Upgrade Dashboard, Duel League Scenario & Path Analyzer, Radar Tasks Banking & VS Optimizer, Squad Targeting & 5v5 Combat Simulator, Secretary Buff & Arms Race Optimizer, Special Forces T10 Research, Season 1 Start Date Projection, Alliance Help & Survivor Optimizer, VS Friday Troop Training, Gold Zombie Spawner, and Taylor Hero Yield Simulator.</p>
     </header>
 
     <!-- Metrics Summary -->
     <div class="metrics-row">
+      <div class="metric-card" onclick="scrollToTool('card-mgsiege')" title="Jump to Marshal's Guard & Zombie Siege Calendar">
+        <div class="metric-icon">🏰</div>
+        <div class="metric-info">
+          <div class="val">MG & Siege</div>
+          <div class="lbl">Rotation & Dual Clocks</div>
+        </div>
+      </div>
+
       <div class="metric-card" onclick="scrollToTool('card-drone')" title="Jump to Drone VS Pacing & Upgrade Dashboard">
         <div class="metric-icon">🛸</div>
         <div class="metric-info">
@@ -756,6 +764,29 @@
 
     <!-- Tools Grid -->
     <div class="tools-grid" id="toolsGrid">
+
+      <!-- Marshal's Guard & Zombie Siege Calendar -->
+      <div class="tool-card" id="card-mgsiege" data-category="events" data-title="marshals guard zombie siege calendar schedule event rotation dual clocks svt utc local time alliance alerts joint days cooldown">
+        <div>
+          <div class="tool-header">
+            <div class="tool-icon-wrapper">🏰</div>
+            <span class="tool-category-badge badge-events">Events & Timing</span>
+          </div>
+          <h2>Marshal's Guard & Zombie Siege Calendar</h2>
+          <p class="description">Tactical event rotation calendar for Marshal's Guard (MG) and Zombie Siege. Features dual live clocks (Server UTC & Local), joint event day tracking, cooldown alerts, and conflict-free alliance scheduling.</p>
+          <div class="features-list">
+            <span class="feature-tag">Dual Clocks (SVT & Local)</span>
+            <span class="feature-tag">MG & Siege Weekly Matrix</span>
+            <span class="feature-tag">Joint Day Tracking</span>
+            <span class="feature-tag">Cooldown & Conflict Alerts</span>
+            <span class="feature-tag">Time Slot Customizer</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <span class="status-text">✅ Live Interactive Calendar</span>
+          <a href="tools/mg-siege-calendar/index.html" class="btn-launch">Launch Calendar ➔</a>
+        </div>
+      </div>
 
       <!-- Drone VS Pacing & Upgrade Dashboard -->
       <div class="tool-card card-cyan" id="card-drone" data-category="duel tech" data-title="drone vs pacing upgrade dashboard parts combat data components levels 150 vs thursday day 4 alliance duel chest milestones progression trajectory">
