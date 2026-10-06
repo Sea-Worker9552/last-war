@@ -1,1 +1,1964 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gold Zombie Priority List • Last War: Survival</title>
+  <style>
+    :root {
+      --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 
+      /* Dark Theme (Default) */
+      --bg-page: #0d1219;
+      --bg-page-gradient: radial-gradient(circle at 50% 0%, #172233 0%, #0d1219 75%);
+      --bg-primary: #121822;
+      --bg-secondary: #17212e;
+      --bg-card: #1f2a3a;
+      --bg-card-hover: #263447;
+      --bg-input: #0b0f16;
+      --border-color: #273447;
+      --border-accent: #3b4d68;
+      --text-main: #e2e8f0;
+      --text-muted: #94a3b8;
+      --heading-color: #ffffff;
+      --table-header-bg: #101622;
+      --table-row-hover: #1e2838;
+      --row-done: #131821;
+
+      --accent-gold: #f59e0b;
+      --accent-gold-glow: rgba(245, 158, 11, 0.25);
+      --accent-cyan: #06b6d4;
+      --accent-green: #10b981;
+      --accent-green-glow: rgba(16, 185, 129, 0.25);
+      --accent-orange: #f97316;
+      --accent-red: #ef4444;
+
+      --tag-alliance-bg: #0f172a;
+      --tag-alliance-border: #273447;
+      --tag-alliance-color: #38bdf8;
+      --shadow-card: 0 4px 16px rgba(0, 0, 0, 0.35);
+    }
+
+    /* Light Theme */
+    html[data-applied-theme="light"] {
+      --bg-page: #f8fafc;
+      --bg-page-gradient: linear-gradient(180deg, #f1f5f9 0%, #f8fafc 100%);
+      --bg-primary: #ffffff;
+      --bg-secondary: #ffffff;
+      --bg-card: #f1f5f9;
+      --bg-card-hover: #e2e8f0;
+      --bg-input: #f8fafc;
+      --border-color: #e2e8f0;
+      --border-accent: #cbd5e1;
+      --text-main: #334155;
+      --text-muted: #64748b;
+      --heading-color: #0f172a;
+      --table-header-bg: #f1f5f9;
+      --table-row-hover: #f8fafc;
+      --row-done: #f8fafc;
+
+      --accent-gold: #d97706;
+      --accent-gold-glow: rgba(217, 119, 6, 0.15);
+      --accent-cyan: #0284c7;
+      --accent-green: #16a34a;
+      --accent-green-glow: rgba(22, 163, 74, 0.15);
+      --accent-orange: #ea580c;
+      --accent-red: #dc2626;
+
+      --tag-alliance-bg: #eff6ff;
+      --tag-alliance-border: #bfdbfe;
+      --tag-alliance-color: #0284c7;
+      --shadow-card: 0 2px 10px rgba(0, 0, 0, 0.06);
+    }
+
+    /* System Light mode before JS executes */
+    @media (prefers-color-scheme: light) {
+      html:not([data-applied-theme="dark"]) {
+        --bg-page: #f8fafc;
+        --bg-page-gradient: linear-gradient(180deg, #f1f5f9 0%, #f8fafc 100%);
+        --bg-primary: #ffffff;
+        --bg-secondary: #ffffff;
+        --bg-card: #f1f5f9;
+        --bg-card-hover: #e2e8f0;
+        --bg-input: #f8fafc;
+        --border-color: #e2e8f0;
+        --border-accent: #cbd5e1;
+        --text-main: #334155;
+        --text-muted: #64748b;
+        --heading-color: #0f172a;
+        --table-header-bg: #f1f5f9;
+        --table-row-hover: #f8fafc;
+        --row-done: #f8fafc;
+
+        --accent-gold: #d97706;
+        --accent-gold-glow: rgba(217, 119, 6, 0.15);
+        --accent-cyan: #0284c7;
+        --accent-green: #16a34a;
+        --accent-green-glow: rgba(22, 163, 74, 0.15);
+        --accent-orange: #ea580c;
+        --accent-red: #dc2626;
+
+        --tag-alliance-bg: #eff6ff;
+        --tag-alliance-border: #bfdbfe;
+        --tag-alliance-color: #0284c7;
+        --shadow-card: 0 2px 10px rgba(0, 0, 0, 0.06);
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-main);
+      background: var(--bg-page-gradient);
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      min-height: 100vh;
+      padding: 24px 16px;
+      line-height: 1.5;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .container {
+      max-width: 1240px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 24px;
+    }
+
+    .title-group h1 {
+      font-size: 1.65rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--heading-color);
+    }
+
+    .title-group h1 span.gold-text {
+      color: var(--accent-gold);
+      text-shadow: 0 0 16px var(--accent-gold-glow);
+    }
+
+    .title-group p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-top: 4px;
+    }
+
+    .header-right-controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* Theme Switcher */
+    .theme-switch {
+      display: inline-flex;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 3px;
+      gap: 2px;
+    }
+
+    .theme-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 5px 9px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-family: inherit;
+      transition: all 0.15s ease;
+    }
+
+    .theme-btn:hover {
+      color: var(--heading-color);
+    }
+
+    .theme-btn.active {
+      background: var(--bg-primary);
+      color: var(--heading-color);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .base-coords-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .base-coords-card label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--accent-cyan);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .coords-inputs {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .coord-field {
+      display: flex;
+      align-items: center;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 4px 8px;
+    }
+
+    .coord-field span {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-right: 4px;
+    }
+
+    .coord-field input {
+      background: transparent;
+      border: none;
+      color: var(--heading-color);
+      font-weight: 700;
+      font-size: 0.92rem;
+      width: 58px;
+      outline: none;
+      font-family: inherit;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Layout Sections */
+    .input-section {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .input-section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .input-section-header h2 {
+      font-size: 0.98rem;
+      font-weight: 700;
+      color: var(--heading-color);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .parse-feedback {
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #34d399;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s ease;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .parse-feedback.empty {
+      background: rgba(148, 163, 184, 0.1);
+      border-color: rgba(148, 163, 184, 0.3);
+      color: var(--text-muted);
+    }
+
+    html[data-applied-theme="light"] .parse-feedback {
+      background: #dcfce7;
+      border-color: #86efac;
+      color: #166534;
+    }
+
+    @media (prefers-color-scheme: light) {
+      html:not([data-applied-theme="dark"]) .parse-feedback {
+        background: #dcfce7;
+        border-color: #86efac;
+        color: #166534;
+      }
+    }
+
+    .paste-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    button.btn-action {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: inherit;
+      transition: all 0.15s ease;
+    }
+
+    button.btn-action:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-accent);
+      color: var(--heading-color);
+    }
+
+    button.btn-action.btn-sample {
+      color: var(--accent-gold);
+      border-color: rgba(245, 158, 11, 0.4);
+    }
+    button.btn-action.btn-sample:hover {
+      background: rgba(245, 158, 11, 0.15);
+    }
+
+    button.btn-action.btn-capitol {
+      border-color: rgba(245, 158, 11, 0.35);
+      color: var(--text-main);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    button.btn-action.btn-capitol.active {
+      background: rgba(245, 158, 11, 0.2);
+      border-color: var(--accent-gold);
+      color: #fff;
+      font-weight: 700;
+      box-shadow: 0 0 12px var(--accent-gold-glow);
+    }
+
+    html[data-applied-theme="light"] button.btn-action.btn-capitol.active {
+      background: #fef3c7;
+      border-color: #d97706;
+      color: #92400e;
+      box-shadow: 0 0 8px rgba(217, 119, 6, 0.2);
+    }
+
+    textarea.raw-input {
+      width: 100%;
+      height: 105px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 0.88rem;
+      line-height: 1.45;
+      padding: 10px 14px;
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    textarea.raw-input:focus {
+      border-color: var(--accent-cyan);
+    }
+
+    /* Controls & Filter Bar */
+    .controls-bar {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 14px 18px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .filter-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .filter-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+      margin-right: 4px;
+    }
+
+    .filter-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .pill-btn {
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 4px 11px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      font-variant-numeric: tabular-nums;
+      transition: all 0.15s ease;
+    }
+
+    .pill-btn:hover {
+      color: var(--heading-color);
+      border-color: var(--border-accent);
+    }
+
+    .pill-btn.active {
+      background: var(--accent-gold);
+      color: #fff;
+      border-color: var(--accent-gold);
+      font-weight: 700;
+      box-shadow: 0 0 10px var(--accent-gold-glow);
+    }
+
+    .pill-btn.active.avail {
+      background: var(--accent-green);
+      color: #fff;
+      border-color: var(--accent-green);
+      box-shadow: 0 0 10px var(--accent-green-glow);
+    }
+
+    .search-filters-group {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .search-input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .search-input {
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 6px 12px 6px 30px;
+      color: var(--text-main);
+      font-size: 0.85rem;
+      width: 170px;
+      outline: none;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+
+    .search-input:focus {
+      width: 200px;
+      border-color: var(--accent-cyan);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 10px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .view-toggles {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .checkbox-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .checkbox-label input {
+      accent-color: var(--accent-gold);
+      cursor: pointer;
+    }
+
+    /* Quick stats summary strip */
+    .summary-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: center;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      padding: 0 4px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stat-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .stat-badge strong {
+      color: var(--heading-color);
+    }
+
+    /* Table Container */
+    .table-container {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      overflow-x: auto;
+      box-shadow: var(--shadow-card);
+    }
+
+    table.boss-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      text-align: left;
+    }
+
+    table.boss-table thead th {
+      background: var(--table-header-bg);
+      padding: 12px 14px;
+      font-weight: 700;
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 2px solid var(--border-color);
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+      transition: color 0.15s;
+    }
+
+    table.boss-table thead th:hover {
+      color: var(--heading-color);
+    }
+
+    table.boss-table thead th.sorted {
+      color: var(--accent-cyan);
+    }
+
+    table.boss-table thead th .sort-indicator {
+      display: inline-block;
+      margin-left: 4px;
+      font-size: 0.7rem;
+    }
+
+    table.boss-table tbody tr {
+      border-bottom: 1px solid var(--border-color);
+      transition: background-color 0.1s;
+    }
+
+    table.boss-table tbody tr:hover {
+      background-color: var(--table-row-hover);
+    }
+
+    table.boss-table tbody td {
+      padding: 12px 14px;
+      white-space: nowrap;
+    }
+
+    /* Row States */
+    tr.is-done {
+      background-color: var(--row-done) !important;
+      opacity: 0.45;
+    }
+
+    tr.is-done td.name-cell,
+    tr.is-done td.coords-cell,
+    tr.is-done td.dist-cell {
+      text-decoration: line-through;
+    }
+
+    /* Column Specific Styling */
+    .col-done {
+      width: 44px;
+      text-align: center;
+    }
+
+    .done-toggle {
+      width: 17px;
+      height: 17px;
+      accent-color: var(--accent-green);
+      cursor: pointer;
+    }
+
+    .dist-badge {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--accent-cyan);
+      display: inline-flex;
+      align-items: baseline;
+      gap: 2px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .dist-container {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .dist-badge.dist-eff {
+      color: var(--accent-gold);
+    }
+
+    html[data-applied-theme="light"] .dist-badge.dist-eff {
+      color: #b45309;
+    }
+
+    .mud-subtext {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      flex-wrap: wrap;
+    }
+
+    .badge-mud {
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 1px 5px;
+      border-radius: 4px;
+      background: rgba(249, 115, 22, 0.18);
+      border: 1px solid rgba(249, 115, 22, 0.45);
+      color: #fb923c;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    html[data-applied-theme="light"] .badge-mud {
+      background: #ffedd5;
+      border-color: #fdba74;
+      color: #c2410c;
+    }
+
+    .badge-clear {
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 1px 5px;
+      border-radius: 4px;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      color: #34d399;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    html[data-applied-theme="light"] .badge-clear {
+      background: #dcfce7;
+      border-color: #86efac;
+      color: #15803d;
+    }
+
+    .raw-sub {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      font-variant-numeric: tabular-nums;
+    }
+
+    tr.row-mud {
+      background-color: rgba(249, 115, 22, 0.035);
+    }
+
+    .pill-btn.active.mud {
+      background: var(--accent-orange);
+      border-color: var(--accent-orange);
+      color: #fff;
+    }
+
+    .pill-btn.active.clear {
+      background: var(--accent-green);
+      border-color: var(--accent-green);
+      color: #fff;
+    }
+
+    .dist-unit {
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    .level-badge {
+      font-weight: 700;
+      font-size: 0.82rem;
+      padding: 3px 8px;
+      border-radius: 4px;
+      display: inline-block;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .lvl-60 { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); }
+    .lvl-55 { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); }
+    .lvl-50 { background: rgba(168, 85, 247, 0.2); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.4); }
+    .lvl-45 { background: rgba(59, 130, 246, 0.2); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.4); }
+    .lvl-40 { background: rgba(20, 184, 166, 0.2); color: #2dd4bf; border: 1px solid rgba(20, 184, 166, 0.4); }
+    .lvl-other { background: rgba(148, 163, 184, 0.2); color: #cbd5e1; border: 1px solid rgba(148, 163, 184, 0.3); }
+
+    html[data-applied-theme="light"] .lvl-60 { background: #fee2e2; color: #b91c1c; border-color: #fca5a5; }
+    html[data-applied-theme="light"] .lvl-55 { background: #fef3c7; color: #b45309; border-color: #fcd34d; }
+    html[data-applied-theme="light"] .lvl-50 { background: #f3e8ff; color: #7e22ce; border-color: #d8b4fe; }
+    html[data-applied-theme="light"] .lvl-45 { background: #dbeafe; color: #1d4ed8; border-color: #93c5fd; }
+    html[data-applied-theme="light"] .lvl-40 { background: #ccfbf1; color: #0f766e; border-color: #5eead4; }
+    html[data-applied-theme="light"] .lvl-other { background: #f1f5f9; color: #475569; border-color: #cbd5e1; }
+
+    @media (prefers-color-scheme: light) {
+      html:not([data-applied-theme="dark"]) .lvl-60 { background: #fee2e2; color: #b91c1c; border-color: #fca5a5; }
+      html:not([data-applied-theme="dark"]) .lvl-55 { background: #fef3c7; color: #b45309; border-color: #fcd34d; }
+      html:not([data-applied-theme="dark"]) .lvl-50 { background: #f3e8ff; color: #7e22ce; border-color: #d8b4fe; }
+      html:not([data-applied-theme="dark"]) .lvl-45 { background: #dbeafe; color: #1d4ed8; border-color: #93c5fd; }
+      html:not([data-applied-theme="dark"]) .lvl-40 { background: #ccfbf1; color: #0f766e; border-color: #5eead4; }
+      html:not([data-applied-theme="dark"]) .lvl-other { background: #f1f5f9; color: #475569; border-color: #cbd5e1; }
+    }
+
+    .coords-cell {
+      font-weight: 700;
+      color: var(--heading-color);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .owner-cell {
+      font-weight: 600;
+      color: var(--heading-color);
+    }
+
+    .alliance-tag {
+      background: var(--tag-alliance-bg);
+      border: 1px solid var(--tag-alliance-border);
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 0.8rem;
+      color: var(--tag-alliance-color);
+    }
+
+    /* Protection Status Badges */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 700;
+      font-size: 0.82rem;
+      padding: 3px 9px;
+      border-radius: 20px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .status-available {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #34d399;
+    }
+
+    .status-locked {
+      background: rgba(249, 115, 22, 0.15);
+      border: 1px solid rgba(249, 115, 22, 0.4);
+      color: #fb923c;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .status-unlocked-now {
+      background: rgba(16, 185, 129, 0.3);
+      border: 1px solid #10b981;
+      color: #6ee7b7;
+      animation: pulse-unlock 1.5s infinite;
+    }
+
+    html[data-applied-theme="light"] .status-available {
+      background: #dcfce7;
+      border-color: #86efac;
+      color: #15803d;
+    }
+
+    html[data-applied-theme="light"] .status-locked {
+      background: #ffedd5;
+      border-color: #fdba74;
+      color: #c2410c;
+    }
+
+    html[data-applied-theme="light"] .status-unlocked-now {
+      background: #bbf7d0;
+      border-color: #22c55e;
+      color: #15803d;
+    }
+
+    @media (prefers-color-scheme: light) {
+      html:not([data-applied-theme="dark"]) .status-available {
+        background: #dcfce7;
+        border-color: #86efac;
+        color: #15803d;
+      }
+      html:not([data-applied-theme="dark"]) .status-locked {
+        background: #ffedd5;
+        border-color: #fdba74;
+        color: #c2410c;
+      }
+      html:not([data-applied-theme="dark"]) .status-unlocked-now {
+        background: #bbf7d0;
+        border-color: #22c55e;
+        color: #15803d;
+      }
+    }
+
+    @keyframes pulse-unlock {
+      0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+      70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+
+    .server-cell {
+      color: var(--text-muted);
+      font-size: 0.82rem;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 50px 20px;
+      color: var(--text-muted);
+    }
+
+    .empty-state .icon {
+      font-size: 2.5rem;
+      margin-bottom: 12px;
+      opacity: 0.6;
+    }
+
+    .empty-state h3 {
+      font-size: 1.1rem;
+      color: var(--heading-color);
+      margin-bottom: 6px;
+    }
+
+    footer {
+      margin-top: 32px;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      padding-bottom: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <div class="title-group">
+        <h1>🧟 <span class="gold-text">Gold Zombie</span> Priority List</h1>
+        <p>Live Distance Calculator, Dynamic Countdown Timers & Target Prioritization</p>
+      </div>
+
+      <div class="header-right-controls">
+        <!-- Theme Switcher: Light / Dark / System -->
+        <div class="theme-switch" role="group" aria-label="Color Theme">
+          <button type="button" class="theme-btn" data-theme-val="light" title="Light mode">☀️ Light</button>
+          <button type="button" class="theme-btn" data-theme-val="dark" title="Dark mode">🌙 Dark</button>
+          <button type="button" class="theme-btn active" data-theme-val="system" title="Follow system color preference">💻 System</button>
+        </div>
+
+        <div class="base-coords-card">
+          <label for="baseX">📍 Base Coords</label>
+          <div class="coords-inputs">
+            <div class="coord-field">
+              <span>X:</span>
+              <input type="number" id="baseX" placeholder="500" min="0" max="1200">
+            </div>
+            <div class="coord-field">
+              <span>Y:</span>
+              <input type="number" id="baseY" placeholder="500" min="0" max="1200">
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Paste / Input Section -->
+    <section class="input-section">
+      <div class="input-section-header">
+        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+          <h2>📋 Paste Raw Text Dump</h2>
+          <span id="parseFeedback" class="parse-feedback" style="display: none;"></span>
+        </div>
+        <div class="paste-actions">
+          <button type="button" class="btn-action" id="btnPasteClipboard" title="Paste directly from clipboard">📋 Paste Clipboard</button>
+          <button type="button" class="btn-action" id="btnSelectAll" title="Select all text in box">🔤 Select All</button>
+          <button type="button" class="btn-action btn-sample" id="btnLoadSample">🧪 Sample</button>
+          <button type="button" class="btn-action" id="btnClearText">🗑 Clear</button>
+        </div>
+      </div>
+      <textarea id="rawInput" class="raw-input" placeholder="Paste raw boss list here..."></textarea>
+    </section>
+
+    <!-- Controls & Filters -->
+    <section class="controls-bar" id="controlsBar">
+      <div class="filter-row">
+        <!-- Level Filter -->
+        <div class="filter-group">
+          <span class="filter-label">Level:</span>
+          <div class="filter-pills" id="levelPills">
+            <button class="pill-btn active" data-level="ALL">All</button>
+          </div>
+        </div>
+
+        <!-- Status Filter -->
+        <div class="filter-group">
+          <span class="filter-label">Status:</span>
+          <div class="filter-pills">
+            <button class="pill-btn active" data-status="ALL" id="statusAll">All</button>
+            <button class="pill-btn" data-status="AVAIL" id="statusAvail">✔ Available</button>
+            <button class="pill-btn" data-status="LOCKED" id="statusLocked">🔒 Locked</button>
+          </div>
+        </div>
+
+        <!-- Route / Path Filter (Visible when Capitol War is active) -->
+        <div class="filter-group" id="pathFilterGroup" style="display: none;">
+          <span class="filter-label">Route:</span>
+          <div class="filter-pills" id="pathPills">
+            <button type="button" class="pill-btn active" data-path="ALL">All Routes</button>
+            <button type="button" class="pill-btn" data-path="CLEAR">🟢 Clear Path</button>
+            <button type="button" class="pill-btn" data-path="MUD">⚠️ Crosses Mud</button>
+          </div>
+        </div>
+
+        <!-- Separate Alliance and Summoner Filter Boxes -->
+        <div class="search-filters-group">
+          <div class="search-input-wrapper">
+            <span class="search-icon">🛡️</span>
+            <input type="text" id="allianceInput" class="search-input" placeholder="Filter Alliance...">
+          </div>
+          <div class="search-input-wrapper">
+            <span class="search-icon">👤</span>
+            <input type="text" id="summonerInput" class="search-input" placeholder="Filter Summoner...">
+          </div>
+        </div>
+      </div>
+
+      <!-- Secondary Row: View Toggles & Summary -->
+      <div class="filter-row">
+        <div class="view-toggles">
+          <label class="checkbox-label">
+            <input type="checkbox" id="hideDoneCheckbox"> Hide Cleared Bosses
+          </label>
+          <button type="button" class="btn-action" id="btnResetDone" style="padding: 3px 8px; font-size: 0.75rem;">Reset Cleared</button>
+          <button type="button" class="btn-action btn-capitol" id="btnCapitolToggle" title="Alert if march path crosses Capitol Mud Zone (450-550) with 70% speed penalty">
+            ⚔️ Capitol War: <span id="capitolStatusText">OFF</span>
+          </button>
+        </div>
+
+        <div class="summary-strip" id="summaryStrip">
+          <span class="stat-badge">Total: <strong id="statTotal">0</strong></span>
+          <span class="stat-badge">Available: <strong id="statAvail" style="color: var(--accent-green);">0</strong></span>
+          <span class="stat-badge">Locked: <strong id="statLocked" style="color: var(--accent-orange);">0</strong></span>
+          <span class="stat-badge">Cleared: <strong id="statCleared">0</strong></span>
+          <span class="stat-badge stat-capitol-metric" id="statClearWrap" style="display: none;">Clear: <strong id="statClearCount" style="color: var(--accent-green);">0</strong></span>
+          <span class="stat-badge stat-capitol-metric" id="statMudWrap" style="display: none;">Mud: <strong id="statMudCount" style="color: var(--accent-orange);">0</strong></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Data Table -->
+    <div class="table-container">
+      <table class="boss-table" id="bossTable">
+        <thead>
+          <tr>
+            <th data-col="done" class="col-done" title="Toggle Visited/Cleared">Done</th>
+            <th data-col="dist" class="sorted" data-default-dir="asc" id="thDist">Distance <span class="sort-indicator">▲</span></th>
+            <th data-col="coords">Coords (X, Y) <span class="sort-indicator"></span></th>
+            <th data-col="level" data-default-dir="desc">Level <span class="sort-indicator"></span></th>
+            <th data-col="status">Protection / Timer <span class="sort-indicator"></span></th>
+            <th data-col="alliance">Alliance <span class="sort-indicator"></span></th>
+            <th data-col="summoner">Summoner <span class="sort-indicator"></span></th>
+            <th data-col="server">Server # <span class="sort-indicator"></span></th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          <!-- Populated dynamically via JS -->
+        </tbody>
+      </table>
+
+      <div class="empty-state" id="emptyState">
+        <div class="icon">🎯</div>
+        <h3>No Bosses Loaded</h3>
+        <p>Paste raw zombie boss data in the text box above to view distances and priorities.</p>
+      </div>
+    </div>
+
+    <footer>
+      Last War: Survival • Gold Zombie Priority List • Real-time Tactical Tool
+    </footer>
+  </div>
+
+  <script>
+    // Sample Data with generic usernames, alliances, and Server #1234
+    const SAMPLE_RAW_DATA = `Showing 33 of 120 bosses
+162, 252	Lv60	CommanderAlpha	WAR	✔ Available	#1234
+172, 914	Lv60	ShadowWolf	VIP	✔ Available	#1234
+350, 811	Lv60	IronClad	APEX	✔ Available	#1234
+360, 943	Lv60	GhostRecon	APEX	✔ Available	#1234
+576, 949	Lv60	ViperPilot	NOVA	🔒 00:08:52	#1234
+663, 947	Lv60	Phoenix	LION	✔ Available	#1234
+695, 964	Lv60	Phoenix	LION	✔ Available	#1234
+706, 900	Lv60	NightRider	TITN	✔ Available	#1234
+707, 975	Lv60	Thunder	TITN	✔ Available	#1234
+726, 812	Lv60	Blaze	TITN	✔ Available	#1234
+968, 180	Lv60	Spartan	WAR	✔ Available	#1234
+992, 87	Lv60	Valkyrie	WAR	✔ Available	#1234
+214, 789	Lv55	StormBringer	VIP	✔ Available	#1234
+215, 157	Lv55	AeroAce	EGL	🔒 00:00:42	#1234
+244, 979	Lv55	DoomSlayer	APEX	✔ Available	#1234
+428, 789	Lv55	SteelGrip	TITN	✔ Available	#1234
+665, 997	Lv55	Blaze	TITN	✔ Available	#1234
+700, 789	Lv55	Blaze	TITN	✔ Available	#1234
+707, 808	Lv55	Blaze	TITN	✔ Available	#1234
+773, 930	Lv55	Phoenix	LION	✔ Available	#1234
+756, 997	Lv50	Phoenix	LION	✔ Available	#1234
+65, 239	Lv45	RogueOne	WAR	✔ Available	#1234
+912, 887	Lv45	ApexHunter	NOVA	✔ Available	#1234
+973, 140	Lv45	Sentinel	EGL	🔒 00:01:40	#1234
+201, 871	Lv40	TitanShield	VIP	✔ Available	#1234
+380, 67	Lv35	Ranger99	VIP	🔒 00:05:53	#1234
+388, 44	Lv35	Ranger99	VIP	🔒 00:06:45	#1234
+970, 141	Lv35	Sentinel	EGL	🔒 00:02:36	#1234
+39, 111	Lv30	RogueOne	WAR	🔒 00:06:00	#1234
+368, 35	Lv30	Ranger99	VIP	🔒 00:06:06	#1234
+368, 41	Lv30	Ranger99	VIP	🔒 00:06:29	#1234
+385, 31	Lv30	Ranger99	VIP	🔒 00:08:43	#1234
+477, 925	Lv30	FrostBite	APEX	🔒 00:07:07	#1234`;
+
+    // Theme Management: Light / Dark / System (Default: System)
+    const STORAGE_KEY_THEME = 'lastwar_theme_mode';
+    let currentThemeMode = localStorage.getItem(STORAGE_KEY_THEME) || 'system';
+
+    function applyTheme(mode) {
+      currentThemeMode = mode;
+      localStorage.setItem(STORAGE_KEY_THEME, mode);
+
+      let effectiveTheme = mode;
+      if (mode === 'system') {
+        effectiveTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+
+      document.documentElement.setAttribute('data-applied-theme', effectiveTheme);
+      document.documentElement.setAttribute('data-theme-mode', mode);
+
+      document.querySelectorAll('.theme-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.themeVal === mode);
+      });
+    }
+
+    // Initialize Theme immediately
+    applyTheme(currentThemeMode);
+
+    // Watch OS Theme changes when mode is 'system'
+    const systemThemeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    if (systemThemeQuery.addEventListener) {
+      systemThemeQuery.addEventListener('change', () => {
+        if (currentThemeMode === 'system') {
+          applyTheme('system');
+        }
+      });
+    }
+
+    // Attach click listeners to theme buttons
+    document.querySelectorAll('.theme-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        applyTheme(btn.dataset.themeVal);
+      });
+    });
+
+    // State
+    let parsedBosses = [];
+    let pasteTimestamp = Date.now();
+    let currentSort = { column: 'dist', direction: 'asc' };
+    let selectedLevels = new Set(['ALL']);
+    let selectedStatus = 'ALL';
+    let allianceFilterQuery = '';
+    let summonerFilterQuery = '';
+    let hideDone = false;
+
+    // Capitol War State (Contaminated Mud Zone: [450, 550] x [450, 550], 70% slow)
+    const STORAGE_KEY_CAPITOL = 'lastwar_gold_boss_capitol_war';
+    let capitolWarMode = localStorage.getItem(STORAGE_KEY_CAPITOL) === 'true';
+    let selectedPathFilter = 'ALL';
+
+    // Load persisted Base Coords & Done list from localStorage
+    const STORAGE_KEY_BASE_X = 'lastwar_gold_boss_base_x';
+    const STORAGE_KEY_BASE_Y = 'lastwar_gold_boss_base_y';
+    const STORAGE_KEY_DONE = 'lastwar_gold_boss_done_ids';
+
+    let doneBossKeys = new Set(JSON.parse(localStorage.getItem(STORAGE_KEY_DONE) || '[]'));
+
+    // DOM Elements
+    const baseXInput = document.getElementById('baseX');
+    const baseYInput = document.getElementById('baseY');
+    const rawInput = document.getElementById('rawInput');
+    const btnLoadSample = document.getElementById('btnLoadSample');
+    const btnClearText = document.getElementById('btnClearText');
+    const btnPasteClipboard = document.getElementById('btnPasteClipboard');
+    const btnSelectAll = document.getElementById('btnSelectAll');
+    const parseFeedback = document.getElementById('parseFeedback');
+    const levelPillsContainer = document.getElementById('levelPills');
+    const allianceInput = document.getElementById('allianceInput');
+    const summonerInput = document.getElementById('summonerInput');
+    const hideDoneCheckbox = document.getElementById('hideDoneCheckbox');
+    const btnResetDone = document.getElementById('btnResetDone');
+    const tableBody = document.getElementById('tableBody');
+    const emptyState = document.getElementById('emptyState');
+    const bossTable = document.getElementById('bossTable');
+    const thDist = document.getElementById('thDist');
+
+    // Capitol War & Route Filter Elements
+    const btnCapitolToggle = document.getElementById('btnCapitolToggle');
+    const capitolStatusText = document.getElementById('capitolStatusText');
+    const pathFilterGroup = document.getElementById('pathFilterGroup');
+    const pathPills = document.getElementById('pathPills');
+
+    // Stats elements
+    const statTotal = document.getElementById('statTotal');
+    const statAvail = document.getElementById('statAvail');
+    const statLocked = document.getElementById('statLocked');
+    const statCleared = document.getElementById('statCleared');
+    const statClearWrap = document.getElementById('statClearWrap');
+    const statMudWrap = document.getElementById('statMudWrap');
+    const statClearCount = document.getElementById('statClearCount');
+    const statMudCount = document.getElementById('statMudCount');
+
+    // Init Base Coords (Synced across tactical tools)
+    baseXInput.value = localStorage.getItem('lastwar_base_coords_x') || localStorage.getItem(STORAGE_KEY_BASE_X) || '500';
+    baseYInput.value = localStorage.getItem('lastwar_base_coords_y') || localStorage.getItem(STORAGE_KEY_BASE_Y) || '500';
+
+    function saveBaseCoords() {
+      const x = baseXInput.value;
+      const y = baseYInput.value;
+      localStorage.setItem('lastwar_base_coords_x', x);
+      localStorage.setItem('lastwar_base_coords_y', y);
+      localStorage.setItem(STORAGE_KEY_BASE_X, x);
+      localStorage.setItem(STORAGE_KEY_BASE_Y, y);
+      recalcDistances();
+      renderTable();
+    }
+
+    baseXInput.addEventListener('input', saveBaseCoords);
+    baseYInput.addEventListener('input', saveBaseCoords);
+
+    // Support pasting "X, Y" into the X field
+    baseXInput.addEventListener('paste', (e) => {
+      const pasteText = (e.clipboardData || window.clipboardData).getData('text');
+      if (pasteText && pasteText.includes(',')) {
+        e.preventDefault();
+        const parts = pasteText.split(',').map(s => s.trim());
+        if (parts.length >= 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
+          baseXInput.value = parts[0];
+          baseYInput.value = parts[1];
+          saveBaseCoords();
+        }
+      }
+    });
+
+    // Helper: calculate Euclidean distance
+    function calcDistance(x, y, bx, by) {
+      if (isNaN(x) || isNaN(y) || isNaN(bx) || isNaN(by)) return 0;
+      const dx = x - bx;
+      const dy = y - by;
+      return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    // Liang-Barsky Line Clipping: checks if segment (x0, y0)->(x1, y1) intersects Mud Zone [450, 550] x [450, 550]
+    // Mud speed penalty: 70% reduction -> speed multiplier = 0.30
+    // Effective distance = (rawDist - mudDist) + (mudDist / 0.30)
+    function checkMudCrossing(x0, y0, x1, y1) {
+      const xmin = 450, xmax = 550, ymin = 450, ymax = 550;
+      const dx = x1 - x0;
+      const dy = y1 - y0;
+      const rawDist = Math.sqrt(dx * dx + dy * dy);
+
+      if (rawDist === 0) {
+        const inside = (x0 >= xmin && x0 <= xmax && y0 >= ymin && y0 <= ymax);
+        return {
+          crosses: inside,
+          mudDist: 0,
+          rawDist: 0,
+          effectiveDistance: 0
+        };
+      }
+
+      let t0 = 0.0;
+      let t1 = 1.0;
+
+      const p = [-dx, dx, -dy, dy];
+      const q = [x0 - xmin, xmax - x0, y0 - ymin, ymax - y0];
+
+      for (let i = 0; i < 4; i++) {
+        if (p[i] === 0) {
+          if (q[i] < 0) {
+            // Parallel to edge and strictly outside the slab
+            return { crosses: false, mudDist: 0, rawDist, effectiveDistance: rawDist };
+          }
+        } else {
+          const t = q[i] / p[i];
+          if (p[i] < 0) {
+            if (t > t1) return { crosses: false, mudDist: 0, rawDist, effectiveDistance: rawDist };
+            if (t > t0) t0 = t;
+          } else {
+            if (t < t0) return { crosses: false, mudDist: 0, rawDist, effectiveDistance: rawDist };
+            if (t < t1) t1 = t;
+          }
+        }
+      }
+
+      if (t0 < t1) {
+        const mudSegment = (t1 - t0) * rawDist;
+        if (mudSegment > 0.01) {
+          const effectiveDistance = (rawDist - mudSegment) + (mudSegment / 0.30);
+          return {
+            crosses: true,
+            mudDist: mudSegment,
+            rawDist,
+            effectiveDistance
+          };
+        }
+      }
+
+      return { crosses: false, mudDist: 0, rawDist, effectiveDistance: rawDist };
+    }
+
+    function recalcDistances() {
+      const bx = parseFloat(baseXInput.value) || 0;
+      const by = parseFloat(baseYInput.value) || 0;
+      parsedBosses.forEach(b => {
+        b.distance = calcDistance(b.x, b.y, bx, by);
+        const mudInfo = checkMudCrossing(bx, by, b.x, b.y);
+        b.crossesMud = mudInfo.crosses;
+        b.mudDistance = mudInfo.mudDist;
+        b.effectiveDistance = mudInfo.effectiveDistance;
+      });
+    }
+
+    // Parse raw text input (supports both multi-line select-all page dumps and single-line rows)
+    function parseRawText(text) {
+      if (!text || !text.trim()) {
+        parsedBosses = [];
+        if (parseFeedback) parseFeedback.style.display = 'none';
+        updateLevelPills();
+        renderTable();
+        return;
+      }
+
+      pasteTimestamp = Date.now();
+      // Normalize non-breaking spaces and carriage returns
+      text = text.replace(/\u00A0/g, ' ').replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+      const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+      const results = [];
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Check if line starts with coordinates: "X, Y" or "X,Y"
+        const coordMatch = line.match(/^(\d{1,4})\s*,\s*(\d{1,4})/);
+        if (!coordMatch) continue;
+
+        const x = parseInt(coordMatch[1], 10);
+        const y = parseInt(coordMatch[2], 10);
+        const rest = line.substring(coordMatch[0].length).trim();
+
+        let levelStr = '';
+        let levelNum = 0;
+        let owner = '';
+        let alliance = '';
+        let protectionStr = '';
+        let initialSecondsLeft = 0;
+        let server = '';
+
+        // Case 1: Single-line row (Level, Owner, etc. on the same line)
+        if (rest.length > 0 && (/Lv\s*\d+/i.test(rest) || rest.includes('\t') || rest.includes('Available') || rest.includes('🔒') || rest.includes('#'))) {
+          let tokens = rest.split(/\t+/);
+          if (tokens.length < 3) {
+            tokens = rest.split(/\s{2,}/);
+          }
+
+          if (tokens.length >= 4) {
+            levelStr = tokens[0].trim();
+            owner = tokens[1].trim();
+            alliance = tokens[2].trim();
+            protectionStr = tokens[3].trim();
+            server = tokens[4] ? tokens[4].trim() : '';
+          } else {
+            const lvlMatch = rest.match(/Lv\s*(\d+)/i);
+            if (lvlMatch) levelStr = lvlMatch[0];
+
+            const serverMatch = rest.match(/#\d+/);
+            if (serverMatch) server = serverMatch[0];
+
+            if (rest.includes('✔') || /available/i.test(rest)) {
+              protectionStr = '✔ Available';
+            } else {
+              const timeMatch = rest.match(/(\d{1,2}):(\d{2}):(\d{2})/);
+              if (timeMatch) protectionStr = '🔒 ' + timeMatch[0];
+            }
+          }
+        } else {
+          // Case 2: Multi-line entry (MapScout select-all copy-all dump)
+          let j = i + 1;
+          let consumed = 0;
+          const blockLines = [];
+
+          while (j < lines.length && consumed < 8) {
+            // Stop if next boss coordinate line is reached
+            if (/^\d{1,4}\s*,\s*\d{1,4}/.test(lines[j])) {
+              break;
+            }
+            // Stop if footer/menu/log sections are reached
+            if (/^(Filters|Level|Protection|Activity Log|MapScout|Server Stats|Scan History|Scan Queue|Notifications|Export|Scan for Zombies)/i.test(lines[j])) {
+              break;
+            }
+            blockLines.push(lines[j]);
+            j++;
+            consumed++;
+          }
+
+          if (blockLines.length >= 2) {
+            for (let b = 0; b < blockLines.length; b++) {
+              const bl = blockLines[b];
+              if (/^Lv\s*\d+/i.test(bl) && !levelStr) {
+                levelStr = bl;
+              } else if (/^#\d+/.test(bl) && !server) {
+                server = bl;
+              } else if ((bl.includes('✔') || /available/i.test(bl) || /🔒|\d{1,2}:\d{2}:\d{2}/.test(bl)) && !protectionStr) {
+                protectionStr = bl;
+              } else if (!owner) {
+                owner = bl;
+              } else if (!alliance) {
+                alliance = bl;
+              }
+            }
+            i = j - 1; // Advance outer index
+          } else {
+            continue; // Not a boss entry
+          }
+        }
+
+        // Parse level number
+        const numMatch = levelStr.match(/\d+/);
+        levelNum = numMatch ? parseInt(numMatch[0], 10) : 0;
+
+        // Parse initial protection seconds
+        if (protectionStr.includes('Available') || protectionStr.includes('✔')) {
+          initialSecondsLeft = 0;
+          protectionStr = '✔ Available';
+        } else {
+          const timeMatch = protectionStr.match(/(\d{1,2}):(\d{2}):(\d{2})/);
+          if (timeMatch) {
+            const h = parseInt(timeMatch[1], 10);
+            const m = parseInt(timeMatch[2], 10);
+            const s = parseInt(timeMatch[3], 10);
+            initialSecondsLeft = h * 3600 + m * 60 + s;
+            protectionStr = '🔒 ' + timeMatch[0];
+          } else {
+            protectionStr = '✔ Available';
+            initialSecondsLeft = 0;
+          }
+        }
+
+        const uniqueKey = `${x}_${y}_${levelNum}_${owner}`;
+        results.push({
+          id: uniqueKey,
+          x,
+          y,
+          levelStr: levelStr || `Lv${levelNum}`,
+          levelNum,
+          summoner: owner || 'Unknown',
+          owner: owner || 'Unknown',
+          alliance: alliance || '-',
+          protectionStr,
+          initialSecondsLeft,
+          server: server || '#1234',
+          distance: 0,
+          justUnlocked: false
+        });
+      }
+
+      parsedBosses = results;
+
+      if (parseFeedback) {
+        if (results.length > 0) {
+          parseFeedback.style.display = 'inline-flex';
+          parseFeedback.className = 'parse-feedback';
+          parseFeedback.innerHTML = `🎯 <strong>${results.length} Bosses</strong> Detected & Prioritized`;
+        } else {
+          parseFeedback.style.display = 'inline-flex';
+          parseFeedback.className = 'parse-feedback empty';
+          parseFeedback.textContent = 'No coordinates recognized';
+        }
+      }
+
+      recalcDistances();
+      updateLevelPills();
+      renderTable();
+    }
+
+    // Dynamic Level Filter Pills (Multi-Select)
+    function updateLevelPills() {
+      const levelCounts = {};
+      parsedBosses.forEach(b => {
+        levelCounts[b.levelNum] = (levelCounts[b.levelNum] || 0) + 1;
+      });
+
+      const levels = Object.keys(levelCounts).map(Number).sort((a, b) => b - a);
+      const isAll = selectedLevels.has('ALL') || selectedLevels.size === 0;
+
+      let html = `<button type="button" class="pill-btn ${isAll ? 'active' : ''}" data-level="ALL">All (${parsedBosses.length})</button>`;
+      levels.forEach(lvl => {
+        const isActive = !isAll && selectedLevels.has(lvl);
+        html += `<button type="button" class="pill-btn ${isActive ? 'active' : ''}" data-level="${lvl}">Lv${lvl} (${levelCounts[lvl]})</button>`;
+      });
+      levelPillsContainer.innerHTML = html;
+
+      // Re-attach pill click listeners for multi-select
+      levelPillsContainer.querySelectorAll('.pill-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const lvlAttr = btn.dataset.level;
+
+          if (lvlAttr === 'ALL') {
+            selectedLevels.clear();
+            selectedLevels.add('ALL');
+          } else {
+            const num = parseInt(lvlAttr, 10);
+            if (selectedLevels.has('ALL')) {
+              selectedLevels.clear();
+            }
+
+            if (selectedLevels.has(num)) {
+              selectedLevels.delete(num);
+              if (selectedLevels.size === 0) {
+                selectedLevels.add('ALL');
+              }
+            } else {
+              selectedLevels.add(num);
+            }
+          }
+
+          updateLevelPills();
+          renderTable();
+        });
+      });
+    }
+
+    // Format seconds into HH:MM:SS
+    function formatTime(sec) {
+      if (sec <= 0) return '00:00:00';
+      const h = Math.floor(sec / 3600);
+      const m = Math.floor((sec % 3600) / 60);
+      const s = sec % 60;
+      const pad = (n) => String(n).padStart(2, '0');
+      return `${pad(h)}:${pad(m)}:${pad(s)}`;
+    }
+
+    // Calculate current seconds left for a boss based on elapsed wall-clock time
+    function getCurrentSecondsLeft(boss) {
+      if (boss.initialSecondsLeft <= 0) return 0;
+      const elapsedSec = Math.floor((Date.now() - pasteTimestamp) / 1000);
+      return Math.max(0, boss.initialSecondsLeft - elapsedSec);
+    }
+
+    // Level CSS Class
+    function getLevelClass(lvl) {
+      if (lvl >= 60) return 'lvl-60';
+      if (lvl >= 55) return 'lvl-55';
+      if (lvl >= 50) return 'lvl-50';
+      if (lvl >= 45) return 'lvl-45';
+      if (lvl >= 40) return 'lvl-40';
+      return 'lvl-other';
+    }
+
+    // Route Filter Pill Badges Update
+    function updatePathPillCounts(clearCount, mudCount) {
+      const allBtn = pathPills.querySelector('[data-path="ALL"]');
+      const clearBtn = pathPills.querySelector('[data-path="CLEAR"]');
+      const mudBtn = pathPills.querySelector('[data-path="MUD"]');
+      if (allBtn) allBtn.textContent = `All Routes (${clearCount + mudCount})`;
+      if (clearBtn) clearBtn.textContent = `🟢 Clear Path (${clearCount})`;
+      if (mudBtn) mudBtn.textContent = `⚠️ Crosses Mud (${mudCount})`;
+    }
+
+    // Update Sort Headers
+    function updateSortHeaders() {
+      bossTable.querySelectorAll('thead th').forEach(header => {
+        const col = header.dataset.col;
+        const isSorted = (currentSort.column === col);
+        header.classList.toggle('sorted', isSorted);
+        
+        let indicator = header.querySelector('.sort-indicator');
+        if (!indicator) {
+          indicator = document.createElement('span');
+          indicator.className = 'sort-indicator';
+          header.appendChild(indicator);
+        }
+        indicator.textContent = isSorted ? (currentSort.direction === 'asc' ? ' ▲' : ' ▼') : '';
+      });
+
+      if (thDist) {
+        const isDistSorted = (currentSort.column === 'dist');
+        const arrow = isDistSorted ? (currentSort.direction === 'asc' ? ' ▲' : ' ▼') : '';
+        thDist.innerHTML = `${capitolWarMode ? 'Effective Dist ⚔️' : 'Distance'} <span class="sort-indicator">${arrow}</span>`;
+      }
+    }
+
+    // Render Table
+    function renderTable() {
+      updateSortHeaders();
+
+      if (parsedBosses.length === 0) {
+        emptyState.style.display = 'block';
+        bossTable.style.display = 'none';
+        updateStats(0, 0, 0, 0, 0, 0);
+        updatePathPillCounts(0, 0);
+        return;
+      }
+
+      emptyState.style.display = 'none';
+      bossTable.style.display = 'table';
+
+      // Filtering & Counts
+      let totalAvail = 0;
+      let totalLocked = 0;
+      let totalCleared = 0;
+      let totalClearPath = 0;
+      let totalMudPath = 0;
+
+      const filtered = parsedBosses.filter(boss => {
+        const secsLeft = getCurrentSecondsLeft(boss);
+        const isAvail = secsLeft === 0;
+
+        if (isAvail) totalAvail++;
+        else totalLocked++;
+
+        const isDone = doneBossKeys.has(boss.id);
+        if (isDone) totalCleared++;
+
+        if (boss.crossesMud) totalMudPath++;
+        else totalClearPath++;
+
+        if (hideDone && isDone) return false;
+
+        // Level Filter (Multi-Select)
+        if (!selectedLevels.has('ALL') && selectedLevels.size > 0) {
+          if (!selectedLevels.has(boss.levelNum)) {
+            return false;
+          }
+        }
+
+        // Status Filter
+        if (selectedStatus === 'AVAIL' && !isAvail) return false;
+        if (selectedStatus === 'LOCKED' && isAvail) return false;
+
+        // Route Filter (when Capitol War is active)
+        if (capitolWarMode && selectedPathFilter !== 'ALL') {
+          if (selectedPathFilter === 'CLEAR' && boss.crossesMud) return false;
+          if (selectedPathFilter === 'MUD' && !boss.crossesMud) return false;
+        }
+
+        // Separate Alliance & Summoner Filters
+        if (allianceFilterQuery && !boss.alliance.toLowerCase().includes(allianceFilterQuery)) {
+          return false;
+        }
+
+        if (summonerFilterQuery) {
+          const summonerName = (boss.summoner || boss.owner || '').toLowerCase();
+          if (!summonerName.includes(summonerFilterQuery)) {
+            return false;
+          }
+        }
+
+        return true;
+      });
+
+      updateStats(parsedBosses.length, totalAvail, totalLocked, totalCleared, totalClearPath, totalMudPath);
+      updatePathPillCounts(totalClearPath, totalMudPath);
+
+      // Sorting
+      filtered.sort((a, b) => {
+        let valA, valB;
+        const dir = currentSort.direction === 'asc' ? 1 : -1;
+
+        switch (currentSort.column) {
+          case 'done':
+            valA = doneBossKeys.has(a.id) ? 1 : 0;
+            valB = doneBossKeys.has(b.id) ? 1 : 0;
+            break;
+          case 'dist':
+            valA = capitolWarMode ? a.effectiveDistance : a.distance;
+            valB = capitolWarMode ? b.effectiveDistance : b.distance;
+            break;
+          case 'coords':
+            valA = a.x * 10000 + a.y;
+            valB = b.x * 10000 + b.y;
+            break;
+          case 'level':
+            valA = a.levelNum;
+            valB = b.levelNum;
+            break;
+          case 'status':
+            valA = getCurrentSecondsLeft(a);
+            valB = getCurrentSecondsLeft(b);
+            break;
+          case 'alliance':
+            valA = a.alliance.toLowerCase();
+            valB = b.alliance.toLowerCase();
+            break;
+          case 'summoner':
+          case 'owner':
+            valA = (a.summoner || a.owner || '').toLowerCase();
+            valB = (b.summoner || b.owner || '').toLowerCase();
+            break;
+          case 'server':
+            valA = a.server.toLowerCase();
+            valB = b.server.toLowerCase();
+            break;
+          default:
+            valA = capitolWarMode ? a.effectiveDistance : a.distance;
+            valB = capitolWarMode ? b.effectiveDistance : b.distance;
+        }
+
+        if (valA < valB) return -1 * dir;
+        if (valA > valB) return 1 * dir;
+        // Secondary sort tiebreaker: always distance / effective distance
+        return (capitolWarMode ? a.effectiveDistance - b.effectiveDistance : a.distance - b.distance);
+      });
+
+      // Build rows
+      let rowsHtml = '';
+      filtered.forEach(boss => {
+        const secsLeft = getCurrentSecondsLeft(boss);
+        const isDone = doneBossKeys.has(boss.id);
+        const isAvail = secsLeft === 0;
+
+        let statusBadgeHtml = '';
+        if (isAvail) {
+          if (boss.justUnlocked) {
+            statusBadgeHtml = `<span class="status-badge status-unlocked-now">⚡ UNLOCKED!</span>`;
+          } else {
+            statusBadgeHtml = `<span class="status-badge status-available">✔ Available</span>`;
+          }
+        } else {
+          statusBadgeHtml = `<span class="status-badge status-locked">🔒 ${formatTime(secsLeft)}</span>`;
+        }
+
+        // Distance Cell: shows Capitol War mud alert & effective distance when Capitol War is ON
+        let distCellHtml = '';
+        if (capitolWarMode) {
+          if (boss.crossesMud) {
+            distCellHtml = `
+              <div class="dist-container">
+                <div>
+                  <span class="dist-badge dist-eff">${boss.effectiveDistance.toFixed(1)}<span class="dist-unit">km</span></span>
+                  <span class="badge-mud" title="March line crosses contaminated mud zone [450, 550] x [450, 550] (70% speed penalty)">⚠️ Mud Zone (${boss.mudDistance.toFixed(1)} km)</span>
+                </div>
+                <div class="raw-sub">Direct: ${boss.distance.toFixed(1)} km</div>
+              </div>
+            `;
+          } else {
+            distCellHtml = `
+              <div class="dist-container">
+                <div>
+                  <span class="dist-badge">${boss.distance.toFixed(1)}<span class="dist-unit">km</span></span>
+                  <span class="badge-clear">🟢 Clear Path</span>
+                </div>
+              </div>
+            `;
+          }
+        } else {
+          distCellHtml = `<span class="dist-badge">${boss.distance.toFixed(1)}<span class="dist-unit">km</span></span>`;
+        }
+
+        const trClasses = [
+          isDone ? 'is-done' : '',
+          (capitolWarMode && boss.crossesMud) ? 'row-mud' : ''
+        ].filter(Boolean).join(' ');
+
+        rowsHtml += `
+          <tr class="${trClasses}" data-id="${boss.id}">
+            <td class="col-done">
+              <input type="checkbox" class="done-toggle" data-id="${boss.id}" ${isDone ? 'checked' : ''} title="Mark as Cleared">
+            </td>
+            <td class="dist-cell">
+              ${distCellHtml}
+            </td>
+            <td class="coords-cell">${boss.x}, ${boss.y}</td>
+            <td><span class="level-badge ${getLevelClass(boss.levelNum)}">${boss.levelStr}</span></td>
+            <td class="status-cell">${statusBadgeHtml}</td>
+            <td><span class="alliance-tag">${escapeHtml(boss.alliance)}</span></td>
+            <td class="summoner-cell name-cell">${escapeHtml(boss.summoner || boss.owner)}</td>
+            <td class="server-cell">${escapeHtml(boss.server)}</td>
+          </tr>
+        `;
+      });
+
+      tableBody.innerHTML = rowsHtml;
+
+      // Attach row done checkbox listeners
+      tableBody.querySelectorAll('.done-toggle').forEach(chk => {
+        chk.addEventListener('change', (e) => {
+          const id = e.target.dataset.id;
+          if (e.target.checked) {
+            doneBossKeys.add(id);
+          } else {
+            doneBossKeys.delete(id);
+          }
+          localStorage.setItem(STORAGE_KEY_DONE, JSON.stringify(Array.from(doneBossKeys)));
+          renderTable();
+        });
+      });
+    }
+
+    function updateStats(total, avail, locked, cleared, clearCount = 0, mudCount = 0) {
+      statTotal.textContent = total;
+      statAvail.textContent = avail;
+      statLocked.textContent = locked;
+      statCleared.textContent = cleared;
+      if (statClearCount) statClearCount.textContent = clearCount;
+      if (statMudCount) statMudCount.textContent = mudCount;
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    // Update Capitol War UI Controls (Toggle button & route filter visibility)
+    function updateCapitolWarUI() {
+      btnCapitolToggle.classList.toggle('active', capitolWarMode);
+      capitolStatusText.textContent = capitolWarMode ? 'ON' : 'OFF';
+      pathFilterGroup.style.display = capitolWarMode ? 'flex' : 'none';
+      statClearWrap.style.display = capitolWarMode ? 'inline-flex' : 'none';
+      statMudWrap.style.display = capitolWarMode ? 'inline-flex' : 'none';
+    }
+
+    // 1-Second Timer Loop for live countdowns
+    setInterval(() => {
+      if (parsedBosses.length === 0) return;
+
+      let changed = false;
+      parsedBosses.forEach(boss => {
+        if (boss.initialSecondsLeft > 0) {
+          const left = getCurrentSecondsLeft(boss);
+          if (left === 0 && !boss.justUnlocked) {
+            boss.justUnlocked = true;
+            changed = true;
+          }
+        }
+      });
+
+      // Update timer cell contents without rebuilding the entire table if active
+      const statusCells = tableBody.querySelectorAll('tr');
+      if (statusCells.length > 0) {
+        statusCells.forEach(tr => {
+          const id = tr.dataset.id;
+          const boss = parsedBosses.find(b => b.id === id);
+          if (!boss) return;
+
+          const cell = tr.querySelector('.status-cell');
+          if (!cell) return;
+
+          const secsLeft = getCurrentSecondsLeft(boss);
+          if (secsLeft === 0) {
+            if (boss.justUnlocked) {
+              cell.innerHTML = `<span class="status-badge status-unlocked-now">⚡ UNLOCKED!</span>`;
+            } else {
+              cell.innerHTML = `<span class="status-badge status-available">✔ Available</span>`;
+            }
+          } else {
+            cell.innerHTML = `<span class="status-badge status-locked">🔒 ${formatTime(secsLeft)}</span>`;
+          }
+        });
+      }
+
+      if (changed) {
+        renderTable();
+      }
+    }, 1000);
+
+    // Event Handlers for Inputs & Controls
+    rawInput.addEventListener('input', (e) => {
+      parseRawText(e.target.value);
+    });
+
+    btnPasteClipboard.addEventListener('click', async () => {
+      try {
+        const text = await navigator.clipboard.readText();
+        if (text) {
+          rawInput.value = text;
+          parseRawText(text);
+        }
+      } catch (err) {
+        rawInput.focus();
+        alert('Clipboard access prompt blocked. Please click inside the box and press Cmd+V / Ctrl+V to paste!');
+      }
+    });
+
+    btnSelectAll.addEventListener('click', () => {
+      rawInput.focus();
+      rawInput.select();
+    });
+
+    rawInput.addEventListener('dblclick', () => {
+      rawInput.select();
+    });
+
+    btnLoadSample.addEventListener('click', () => {
+      rawInput.value = SAMPLE_RAW_DATA;
+      parseRawText(SAMPLE_RAW_DATA);
+    });
+
+    btnClearText.addEventListener('click', () => {
+      rawInput.value = '';
+      parseRawText('');
+    });
+
+    // Capitol War Toggle Handler
+    btnCapitolToggle.addEventListener('click', () => {
+      capitolWarMode = !capitolWarMode;
+      localStorage.setItem(STORAGE_KEY_CAPITOL, capitolWarMode ? 'true' : 'false');
+      updateCapitolWarUI();
+      renderTable();
+    });
+
+    // Path / Route Filter Pills
+    pathPills.querySelectorAll('.pill-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        pathPills.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active', 'mud', 'clear'));
+        btn.classList.add('active');
+        if (btn.dataset.path === 'MUD') btn.classList.add('mud');
+        if (btn.dataset.path === 'CLEAR') btn.classList.add('clear');
+        selectedPathFilter = btn.dataset.path;
+        renderTable();
+      });
+    });
+
+    // Status filter buttons
+    document.querySelectorAll('[data-status]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('[data-status]').forEach(b => b.classList.remove('active', 'avail'));
+        btn.classList.add('active');
+        if (btn.dataset.status === 'AVAIL') btn.classList.add('avail');
+        selectedStatus = btn.dataset.status;
+        renderTable();
+      });
+    });
+
+    // Separate Alliance and Summoner input listeners
+    allianceInput.addEventListener('input', (e) => {
+      allianceFilterQuery = e.target.value.trim().toLowerCase();
+      renderTable();
+    });
+
+    summonerInput.addEventListener('input', (e) => {
+      summonerFilterQuery = e.target.value.trim().toLowerCase();
+      renderTable();
+    });
+
+    // Hide Done
+    hideDoneCheckbox.addEventListener('change', (e) => {
+      hideDone = e.target.checked;
+      renderTable();
+    });
+
+    // Reset Done
+    btnResetDone.addEventListener('click', () => {
+      if (confirm('Clear all "Done" marks for visited bosses?')) {
+        doneBossKeys.clear();
+        localStorage.removeItem(STORAGE_KEY_DONE);
+        renderTable();
+      }
+    });
+
+    // Table Column Sorting Click Handlers
+    bossTable.querySelectorAll('thead th').forEach(th => {
+      th.addEventListener('click', () => {
+        const col = th.dataset.col;
+        if (!col) return;
+
+        if (currentSort.column === col) {
+          currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+        } else {
+          currentSort.column = col;
+          currentSort.direction = th.dataset.defaultDir || 'asc';
+        }
+
+        renderTable();
+      });
+    });
+
+    // Initial UI state & render
+    updateCapitolWarUI();
+    parseRawText(rawInput.value);
+  </script>
+</body>
+</html>
