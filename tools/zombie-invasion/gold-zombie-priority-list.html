@@ -1632,7 +1632,112 @@
       const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
       const results = [];
 
-      // Auto-detect Mobile Card format: Level marker appears before the first coordinate line
+      // Detect known servers & determine common server prefix (handles glued mobile cases like #225832, 465)
+      const knownServers = new Set();
+      const headerServerMatches = text.match(/#\d+/g);
+      if (headerServerMatches) {
+        headerServerMatches.forEach(s => knownServers.add(s.replace('#', '')));
+      }
+
+      const gluedCoordMatches = [];
+      lines.forEach(l => {
+        const m = l.match(/#(\d+)\s*,\s*(\d+)/);
+        if (m) gluedCoordMatches.push(m[1]);
+      });
+
+      let serverPrefix = '';
+      if (gluedCoordMatches.length > 0) {
+        let prefix = gluedCoordMatches[0];
+        for (let i = 1; i < gluedCoordMatches.length; i++) {
+          while (!gluedCoordMatches[i].startsWith(prefix)) {
+            prefix = prefix.slice(0, -1);
+            if (!prefix) break;
+          }
+        }
+        if (prefix.length >= 2) {
+          serverPrefix = prefix;
+        }
+      }
+
+      function extractServerAndCoords(str) {
+        // Case 1: Glued `#225832, 465` or `#2258 32, 465`
+        const gluedMatch = str.match(/#(\d+)\s*,\s*(\d+)/);
+        if (gluedMatch) {
+          const fullDigits = gluedMatch[1];
+          const y = parseInt(gluedMatch[2], 10);
+          let srv = serverPrefix;
+          let x = null;
+
+          if (srv && fullDigits.startsWith(srv) && fullDigits.length > srv.length) {
+            x = parseInt(fullDigits.slice(srv.length), 10);
+            return { server: '#' + srv, x, y };
+          }
+
+          for (const ks of knownServers) {
+            if (fullDigits.startsWith(ks) && fullDigits.length > ks.length) {
+              x = parseInt(fullDigits.slice(ks.length), 10);
+              return { server: '#' + ks, x, y };
+            }
+          }
+
+          if (fullDigits.length >= 5) {
+            const s4 = fullDigits.slice(0, 4);
+            const x4 = parseInt(fullDigits.slice(4), 10);
+            if (x4 >= 0 && x4 <= 1000) {
+              return { server: '#' + s4, x: x4, y };
+            }
+          }
+        }
+
+        // Case 2: Clean `X, Y` with optional `#server`
+        const cleanMatch = str.match(/(?:#(\d+)\s+)?(\d{1,4})\s*,\s*(\d{1,4})/);
+        if (cleanMatch) {
+          const srv = cleanMatch[1] ? '#' + cleanMatch[1] : '';
+          return { server: srv, x: parseInt(cleanMatch[2], 10), y: parseInt(cleanMatch[3], 10) };
+        }
+
+        return null;
+      }
+
+      function extractLevelAndAlliance(line) {
+        // Standard Last War boss levels: 100, 95, 90, ..., 15, 10, 5
+        const stdMatch = line.match(/^Lv\s*(100|[1-9][05]|[5])\s*(.*)$/i);
+        if (stdMatch) {
+          const lvl = parseInt(stdMatch[1], 10);
+          const alliance = stdMatch[2].trim();
+          return { levelNum: lvl, levelStr: 'Lv' + lvl, alliance };
+        }
+
+        // Generic fallback for any level number
+        const genMatch = line.match(/^Lv\s*(\d+)\s*(.*)$/i);
+        if (genMatch) {
+          const lvl = parseInt(genMatch[1], 10);
+          const alliance = genMatch[2].trim();
+          return { levelNum: lvl, levelStr: 'Lv' + lvl, alliance };
+        }
+
+        return null;
+      }
+
+      function extractStatus(str) {
+        if (str.includes('✔') || /available/i.test(str)) {
+          return { protectionStr: '✔ Available', initialSecondsLeft: 0 };
+        }
+        const timeMatch = str.match(/(\d{1,2}):(\d{2}):(\d{2})/);
+        if (timeMatch) {
+          const h = parseInt(timeMatch[1], 10);
+          const m = parseInt(timeMatch[2], 10);
+          const s = parseInt(timeMatch[3], 10);
+          return {
+            protectionStr: '🔒 ' + timeMatch[0],
+            initialSecondsLeft: h * 3600 + m * 60 + s
+          };
+        }
+        return { protectionStr: '✔ Available', initialSecondsLeft: 0 };
+      }
+
+      // Auto-detect Mobile vs Desktop:
+      // If first Lv line appears before first standalone coordinate line -> Mobile Mode
       let isMobileFormat = false;
       let firstLvIdx = -1;
       let firstCoordIdx = -1;
@@ -1645,88 +1750,86 @@
       }
 
       if (isMobileFormat) {
-        // --- Branch A: Mobile Card Format ---
-        // Each card: Lv <num> -> Alliance -> Protection -> Server -> Coords -> Summoner
+        // --- Branch A: Mobile Format (handles both compact glued cards AND expanded multi-line cards) ---
         for (let i = 0; i < lines.length; i++) {
           const line = lines[i];
-          const lvlMatch = line.match(/^Lv\s*(\d+)/i);
-          if (!lvlMatch) continue;
+          const lvInfo = extractLevelAndAlliance(line);
+          if (!lvInfo) continue;
 
           let j = i + 1;
           const cardLines = [];
           while (j < lines.length) {
             if (/^Lv\s*\d+/i.test(lines[j])) break;
-            if (/^(Filters|Level|Protection|Activity Log|MapScout|Server Stats|Scan History|Scan Queue|Notifications|Export|Scan for Zombies)/i.test(lines[j])) break;
+            if (/^(Filters|Level|Protection|Activity Log|MapScout|Server Stats|Scan History|Scan Queue|Notifications|Export|Scan for Zombies|Home Filters)/i.test(lines[j])) break;
             cardLines.push(lines[j]);
             j++;
           }
 
-          const levelNum = parseInt(lvlMatch[1], 10);
-          const levelStr = 'Lv' + levelNum;
-          let alliance = '';
+          let alliance = lvInfo.alliance;
           let protectionStr = '';
+          let initialSecondsLeft = 0;
           let server = '';
           let coords = null;
           let summoner = '';
 
-          let coordIdx = -1;
+          let coordLineIdx = -1;
           for (let c = 0; c < cardLines.length; c++) {
-            const m = cardLines[c].match(/^(\d{1,4})\s*,\s*(\d{1,4})$/);
-            if (m) {
-              coords = { x: parseInt(m[1], 10), y: parseInt(m[2], 10) };
-              coordIdx = c;
+            const cl = cardLines[c];
+            const sc = extractServerAndCoords(cl);
+            if (sc && sc.x !== null && !isNaN(sc.x) && !isNaN(sc.y)) {
+              coords = { x: sc.x, y: sc.y };
+              if (sc.server) server = sc.server;
+              coordLineIdx = c;
+
+              if (cl.includes('✔') || /available/i.test(cl) || /🔒|\d{1,2}:\d{2}:\d{2}/.test(cl)) {
+                const st = extractStatus(cl);
+                protectionStr = st.protectionStr;
+                initialSecondsLeft = st.initialSecondsLeft;
+              }
               break;
             }
           }
 
           if (!coords) continue;
 
-          for (let b = 0; b < coordIdx; b++) {
+          for (let b = 0; b < coordLineIdx; b++) {
             const bl = cardLines[b];
             if (/^#\d+/.test(bl)) {
               server = bl;
             } else if (bl.includes('✔') || /available/i.test(bl) || /🔒|\d{1,2}:\d{2}:\d{2}/.test(bl)) {
-              protectionStr = bl;
+              const st = extractStatus(bl);
+              protectionStr = st.protectionStr;
+              initialSecondsLeft = st.initialSecondsLeft;
             } else if (!alliance) {
               alliance = bl;
             }
           }
 
-          if (coordIdx + 1 < cardLines.length) {
-            summoner = cardLines.slice(coordIdx + 1).join(' ').trim();
-          }
-
-          let initialSecondsLeft = 0;
-          if (protectionStr.includes('Available') || protectionStr.includes('✔')) {
+          if (!protectionStr) {
             protectionStr = '✔ Available';
-            initialSecondsLeft = 0;
-          } else {
-            const timeMatch = protectionStr.match(/(\d{1,2}):(\d{2}):(\d{2})/);
-            if (timeMatch) {
-              const h = parseInt(timeMatch[1], 10);
-              const m = parseInt(timeMatch[2], 10);
-              const s = parseInt(timeMatch[3], 10);
-              initialSecondsLeft = h * 3600 + m * 60 + s;
-              protectionStr = '🔒 ' + timeMatch[0];
-            } else {
-              protectionStr = '✔ Available';
-              initialSecondsLeft = 0;
-            }
           }
 
-          const uniqueKey = `${coords.x}_${coords.y}_${levelNum}_${summoner}`;
+          if (coordLineIdx + 1 < cardLines.length) {
+            summoner = cardLines.slice(coordLineIdx + 1).join(' ').trim();
+          }
+
+          if (!server) {
+            server = serverPrefix ? '#' + serverPrefix : '#2258';
+          }
+
+          const uniqueKey = `${coords.x}_${coords.y}_${lvInfo.levelNum}_${summoner}`;
           results.push({
             id: uniqueKey,
             x: coords.x,
             y: coords.y,
-            levelStr,
-            levelNum,
+            levelStr: lvInfo.levelStr,
+            levelNum: lvInfo.levelNum,
             summoner: summoner || 'Unknown',
             owner: summoner || 'Unknown',
             alliance: alliance || '-',
             protectionStr,
             initialSecondsLeft,
-            server: server || '#1234',
+            server,
             distance: 0,
             justUnlocked: false
           });
@@ -1734,128 +1837,78 @@
           i = j - 1;
         }
       } else {
-        // --- Branch B: Desktop Format (Single-line row or Coords-first multiline) ---
+        // --- Branch B: Desktop Format (Single-line row or multiline) ---
         for (let i = 0; i < lines.length; i++) {
           const line = lines[i];
-
-          // Check if line starts with coordinates: "X, Y" or "X,Y"
           const coordMatch = line.match(/^(\d{1,4})\s*,\s*(\d{1,4})/);
           if (!coordMatch) continue;
 
           const x = parseInt(coordMatch[1], 10);
           const y = parseInt(coordMatch[2], 10);
-          const rest = line.substring(coordMatch[0].length).trim();
+          const rest = line.slice(coordMatch[0].length).trim();
 
-          let levelStr = '';
-          let levelNum = 0;
-          let owner = '';
-          let alliance = '';
-          let protectionStr = '';
-          let initialSecondsLeft = 0;
-          let server = '';
+          let levelStr = '', levelNum = 0, summoner = '', alliance = '', protectionStr = '', initialSecondsLeft = 0, server = '';
 
-          // Case 1: Single-line row (Level, Owner, etc. on the same line)
-          if (rest.length > 0 && (/Lv\s*\d+/i.test(rest) || rest.includes('\t') || rest.includes('Available') || rest.includes('🔒') || rest.includes('#'))) {
-            let tokens = rest.split(/\t+/);
-            if (tokens.length < 3) {
-              tokens = rest.split(/\s{2,}/);
-            }
-
-            if (tokens.length >= 4) {
-              levelStr = tokens[0].trim();
-              owner = tokens[1].trim();
-              alliance = tokens[2].trim();
-              protectionStr = tokens[3].trim();
-              server = tokens[4] ? tokens[4].trim() : '';
+          if (rest.length > 0) {
+            const tokens = rest.split(/\t+|\s{2,}/).map(t => t.trim()).filter(Boolean);
+            if (tokens.length >= 3) {
+              tokens.forEach(tok => {
+                if (/^Lv\s*\d+/i.test(tok)) levelStr = tok;
+                else if (/^#\d+/.test(tok)) server = tok;
+                else if (tok.includes('✔') || /available/i.test(tok) || /🔒|\d{1,2}:\d{2}:\d{2}/.test(tok)) protectionStr = tok;
+                else if (!summoner) summoner = tok;
+                else if (!alliance) alliance = tok;
+              });
             } else {
-              const lvlMatch = rest.match(/Lv\s*(\d+)/i);
-              if (lvlMatch) levelStr = lvlMatch[0];
-
-              const serverMatch = rest.match(/#\d+/);
-              if (serverMatch) server = serverMatch[0];
-
-              if (rest.includes('✔') || /available/i.test(rest)) {
-                protectionStr = '✔ Available';
-              } else {
-                const timeMatch = rest.match(/(\d{1,2}):(\d{2}):(\d{2})/);
-                if (timeMatch) protectionStr = '🔒 ' + timeMatch[0];
+              const lMatch = rest.match(/Lv\s*(\d+)/i);
+              if (lMatch) levelStr = lMatch[0];
+              const sMatch = rest.match(/#\d+/);
+              if (sMatch) server = sMatch[0];
+              if (rest.includes('✔') || /available/i.test(rest)) protectionStr = '✔ Available';
+              else {
+                const tm = rest.match(/(\d{1,2}):(\d{2}):(\d{2})/);
+                if (tm) protectionStr = '🔒 ' + tm[0];
               }
             }
           } else {
-            // Case 2: Multi-line entry (MapScout select-all copy-all dump)
             let j = i + 1;
-            let consumed = 0;
             const blockLines = [];
-
-            while (j < lines.length && consumed < 8) {
-              // Stop if next boss coordinate line is reached
-              if (/^\d{1,4}\s*,\s*\d{1,4}/.test(lines[j])) {
-                break;
-              }
-              // Stop if footer/menu/log sections are reached
-              if (/^(Filters|Level|Protection|Activity Log|MapScout|Server Stats|Scan History|Scan Queue|Notifications|Export|Scan for Zombies)/i.test(lines[j])) {
-                break;
-              }
+            while (j < lines.length && blockLines.length < 8) {
+              if (/^\d{1,4}\s*,\s*\d{1,4}/.test(lines[j])) break;
+              if (/^(Filters|Level|Protection|Activity Log|MapScout|Server Stats|Scan History|Scan Queue|Notifications|Export|Scan for Zombies)/i.test(lines[j])) break;
               blockLines.push(lines[j]);
               j++;
-              consumed++;
             }
 
             if (blockLines.length >= 2) {
-              for (let b = 0; b < blockLines.length; b++) {
-                const bl = blockLines[b];
-                if (/^Lv\s*\d+/i.test(bl) && !levelStr) {
-                  levelStr = bl;
-                } else if (/^#\d+/.test(bl) && !server) {
-                  server = bl;
-                } else if ((bl.includes('✔') || /available/i.test(bl) || /🔒|\d{1,2}:\d{2}:\d{2}/.test(bl)) && !protectionStr) {
-                  protectionStr = bl;
-                } else if (!owner) {
-                  owner = bl;
-                } else if (!alliance) {
-                  alliance = bl;
-                }
-              }
-              i = j - 1; // Advance outer index
+              blockLines.forEach(bl => {
+                if (/^Lv\s*\d+/i.test(bl) && !levelStr) levelStr = bl;
+                else if (/^#\d+/.test(bl) && !server) server = bl;
+                else if ((bl.includes('✔') || /available/i.test(bl) || /🔒|\d{1,2}:\d{2}:\d{2}/.test(bl)) && !protectionStr) protectionStr = bl;
+                else if (!summoner) summoner = bl;
+                else if (!alliance) alliance = bl;
+              });
+              i = j - 1;
             } else {
-              continue; // Not a boss entry
+              continue;
             }
           }
 
-          // Parse level number
           const numMatch = levelStr.match(/\d+/);
           levelNum = numMatch ? parseInt(numMatch[0], 10) : 0;
+          const st = extractStatus(protectionStr);
 
-          // Parse initial protection seconds
-          if (protectionStr.includes('Available') || protectionStr.includes('✔')) {
-            initialSecondsLeft = 0;
-            protectionStr = '✔ Available';
-          } else {
-            const timeMatch = protectionStr.match(/(\d{1,2}):(\d{2}):(\d{2})/);
-            if (timeMatch) {
-              const h = parseInt(timeMatch[1], 10);
-              const m = parseInt(timeMatch[2], 10);
-              const s = parseInt(timeMatch[3], 10);
-              initialSecondsLeft = h * 3600 + m * 60 + s;
-              protectionStr = '🔒 ' + timeMatch[0];
-            } else {
-              protectionStr = '✔ Available';
-              initialSecondsLeft = 0;
-            }
-          }
-
-          const uniqueKey = `${x}_${y}_${levelNum}_${owner}`;
           results.push({
-            id: uniqueKey,
+            id: `${x}_${y}_${levelNum}_${summoner}`,
             x,
             y,
             levelStr: levelStr || `Lv${levelNum}`,
             levelNum,
-            summoner: owner || 'Unknown',
-            owner: owner || 'Unknown',
+            summoner: summoner || 'Unknown',
+            owner: summoner || 'Unknown',
             alliance: alliance || '-',
-            protectionStr,
-            initialSecondsLeft,
+            protectionStr: st.protectionStr,
+            initialSecondsLeft: st.initialSecondsLeft,
             server: server || '#1234',
             distance: 0,
             justUnlocked: false
