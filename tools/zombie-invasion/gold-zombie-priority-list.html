@@ -477,11 +477,228 @@
       box-shadow: 0 0 10px var(--accent-green-glow);
     }
 
-    .search-filters-group {
+    /* Multi-Select Checkbox Dropdown Component */
+    .multiselect-dropdown {
+      position: relative;
+      display: inline-block;
+    }
+
+    .dropdown-trigger-btn {
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      transition: all 0.2s;
+      font-family: inherit;
+      font-variant-numeric: tabular-nums;
+      user-select: none;
+    }
+
+    .dropdown-trigger-btn:hover {
+      border-color: var(--border-accent);
+      color: var(--heading-color);
+    }
+
+    .dropdown-trigger-btn.open {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.25);
+      color: var(--heading-color);
+    }
+
+    .dropdown-caret {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      transition: transform 0.2s ease;
+      display: inline-block;
+      line-height: 1;
+    }
+
+    .dropdown-trigger-btn.open .dropdown-caret {
+      transform: rotate(180deg);
+    }
+
+    .dropdown-trigger-summary {
+      color: var(--accent-gold);
+      font-weight: 700;
+    }
+
+    html[data-applied-theme="light"] .dropdown-trigger-summary {
+      color: var(--accent-gold);
+    }
+
+    .dropdown-menu-panel {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      z-index: 1000;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
+      min-width: 240px;
+      max-width: min(320px, 92vw);
+      padding: 8px;
+      display: none;
+      flex-direction: column;
+      gap: 6px;
+      backdrop-filter: blur(12px);
+      animation: dropdownFadeIn 0.15s ease-out;
+    }
+
+    html[data-applied-theme="light"] .dropdown-menu-panel {
+      background: #ffffff;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+    }
+
+    @keyframes dropdownFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-4px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .dropdown-menu-panel.open {
       display: flex;
-      flex-wrap: wrap;
+    }
+
+    .dropdown-panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border-color);
+      gap: 8px;
+    }
+
+    .dropdown-panel-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+    }
+
+    .dropdown-quick-actions {
+      display: flex;
+      gap: 4px;
+    }
+
+    .btn-dropdown-action {
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s ease;
+    }
+
+    .btn-dropdown-action:hover {
+      color: var(--heading-color);
+      border-color: var(--accent-cyan);
+    }
+
+    .dropdown-search-wrapper {
+      position: relative;
+      width: 100%;
+    }
+
+    .dropdown-search-input {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 5px;
+      padding: 5px 8px;
+      color: var(--text-main);
+      font-size: 0.8rem;
+      outline: none;
+      font-family: inherit;
+      transition: border-color 0.15s ease;
+    }
+
+    .dropdown-search-input:focus {
+      border-color: var(--accent-cyan);
+    }
+
+    .dropdown-panel-list {
+      max-height: 220px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      padding-right: 2px;
+    }
+
+    .dropdown-panel-list::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    .dropdown-panel-list::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 4px;
+    }
+
+    .dropdown-item {
+      display: flex;
       align-items: center;
       gap: 8px;
+      padding: 5px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      user-select: none;
+      font-size: 0.82rem;
+      color: var(--text-main);
+      transition: background-color 0.1s ease;
+    }
+
+    .dropdown-item:hover {
+      background: var(--table-row-hover);
+    }
+
+    .dropdown-item input[type="checkbox"] {
+      width: 15px;
+      height: 15px;
+      accent-color: var(--accent-gold);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .dropdown-item-content {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-grow: 1;
+      min-width: 0;
+    }
+
+    .dropdown-item-count {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      margin-left: auto;
+      font-variant-numeric: tabular-nums;
+      flex-shrink: 0;
+    }
+
+    .dropdown-empty-msg {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      text-align: center;
+      padding: 12px 6px;
+      font-style: italic;
     }
 
     .search-input-wrapper {
@@ -980,11 +1197,48 @@
     <!-- Controls & Filters -->
     <section class="controls-bar" id="controlsBar">
       <div class="filter-row">
-        <!-- Level Filter -->
-        <div class="filter-group">
-          <span class="filter-label">Level:</span>
-          <div class="filter-pills" id="levelPills">
-            <button class="pill-btn active" data-level="ALL">All</button>
+        <!-- Level Checkbox Dropdown -->
+        <div class="multiselect-dropdown" id="levelDropdown">
+          <button type="button" class="dropdown-trigger-btn" id="btnLevelDropdown" aria-haspopup="true" aria-expanded="false" title="Filter Boss Levels">
+            <span class="dropdown-trigger-icon">🎖️</span>
+            <span>Level: <span class="dropdown-trigger-summary" id="levelDropdownSummary">All</span></span>
+            <span class="dropdown-caret">▾</span>
+          </button>
+          <div class="dropdown-menu-panel" id="levelDropdownPanel">
+            <div class="dropdown-panel-header">
+              <span class="dropdown-panel-title">Boss Levels</span>
+              <div class="dropdown-quick-actions">
+                <button type="button" class="btn-dropdown-action" id="btnLevelSelectAll">Select All</button>
+                <button type="button" class="btn-dropdown-action" id="btnLevelClear">Clear</button>
+              </div>
+            </div>
+            <div class="dropdown-panel-list" id="levelDropdownList">
+              <!-- Populated dynamically -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Alliance Checkbox Dropdown -->
+        <div class="multiselect-dropdown" id="allianceDropdown">
+          <button type="button" class="dropdown-trigger-btn" id="btnAllianceDropdown" aria-haspopup="true" aria-expanded="false" title="Filter Alliances">
+            <span class="dropdown-trigger-icon">🛡️</span>
+            <span>Alliance: <span class="dropdown-trigger-summary" id="allianceDropdownSummary">All</span></span>
+            <span class="dropdown-caret">▾</span>
+          </button>
+          <div class="dropdown-menu-panel" id="allianceDropdownPanel">
+            <div class="dropdown-panel-header">
+              <span class="dropdown-panel-title">Alliances</span>
+              <div class="dropdown-quick-actions">
+                <button type="button" class="btn-dropdown-action" id="btnAllianceSelectAll">Select All</button>
+                <button type="button" class="btn-dropdown-action" id="btnAllianceClear">Clear</button>
+              </div>
+            </div>
+            <div class="dropdown-search-wrapper">
+              <input type="text" id="allianceSearchInput" class="dropdown-search-input" placeholder="🔍 Search alliances...">
+            </div>
+            <div class="dropdown-panel-list" id="allianceDropdownList">
+              <!-- Populated dynamically -->
+            </div>
           </div>
         </div>
 
@@ -1008,16 +1262,10 @@
           </div>
         </div>
 
-        <!-- Separate Alliance and Summoner Filter Boxes -->
-        <div class="search-filters-group">
-          <div class="search-input-wrapper">
-            <span class="search-icon">🛡️</span>
-            <input type="text" id="allianceInput" class="search-input" placeholder="Filter Alliance...">
-          </div>
-          <div class="search-input-wrapper">
-            <span class="search-icon">👤</span>
-            <input type="text" id="summonerInput" class="search-input" placeholder="Filter Summoner...">
-          </div>
+        <!-- Summoner Filter Box -->
+        <div class="search-input-wrapper">
+          <span class="search-icon">👤</span>
+          <input type="text" id="summonerInput" class="search-input" placeholder="Filter Summoner...">
         </div>
       </div>
 
@@ -1158,9 +1406,16 @@
     let parsedBosses = [];
     let pasteTimestamp = Date.now();
     let currentSort = { column: 'dist', direction: 'asc' };
-    let selectedLevels = new Set(['ALL']);
+
+    // Multi-Select Level State
+    let allLevelsSelected = true;
+    let selectedLevels = new Set();
+
+    // Multi-Select Alliance State
+    let allAlliancesSelected = true;
+    let selectedAlliances = new Set(); // Stores lowercase string tags
+
     let selectedStatus = 'ALL';
-    let allianceFilterQuery = '';
     let summonerFilterQuery = '';
     let hideDone = false;
 
@@ -1185,8 +1440,26 @@
     const btnPasteClipboard = document.getElementById('btnPasteClipboard');
     const btnSelectAll = document.getElementById('btnSelectAll');
     const parseFeedback = document.getElementById('parseFeedback');
-    const levelPillsContainer = document.getElementById('levelPills');
-    const allianceInput = document.getElementById('allianceInput');
+
+    // Multi-Select Level Elements
+    const levelDropdown = document.getElementById('levelDropdown');
+    const btnLevelDropdown = document.getElementById('btnLevelDropdown');
+    const levelDropdownSummary = document.getElementById('levelDropdownSummary');
+    const levelDropdownPanel = document.getElementById('levelDropdownPanel');
+    const levelDropdownList = document.getElementById('levelDropdownList');
+    const btnLevelSelectAll = document.getElementById('btnLevelSelectAll');
+    const btnLevelClear = document.getElementById('btnLevelClear');
+
+    // Multi-Select Alliance Elements
+    const allianceDropdown = document.getElementById('allianceDropdown');
+    const btnAllianceDropdown = document.getElementById('btnAllianceDropdown');
+    const allianceDropdownSummary = document.getElementById('allianceDropdownSummary');
+    const allianceDropdownPanel = document.getElementById('allianceDropdownPanel');
+    const allianceDropdownList = document.getElementById('allianceDropdownList');
+    const allianceSearchInput = document.getElementById('allianceSearchInput');
+    const btnAllianceSelectAll = document.getElementById('btnAllianceSelectAll');
+    const btnAllianceClear = document.getElementById('btnAllianceClear');
+
     const summonerInput = document.getElementById('summonerInput');
     const hideDoneCheckbox = document.getElementById('hideDoneCheckbox');
     const btnResetDone = document.getElementById('btnResetDone');
@@ -1327,7 +1600,7 @@
       if (!text || !text.trim()) {
         parsedBosses = [];
         if (parseFeedback) parseFeedback.style.display = 'none';
-        updateLevelPills();
+        syncDropdownOptions();
         renderTable();
         return;
       }
@@ -1584,55 +1857,220 @@
       }
 
       recalcDistances();
-      updateLevelPills();
+      syncDropdownOptions();
       renderTable();
     }
 
-    // Dynamic Level Filter Pills (Multi-Select)
-    function updateLevelPills() {
+    // Update summary text for Level dropdown trigger
+    function updateLevelSummaryText(totalLevelsCount) {
+      if (totalLevelsCount === 0 || allLevelsSelected || selectedLevels.size === totalLevelsCount) {
+        levelDropdownSummary.textContent = 'All';
+      } else if (selectedLevels.size === 0) {
+        levelDropdownSummary.textContent = '0 Selected';
+      } else if (selectedLevels.size === 1) {
+        levelDropdownSummary.textContent = `Lv${Array.from(selectedLevels)[0]}`;
+      } else {
+        levelDropdownSummary.textContent = `${selectedLevels.size} Selected`;
+      }
+    }
+
+    // Dynamic Level Dropdown Menu
+    function updateLevelDropdownOptions() {
       const levelCounts = {};
       parsedBosses.forEach(b => {
         levelCounts[b.levelNum] = (levelCounts[b.levelNum] || 0) + 1;
       });
 
       const levels = Object.keys(levelCounts).map(Number).sort((a, b) => b - a);
-      const isAll = selectedLevels.has('ALL') || selectedLevels.size === 0;
 
-      let html = `<button type="button" class="pill-btn ${isAll ? 'active' : ''}" data-level="ALL">All (${parsedBosses.length})</button>`;
-      levels.forEach(lvl => {
-        const isActive = !isAll && selectedLevels.has(lvl);
-        html += `<button type="button" class="pill-btn ${isActive ? 'active' : ''}" data-level="${lvl}">Lv${lvl} (${levelCounts[lvl]})</button>`;
-      });
-      levelPillsContainer.innerHTML = html;
+      if (levels.length === 0) {
+        allLevelsSelected = true;
+        selectedLevels.clear();
+        levelDropdownSummary.textContent = 'All';
+        levelDropdownList.innerHTML = '<div class="dropdown-empty-msg">No bosses loaded</div>';
+        return;
+      }
 
-      // Re-attach pill click listeners for multi-select
-      levelPillsContainer.querySelectorAll('.pill-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const lvlAttr = btn.dataset.level;
-
-          if (lvlAttr === 'ALL') {
-            selectedLevels.clear();
-            selectedLevels.add('ALL');
-          } else {
-            const num = parseInt(lvlAttr, 10);
-            if (selectedLevels.has('ALL')) {
-              selectedLevels.clear();
-            }
-
-            if (selectedLevels.has(num)) {
-              selectedLevels.delete(num);
-              if (selectedLevels.size === 0) {
-                selectedLevels.add('ALL');
-              }
-            } else {
-              selectedLevels.add(num);
-            }
+      // Reconcile selected levels with newly parsed levels
+      if (allLevelsSelected) {
+        selectedLevels = new Set(levels);
+      } else {
+        const retained = new Set();
+        levels.forEach(lvl => {
+          if (selectedLevels.has(lvl)) retained.add(lvl);
+        });
+        if (retained.size === 0 && selectedLevels.size > 0) {
+          allLevelsSelected = true;
+          selectedLevels = new Set(levels);
+        } else {
+          selectedLevels = retained;
+          if (selectedLevels.size === levels.length) {
+            allLevelsSelected = true;
           }
+        }
+      }
 
-          updateLevelPills();
+      updateLevelSummaryText(levels.length);
+
+      let html = '';
+      levels.forEach(lvl => {
+        const isChecked = allLevelsSelected || selectedLevels.has(lvl);
+        html += `
+          <label class="dropdown-item">
+            <input type="checkbox" data-level="${lvl}" ${isChecked ? 'checked' : ''}>
+            <span class="dropdown-item-content">
+              <span class="level-badge ${getLevelClass(lvl)}">Lv${lvl}</span>
+            </span>
+            <span class="dropdown-item-count">(${levelCounts[lvl]})</span>
+          </label>
+        `;
+      });
+      levelDropdownList.innerHTML = html;
+
+      // Checkbox event listeners
+      levelDropdownList.querySelectorAll('input[type="checkbox"]').forEach(chk => {
+        chk.addEventListener('change', (e) => {
+          const lvl = parseInt(e.target.dataset.level, 10);
+          if (e.target.checked) {
+            selectedLevels.add(lvl);
+            if (selectedLevels.size === levels.length) {
+              allLevelsSelected = true;
+            }
+          } else {
+            allLevelsSelected = false;
+            selectedLevels.delete(lvl);
+          }
+          updateLevelSummaryText(levels.length);
           renderTable();
         });
       });
+    }
+
+    // Update summary text for Alliance dropdown trigger
+    function updateAllianceSummaryText(totalAlliancesCount, alliancesList) {
+      if (totalAlliancesCount === 0 || allAlliancesSelected || selectedAlliances.size === totalAlliancesCount) {
+        allianceDropdownSummary.textContent = 'All';
+      } else if (selectedAlliances.size === 0) {
+        allianceDropdownSummary.textContent = '0 Selected';
+      } else if (selectedAlliances.size === 1) {
+        const selectedTagLower = Array.from(selectedAlliances)[0];
+        const originalTag = (alliancesList && alliancesList.find(a => a.toLowerCase() === selectedTagLower)) || selectedTagLower.toUpperCase();
+        allianceDropdownSummary.textContent = `[${originalTag}]`;
+      } else {
+        allianceDropdownSummary.textContent = `${selectedAlliances.size} Selected`;
+      }
+    }
+
+    // Dynamic Alliance Dropdown Menu
+    function updateAllianceDropdownOptions() {
+      const allianceCounts = {};
+      parsedBosses.forEach(b => {
+        const tag = b.alliance || '-';
+        allianceCounts[tag] = (allianceCounts[tag] || 0) + 1;
+      });
+
+      // Sort by count descending, then alphabetically
+      const alliances = Object.keys(allianceCounts).sort((a, b) => {
+        return (allianceCounts[b] - allianceCounts[a]) || a.localeCompare(b);
+      });
+
+      if (alliances.length === 0) {
+        allAlliancesSelected = true;
+        selectedAlliances.clear();
+        allianceDropdownSummary.textContent = 'All';
+        allianceDropdownList.innerHTML = '<div class="dropdown-empty-msg">No alliances loaded</div>';
+        return;
+      }
+
+      // Reconcile selected alliances with newly parsed alliances
+      if (allAlliancesSelected) {
+        selectedAlliances = new Set(alliances.map(a => a.toLowerCase()));
+      } else {
+        const retained = new Set();
+        alliances.forEach(a => {
+          const lower = a.toLowerCase();
+          if (selectedAlliances.has(lower)) retained.add(lower);
+        });
+        if (retained.size === 0 && selectedAlliances.size > 0) {
+          allAlliancesSelected = true;
+          selectedAlliances = new Set(alliances.map(a => a.toLowerCase()));
+        } else {
+          selectedAlliances = retained;
+          if (selectedAlliances.size === alliances.length) {
+            allAlliancesSelected = true;
+          }
+        }
+      }
+
+      updateAllianceSummaryText(alliances.length, alliances);
+
+      let html = '';
+      alliances.forEach(tag => {
+        const lower = tag.toLowerCase();
+        const isChecked = allAlliancesSelected || selectedAlliances.has(lower);
+        html += `
+          <label class="dropdown-item" data-alliance="${escapeHtml(lower)}">
+            <input type="checkbox" data-alliance="${escapeHtml(lower)}" ${isChecked ? 'checked' : ''}>
+            <span class="dropdown-item-content">
+              <span class="alliance-tag">${escapeHtml(tag)}</span>
+            </span>
+            <span class="dropdown-item-count">(${allianceCounts[tag]})</span>
+          </label>
+        `;
+      });
+      allianceDropdownList.innerHTML = html;
+
+      // Filter list based on existing search text if any
+      if (allianceSearchInput) {
+        filterAllianceList(allianceSearchInput.value.trim().toLowerCase());
+      }
+
+      // Checkbox event listeners
+      allianceDropdownList.querySelectorAll('input[type="checkbox"]').forEach(chk => {
+        chk.addEventListener('change', (e) => {
+          const lower = e.target.dataset.alliance;
+          if (e.target.checked) {
+            selectedAlliances.add(lower);
+            if (selectedAlliances.size === alliances.length) {
+              allAlliancesSelected = true;
+            }
+          } else {
+            allAlliancesSelected = false;
+            selectedAlliances.delete(lower);
+          }
+          updateAllianceSummaryText(alliances.length, alliances);
+          renderTable();
+        });
+      });
+    }
+
+    function filterAllianceList(query) {
+      const items = allianceDropdownList.querySelectorAll('.dropdown-item');
+      let visibleCount = 0;
+      items.forEach(item => {
+        const tag = item.dataset.alliance || '';
+        const match = !query || tag.includes(query);
+        item.style.display = match ? 'flex' : 'none';
+        if (match) visibleCount++;
+      });
+
+      let noMatchMsg = allianceDropdownList.querySelector('.dropdown-no-match');
+      if (visibleCount === 0 && items.length > 0) {
+        if (!noMatchMsg) {
+          noMatchMsg = document.createElement('div');
+          noMatchMsg.className = 'dropdown-empty-msg dropdown-no-match';
+          allianceDropdownList.appendChild(noMatchMsg);
+        }
+        noMatchMsg.textContent = `No alliance tags match "${query}"`;
+        noMatchMsg.style.display = 'block';
+      } else if (noMatchMsg) {
+        noMatchMsg.style.display = 'none';
+      }
+    }
+
+    function syncDropdownOptions() {
+      updateLevelDropdownOptions();
+      updateAllianceDropdownOptions();
     }
 
     // Format seconds into HH:MM:SS
@@ -1741,7 +2179,7 @@
         if (hideDone && isDone) return false;
 
         // Level Filter (Multi-Select)
-        if (!selectedLevels.has('ALL') && selectedLevels.size > 0) {
+        if (!allLevelsSelected) {
           if (!selectedLevels.has(boss.levelNum)) {
             return false;
           }
@@ -1757,9 +2195,12 @@
           if (selectedPathFilter === 'MUD' && !boss.crossesMud) return false;
         }
 
-        // Separate Alliance & Summoner Filters
-        if (allianceFilterQuery && !boss.alliance.toLowerCase().includes(allianceFilterQuery)) {
-          return false;
+        // Alliance Filter (Multi-Select)
+        if (!allAlliancesSelected) {
+          const bossAlliance = (boss.alliance || '-').toLowerCase();
+          if (!selectedAlliances.has(bossAlliance)) {
+            return false;
+          }
         }
 
         if (summonerFilterQuery) {
@@ -2049,10 +2490,117 @@
       });
     });
 
-    // Separate Alliance and Summoner input listeners
-    allianceInput.addEventListener('input', (e) => {
-      allianceFilterQuery = e.target.value.trim().toLowerCase();
+    // Dropdown Panel Toggle & Outside Click Dismissal
+    function toggleDropdown(dropdownEl) {
+      const panel = dropdownEl.querySelector('.dropdown-menu-panel');
+      const btn = dropdownEl.querySelector('.dropdown-trigger-btn');
+      const isOpen = panel.classList.contains('open');
+
+      closeAllDropdowns();
+
+      if (!isOpen) {
+        panel.classList.add('open');
+        btn.classList.add('open');
+        btn.setAttribute('aria-expanded', 'true');
+
+        // Prevent clipping if dropdown is near right screen edge
+        const rect = panel.getBoundingClientRect();
+        if (rect.right > window.innerWidth - 12) {
+          panel.style.left = 'auto';
+          panel.style.right = '0';
+        } else {
+          panel.style.left = '0';
+          panel.style.right = 'auto';
+        }
+
+        // Auto-focus search input if alliance dropdown
+        const searchInput = panel.querySelector('.dropdown-search-input');
+        if (searchInput) {
+          setTimeout(() => searchInput.focus(), 50);
+        }
+      }
+    }
+
+    function closeAllDropdowns() {
+      document.querySelectorAll('.dropdown-menu-panel.open').forEach(p => p.classList.remove('open'));
+      document.querySelectorAll('.dropdown-trigger-btn.open').forEach(b => {
+        b.classList.remove('open');
+        b.setAttribute('aria-expanded', 'false');
+      });
+    }
+
+    btnLevelDropdown.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleDropdown(levelDropdown);
+    });
+
+    btnAllianceDropdown.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleDropdown(allianceDropdown);
+    });
+
+    levelDropdownPanel.addEventListener('click', (e) => e.stopPropagation());
+    allianceDropdownPanel.addEventListener('click', (e) => e.stopPropagation());
+
+    document.addEventListener('click', () => {
+      closeAllDropdowns();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeAllDropdowns();
+      }
+    });
+
+    // Level Quick Actions: Select All & Clear
+    btnLevelSelectAll.addEventListener('click', () => {
+      const levelCounts = {};
+      parsedBosses.forEach(b => { levelCounts[b.levelNum] = true; });
+      const levels = Object.keys(levelCounts).map(Number);
+      allLevelsSelected = true;
+      selectedLevels = new Set(levels);
+      levelDropdownList.querySelectorAll('input[type="checkbox"]').forEach(c => c.checked = true);
+      updateLevelSummaryText(levels.length);
       renderTable();
+    });
+
+    btnLevelClear.addEventListener('click', () => {
+      const levelCounts = {};
+      parsedBosses.forEach(b => { levelCounts[b.levelNum] = true; });
+      const levels = Object.keys(levelCounts).map(Number);
+      allLevelsSelected = false;
+      selectedLevels.clear();
+      levelDropdownList.querySelectorAll('input[type="checkbox"]').forEach(c => c.checked = false);
+      updateLevelSummaryText(levels.length);
+      renderTable();
+    });
+
+    // Alliance Quick Actions: Select All & Clear
+    btnAllianceSelectAll.addEventListener('click', () => {
+      const allianceCounts = {};
+      parsedBosses.forEach(b => { allianceCounts[b.alliance || '-'] = true; });
+      const alliances = Object.keys(allianceCounts);
+      allAlliancesSelected = true;
+      selectedAlliances = new Set(alliances.map(a => a.toLowerCase()));
+      allianceDropdownList.querySelectorAll('input[type="checkbox"]').forEach(c => c.checked = true);
+      updateAllianceSummaryText(alliances.length, alliances);
+      renderTable();
+    });
+
+    btnAllianceClear.addEventListener('click', () => {
+      const allianceCounts = {};
+      parsedBosses.forEach(b => { allianceCounts[b.alliance || '-'] = true; });
+      const alliances = Object.keys(allianceCounts);
+      allAlliancesSelected = false;
+      selectedAlliances.clear();
+      allianceDropdownList.querySelectorAll('input[type="checkbox"]').forEach(c => c.checked = false);
+      updateAllianceSummaryText(alliances.length, alliances);
+      renderTable();
+    });
+
+    // Alliance Inline Search Input
+    allianceSearchInput.addEventListener('input', (e) => {
+      filterAllianceList(e.target.value.trim().toLowerCase());
     });
 
     summonerInput.addEventListener('input', (e) => {
