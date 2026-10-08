@@ -542,8 +542,8 @@
       border: 1px solid var(--border-color);
       border-radius: 8px;
       box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
-      min-width: 240px;
-      max-width: min(320px, 92vw);
+      min-width: 340px;
+      max-width: min(390px, 95vw);
       padding: 8px;
       display: none;
       flex-direction: column;
@@ -670,11 +670,11 @@
     .dropdown-range-bar {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
       background: rgba(255, 255, 255, 0.03);
       border: 1px solid var(--border-color);
-      border-radius: 5px;
-      padding: 4px 6px;
+      border-radius: 6px;
+      padding: 5px 8px;
     }
 
     html[data-applied-theme="light"] .dropdown-range-bar {
@@ -684,26 +684,30 @@
     .range-select-group {
       display: flex;
       align-items: center;
-      gap: 4px;
+      gap: 5px;
       flex: 1;
+      min-width: 0;
     }
 
     .range-label {
-      font-size: 0.68rem;
+      font-size: 0.7rem;
       font-weight: 700;
       color: var(--text-muted);
       text-transform: uppercase;
+      letter-spacing: 0.02em;
+      flex-shrink: 0;
     }
 
     .dropdown-range-select {
-      width: 100%;
+      flex: 1;
+      min-width: 0;
       background: var(--bg-input);
       border: 1px solid var(--border-color);
       border-radius: 4px;
       color: var(--text-main);
-      font-size: 0.74rem;
+      font-size: 0.76rem;
       font-weight: 600;
-      padding: 2px 4px;
+      padding: 3px 6px;
       outline: none;
       cursor: pointer;
       font-family: inherit;
@@ -714,9 +718,11 @@
     }
 
     .range-sep {
-      font-size: 0.68rem;
+      font-size: 0.7rem;
       color: var(--text-muted);
       font-style: italic;
+      flex-shrink: 0;
+      margin: 0 1px;
     }
 
     .btn-range-reset {
@@ -724,15 +730,16 @@
       border: 1px solid var(--border-color);
       color: var(--text-muted);
       border-radius: 4px;
-      width: 20px;
-      height: 20px;
+      width: 22px;
+      height: 22px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.7rem;
+      font-size: 0.72rem;
       cursor: pointer;
       transition: all 0.15s ease;
       line-height: 1;
+      flex-shrink: 0;
     }
 
     .btn-range-reset:hover {
@@ -819,6 +826,10 @@
       margin-left: auto;
       font-variant-numeric: tabular-nums;
       flex-shrink: 0;
+    }
+
+    .dropdown-item-count.count-zero {
+      opacity: 0.4;
     }
 
     .dropdown-empty-msg {
@@ -1097,72 +1108,73 @@
       font-variant-numeric: tabular-nums;
     }
 
+    /* 20-Tier Harmonious Continuous Chromatic Spectrum (Lv 5 to Lv 100) */
     .lvl-100 { background: linear-gradient(135deg, rgba(234, 179, 8, 0.3), rgba(244, 63, 94, 0.3)); color: #fef08a; border: 1px solid rgba(234, 179, 8, 0.8); font-weight: 800; box-shadow: 0 0 8px rgba(234, 179, 8, 0.35); }
     .lvl-95  { background: rgba(244, 63, 94, 0.25); color: #fda4af; border: 1px solid rgba(244, 63, 94, 0.6); font-weight: 800; }
-    .lvl-90  { background: rgba(255, 122, 0, 0.25); color: #fed7aa; border: 1px solid rgba(255, 122, 0, 0.6); font-weight: 800; }
+    .lvl-90  { background: rgba(6, 182, 212, 0.25); color: #67e8f9; border: 1px solid rgba(6, 182, 212, 0.6); font-weight: 800; }
     .lvl-85  { background: rgba(234, 179, 8, 0.25); color: #fde047; border: 1px solid rgba(234, 179, 8, 0.6); font-weight: 800; }
-    .lvl-80  { background: rgba(6, 182, 212, 0.25); color: #67e8f9; border: 1px solid rgba(6, 182, 212, 0.6); font-weight: 800; }
-    .lvl-75  { background: rgba(217, 70, 239, 0.25); color: #f0abfc; border: 1px solid rgba(217, 70, 239, 0.6); font-weight: 800; }
+    .lvl-80  { background: rgba(245, 158, 11, 0.25); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.6); font-weight: 800; }
+    .lvl-75  { background: rgba(251, 146, 60, 0.25); color: #fb923c; border: 1px solid rgba(251, 146, 60, 0.6); font-weight: 800; }
     .lvl-70  { background: rgba(236, 72, 153, 0.25); color: #f472b6; border: 1px solid rgba(236, 72, 153, 0.6); font-weight: 800; }
-    .lvl-65  { background: linear-gradient(135deg, rgba(225, 29, 72, 0.7), rgba(159, 18, 57, 0.9)); color: #ffffff; border: 1px solid #fda4af; box-shadow: 0 0 7px rgba(225, 29, 72, 0.45); font-weight: 800; letter-spacing: 0.02em; }
-    .lvl-60  { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.45); font-weight: 700; }
-    .lvl-55  { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); }
-    .lvl-50  { background: rgba(168, 85, 247, 0.2); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.4); }
-    .lvl-45  { background: rgba(59, 130, 246, 0.2); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.4); }
-    .lvl-40  { background: rgba(20, 184, 166, 0.2); color: #2dd4bf; border: 1px solid rgba(20, 184, 166, 0.4); }
-    .lvl-35  { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.45); }
-    .lvl-30  { background: rgba(132, 204, 22, 0.2); color: #a3e635; border: 1px solid rgba(132, 204, 22, 0.45); }
-    .lvl-25  { background: rgba(99, 102, 241, 0.2); color: #a5b4fc; border: 1px solid rgba(99, 102, 241, 0.45); }
-    .lvl-20  { background: rgba(14, 165, 233, 0.2); color: #38bdf8; border: 1px solid rgba(14, 165, 233, 0.45); }
-    .lvl-15  { background: rgba(234, 88, 12, 0.2); color: #fb923c; border: 1px solid rgba(234, 88, 12, 0.45); }
-    .lvl-10  { background: rgba(148, 163, 184, 0.25); color: #f1f5f9; border: 1px solid rgba(203, 213, 225, 0.5); }
-    .lvl-5   { background: rgba(71, 85, 105, 0.25); color: #94a3b8; border: 1px solid rgba(100, 116, 139, 0.4); }
-    .lvl-other { background: rgba(100, 116, 139, 0.15); color: #64748b; border: 1px solid rgba(100, 116, 139, 0.3); }
+    .lvl-65  { background: rgba(239, 68, 68, 0.25); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.55); font-weight: 800; }
+    .lvl-60  { background: rgba(168, 85, 247, 0.25); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.5); font-weight: 800; }
+    .lvl-55  { background: rgba(217, 70, 239, 0.25); color: #f0abfc; border: 1px solid rgba(217, 70, 239, 0.5); font-weight: 800; }
+    .lvl-50  { background: rgba(99, 102, 241, 0.25); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.5); font-weight: 800; }
+    .lvl-45  { background: rgba(59, 130, 246, 0.25); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.5); font-weight: 700; }
+    .lvl-40  { background: rgba(14, 165, 233, 0.22); color: #38bdf8; border: 1px solid rgba(14, 165, 233, 0.45); font-weight: 700; }
+    .lvl-35  { background: rgba(20, 184, 166, 0.22); color: #2dd4bf; border: 1px solid rgba(20, 184, 166, 0.45); font-weight: 700; }
+    .lvl-30  { background: rgba(132, 204, 22, 0.22); color: #a3e635; border: 1px solid rgba(132, 204, 22, 0.45); font-weight: 700; }
+    .lvl-25  { background: rgba(16, 185, 129, 0.22); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.45); font-weight: 700; }
+    .lvl-20  { background: rgba(22, 163, 74, 0.22); color: #4ade80; border: 1px solid rgba(22, 163, 74, 0.45); font-weight: 700; }
+    .lvl-15  { background: rgba(217, 119, 6, 0.22); color: #fed7aa; border: 1px solid rgba(217, 119, 6, 0.45); font-weight: 700; }
+    .lvl-10  { background: rgba(148, 163, 184, 0.25); color: #f1f5f9; border: 1px solid rgba(203, 213, 225, 0.5); font-weight: 700; }
+    .lvl-5   { background: rgba(71, 85, 105, 0.25); color: #94a3b8; border: 1px solid rgba(100, 116, 139, 0.4); font-weight: 700; }
+    .lvl-other { background: rgba(100, 116, 139, 0.15); color: #64748b; border: 1px solid rgba(100, 116, 139, 0.3); font-weight: 700; }
 
     html[data-applied-theme="light"] .lvl-100 { background: linear-gradient(135deg, #fef3c7, #ffe4e6); color: #854d0e; border: 1px solid #eab308; font-weight: 800; box-shadow: 0 0 6px rgba(234, 179, 8, 0.25); }
     html[data-applied-theme="light"] .lvl-95  { background: #ffe4e6; color: #9f1239; border-color: #f43f5e; font-weight: 800; }
-    html[data-applied-theme="light"] .lvl-90  { background: #ffedd5; color: #c2410c; border-color: #f97316; font-weight: 800; }
+    html[data-applied-theme="light"] .lvl-90  { background: #cffafe; color: #0e7490; border-color: #06b6d4; font-weight: 800; }
     html[data-applied-theme="light"] .lvl-85  { background: #fef9c3; color: #a16207; border-color: #eab308; font-weight: 800; }
-    html[data-applied-theme="light"] .lvl-80  { background: #cffafe; color: #0e7490; border-color: #06b6d4; font-weight: 800; }
-    html[data-applied-theme="light"] .lvl-75  { background: #fae8ff; color: #a21caf; border-color: #d946ef; font-weight: 800; }
+    html[data-applied-theme="light"] .lvl-80  { background: #fef3c7; color: #b45309; border-color: #f59e0b; font-weight: 800; }
+    html[data-applied-theme="light"] .lvl-75  { background: #ffedd5; color: #c2410c; border-color: #fb923c; font-weight: 800; }
     html[data-applied-theme="light"] .lvl-70  { background: #fce7f3; color: #be185d; border-color: #ec4899; font-weight: 800; }
-    html[data-applied-theme="light"] .lvl-65  { background: #9f1239; color: #ffffff; border: 1px solid #881337; box-shadow: 0 1px 4px rgba(159, 18, 57, 0.35); font-weight: 800; letter-spacing: 0.02em; }
-    html[data-applied-theme="light"] .lvl-60  { background: #fee2e2; color: #dc2626; border-color: #fca5a5; font-weight: 700; }
-    html[data-applied-theme="light"] .lvl-55  { background: #fef3c7; color: #b45309; border-color: #fcd34d; }
-    html[data-applied-theme="light"] .lvl-50  { background: #f3e8ff; color: #7e22ce; border-color: #d8b4fe; }
-    html[data-applied-theme="light"] .lvl-45  { background: #dbeafe; color: #1d4ed8; border-color: #93c5fd; }
-    html[data-applied-theme="light"] .lvl-40  { background: #ccfbf1; color: #0f766e; border-color: #5eead4; }
-    html[data-applied-theme="light"] .lvl-35  { background: #d1fae5; color: #047857; border-color: #6ee7b7; }
-    html[data-applied-theme="light"] .lvl-30  { background: #ecfccb; color: #4d7c0f; border-color: #a3e635; }
-    html[data-applied-theme="light"] .lvl-25  { background: #e0e7ff; color: #4338ca; border-color: #a5b4fc; }
-    html[data-applied-theme="light"] .lvl-20  { background: #e0f2fe; color: #0284c7; border-color: #7dd3fc; }
-    html[data-applied-theme="light"] .lvl-15  { background: #ffedd5; color: #c2410c; border-color: #fdba74; }
+    html[data-applied-theme="light"] .lvl-65  { background: #fee2e2; color: #dc2626; border-color: #fca5a5; font-weight: 800; }
+    html[data-applied-theme="light"] .lvl-60  { background: #f3e8ff; color: #7e22ce; border-color: #d8b4fe; font-weight: 800; }
+    html[data-applied-theme="light"] .lvl-55  { background: #fae8ff; color: #a21caf; border-color: #d946ef; font-weight: 800; }
+    html[data-applied-theme="light"] .lvl-50  { background: #e0e7ff; color: #3730a3; border-color: #a5b4fc; font-weight: 800; }
+    html[data-applied-theme="light"] .lvl-45  { background: #dbeafe; color: #1d4ed8; border-color: #93c5fd; font-weight: 700; }
+    html[data-applied-theme="light"] .lvl-40  { background: #e0f2fe; color: #0284c7; border-color: #7dd3fc; font-weight: 700; }
+    html[data-applied-theme="light"] .lvl-35  { background: #ccfbf1; color: #0f766e; border-color: #5eead4; font-weight: 700; }
+    html[data-applied-theme="light"] .lvl-30  { background: #ecfccb; color: #4d7c0f; border-color: #a3e635; font-weight: 700; }
+    html[data-applied-theme="light"] .lvl-25  { background: #d1fae5; color: #047857; border-color: #6ee7b7; font-weight: 700; }
+    html[data-applied-theme="light"] .lvl-20  { background: #dcfce7; color: #15803d; border-color: #86efac; font-weight: 700; }
+    html[data-applied-theme="light"] .lvl-15  { background: #fef3c7; color: #92400e; border-color: #fcd34d; font-weight: 700; }
     html[data-applied-theme="light"] .lvl-10  { background: #f1f5f9; color: #1e293b; border-color: #94a3b8; font-weight: 700; }
-    html[data-applied-theme="light"] .lvl-5   { background: #e2e8f0; color: #475569; border-color: #cbd5e1; }
-    html[data-applied-theme="light"] .lvl-other { background: #f8fafc; color: #64748b; border-color: #e2e8f0; }
+    html[data-applied-theme="light"] .lvl-5   { background: #e2e8f0; color: #475569; border-color: #cbd5e1; font-weight: 700; }
+    html[data-applied-theme="light"] .lvl-other { background: #f8fafc; color: #64748b; border-color: #e2e8f0; font-weight: 700; }
 
     @media (prefers-color-scheme: light) {
       html:not([data-applied-theme="dark"]) .lvl-100 { background: linear-gradient(135deg, #fef3c7, #ffe4e6); color: #854d0e; border: 1px solid #eab308; font-weight: 800; box-shadow: 0 0 6px rgba(234, 179, 8, 0.25); }
       html:not([data-applied-theme="dark"]) .lvl-95  { background: #ffe4e6; color: #9f1239; border-color: #f43f5e; font-weight: 800; }
-      html:not([data-applied-theme="dark"]) .lvl-90  { background: #ffedd5; color: #c2410c; border-color: #f97316; font-weight: 800; }
+      html:not([data-applied-theme="dark"]) .lvl-90  { background: #cffafe; color: #0e7490; border-color: #06b6d4; font-weight: 800; }
       html:not([data-applied-theme="dark"]) .lvl-85  { background: #fef9c3; color: #a16207; border-color: #eab308; font-weight: 800; }
-      html:not([data-applied-theme="dark"]) .lvl-80  { background: #cffafe; color: #0e7490; border-color: #06b6d4; font-weight: 800; }
-      html:not([data-applied-theme="dark"]) .lvl-75  { background: #fae8ff; color: #a21caf; border-color: #d946ef; font-weight: 800; }
+      html:not([data-applied-theme="dark"]) .lvl-80  { background: #fef3c7; color: #b45309; border-color: #f59e0b; font-weight: 800; }
+      html:not([data-applied-theme="dark"]) .lvl-75  { background: #ffedd5; color: #c2410c; border-color: #fb923c; font-weight: 800; }
       html:not([data-applied-theme="dark"]) .lvl-70  { background: #fce7f3; color: #be185d; border-color: #ec4899; font-weight: 800; }
-      html:not([data-applied-theme="dark"]) .lvl-65  { background: #9f1239; color: #ffffff; border: 1px solid #881337; box-shadow: 0 1px 4px rgba(159, 18, 57, 0.35); font-weight: 800; letter-spacing: 0.02em; }
-      html:not([data-applied-theme="dark"]) .lvl-60  { background: #fee2e2; color: #dc2626; border-color: #fca5a5; font-weight: 700; }
-      html:not([data-applied-theme="dark"]) .lvl-55  { background: #fef3c7; color: #b45309; border-color: #fcd34d; }
-      html:not([data-applied-theme="dark"]) .lvl-50  { background: #f3e8ff; color: #7e22ce; border-color: #d8b4fe; }
-      html:not([data-applied-theme="dark"]) .lvl-45  { background: #dbeafe; color: #1d4ed8; border-color: #93c5fd; }
-      html:not([data-applied-theme="dark"]) .lvl-40  { background: #ccfbf1; color: #0f766e; border-color: #5eead4; }
-      html:not([data-applied-theme="dark"]) .lvl-35  { background: #d1fae5; color: #047857; border-color: #6ee7b7; }
-      html:not([data-applied-theme="dark"]) .lvl-30  { background: #ecfccb; color: #4d7c0f; border-color: #a3e635; }
-      html:not([data-applied-theme="dark"]) .lvl-25  { background: #e0e7ff; color: #4338ca; border-color: #a5b4fc; }
-      html:not([data-applied-theme="dark"]) .lvl-20  { background: #e0f2fe; color: #0284c7; border-color: #7dd3fc; }
-      html:not([data-applied-theme="dark"]) .lvl-15  { background: #ffedd5; color: #c2410c; border-color: #fdba74; }
+      html:not([data-applied-theme="dark"]) .lvl-65  { background: #fee2e2; color: #dc2626; border-color: #fca5a5; font-weight: 800; }
+      html:not([data-applied-theme="dark"]) .lvl-60  { background: #f3e8ff; color: #7e22ce; border-color: #d8b4fe; font-weight: 800; }
+      html:not([data-applied-theme="dark"]) .lvl-55  { background: #fae8ff; color: #a21caf; border-color: #d946ef; font-weight: 800; }
+      html:not([data-applied-theme="dark"]) .lvl-50  { background: #e0e7ff; color: #3730a3; border-color: #a5b4fc; font-weight: 800; }
+      html:not([data-applied-theme="dark"]) .lvl-45  { background: #dbeafe; color: #1d4ed8; border-color: #93c5fd; font-weight: 700; }
+      html:not([data-applied-theme="dark"]) .lvl-40  { background: #e0f2fe; color: #0284c7; border-color: #7dd3fc; font-weight: 700; }
+      html:not([data-applied-theme="dark"]) .lvl-35  { background: #ccfbf1; color: #0f766e; border-color: #5eead4; font-weight: 700; }
+      html:not([data-applied-theme="dark"]) .lvl-30  { background: #ecfccb; color: #4d7c0f; border-color: #a3e635; font-weight: 700; }
+      html:not([data-applied-theme="dark"]) .lvl-25  { background: #d1fae5; color: #047857; border-color: #6ee7b7; font-weight: 700; }
+      html:not([data-applied-theme="dark"]) .lvl-20  { background: #dcfce7; color: #15803d; border-color: #86efac; font-weight: 700; }
+      html:not([data-applied-theme="dark"]) .lvl-15  { background: #fef3c7; color: #92400e; border-color: #fcd34d; font-weight: 700; }
       html:not([data-applied-theme="dark"]) .lvl-10  { background: #f1f5f9; color: #1e293b; border-color: #94a3b8; font-weight: 700; }
-      html:not([data-applied-theme="dark"]) .lvl-5   { background: #e2e8f0; color: #475569; border-color: #cbd5e1; }
-      html:not([data-applied-theme="dark"]) .lvl-other { background: #f8fafc; color: #64748b; border-color: #e2e8f0; }
+      html:not([data-applied-theme="dark"]) .lvl-5   { background: #e2e8f0; color: #475569; border-color: #cbd5e1; font-weight: 700; }
+      html:not([data-applied-theme="dark"]) .lvl-other { background: #f8fafc; color: #64748b; border-color: #e2e8f0; font-weight: 700; }
     }
 
     .coords-cell {
@@ -1372,14 +1384,14 @@
               <div class="range-select-group">
                 <label for="selectMinLevel" class="range-label">Min:</label>
                 <select id="selectMinLevel" class="dropdown-range-select" title="Minimum Boss Level">
-                  <option value="ALL">Any (Lv5)</option>
+                  <option value="ALL">Any (Lv 5)</option>
                 </select>
               </div>
               <span class="range-sep">to</span>
               <div class="range-select-group">
                 <label for="selectMaxLevel" class="range-label">Max:</label>
                 <select id="selectMaxLevel" class="dropdown-range-select" title="Maximum Boss Level">
-                  <option value="ALL">Any (Lv100)</option>
+                  <option value="ALL">Any (Lv 100)</option>
                 </select>
               </div>
               <button type="button" class="btn-range-reset" id="btnResetRange" title="Reset Min/Max Range">✕</button>
@@ -1877,7 +1889,7 @@
         if (stdMatch) {
           const lvl = parseInt(stdMatch[1], 10);
           const alliance = stdMatch[2].trim();
-          return { levelNum: lvl, levelStr: 'Lv' + lvl, alliance };
+          return { levelNum: lvl, levelStr: 'Lv ' + lvl, alliance };
         }
 
         // Generic fallback for any level number
@@ -1885,7 +1897,7 @@
         if (genMatch) {
           const lvl = parseInt(genMatch[1], 10);
           const alliance = genMatch[2].trim();
-          return { levelNum: lvl, levelStr: 'Lv' + lvl, alliance };
+          return { levelNum: lvl, levelStr: 'Lv ' + lvl, alliance };
         }
 
         return null;
@@ -2074,7 +2086,7 @@
             id: `${x}_${y}_${levelNum}_${summoner}`,
             x,
             y,
-            levelStr: levelStr || `Lv${levelNum}`,
+            levelStr: levelStr ? levelStr.replace(/^Lv(?!\s)/i, 'Lv ') : `Lv ${levelNum}`,
             levelNum,
             summoner: summoner || 'Unknown',
             owner: summoner || 'Unknown',
@@ -2111,16 +2123,16 @@
     function initMinMaxLevelSelects() {
       if (!selectMinLevel || !selectMaxLevel) return;
 
-      // Min Level: Any (Lv5), then ascending 5..100
-      let minHtml = '<option value="ALL">Any (Lv5)</option>';
+      // Min Level: Any (Lv 5), then ascending 5..100
+      let minHtml = '<option value="ALL">Any (Lv 5)</option>';
       const ascLevels = [...ALL_GAME_LEVELS].reverse();
       ascLevels.forEach(lvl => {
         minHtml += `<option value="${lvl}">Lv ${lvl}</option>`;
       });
       selectMinLevel.innerHTML = minHtml;
 
-      // Max Level: Any (Lv100), then descending 100..5
-      let maxHtml = '<option value="ALL">Any (Lv100)</option>';
+      // Max Level: Any (Lv 100), then descending 100..5
+      let maxHtml = '<option value="ALL">Any (Lv 100)</option>';
       ALL_GAME_LEVELS.forEach(lvl => {
         maxHtml += `<option value="${lvl}">Lv ${lvl}</option>`;
       });
@@ -2138,7 +2150,7 @@
       } else if (levelFilterMode === 'INCLUDE') {
         return includedLevels.has(lvl);
       }
-      return true; // 'ALL'
+      return !excludedLevels.has(lvl); // 'ALL' with optional range and interior exclusions
     }
 
     // Helper: Determine if an alliance tag is currently active/selected
@@ -2181,30 +2193,41 @@
       if (!levelDropdownSummary) return;
 
       // Priority 1: Range active (Min or Max not ALL)
+      const excCount = excludedLevels.size;
+      const excStr = excCount === 1 
+        ? ` (exc Lv ${Array.from(excludedLevels)[0]})` 
+        : (excCount > 1 ? ` (exc ${excCount})` : '');
+
       if (minLevelSetting !== 'ALL' && maxLevelSetting !== 'ALL') {
-        levelDropdownSummary.textContent = `Lv${minLevelSetting}–Lv${maxLevelSetting}`;
+        levelDropdownSummary.textContent = `Lv ${minLevelSetting}–Lv ${maxLevelSetting}${excStr}`;
         return;
       }
       if (maxLevelSetting !== 'ALL') {
-        levelDropdownSummary.textContent = `≤ Lv${maxLevelSetting}`;
+        levelDropdownSummary.textContent = `≤ Lv ${maxLevelSetting}${excStr}`;
         return;
       }
       if (minLevelSetting !== 'ALL') {
-        levelDropdownSummary.textContent = `≥ Lv${minLevelSetting}`;
+        levelDropdownSummary.textContent = `≥ Lv ${minLevelSetting}${excStr}`;
         return;
       }
 
       // Priority 2: Modes
       if (levelFilterMode === 'ALL') {
-        levelDropdownSummary.textContent = 'All';
+        if (excludedLevels.size === 0) {
+          levelDropdownSummary.textContent = 'All';
+        } else if (excludedLevels.size === 1) {
+          levelDropdownSummary.textContent = `All except Lv ${Array.from(excludedLevels)[0]}`;
+        } else {
+          levelDropdownSummary.textContent = `All except ${excludedLevels.size}`;
+        }
       } else if (levelFilterMode === 'EXCLUDE') {
         if (excludedLevels.size === 0) {
           levelDropdownSummary.textContent = 'All';
         } else if (excludedLevels.size === 1) {
-          levelDropdownSummary.textContent = `All except Lv${Array.from(excludedLevels)[0]}`;
+          levelDropdownSummary.textContent = `All except Lv ${Array.from(excludedLevels)[0]}`;
         } else if (excludedLevels.size === 2) {
           const arr = Array.from(excludedLevels);
-          levelDropdownSummary.textContent = `All except Lv${arr[0]}, Lv${arr[1]}`;
+          levelDropdownSummary.textContent = `All except Lv ${arr[0]}, Lv ${arr[1]}`;
         } else {
           levelDropdownSummary.textContent = `All except ${excludedLevels.size}`;
         }
@@ -2212,77 +2235,168 @@
         if (includedLevels.size === 0) {
           levelDropdownSummary.textContent = '0 Selected';
         } else if (includedLevels.size === 1) {
-          levelDropdownSummary.textContent = `Only Lv${Array.from(includedLevels)[0]}`;
+          levelDropdownSummary.textContent = `Only Lv ${Array.from(includedLevels)[0]}`;
         } else if (includedLevels.size === 2) {
           const arr = Array.from(includedLevels);
-          levelDropdownSummary.textContent = `Only Lv${arr[0]}, Lv${arr[1]}`;
+          levelDropdownSummary.textContent = `Only Lv ${arr[0]}, Lv ${arr[1]}`;
         } else {
           levelDropdownSummary.textContent = `${includedLevels.size} Selected`;
         }
       }
     }
 
-    // Dynamic Level Dropdown Menu
+    let lastLevelCheckedIndex = -1;
+
+    // Set Level Range programmatically (e.g. from range inputs)
+    function setLevelRange(min, max) {
+      minLevelSetting = min;
+      maxLevelSetting = max;
+      if (selectMinLevel) selectMinLevel.value = String(min);
+      if (selectMaxLevel) selectMaxLevel.value = String(max);
+      excludedLevels.clear();
+      includedLevels.clear();
+      levelFilterMode = 'ALL';
+      updateLevelDropdownOptions();
+      renderTable();
+    }
+
+    // Handle toggling of a level checkbox (supports boundaries, interior exclusions, and contiguous range promotion)
+    function handleLevelCheckboxToggle(lvl, isChecked) {
+      if (levelFilterMode === 'INCLUDE') {
+        if (isChecked) {
+          includedLevels.add(lvl);
+        } else {
+          includedLevels.delete(lvl);
+        }
+        // If includedLevels forms a contiguous span of >= 2 levels, promote to Range
+        if (includedLevels.size >= 2) {
+          const sorted = Array.from(includedLevels).sort((a, b) => a - b);
+          const minL = sorted[0];
+          const maxL = sorted[sorted.length - 1];
+          if ((maxL - minL) / 5 + 1 === sorted.length) {
+            minLevelSetting = minL;
+            maxLevelSetting = maxL;
+            if (selectMinLevel) selectMinLevel.value = String(minL);
+            if (selectMaxLevel) selectMaxLevel.value = String(maxL);
+            includedLevels.clear();
+            excludedLevels.clear();
+            levelFilterMode = 'ALL';
+          }
+        }
+        return;
+      }
+
+      // Range-first mode (ALL or EXCLUDE)
+      if (isChecked) {
+        if (excludedLevels.has(lvl)) {
+          excludedLevels.delete(lvl);
+        } else {
+          // Level was outside current range; expand boundary to include it
+          if (minLevelSetting !== 'ALL' && lvl < minLevelSetting) {
+            minLevelSetting = lvl;
+            if (selectMinLevel) selectMinLevel.value = String(lvl);
+          }
+          if (maxLevelSetting !== 'ALL' && lvl > maxLevelSetting) {
+            maxLevelSetting = lvl;
+            if (selectMaxLevel) selectMaxLevel.value = String(lvl);
+          }
+        }
+      } else {
+        // User unchecked this level
+        if (minLevelSetting === lvl) {
+          // Unchecking lower boundary moves min up
+          const nextMin = lvl + 5;
+          if (maxLevelSetting === 'ALL' || nextMin <= maxLevelSetting) {
+            minLevelSetting = nextMin;
+            if (selectMinLevel) selectMinLevel.value = String(nextMin);
+          } else {
+            excludedLevels.add(lvl);
+          }
+        } else if (maxLevelSetting === lvl) {
+          // Unchecking upper boundary moves max down
+          const nextMax = lvl - 5;
+          if (minLevelSetting === 'ALL' || nextMax >= minLevelSetting) {
+            maxLevelSetting = nextMax;
+            if (selectMaxLevel) selectMaxLevel.value = String(nextMax);
+          } else {
+            excludedLevels.add(lvl);
+          }
+        } else {
+          // Interior exclusion inside range
+          excludedLevels.add(lvl);
+        }
+      }
+
+      // Normalize if boundaries reach extremes
+      if (minLevelSetting === 5) {
+        minLevelSetting = 'ALL';
+        if (selectMinLevel) selectMinLevel.value = 'ALL';
+      }
+      if (maxLevelSetting === 100) {
+        maxLevelSetting = 'ALL';
+        if (selectMaxLevel) selectMaxLevel.value = 'ALL';
+      }
+
+      if (minLevelSetting === 'ALL' && maxLevelSetting === 'ALL' && excludedLevels.size === 0) {
+        levelFilterMode = 'ALL';
+      } else if (excludedLevels.size > 0 && minLevelSetting === 'ALL' && maxLevelSetting === 'ALL') {
+        levelFilterMode = 'EXCLUDE';
+      }
+    }
+
+    // Dynamic Level Dropdown Menu (lists all 20 game levels 100..5)
     function updateLevelDropdownOptions() {
       const levelCounts = {};
       parsedBosses.forEach(b => {
         levelCounts[b.levelNum] = (levelCounts[b.levelNum] || 0) + 1;
       });
 
-      const levels = Object.keys(levelCounts).map(Number).sort((a, b) => b - a);
+      const levels = ALL_GAME_LEVELS;
 
       updateLevelModeUI();
-
-      if (levels.length === 0) {
-        updateLevelSummaryText(0);
-        levelDropdownList.innerHTML = '<div class="dropdown-empty-msg">No bosses loaded</div>';
-        return;
-      }
-
       updateLevelSummaryText(levels.length);
 
+      const prevScroll = levelDropdownList ? levelDropdownList.scrollTop : 0;
+
       let html = '';
-      levels.forEach(lvl => {
+      levels.forEach((lvl, idx) => {
+        const count = levelCounts[lvl] || 0;
         const isChecked = isLevelActive(lvl);
+        const countClass = count === 0 ? 'dropdown-item-count count-zero' : 'dropdown-item-count';
         html += `
-          <label class="dropdown-item">
-            <input type="checkbox" data-level="${lvl}" ${isChecked ? 'checked' : ''}>
+          <label class="dropdown-item" data-index="${idx}">
+            <input type="checkbox" data-level="${lvl}" data-index="${idx}" ${isChecked ? 'checked' : ''}>
             <span class="dropdown-item-content">
-              <span class="level-badge ${getLevelClass(lvl)}">Lv${lvl}</span>
+              <span class="level-badge ${getLevelClass(lvl)}">Lv ${lvl}</span>
             </span>
-            <span class="dropdown-item-count">(${levelCounts[lvl]})</span>
+            <span class="${countClass}">(${count})</span>
           </label>
         `;
       });
       levelDropdownList.innerHTML = html;
+      levelDropdownList.scrollTop = prevScroll;
 
-      // Checkbox event listeners
-      levelDropdownList.querySelectorAll('input[type="checkbox"]').forEach(chk => {
-        chk.addEventListener('change', (e) => {
-          const lvl = parseInt(e.target.dataset.level, 10);
-          if (e.target.checked) {
-            // User checked this level
-            if (levelFilterMode === 'EXCLUDE') {
-              excludedLevels.delete(lvl);
-              if (excludedLevels.size === 0 && minLevelSetting === 'ALL' && maxLevelSetting === 'ALL') {
-                levelFilterMode = 'ALL';
-              }
-            } else if (levelFilterMode === 'INCLUDE') {
-              includedLevels.add(lvl);
+      // Checkbox event listeners with Shift+Click support
+      const checkboxes = levelDropdownList.querySelectorAll('input[type="checkbox"]');
+      checkboxes.forEach(chk => {
+        chk.addEventListener('click', (e) => {
+          const currentIdx = parseInt(e.target.dataset.index, 10);
+          const targetChecked = e.target.checked;
+
+          if (e.shiftKey && lastLevelCheckedIndex !== -1 && lastLevelCheckedIndex !== currentIdx) {
+            const start = Math.min(lastLevelCheckedIndex, currentIdx);
+            const end = Math.max(lastLevelCheckedIndex, currentIdx);
+            for (let i = start; i <= end; i++) {
+              const lvl = levels[i];
+              handleLevelCheckboxToggle(lvl, targetChecked);
             }
           } else {
-            // User unchecked this level
-            if (levelFilterMode === 'ALL') {
-              levelFilterMode = 'EXCLUDE';
-              excludedLevels.add(lvl);
-            } else if (levelFilterMode === 'EXCLUDE') {
-              excludedLevels.add(lvl);
-            } else if (levelFilterMode === 'INCLUDE') {
-              includedLevels.delete(lvl);
-            }
+            const lvl = parseInt(e.target.dataset.level, 10);
+            handleLevelCheckboxToggle(lvl, targetChecked);
           }
-          updateLevelModeUI();
-          updateLevelSummaryText(levels.length);
+
+          lastLevelCheckedIndex = currentIdx;
+          updateLevelDropdownOptions();
           renderTable();
         });
       });
@@ -2307,6 +2421,9 @@
           allianceDropdownSummary.textContent = 'All';
         } else if (excludedAlliances.size === 1) {
           allianceDropdownSummary.textContent = `All except [${formatTag(Array.from(excludedAlliances)[0])}]`;
+        } else if (excludedAlliances.size === 2) {
+          const arr = Array.from(excludedAlliances);
+          allianceDropdownSummary.textContent = `All except [${formatTag(arr[0])}], [${formatTag(arr[1])}]`;
         } else {
           allianceDropdownSummary.textContent = `All except ${excludedAlliances.size}`;
         }
@@ -2315,6 +2432,9 @@
           allianceDropdownSummary.textContent = '0 Selected';
         } else if (includedAlliances.size === 1) {
           allianceDropdownSummary.textContent = `[${formatTag(Array.from(includedAlliances)[0])}]`;
+        } else if (includedAlliances.size === 2) {
+          const arr = Array.from(includedAlliances);
+          allianceDropdownSummary.textContent = `[${formatTag(arr[0])}], [${formatTag(arr[1])}]`;
         } else {
           allianceDropdownSummary.textContent = `${includedAlliances.size} Selected`;
         }
@@ -2344,6 +2464,8 @@
 
       updateAllianceSummaryText(alliances.length, alliances);
 
+      const prevScroll = allianceDropdownList ? allianceDropdownList.scrollTop : 0;
+
       let html = '';
       alliances.forEach(tag => {
         const lower = tag.toLowerCase();
@@ -2359,6 +2481,7 @@
         `;
       });
       allianceDropdownList.innerHTML = html;
+      allianceDropdownList.scrollTop = prevScroll;
 
       // Filter list based on existing search text if any
       if (allianceSearchInput) {
@@ -2681,7 +2804,7 @@
               ${distCellHtml}
             </td>
             <td class="coords-cell">${boss.x}, ${boss.y}</td>
-            <td><span class="level-badge ${getLevelClass(boss.levelNum)}">${boss.levelStr}</span></td>
+            <td><span class="level-badge ${getLevelClass(boss.levelNum)}">${boss.levelStr.replace(/^Lv(?!\s)/i, 'Lv ')}</span></td>
             <td class="status-cell">${statusBadgeHtml}</td>
             <td><span class="alliance-tag">${escapeHtml(boss.alliance)}</span></td>
             <td class="summoner-cell name-cell">${escapeHtml(boss.summoner || boss.owner)}</td>
@@ -2911,35 +3034,45 @@
     // Level Range Selectors: Min, Max, and Reset
     selectMinLevel.addEventListener('change', (e) => {
       minLevelSetting = e.target.value === 'ALL' ? 'ALL' : parseInt(e.target.value, 10);
+      if (minLevelSetting !== 'ALL' && maxLevelSetting !== 'ALL' && minLevelSetting > maxLevelSetting) {
+        maxLevelSetting = minLevelSetting;
+        selectMaxLevel.value = String(minLevelSetting);
+      }
+      excludedLevels.clear();
+      levelFilterMode = 'ALL';
       updateLevelDropdownOptions();
       renderTable();
     });
 
     selectMaxLevel.addEventListener('change', (e) => {
       maxLevelSetting = e.target.value === 'ALL' ? 'ALL' : parseInt(e.target.value, 10);
+      if (minLevelSetting !== 'ALL' && maxLevelSetting !== 'ALL' && maxLevelSetting < minLevelSetting) {
+        minLevelSetting = maxLevelSetting;
+        selectMinLevel.value = String(maxLevelSetting);
+      }
+      excludedLevels.clear();
+      levelFilterMode = 'ALL';
       updateLevelDropdownOptions();
       renderTable();
     });
 
     btnResetRange.addEventListener('click', () => {
-      minLevelSetting = 'ALL';
-      maxLevelSetting = 'ALL';
-      selectMinLevel.value = 'ALL';
-      selectMaxLevel.value = 'ALL';
-      updateLevelDropdownOptions();
-      renderTable();
+      setLevelRange('ALL', 'ALL');
     });
 
     // Level Mode Pills: All Except vs Only Selected
     btnLevelModeExclude.addEventListener('click', () => {
       if (levelFilterMode === 'EXCLUDE') return;
-      levelFilterMode = 'EXCLUDE';
-      excludedLevels.clear();
-      const levelCounts = {};
-      parsedBosses.forEach(b => { levelCounts[b.levelNum] = true; });
-      Object.keys(levelCounts).map(Number).forEach(lvl => {
-        if (!isLevelActive(lvl)) excludedLevels.add(lvl);
+      const newExclusions = new Set();
+      ALL_GAME_LEVELS.forEach(lvl => {
+        if (!isLevelActive(lvl)) newExclusions.add(lvl);
       });
+      minLevelSetting = 'ALL';
+      maxLevelSetting = 'ALL';
+      if (selectMinLevel) selectMinLevel.value = 'ALL';
+      if (selectMaxLevel) selectMaxLevel.value = 'ALL';
+      levelFilterMode = 'EXCLUDE';
+      excludedLevels = newExclusions;
       includedLevels.clear();
       updateLevelModeUI();
       updateLevelDropdownOptions();
@@ -2948,13 +3081,16 @@
 
     btnLevelModeInclude.addEventListener('click', () => {
       if (levelFilterMode === 'INCLUDE') return;
-      levelFilterMode = 'INCLUDE';
-      includedLevels.clear();
-      const levelCounts = {};
-      parsedBosses.forEach(b => { levelCounts[b.levelNum] = true; });
-      Object.keys(levelCounts).map(Number).forEach(lvl => {
-        if (isLevelActive(lvl)) includedLevels.add(lvl);
+      const newInclusions = new Set();
+      ALL_GAME_LEVELS.forEach(lvl => {
+        if (isLevelActive(lvl)) newInclusions.add(lvl);
       });
+      minLevelSetting = 'ALL';
+      maxLevelSetting = 'ALL';
+      if (selectMinLevel) selectMinLevel.value = 'ALL';
+      if (selectMaxLevel) selectMaxLevel.value = 'ALL';
+      levelFilterMode = 'INCLUDE';
+      includedLevels = newInclusions;
       excludedLevels.clear();
       updateLevelModeUI();
       updateLevelDropdownOptions();
@@ -2963,24 +3099,15 @@
 
     // Level Quick Actions: Select All & Clear
     btnLevelSelectAll.addEventListener('click', () => {
-      levelFilterMode = 'ALL';
-      minLevelSetting = 'ALL';
-      maxLevelSetting = 'ALL';
-      selectMinLevel.value = 'ALL';
-      selectMaxLevel.value = 'ALL';
-      excludedLevels.clear();
-      includedLevels.clear();
-      updateLevelModeUI();
-      updateLevelDropdownOptions();
-      renderTable();
+      setLevelRange('ALL', 'ALL');
     });
 
     btnLevelClear.addEventListener('click', () => {
       levelFilterMode = 'INCLUDE';
       minLevelSetting = 'ALL';
       maxLevelSetting = 'ALL';
-      selectMinLevel.value = 'ALL';
-      selectMaxLevel.value = 'ALL';
+      if (selectMinLevel) selectMinLevel.value = 'ALL';
+      if (selectMaxLevel) selectMaxLevel.value = 'ALL';
       includedLevels.clear();
       excludedLevels.clear();
       updateLevelModeUI();
@@ -2991,13 +3118,18 @@
     // Alliance Mode Pills: All Except vs Only Selected
     btnAllianceModeExclude.addEventListener('click', () => {
       if (allianceFilterMode === 'EXCLUDE') return;
-      allianceFilterMode = 'EXCLUDE';
-      excludedAlliances.clear();
-      const allianceCounts = {};
-      parsedBosses.forEach(b => { allianceCounts[(b.alliance || '-').toLowerCase()] = true; });
-      Object.keys(allianceCounts).forEach(tag => {
-        if (!isAllianceActive(tag)) excludedAlliances.add(tag);
+      const allTags = new Set();
+      parsedBosses.forEach(b => { allTags.add((b.alliance || '-').toLowerCase()); });
+      excludedAlliances.forEach(t => allTags.add(t));
+      includedAlliances.forEach(t => allTags.add(t));
+
+      const newExclusions = new Set();
+      allTags.forEach(tag => {
+        if (!isAllianceActive(tag)) newExclusions.add(tag);
       });
+
+      allianceFilterMode = 'EXCLUDE';
+      excludedAlliances = newExclusions;
       includedAlliances.clear();
       updateAllianceModeUI();
       updateAllianceDropdownOptions();
@@ -3006,13 +3138,18 @@
 
     btnAllianceModeInclude.addEventListener('click', () => {
       if (allianceFilterMode === 'INCLUDE') return;
-      allianceFilterMode = 'INCLUDE';
-      includedAlliances.clear();
-      const allianceCounts = {};
-      parsedBosses.forEach(b => { allianceCounts[(b.alliance || '-').toLowerCase()] = true; });
-      Object.keys(allianceCounts).forEach(tag => {
-        if (isAllianceActive(tag)) includedAlliances.add(tag);
+      const allTags = new Set();
+      parsedBosses.forEach(b => { allTags.add((b.alliance || '-').toLowerCase()); });
+      excludedAlliances.forEach(t => allTags.add(t));
+      includedAlliances.forEach(t => allTags.add(t));
+
+      const newInclusions = new Set();
+      allTags.forEach(tag => {
+        if (isAllianceActive(tag)) newInclusions.add(tag);
       });
+
+      allianceFilterMode = 'INCLUDE';
+      includedAlliances = newInclusions;
       excludedAlliances.clear();
       updateAllianceModeUI();
       updateAllianceDropdownOptions();
