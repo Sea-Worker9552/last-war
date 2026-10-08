@@ -612,6 +612,134 @@
       border-color: var(--accent-cyan);
     }
 
+    .dropdown-mode-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      padding: 3px 0;
+      border-bottom: 1px dashed var(--border-color);
+    }
+
+    .dropdown-mode-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .dropdown-mode-pills {
+      display: inline-flex;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      padding: 1px;
+      gap: 1px;
+    }
+
+    .mode-pill-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.68rem;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 3px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .mode-pill-btn:hover {
+      color: var(--heading-color);
+    }
+
+    .mode-pill-btn.active {
+      background: var(--accent-cyan);
+      color: #0b1120;
+      font-weight: 700;
+    }
+
+    html[data-applied-theme="light"] .mode-pill-btn.active {
+      background: #0284c7;
+      color: #ffffff;
+    }
+
+    .dropdown-range-bar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-color);
+      border-radius: 5px;
+      padding: 4px 6px;
+    }
+
+    html[data-applied-theme="light"] .dropdown-range-bar {
+      background: #f8fafc;
+    }
+
+    .range-select-group {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex: 1;
+    }
+
+    .range-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .dropdown-range-select {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      color: var(--text-main);
+      font-size: 0.74rem;
+      font-weight: 600;
+      padding: 2px 4px;
+      outline: none;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .dropdown-range-select:focus {
+      border-color: var(--accent-cyan);
+    }
+
+    .range-sep {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    .btn-range-reset {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      border-radius: 4px;
+      width: 20px;
+      height: 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      line-height: 1;
+    }
+
+    .btn-range-reset:hover {
+      color: var(--accent-orange);
+      border-color: var(--accent-orange);
+    }
+
     .dropdown-search-wrapper {
       position: relative;
       width: 100%;
@@ -976,8 +1104,8 @@
     .lvl-80  { background: rgba(6, 182, 212, 0.25); color: #67e8f9; border: 1px solid rgba(6, 182, 212, 0.6); font-weight: 800; }
     .lvl-75  { background: rgba(217, 70, 239, 0.25); color: #f0abfc; border: 1px solid rgba(217, 70, 239, 0.6); font-weight: 800; }
     .lvl-70  { background: rgba(236, 72, 153, 0.25); color: #f472b6; border: 1px solid rgba(236, 72, 153, 0.6); font-weight: 800; }
-    .lvl-65  { background: rgba(225, 29, 72, 0.25); color: #fb7185; border: 1px solid rgba(225, 29, 72, 0.5); font-weight: 800; }
-    .lvl-60  { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); }
+    .lvl-65  { background: linear-gradient(135deg, rgba(225, 29, 72, 0.7), rgba(159, 18, 57, 0.9)); color: #ffffff; border: 1px solid #fda4af; box-shadow: 0 0 7px rgba(225, 29, 72, 0.45); font-weight: 800; letter-spacing: 0.02em; }
+    .lvl-60  { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.45); font-weight: 700; }
     .lvl-55  { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); }
     .lvl-50  { background: rgba(168, 85, 247, 0.2); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.4); }
     .lvl-45  { background: rgba(59, 130, 246, 0.2); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.4); }
@@ -998,8 +1126,8 @@
     html[data-applied-theme="light"] .lvl-80  { background: #cffafe; color: #0e7490; border-color: #06b6d4; font-weight: 800; }
     html[data-applied-theme="light"] .lvl-75  { background: #fae8ff; color: #a21caf; border-color: #d946ef; font-weight: 800; }
     html[data-applied-theme="light"] .lvl-70  { background: #fce7f3; color: #be185d; border-color: #ec4899; font-weight: 800; }
-    html[data-applied-theme="light"] .lvl-65  { background: #ffe4e6; color: #9f1239; border-color: #fda4af; font-weight: 800; }
-    html[data-applied-theme="light"] .lvl-60  { background: #fee2e2; color: #b91c1c; border-color: #fca5a5; }
+    html[data-applied-theme="light"] .lvl-65  { background: #9f1239; color: #ffffff; border: 1px solid #881337; box-shadow: 0 1px 4px rgba(159, 18, 57, 0.35); font-weight: 800; letter-spacing: 0.02em; }
+    html[data-applied-theme="light"] .lvl-60  { background: #fee2e2; color: #dc2626; border-color: #fca5a5; font-weight: 700; }
     html[data-applied-theme="light"] .lvl-55  { background: #fef3c7; color: #b45309; border-color: #fcd34d; }
     html[data-applied-theme="light"] .lvl-50  { background: #f3e8ff; color: #7e22ce; border-color: #d8b4fe; }
     html[data-applied-theme="light"] .lvl-45  { background: #dbeafe; color: #1d4ed8; border-color: #93c5fd; }
@@ -1021,8 +1149,8 @@
       html:not([data-applied-theme="dark"]) .lvl-80  { background: #cffafe; color: #0e7490; border-color: #06b6d4; font-weight: 800; }
       html:not([data-applied-theme="dark"]) .lvl-75  { background: #fae8ff; color: #a21caf; border-color: #d946ef; font-weight: 800; }
       html:not([data-applied-theme="dark"]) .lvl-70  { background: #fce7f3; color: #be185d; border-color: #ec4899; font-weight: 800; }
-      html:not([data-applied-theme="dark"]) .lvl-65  { background: #ffe4e6; color: #9f1239; border-color: #fda4af; font-weight: 800; }
-      html:not([data-applied-theme="dark"]) .lvl-60  { background: #fee2e2; color: #b91c1c; border-color: #fca5a5; }
+      html:not([data-applied-theme="dark"]) .lvl-65  { background: #9f1239; color: #ffffff; border: 1px solid #881337; box-shadow: 0 1px 4px rgba(159, 18, 57, 0.35); font-weight: 800; letter-spacing: 0.02em; }
+      html:not([data-applied-theme="dark"]) .lvl-60  { background: #fee2e2; color: #dc2626; border-color: #fca5a5; font-weight: 700; }
       html:not([data-applied-theme="dark"]) .lvl-55  { background: #fef3c7; color: #b45309; border-color: #fcd34d; }
       html:not([data-applied-theme="dark"]) .lvl-50  { background: #f3e8ff; color: #7e22ce; border-color: #d8b4fe; }
       html:not([data-applied-theme="dark"]) .lvl-45  { background: #dbeafe; color: #1d4ed8; border-color: #93c5fd; }
@@ -1233,6 +1361,29 @@
                 <button type="button" class="btn-dropdown-action" id="btnLevelClear">Clear</button>
               </div>
             </div>
+            <div class="dropdown-mode-bar">
+              <span class="dropdown-mode-label">Mode:</span>
+              <div class="dropdown-mode-pills">
+                <button type="button" class="mode-pill-btn active" id="btnLevelModeExclude" title="All except unchecked. New levels in future pastes will be included by default.">✕ All Except</button>
+                <button type="button" class="mode-pill-btn" id="btnLevelModeInclude" title="Only checked levels. New levels in future pastes will remain unchecked.">✓ Only Selected</button>
+              </div>
+            </div>
+            <div class="dropdown-range-bar">
+              <div class="range-select-group">
+                <label for="selectMinLevel" class="range-label">Min:</label>
+                <select id="selectMinLevel" class="dropdown-range-select" title="Minimum Boss Level">
+                  <option value="ALL">Any (Lv5)</option>
+                </select>
+              </div>
+              <span class="range-sep">to</span>
+              <div class="range-select-group">
+                <label for="selectMaxLevel" class="range-label">Max:</label>
+                <select id="selectMaxLevel" class="dropdown-range-select" title="Maximum Boss Level">
+                  <option value="ALL">Any (Lv100)</option>
+                </select>
+              </div>
+              <button type="button" class="btn-range-reset" id="btnResetRange" title="Reset Min/Max Range">✕</button>
+            </div>
             <div class="dropdown-panel-list" id="levelDropdownList">
               <!-- Populated dynamically -->
             </div>
@@ -1252,6 +1403,13 @@
               <div class="dropdown-quick-actions">
                 <button type="button" class="btn-dropdown-action" id="btnAllianceSelectAll">Select All</button>
                 <button type="button" class="btn-dropdown-action" id="btnAllianceClear">Clear</button>
+              </div>
+            </div>
+            <div class="dropdown-mode-bar">
+              <span class="dropdown-mode-label">Mode:</span>
+              <div class="dropdown-mode-pills">
+                <button type="button" class="mode-pill-btn active" id="btnAllianceModeExclude" title="All except unchecked (Blacklist). New alliances in future pastes will be included by default.">✕ All Except</button>
+                <button type="button" class="mode-pill-btn" id="btnAllianceModeInclude" title="Only checked alliances (Whitelist). New alliances in future pastes will remain unchecked.">✓ Only Selected</button>
               </div>
             </div>
             <div class="dropdown-search-wrapper">
@@ -1428,13 +1586,20 @@
     let pasteTimestamp = Date.now();
     let currentSort = { column: 'dist', direction: 'asc' };
 
+    // Universal Last War Level Ladder (5 to 100 in steps of 5)
+    const ALL_GAME_LEVELS = [100, 95, 90, 85, 80, 75, 70, 65, 60, 55, 50, 45, 40, 35, 30, 25, 20, 15, 10, 5];
+
     // Multi-Select Level State
-    let allLevelsSelected = true;
-    let selectedLevels = new Set();
+    let levelFilterMode = 'ALL'; // 'ALL' | 'EXCLUDE' | 'INCLUDE'
+    let minLevelSetting = 'ALL';  // 'ALL' | number 5..100
+    let maxLevelSetting = 'ALL';  // 'ALL' | number 5..100
+    let excludedLevels = new Set(); // Levels manually excluded when mode === 'EXCLUDE'
+    let includedLevels = new Set(); // Levels manually included when mode === 'INCLUDE'
 
     // Multi-Select Alliance State
-    let allAlliancesSelected = true;
-    let selectedAlliances = new Set(); // Stores lowercase string tags
+    let allianceFilterMode = 'ALL'; // 'ALL' | 'EXCLUDE' | 'INCLUDE'
+    let excludedAlliances = new Set(); // Lowercase string tags excluded (Blacklist)
+    let includedAlliances = new Set(); // Lowercase string tags included (Whitelist)
 
     let selectedStatus = 'ALL';
     let summonerFilterQuery = '';
@@ -1470,6 +1635,11 @@
     const levelDropdownList = document.getElementById('levelDropdownList');
     const btnLevelSelectAll = document.getElementById('btnLevelSelectAll');
     const btnLevelClear = document.getElementById('btnLevelClear');
+    const btnLevelModeExclude = document.getElementById('btnLevelModeExclude');
+    const btnLevelModeInclude = document.getElementById('btnLevelModeInclude');
+    const selectMinLevel = document.getElementById('selectMinLevel');
+    const selectMaxLevel = document.getElementById('selectMaxLevel');
+    const btnResetRange = document.getElementById('btnResetRange');
 
     // Multi-Select Alliance Elements
     const allianceDropdown = document.getElementById('allianceDropdown');
@@ -1480,6 +1650,8 @@
     const allianceSearchInput = document.getElementById('allianceSearchInput');
     const btnAllianceSelectAll = document.getElementById('btnAllianceSelectAll');
     const btnAllianceClear = document.getElementById('btnAllianceClear');
+    const btnAllianceModeExclude = document.getElementById('btnAllianceModeExclude');
+    const btnAllianceModeInclude = document.getElementById('btnAllianceModeInclude');
 
     const summonerInput = document.getElementById('summonerInput');
     const hideDoneCheckbox = document.getElementById('hideDoneCheckbox');
@@ -1935,16 +2107,118 @@
       renderTable();
     }
 
+    // Initialize Min and Max Level Select Dropdowns (Any, 5..100)
+    function initMinMaxLevelSelects() {
+      if (!selectMinLevel || !selectMaxLevel) return;
+
+      // Min Level: Any (Lv5), then ascending 5..100
+      let minHtml = '<option value="ALL">Any (Lv5)</option>';
+      const ascLevels = [...ALL_GAME_LEVELS].reverse();
+      ascLevels.forEach(lvl => {
+        minHtml += `<option value="${lvl}">Lv ${lvl}</option>`;
+      });
+      selectMinLevel.innerHTML = minHtml;
+
+      // Max Level: Any (Lv100), then descending 100..5
+      let maxHtml = '<option value="ALL">Any (Lv100)</option>';
+      ALL_GAME_LEVELS.forEach(lvl => {
+        maxHtml += `<option value="${lvl}">Lv ${lvl}</option>`;
+      });
+      selectMaxLevel.innerHTML = maxHtml;
+    }
+    initMinMaxLevelSelects();
+
+    // Helper: Determine if a level is currently active/selected
+    function isLevelActive(lvl) {
+      if (minLevelSetting !== 'ALL' && lvl < minLevelSetting) return false;
+      if (maxLevelSetting !== 'ALL' && lvl > maxLevelSetting) return false;
+
+      if (levelFilterMode === 'EXCLUDE') {
+        return !excludedLevels.has(lvl);
+      } else if (levelFilterMode === 'INCLUDE') {
+        return includedLevels.has(lvl);
+      }
+      return true; // 'ALL'
+    }
+
+    // Helper: Determine if an alliance tag is currently active/selected
+    function isAllianceActive(tagLower) {
+      if (allianceFilterMode === 'EXCLUDE') {
+        return !excludedAlliances.has(tagLower);
+      } else if (allianceFilterMode === 'INCLUDE') {
+        return includedAlliances.has(tagLower);
+      }
+      return true; // 'ALL'
+    }
+
+    // UI Mode Pill visual state sync
+    function updateLevelModeUI() {
+      if (btnLevelModeExclude && btnLevelModeInclude) {
+        if (levelFilterMode === 'INCLUDE') {
+          btnLevelModeInclude.classList.add('active');
+          btnLevelModeExclude.classList.remove('active');
+        } else {
+          btnLevelModeExclude.classList.add('active');
+          btnLevelModeInclude.classList.remove('active');
+        }
+      }
+    }
+
+    function updateAllianceModeUI() {
+      if (btnAllianceModeExclude && btnAllianceModeInclude) {
+        if (allianceFilterMode === 'INCLUDE') {
+          btnAllianceModeInclude.classList.add('active');
+          btnAllianceModeExclude.classList.remove('active');
+        } else {
+          btnAllianceModeExclude.classList.add('active');
+          btnAllianceModeInclude.classList.remove('active');
+        }
+      }
+    }
+
     // Update summary text for Level dropdown trigger
     function updateLevelSummaryText(totalLevelsCount) {
-      if (totalLevelsCount === 0 || allLevelsSelected || selectedLevels.size === totalLevelsCount) {
+      if (!levelDropdownSummary) return;
+
+      // Priority 1: Range active (Min or Max not ALL)
+      if (minLevelSetting !== 'ALL' && maxLevelSetting !== 'ALL') {
+        levelDropdownSummary.textContent = `Lv${minLevelSetting}–Lv${maxLevelSetting}`;
+        return;
+      }
+      if (maxLevelSetting !== 'ALL') {
+        levelDropdownSummary.textContent = `≤ Lv${maxLevelSetting}`;
+        return;
+      }
+      if (minLevelSetting !== 'ALL') {
+        levelDropdownSummary.textContent = `≥ Lv${minLevelSetting}`;
+        return;
+      }
+
+      // Priority 2: Modes
+      if (levelFilterMode === 'ALL') {
         levelDropdownSummary.textContent = 'All';
-      } else if (selectedLevels.size === 0) {
-        levelDropdownSummary.textContent = '0 Selected';
-      } else if (selectedLevels.size === 1) {
-        levelDropdownSummary.textContent = `Lv${Array.from(selectedLevels)[0]}`;
-      } else {
-        levelDropdownSummary.textContent = `${selectedLevels.size} Selected`;
+      } else if (levelFilterMode === 'EXCLUDE') {
+        if (excludedLevels.size === 0) {
+          levelDropdownSummary.textContent = 'All';
+        } else if (excludedLevels.size === 1) {
+          levelDropdownSummary.textContent = `All except Lv${Array.from(excludedLevels)[0]}`;
+        } else if (excludedLevels.size === 2) {
+          const arr = Array.from(excludedLevels);
+          levelDropdownSummary.textContent = `All except Lv${arr[0]}, Lv${arr[1]}`;
+        } else {
+          levelDropdownSummary.textContent = `All except ${excludedLevels.size}`;
+        }
+      } else if (levelFilterMode === 'INCLUDE') {
+        if (includedLevels.size === 0) {
+          levelDropdownSummary.textContent = '0 Selected';
+        } else if (includedLevels.size === 1) {
+          levelDropdownSummary.textContent = `Only Lv${Array.from(includedLevels)[0]}`;
+        } else if (includedLevels.size === 2) {
+          const arr = Array.from(includedLevels);
+          levelDropdownSummary.textContent = `Only Lv${arr[0]}, Lv${arr[1]}`;
+        } else {
+          levelDropdownSummary.textContent = `${includedLevels.size} Selected`;
+        }
       }
     }
 
@@ -1957,38 +2231,19 @@
 
       const levels = Object.keys(levelCounts).map(Number).sort((a, b) => b - a);
 
+      updateLevelModeUI();
+
       if (levels.length === 0) {
-        allLevelsSelected = true;
-        selectedLevels.clear();
-        levelDropdownSummary.textContent = 'All';
+        updateLevelSummaryText(0);
         levelDropdownList.innerHTML = '<div class="dropdown-empty-msg">No bosses loaded</div>';
         return;
-      }
-
-      // Reconcile selected levels with newly parsed levels
-      if (allLevelsSelected) {
-        selectedLevels = new Set(levels);
-      } else {
-        const retained = new Set();
-        levels.forEach(lvl => {
-          if (selectedLevels.has(lvl)) retained.add(lvl);
-        });
-        if (retained.size === 0 && selectedLevels.size > 0) {
-          allLevelsSelected = true;
-          selectedLevels = new Set(levels);
-        } else {
-          selectedLevels = retained;
-          if (selectedLevels.size === levels.length) {
-            allLevelsSelected = true;
-          }
-        }
       }
 
       updateLevelSummaryText(levels.length);
 
       let html = '';
       levels.forEach(lvl => {
-        const isChecked = allLevelsSelected || selectedLevels.has(lvl);
+        const isChecked = isLevelActive(lvl);
         html += `
           <label class="dropdown-item">
             <input type="checkbox" data-level="${lvl}" ${isChecked ? 'checked' : ''}>
@@ -2006,14 +2261,27 @@
         chk.addEventListener('change', (e) => {
           const lvl = parseInt(e.target.dataset.level, 10);
           if (e.target.checked) {
-            selectedLevels.add(lvl);
-            if (selectedLevels.size === levels.length) {
-              allLevelsSelected = true;
+            // User checked this level
+            if (levelFilterMode === 'EXCLUDE') {
+              excludedLevels.delete(lvl);
+              if (excludedLevels.size === 0 && minLevelSetting === 'ALL' && maxLevelSetting === 'ALL') {
+                levelFilterMode = 'ALL';
+              }
+            } else if (levelFilterMode === 'INCLUDE') {
+              includedLevels.add(lvl);
             }
           } else {
-            allLevelsSelected = false;
-            selectedLevels.delete(lvl);
+            // User unchecked this level
+            if (levelFilterMode === 'ALL') {
+              levelFilterMode = 'EXCLUDE';
+              excludedLevels.add(lvl);
+            } else if (levelFilterMode === 'EXCLUDE') {
+              excludedLevels.add(lvl);
+            } else if (levelFilterMode === 'INCLUDE') {
+              includedLevels.delete(lvl);
+            }
           }
+          updateLevelModeUI();
           updateLevelSummaryText(levels.length);
           renderTable();
         });
@@ -2022,16 +2290,34 @@
 
     // Update summary text for Alliance dropdown trigger
     function updateAllianceSummaryText(totalAlliancesCount, alliancesList) {
-      if (totalAlliancesCount === 0 || allAlliancesSelected || selectedAlliances.size === totalAlliancesCount) {
+      if (!allianceDropdownSummary) return;
+
+      function formatTag(lower) {
+        if (alliancesList) {
+          const orig = alliancesList.find(a => a.toLowerCase() === lower);
+          if (orig) return orig;
+        }
+        return lower.toUpperCase();
+      }
+
+      if (allianceFilterMode === 'ALL') {
         allianceDropdownSummary.textContent = 'All';
-      } else if (selectedAlliances.size === 0) {
-        allianceDropdownSummary.textContent = '0 Selected';
-      } else if (selectedAlliances.size === 1) {
-        const selectedTagLower = Array.from(selectedAlliances)[0];
-        const originalTag = (alliancesList && alliancesList.find(a => a.toLowerCase() === selectedTagLower)) || selectedTagLower.toUpperCase();
-        allianceDropdownSummary.textContent = `[${originalTag}]`;
-      } else {
-        allianceDropdownSummary.textContent = `${selectedAlliances.size} Selected`;
+      } else if (allianceFilterMode === 'EXCLUDE') {
+        if (excludedAlliances.size === 0) {
+          allianceDropdownSummary.textContent = 'All';
+        } else if (excludedAlliances.size === 1) {
+          allianceDropdownSummary.textContent = `All except [${formatTag(Array.from(excludedAlliances)[0])}]`;
+        } else {
+          allianceDropdownSummary.textContent = `All except ${excludedAlliances.size}`;
+        }
+      } else if (allianceFilterMode === 'INCLUDE') {
+        if (includedAlliances.size === 0) {
+          allianceDropdownSummary.textContent = '0 Selected';
+        } else if (includedAlliances.size === 1) {
+          allianceDropdownSummary.textContent = `[${formatTag(Array.from(includedAlliances)[0])}]`;
+        } else {
+          allianceDropdownSummary.textContent = `${includedAlliances.size} Selected`;
+        }
       }
     }
 
@@ -2048,32 +2334,12 @@
         return (allianceCounts[b] - allianceCounts[a]) || a.localeCompare(b);
       });
 
+      updateAllianceModeUI();
+
       if (alliances.length === 0) {
-        allAlliancesSelected = true;
-        selectedAlliances.clear();
-        allianceDropdownSummary.textContent = 'All';
+        updateAllianceSummaryText(0, alliances);
         allianceDropdownList.innerHTML = '<div class="dropdown-empty-msg">No alliances loaded</div>';
         return;
-      }
-
-      // Reconcile selected alliances with newly parsed alliances
-      if (allAlliancesSelected) {
-        selectedAlliances = new Set(alliances.map(a => a.toLowerCase()));
-      } else {
-        const retained = new Set();
-        alliances.forEach(a => {
-          const lower = a.toLowerCase();
-          if (selectedAlliances.has(lower)) retained.add(lower);
-        });
-        if (retained.size === 0 && selectedAlliances.size > 0) {
-          allAlliancesSelected = true;
-          selectedAlliances = new Set(alliances.map(a => a.toLowerCase()));
-        } else {
-          selectedAlliances = retained;
-          if (selectedAlliances.size === alliances.length) {
-            allAlliancesSelected = true;
-          }
-        }
       }
 
       updateAllianceSummaryText(alliances.length, alliances);
@@ -2081,7 +2347,7 @@
       let html = '';
       alliances.forEach(tag => {
         const lower = tag.toLowerCase();
-        const isChecked = allAlliancesSelected || selectedAlliances.has(lower);
+        const isChecked = isAllianceActive(lower);
         html += `
           <label class="dropdown-item" data-alliance="${escapeHtml(lower)}">
             <input type="checkbox" data-alliance="${escapeHtml(lower)}" ${isChecked ? 'checked' : ''}>
@@ -2104,14 +2370,27 @@
         chk.addEventListener('change', (e) => {
           const lower = e.target.dataset.alliance;
           if (e.target.checked) {
-            selectedAlliances.add(lower);
-            if (selectedAlliances.size === alliances.length) {
-              allAlliancesSelected = true;
+            // User checked this alliance
+            if (allianceFilterMode === 'EXCLUDE') {
+              excludedAlliances.delete(lower);
+              if (excludedAlliances.size === 0) {
+                allianceFilterMode = 'ALL';
+              }
+            } else if (allianceFilterMode === 'INCLUDE') {
+              includedAlliances.add(lower);
             }
           } else {
-            allAlliancesSelected = false;
-            selectedAlliances.delete(lower);
+            // User unchecked this alliance
+            if (allianceFilterMode === 'ALL') {
+              allianceFilterMode = 'EXCLUDE';
+              excludedAlliances.add(lower);
+            } else if (allianceFilterMode === 'EXCLUDE') {
+              excludedAlliances.add(lower);
+            } else if (allianceFilterMode === 'INCLUDE') {
+              includedAlliances.delete(lower);
+            }
           }
+          updateAllianceModeUI();
           updateAllianceSummaryText(alliances.length, alliances);
           renderTable();
         });
@@ -2259,11 +2538,9 @@
 
         if (hideDone && isDone) return false;
 
-        // Level Filter (Multi-Select)
-        if (!allLevelsSelected) {
-          if (!selectedLevels.has(boss.levelNum)) {
-            return false;
-          }
+        // Level Filter (Min/Max Range + Inclusion/Exclusion)
+        if (!isLevelActive(boss.levelNum)) {
+          return false;
         }
 
         // Status Filter
@@ -2276,12 +2553,10 @@
           if (selectedPathFilter === 'MUD' && !boss.crossesMud) return false;
         }
 
-        // Alliance Filter (Multi-Select)
-        if (!allAlliancesSelected) {
-          const bossAlliance = (boss.alliance || '-').toLowerCase();
-          if (!selectedAlliances.has(bossAlliance)) {
-            return false;
-          }
+        // Alliance Filter (Inclusion/Exclusion)
+        const bossAlliance = (boss.alliance || '-').toLowerCase();
+        if (!isAllianceActive(bossAlliance)) {
+          return false;
         }
 
         if (summonerFilterQuery) {
@@ -2633,49 +2908,133 @@
       }
     });
 
-    // Level Quick Actions: Select All & Clear
-    btnLevelSelectAll.addEventListener('click', () => {
+    // Level Range Selectors: Min, Max, and Reset
+    selectMinLevel.addEventListener('change', (e) => {
+      minLevelSetting = e.target.value === 'ALL' ? 'ALL' : parseInt(e.target.value, 10);
+      updateLevelDropdownOptions();
+      renderTable();
+    });
+
+    selectMaxLevel.addEventListener('change', (e) => {
+      maxLevelSetting = e.target.value === 'ALL' ? 'ALL' : parseInt(e.target.value, 10);
+      updateLevelDropdownOptions();
+      renderTable();
+    });
+
+    btnResetRange.addEventListener('click', () => {
+      minLevelSetting = 'ALL';
+      maxLevelSetting = 'ALL';
+      selectMinLevel.value = 'ALL';
+      selectMaxLevel.value = 'ALL';
+      updateLevelDropdownOptions();
+      renderTable();
+    });
+
+    // Level Mode Pills: All Except vs Only Selected
+    btnLevelModeExclude.addEventListener('click', () => {
+      if (levelFilterMode === 'EXCLUDE') return;
+      levelFilterMode = 'EXCLUDE';
+      excludedLevels.clear();
       const levelCounts = {};
       parsedBosses.forEach(b => { levelCounts[b.levelNum] = true; });
-      const levels = Object.keys(levelCounts).map(Number);
-      allLevelsSelected = true;
-      selectedLevels = new Set(levels);
-      levelDropdownList.querySelectorAll('input[type="checkbox"]').forEach(c => c.checked = true);
-      updateLevelSummaryText(levels.length);
+      Object.keys(levelCounts).map(Number).forEach(lvl => {
+        if (!isLevelActive(lvl)) excludedLevels.add(lvl);
+      });
+      includedLevels.clear();
+      updateLevelModeUI();
+      updateLevelDropdownOptions();
+      renderTable();
+    });
+
+    btnLevelModeInclude.addEventListener('click', () => {
+      if (levelFilterMode === 'INCLUDE') return;
+      levelFilterMode = 'INCLUDE';
+      includedLevels.clear();
+      const levelCounts = {};
+      parsedBosses.forEach(b => { levelCounts[b.levelNum] = true; });
+      Object.keys(levelCounts).map(Number).forEach(lvl => {
+        if (isLevelActive(lvl)) includedLevels.add(lvl);
+      });
+      excludedLevels.clear();
+      updateLevelModeUI();
+      updateLevelDropdownOptions();
+      renderTable();
+    });
+
+    // Level Quick Actions: Select All & Clear
+    btnLevelSelectAll.addEventListener('click', () => {
+      levelFilterMode = 'ALL';
+      minLevelSetting = 'ALL';
+      maxLevelSetting = 'ALL';
+      selectMinLevel.value = 'ALL';
+      selectMaxLevel.value = 'ALL';
+      excludedLevels.clear();
+      includedLevels.clear();
+      updateLevelModeUI();
+      updateLevelDropdownOptions();
       renderTable();
     });
 
     btnLevelClear.addEventListener('click', () => {
-      const levelCounts = {};
-      parsedBosses.forEach(b => { levelCounts[b.levelNum] = true; });
-      const levels = Object.keys(levelCounts).map(Number);
-      allLevelsSelected = false;
-      selectedLevels.clear();
-      levelDropdownList.querySelectorAll('input[type="checkbox"]').forEach(c => c.checked = false);
-      updateLevelSummaryText(levels.length);
+      levelFilterMode = 'INCLUDE';
+      minLevelSetting = 'ALL';
+      maxLevelSetting = 'ALL';
+      selectMinLevel.value = 'ALL';
+      selectMaxLevel.value = 'ALL';
+      includedLevels.clear();
+      excludedLevels.clear();
+      updateLevelModeUI();
+      updateLevelDropdownOptions();
+      renderTable();
+    });
+
+    // Alliance Mode Pills: All Except vs Only Selected
+    btnAllianceModeExclude.addEventListener('click', () => {
+      if (allianceFilterMode === 'EXCLUDE') return;
+      allianceFilterMode = 'EXCLUDE';
+      excludedAlliances.clear();
+      const allianceCounts = {};
+      parsedBosses.forEach(b => { allianceCounts[(b.alliance || '-').toLowerCase()] = true; });
+      Object.keys(allianceCounts).forEach(tag => {
+        if (!isAllianceActive(tag)) excludedAlliances.add(tag);
+      });
+      includedAlliances.clear();
+      updateAllianceModeUI();
+      updateAllianceDropdownOptions();
+      renderTable();
+    });
+
+    btnAllianceModeInclude.addEventListener('click', () => {
+      if (allianceFilterMode === 'INCLUDE') return;
+      allianceFilterMode = 'INCLUDE';
+      includedAlliances.clear();
+      const allianceCounts = {};
+      parsedBosses.forEach(b => { allianceCounts[(b.alliance || '-').toLowerCase()] = true; });
+      Object.keys(allianceCounts).forEach(tag => {
+        if (isAllianceActive(tag)) includedAlliances.add(tag);
+      });
+      excludedAlliances.clear();
+      updateAllianceModeUI();
+      updateAllianceDropdownOptions();
       renderTable();
     });
 
     // Alliance Quick Actions: Select All & Clear
     btnAllianceSelectAll.addEventListener('click', () => {
-      const allianceCounts = {};
-      parsedBosses.forEach(b => { allianceCounts[b.alliance || '-'] = true; });
-      const alliances = Object.keys(allianceCounts);
-      allAlliancesSelected = true;
-      selectedAlliances = new Set(alliances.map(a => a.toLowerCase()));
-      allianceDropdownList.querySelectorAll('input[type="checkbox"]').forEach(c => c.checked = true);
-      updateAllianceSummaryText(alliances.length, alliances);
+      allianceFilterMode = 'ALL';
+      excludedAlliances.clear();
+      includedAlliances.clear();
+      updateAllianceModeUI();
+      updateAllianceDropdownOptions();
       renderTable();
     });
 
     btnAllianceClear.addEventListener('click', () => {
-      const allianceCounts = {};
-      parsedBosses.forEach(b => { allianceCounts[b.alliance || '-'] = true; });
-      const alliances = Object.keys(allianceCounts);
-      allAlliancesSelected = false;
-      selectedAlliances.clear();
-      allianceDropdownList.querySelectorAll('input[type="checkbox"]').forEach(c => c.checked = false);
-      updateAllianceSummaryText(alliances.length, alliances);
+      allianceFilterMode = 'INCLUDE';
+      includedAlliances.clear();
+      excludedAlliances.clear();
+      updateAllianceModeUI();
+      updateAllianceDropdownOptions();
       renderTable();
     });
 
