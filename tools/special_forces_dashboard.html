@@ -745,6 +745,12 @@
 
         .hedg-card.non-t10-card:hover { opacity: 1.0; }
 
+        .hedg-card.utility-sf-card {
+            opacity: 0.82; border-style: dashed; border-color: #8b5cf6;
+        }
+
+        .hedg-card.utility-sf-card:hover { opacity: 1.0; }
+
         .tag-non-t10 {
             background: var(--bg-input); border: 1px solid var(--border-color); color: var(--text-secondary);
             font-size: 0.7rem; font-weight: 700; padding: 2px 6px; border-radius: 4px; margin-bottom: 4px;
@@ -940,8 +946,18 @@
                 <div class="preset-buttons">
                     <button class="btn-preset active" id="btn-preset-t10-balanced" onclick="selectPreset('t10-balanced')">⚖️ Paced T10 Rush (Gold Capped)</button>
                     <button class="btn-preset" id="btn-preset-t10-pure" onclick="selectPreset('t10-pure')">🚀 Pure T10 Rush (Uncapped)</button>
-                    <button class="btn-preset" id="btn-preset-sf-full" onclick="selectPreset('sf-full')">⚔️ Full Special Forces Tree</button>
+                    <button class="btn-preset" id="btn-preset-sf-full" onclick="selectPreset('sf-full')">⚔️ Full Special Forces Tech Tree</button>
                     <button class="btn-reset-data" onclick="resetAllSettings()" title="Reset all progress and custom week plans">↺ Reset Defaults</button>
+                </div>
+                <!-- SF 80% Mastery Stop Control (Visible when sf-full preset active) -->
+                <div id="sf-mastery-stop-control" style="display:none; margin-top:8px; padding:8px 12px; background:rgba(139, 92, 246, 0.08); border:1px solid #8b5cf6; border-radius:8px; width:100%;">
+                    <label style="cursor:pointer; display:inline-flex; align-items:center; gap:8px; font-size:0.82rem; font-weight:700; color:#a78bfa;">
+                        <input type="checkbox" id="chk-stop-mastery" onchange="toggleStopAtMastery(this.checked)" class="custom-filler-checkbox" style="width:16px; height:16px;">
+                        <span>🛑 Stop Plan When 80%+ Mastery is Unlocked (185/221 Levels)</span>
+                    </label>
+                    <div style="font-size:0.75rem; color:var(--text-secondary); margin-left:24px; margin-top:2px;">
+                        Focuses purely on unlocking Mastery tech trees (Tank, Aircraft, Missile). Keeps focused training, barracks expansion, and healing at minimum (Lvl 1) while prioritizing troop strength. Uncheck to schedule all the way to 100% SF (221/221).
+                    </div>
                 </div>
             </div>
         </header>
@@ -6101,6 +6117,7 @@
             saveWeeks: {},
             fillerMasterEnabled: false,
             stopAtExtraTruck: true,
+            stopAtMastery80: true,
             smartFillerAllowancePct: 12,
             fillerOptions: JSON.parse(JSON.stringify(DEFAULT_FILLER_OPTIONS)),
             modalDraftQueue: [],
@@ -6256,6 +6273,7 @@
 
             if (!state.startingSiegeBaseline) state.startingSiegeBaseline = {};
             if (!state.startingDefenseFortBaseline) state.startingDefenseFortBaseline = {};
+            if (state.stopAtMastery80 === undefined) state.stopAtMastery80 = true;
 
             if (!Array.isArray(state.fillerOptions) || state.fillerOptions.length !== 4 || !state.fillerOptions[0].id) {
                 state.fillerOptions = JSON.parse(JSON.stringify(DEFAULT_FILLER_OPTIONS));
@@ -6576,6 +6594,12 @@ Automatically queues secondary filler research to reach your targeted weekly Val
                 document.querySelectorAll('#goldflex-strict, #goldflex-flex').forEach(r => r.classList.remove('active'));
                 document.getElementById('goldflex-' + state.goldFlex).classList.add('active');
             }
+            let chkMastery = document.getElementById('chk-stop-mastery');
+            if (chkMastery) chkMastery.checked = (state.stopAtMastery80 !== false);
+            let masteryBox = document.getElementById('sf-mastery-stop-control');
+            if (masteryBox) {
+                masteryBox.style.display = (state.preset === 'sf-full') ? 'block' : 'none';
+            }
             renderFillerPriorityUI();
         }
 
@@ -6596,6 +6620,12 @@ Automatically queues secondary filler research to reach your targeted weekly Val
 
         function toggleStopAtExtraTruck(checked) {
             state.stopAtExtraTruck = !!checked;
+            saveStateToLocalStorage();
+            runSimulationAndRender();
+        }
+
+        function toggleStopAtMastery(checked) {
+            state.stopAtMastery80 = !!checked;
             saveStateToLocalStorage();
             runSimulationAndRender();
         }
@@ -6902,6 +6932,8 @@ Automatically queues secondary filler research to reach your targeted weekly Val
             saveStateToLocalStorage();
             runSimulationAndRender();
         }
+        
+        const SF_UTILITY_TECHS = new Set(['focused-training-1', 'barracks-expansion-1', 'rapid-field-dressing-1', 'infirmary-expansion-1']);
 
         function runSimulationAndRender() {
             renderFillerPriorityUI();
@@ -7109,11 +7141,23 @@ Automatically queues secondary filler research to reach your targeted weekly Val
                 });
             });
 
+            const UTILITY_TECHS = SF_UTILITY_TECHS;
+            function isMasteryTroopStrengthTech(cand) {
+                if (!cand) return false;
+                if (UTILITY_TECHS.has(cand.tech_id)) return cand.level === 1;
+                return true;
+            }
+
             let rowMap = {};
             treeData.rows.forEach((r, idx) => r.elements.forEach(e => rowMap[e.id] = idx + 1));
             function priority(k) {
                 let tid = nodes[k].tech_id;
                 let lvl = nodes[k].level;
+
+                // In full SF tree / mastery progression, utility tech levels 2-10 are deprioritized to the very end
+                if (UTILITY_TECHS.has(tid) && lvl > 1) {
+                    return 9000000 + ((rowMap[tid] || 99) * 10000) + (lvl * 10);
+                }
 
                 // 3 Gateway Mapping: Gateway ID -> [Child IDs]
                 let gateways = {
@@ -7245,7 +7289,7 @@ Automatically queues secondary filler research to reach your targeted weekly Val
 
             let totalNodes = Object.keys(nodes).length;
             let weeks = [], currentWeek = 1, cumGold = 0, cumValor = 0, cumSpeedups = 0;
-            let t10UnlockedWeek = null, sfCompletedWeek = null;
+            let t10UnlockedWeek = null, sfCompletedWeek = null, masteryUnlockedWeek = null;
             
             // Build set of required T10 target node keys
             let requiredT10Keys = new Set();
@@ -7255,10 +7299,24 @@ Automatically queues secondary filler research to reach your targeted weekly Val
                     requiredT10Keys.add(tid + ':' + l);
                 }
             });
+
+            // Build set of all 185 essential troop strength + gateway nodes for 80% Mastery unlock
+            let essentialTroopTechKeys = new Set();
+            Object.keys(nodes).forEach(k => {
+                if (isMasteryTroopStrengthTech(nodes[k])) essentialTroopTechKeys.add(k);
+            });
+
             let totalSfNodeCount = 221;
             let bottleneckState = { isGoldBottleneck: false, blockedTechName: '', blockedLevel: 0, requiredGold: 0, currentGoldCap: 0, bottleneckWeek: null };
 
-            while (completedSet.size < totalNodes && currentWeek <= 260) {
+            let isTargetGoalReached = () => {
+                if (state.preset === 'sf-full' && state.stopAtMastery80 !== false) {
+                    return essentialTroopTechKeys.size > 0 && Array.from(essentialTroopTechKeys).every(k => completedSet.has(k));
+                }
+                return completedSet.size >= totalNodes;
+            };
+
+            while (!isTargetGoalReached() && currentWeek <= 260) {
                 let saveConfig = state.saveWeeks[currentWeek] || { enabled: false };
                 let isSaveWeek = saveConfig.enabled;
 
@@ -7357,6 +7415,7 @@ Automatically queues secondary filler research to reach your targeted weekly Val
                     defenseFortAvailable = Object.keys(defenseFortInDegree).filter(k => defenseFortInDegree[k] === 0 && !defenseFortCompletedSet.has(k));
                 } else {
                     // Primary Target Research Execution
+                    let allTroopTechsDone = essentialTroopTechKeys.size > 0 && Array.from(essentialTroopTechKeys).every(k => completedSet.has(k));
                     while (available.length > 0) {
                         let candIdx = -1;
                         // First pass: Prioritize T10 target techs first
@@ -7367,8 +7426,18 @@ Automatically queues secondary filler research to reach your targeted weekly Val
                                 candIdx = i; break;
                             }
                         }
-                        // Second pass: If no T10 target fits budget, take any available candidate (non-T10 SF)
+                        // Second pass: Prioritize remaining troop strength boosting tech (and bare minimum gateways)
                         if (candIdx === -1) {
+                            for (let i=0; i<available.length; i++) {
+                                let cand = nodes[available[i]];
+                                if (isMasteryTroopStrengthTech(cand) && (wValor + cand.valor <= effectiveValorCap) && (wGold + cand.gold <= effectiveGoldCap)) {
+                                    candIdx = i; break;
+                                }
+                            }
+                        }
+                        // Third pass: Utility techs lvl 2-10 ONLY IF all troop strength boosting techs are already done AND not stopping at 80% Mastery!
+                        let allowUtilityLvl2Plus = (state.preset !== 'sf-full' || state.stopAtMastery80 === false);
+                        if (candIdx === -1 && allTroopTechsDone && allowUtilityLvl2Plus) {
                             for (let i=0; i<available.length; i++) {
                                 let cand = nodes[available[i]];
                                 if ((wValor + cand.valor <= effectiveValorCap) && (wGold + cand.gold <= effectiveGoldCap)) {
@@ -7410,9 +7479,19 @@ Automatically queues secondary filler research to reach your targeted weekly Val
                         wItems.push({ tech_id: n.tech_id, tech_name: n.tech_name, level: n.level, valor: n.valor, gold: n.gold, actual_time_sec: n.actual_time_sec });
 
                         completedSet.add(key);
+                        allTroopTechsDone = essentialTroopTechKeys.size > 0 && Array.from(essentialTroopTechKeys).every(k => completedSet.has(k));
+                        if (isTargetGoalReached()) {
+                            break;
+                        }
                         adj[key].forEach(c => {
-                            if (inDegree[c] !== undefined) { inDegree[c]--; if (inDegree[c] === 0) available.push(c); }
-                            if (nonT10SfInDegree[c] !== undefined) { nonT10SfInDegree[c]--; if (nonT10SfInDegree[c] === 0) nonT10SfAvailable.push(c); }
+                            if (inDegree[c] !== undefined) {
+                                inDegree[c]--;
+                                if (inDegree[c] === 0 && !completedSet.has(c)) available.push(c);
+                            }
+                            if (nonT10SfInDegree[c] !== undefined) {
+                                nonT10SfInDegree[c]--;
+                                if (nonT10SfInDegree[c] === 0 && !nonT10SfCompletedSet.has(c)) nonT10SfAvailable.push(c);
+                            }
                         });
                         available.sort((a,b) => priority(a) - priority(b));
                     }
@@ -7505,13 +7584,20 @@ Automatically queues secondary filler research to reach your targeted weekly Val
                                     wItems.push({ tech_id: 'truck:' + n.tech_id, tech_name: n.tech_name, level: n.level, valor: n.valor, gold: n.gold, actual_time_sec: n.actual_time_sec });
                                     truckCompletedSet.add(key);
 
-                                    truckAdj[key].forEach(c => { truckInDegree[c]--; if (truckInDegree[c] === 0) truckAvailable.push(c); });
+                                    truckAdj[key].forEach(c => { truckInDegree[c]--; if (truckInDegree[c] === 0 && !truckCompletedSet.has(c)) truckAvailable.push(c); });
 
                                     if (key === 'extra-truck:1' && state.stopAtExtraTruck !== false) {
                                         break;
                                     }
                                 }
                             } else if (opt.id === 'non-t10-sf') {
+                                nonT10SfAvailable.sort((a,b) => {
+                                    let candA = nonT10SfNodes[a], candB = nonT10SfNodes[b];
+                                    let isTroopA = isMasteryTroopStrengthTech(candA), isTroopB = isMasteryTroopStrengthTech(candB);
+                                    if (isTroopA && !isTroopB) return -1;
+                                    if (!isTroopA && isTroopB) return 1;
+                                    return (candA.level - candB.level);
+                                });
                                 while (nonT10SfAvailable.length > 0 && wValor < fillerTargetValor) {
                                     let candIdx = -1;
                                     for (let i=0; i<nonT10SfAvailable.length; i++) {
@@ -7531,7 +7617,7 @@ Automatically queues secondary filler research to reach your targeted weekly Val
                                     wItems.push({ tech_id: n.tech_id, tech_name: n.tech_name, level: n.level, valor: n.valor, gold: n.gold, actual_time_sec: n.actual_time_sec });
                                     nonT10SfCompletedSet.add(key);
 
-                                    nonT10SfAdj[key].forEach(c => { nonT10SfInDegree[c]--; if (nonT10SfInDegree[c] === 0) nonT10SfAvailable.push(c); });
+                                    nonT10SfAdj[key].forEach(c => { nonT10SfInDegree[c]--; if (nonT10SfInDegree[c] === 0 && !nonT10SfCompletedSet.has(c)) nonT10SfAvailable.push(c); });
                                 }
                             } else if (opt.id === 'siege') {
                                 while (siegeAvailable.length > 0 && wValor < fillerTargetValor) {
@@ -7553,7 +7639,7 @@ Automatically queues secondary filler research to reach your targeted weekly Val
                                     wItems.push({ tech_id: 'siege:' + n.tech_id, tech_name: n.tech_name, level: n.level, valor: n.valor, gold: n.gold, actual_time_sec: n.actual_time_sec });
                                     siegeCompletedSet.add(key);
 
-                                    siegeAdj[key].forEach(c => { siegeInDegree[c]--; if (siegeInDegree[c] === 0) siegeAvailable.push(c); });
+                                    siegeAdj[key].forEach(c => { siegeInDegree[c]--; if (siegeInDegree[c] === 0 && !siegeCompletedSet.has(c)) siegeAvailable.push(c); });
                                 }
                             } else if (opt.id === 'defense-fort') {
                                 while (defenseFortAvailable.length > 0 && wValor < fillerTargetValor) {
@@ -7575,7 +7661,7 @@ Automatically queues secondary filler research to reach your targeted weekly Val
                                     wItems.push({ tech_id: 'def_fort:' + n.tech_id, tech_name: n.tech_name, level: n.level, valor: n.valor, gold: n.gold, actual_time_sec: n.actual_time_sec });
                                     defenseFortCompletedSet.add(key);
 
-                                    defenseFortAdj[key].forEach(c => { defenseFortInDegree[c]--; if (defenseFortInDegree[c] === 0) defenseFortAvailable.push(c); });
+                                    defenseFortAdj[key].forEach(c => { defenseFortInDegree[c]--; if (defenseFortInDegree[c] === 0 && !defenseFortCompletedSet.has(c)) defenseFortAvailable.push(c); });
                                 }
                             }
                         }
@@ -7594,6 +7680,16 @@ Automatically queues secondary filler research to reach your targeted weekly Val
                             if (!completedSet.has(reqKey)) { isT10Done = false; break; }
                         }
                         if (isT10Done) t10UnlockedWeek = currentWeek;
+                    }
+
+                    // Check 80% SF Mastery unlock milestone (177 levels / 80% of 221)
+                    if (!masteryUnlockedWeek) {
+                        let totalDone = 0;
+                        if (state.startingBaseline) {
+                            Object.keys(state.startingBaseline).forEach(k => totalDone += state.startingBaseline[k] || 0);
+                        }
+                        totalDone += completedSet.size;
+                        if (totalDone >= 177) masteryUnlockedWeek = currentWeek;
                     }
 
                     // Check SF completion milestone
@@ -7673,11 +7769,22 @@ Automatically queues secondary filler research to reach your targeted weekly Val
             state.cachedWeeks = weeks;
             state.t10UnlockedWeek = t10UnlockedWeek;
             state.sfCompletedWeek = sfCompletedWeek;
+            state.masteryUnlockedWeek = masteryUnlockedWeek;
             state.bottleneckState = bottleneckState;
             state.t10Diagnostic = t10Diagnostic;
 
-            document.getElementById('kpi-weeks').innerText = weeks.length + ' Weeks';
-            document.getElementById('kpi-months').innerText = '~' + (weeks.length/4.33).toFixed(1) + ' Months';
+            if (state.preset === 'sf-full') {
+                if (state.stopAtMastery80 !== false) {
+                    document.getElementById('kpi-weeks').innerText = weeks.length + ' Weeks';
+                    document.getElementById('kpi-months').innerText = '~' + (weeks.length/4.33).toFixed(1) + ' Months (80% Mastery Goal)';
+                } else {
+                    document.getElementById('kpi-weeks').innerText = weeks.length + ' Weeks';
+                    document.getElementById('kpi-months').innerText = state.masteryUnlockedWeek ? `~${(weeks.length/4.33).toFixed(1)} Mo (Mastery Wk ${state.masteryUnlockedWeek})` : `~${(weeks.length/4.33).toFixed(1)} Months`;
+                }
+            } else {
+                document.getElementById('kpi-weeks').innerText = weeks.length + ' Weeks';
+                document.getElementById('kpi-months').innerText = '~' + (weeks.length/4.33).toFixed(1) + ' Months';
+            }
             document.getElementById('kpi-gold').innerText = (cumGold / 1e9).toFixed(2) + 'B';
             document.getElementById('kpi-speedups').innerText = cumSpeedups.toFixed(1) + ' Days';
             document.getElementById('kpi-speedup-hours').innerText = (cumSpeedups*24).toFixed(0) + ' Hours';
@@ -7870,8 +7977,17 @@ Automatically queues secondary filler research to reach your targeted weekly Val
                 html += `<text x="${mX}" y="18" text-anchor="middle" fill="#ffffff" font-size="10" font-weight="bold">🎖️ T10 UNLOCKED!</text>`;
             }
 
+            // Draw Vertical Milestone Line & Badge for 80% Mastery Unlock
+            if (state.masteryUnlockedWeek && state.masteryUnlockedWeek <= weeks.length && state.masteryUnlockedWeek !== state.t10UnlockedWeek && state.masteryUnlockedWeek !== state.sfCompletedWeek) {
+                let mIdx = state.masteryUnlockedWeek - 1;
+                let mX = 65 + mIdx * ((svgW - 120) / weeks.length) + barW;
+                html += `<line x1="${mX}" y1="20" x2="${mX}" y2="${svgH-35}" stroke="#8b5cf6" stroke-width="2.5" stroke-dasharray="4" />`;
+                html += `<rect x="${mX - 60}" y="4" width="120" height="20" fill="#8b5cf6" rx="4" />`;
+                html += `<text x="${mX}" y="18" text-anchor="middle" fill="#ffffff" font-size="9.5" font-weight="bold">🧬 80% MASTERY UNLOCKED!</text>`;
+            }
+
             // Draw Vertical Milestone Line & Badge for SF Tree Completion (if full SF preset or different week)
-            if (state.preset === 'sf-full' && state.sfCompletedWeek && state.sfCompletedWeek <= weeks.length && state.sfCompletedWeek !== state.t10UnlockedWeek) {
+            if (state.preset === 'sf-full' && state.sfCompletedWeek && state.sfCompletedWeek <= weeks.length && state.sfCompletedWeek !== state.t10UnlockedWeek && state.sfCompletedWeek !== state.masteryUnlockedWeek) {
                 let mIdx = state.sfCompletedWeek - 1;
                 let mX = 65 + mIdx * ((svgW - 120) / weeks.length) + barW;
                 html += `<line x1="${mX}" y1="20" x2="${mX}" y2="${svgH-35}" stroke="#10b981" stroke-width="2.5" stroke-dasharray="4" />`;
@@ -7958,8 +8074,17 @@ Automatically queues secondary filler research to reach your targeted weekly Val
                 html += `<text x="${mX}" y="18" text-anchor="middle" fill="#ffffff" font-size="10" font-weight="bold">🎖️ T10 UNLOCKED!</text>`;
             }
 
+            // Draw Vertical Milestone Line & Badge for 80% Mastery Unlock
+            if (state.masteryUnlockedWeek && state.masteryUnlockedWeek <= weeks.length && state.masteryUnlockedWeek !== state.t10UnlockedWeek && state.masteryUnlockedWeek !== state.sfCompletedWeek) {
+                let mIdx = state.masteryUnlockedWeek - 1;
+                let mX = 65 + mIdx * ((svgW - 120) / weeks.length) + barW;
+                html += `<line x1="${mX}" y1="20" x2="${mX}" y2="${svgH-35}" stroke="#8b5cf6" stroke-width="2.5" stroke-dasharray="4" />`;
+                html += `<rect x="${mX - 60}" y="4" width="120" height="20" fill="#8b5cf6" rx="4" />`;
+                html += `<text x="${mX}" y="18" text-anchor="middle" fill="#ffffff" font-size="9.5" font-weight="bold">🧬 80% MASTERY UNLOCKED!</text>`;
+            }
+
             // Draw Vertical Milestone Line & Badge for SF Tree Completion
-            if (state.preset === 'sf-full' && state.sfCompletedWeek && state.sfCompletedWeek <= weeks.length && state.sfCompletedWeek !== state.t10UnlockedWeek) {
+            if (state.preset === 'sf-full' && state.sfCompletedWeek && state.sfCompletedWeek <= weeks.length && state.sfCompletedWeek !== state.t10UnlockedWeek && state.sfCompletedWeek !== state.masteryUnlockedWeek) {
                 let mIdx = state.sfCompletedWeek - 1;
                 let mX = 65 + mIdx * ((svgW - 120) / weeks.length) + barW;
                 html += `<line x1="${mX}" y1="20" x2="${mX}" y2="${svgH-35}" stroke="#10b981" stroke-width="2.5" stroke-dasharray="4" />`;
@@ -8220,8 +8345,18 @@ Automatically queues secondary filler research to reach your targeted weekly Val
                         </td>
                     </tr>`;
                 }
+
+                if (w.week === state.masteryUnlockedWeek && w.week !== state.t10UnlockedWeek && w.week !== state.sfCompletedWeek) {
+                    html += `<tr style="background:rgba(139, 92, 246, 0.08); border-bottom:2px solid #8b5cf6">
+                        <td colspan="7" style="padding:8px 16px; text-align:center;">
+                            <span class="badge-milestone-sf" style="background:rgba(139,92,246,0.18); color:#a78bfa; border:1px solid #8b5cf6;">
+                                🧬 MILESTONE REACHED IN WEEK ${w.week}: 80%+ SPECIAL FORCES COMPLETED! (MASTERY TECH TREES UNLOCKED: TANK / MISSILE / AIRCRAFT 🔓)
+                            </span>
+                        </td>
+                    </tr>`;
+                }
                 
-                if (state.preset === 'sf-full' && w.week === state.sfCompletedWeek && w.week !== state.t10UnlockedWeek) {
+                if (state.preset === 'sf-full' && w.week === state.sfCompletedWeek && w.week !== state.t10UnlockedWeek && w.week !== state.masteryUnlockedWeek) {
                     html += `<tr style="background:rgba(16, 185, 129, 0.08); border-bottom:2px solid var(--accent-green)">
                         <td colspan="7" style="padding:8px 16px; text-align:center;">
                             <span class="badge-milestone-sf">⚔️ MILESTONE REACHED IN WEEK ${w.week}: 100% SPECIAL FORCES TECH TREE COMPLETED! (221/221)</span>
@@ -8668,7 +8803,15 @@ Automatically queues secondary filler research to reach your targeted weekly Val
                         let isT10Level = (item.level <= maxT10);
                         if (!isT10Level) {
                             pillClass = 'queue-pill non-t10';
-                            labelText += ' <span style="font-size:0.75rem;opacity:0.85">(Non-T10 Required ⚙️)</span>';
+                            if (state.preset === 'sf-full') {
+                                if (SF_UTILITY_TECHS.has(item.tech_id) && item.level > 1) {
+                                    labelText += ' <span style="font-size:0.75rem;opacity:0.85">(Utility Tech ⚙️)</span>';
+                                } else {
+                                    labelText += ' <span style="font-size:0.75rem;opacity:0.9;color:var(--accent-gold);font-weight:600">(Troop Strength ⚔️)</span>';
+                                }
+                            } else {
+                                labelText += ' <span style="font-size:0.75rem;opacity:0.85">(Non-T10 Required ⚙️)</span>';
+                            }
                         }
                     }
 
@@ -8738,7 +8881,13 @@ Automatically queues secondary filler research to reach your targeted weekly Val
                     let activeLvls = queuedLevelsByTech[prefixedTechId] || [];
 
                     let cardClass = 'hedg-card';
-                    if (currentTab === 'sf' && maxT10Lvl === 0) cardClass += ' non-t10-card';
+                    if (currentTab === 'sf') {
+                        if (state.preset === 'sf-full') {
+                            if (SF_UTILITY_TECHS.has(e.id)) cardClass += ' utility-sf-card';
+                        } else if (maxT10Lvl === 0) {
+                            cardClass += ' non-t10-card';
+                        }
+                    }
                     if ((currentTab === 'siege' || currentTab === 'def_fort') && !is40Unlocked) cardClass += ' locked-card';
 
                     let statusHtml = '';
@@ -8767,7 +8916,15 @@ Automatically queues secondary filler research to reach your targeted weekly Val
 
                     let tagHtml = '';
                     if (currentTab === 'sf') {
-                        tagHtml = maxT10Lvl > 0 ? `<div style="font-size:0.7rem; font-weight:700; color:var(--accent-gold); margin-bottom:4px">T10 Target: Lvl 1-${maxT10Lvl}</div>` : `<div class="tag-non-t10">⚙️ Optional Non-T10 SF</div>`;
+                        if (state.preset === 'sf-full') {
+                            if (SF_UTILITY_TECHS.has(e.id)) {
+                                tagHtml = `<div class="tag-non-t10" style="color:#a78bfa; border-color:#8b5cf6;">⚙️ Utility Tech (Lvl 1 Gateway)</div>`;
+                            } else {
+                                tagHtml = `<div style="font-size:0.7rem; font-weight:700; color:var(--accent-gold); margin-bottom:4px">⚔️ Troop Strength (80% Mastery Priority)</div>`;
+                            }
+                        } else {
+                            tagHtml = maxT10Lvl > 0 ? `<div style="font-size:0.7rem; font-weight:700; color:var(--accent-gold); margin-bottom:4px">T10 Target: Lvl 1-${maxT10Lvl}</div>` : `<div class="tag-non-t10">⚙️ Optional Non-T10 SF</div>`;
+                        }
                     } else if (currentTab === 'siege') {
                         tagHtml = `<div style="font-size:0.7rem; font-weight:700; color:#a855f7; margin-bottom:4px">🏰 Siege to Seize</div>`;
                     } else if (currentTab === 'def_fort') {
@@ -8787,7 +8944,15 @@ Automatically queues secondary filler research to reach your targeted weekly Val
                         } else {
                             let optLabel = `+ Add Level ${l}`;
                             if (currentTab === 'sf') {
-                                optLabel = isLevelT10Req ? `+ Add Level ${l} (T10 Target)` : `+ Add Level ${l} (Non-T10 Required ⚙️)`;
+                                if (state.preset === 'sf-full') {
+                                    if (SF_UTILITY_TECHS.has(e.id)) {
+                                        optLabel = (l === 1) ? `+ Add Level 1 (Gateway Prereq 🔑)` : `+ Add Level ${l} (Utility / Non-Mastery ⚙️)`;
+                                    } else {
+                                        optLabel = `+ Add Level ${l} (Troop Strength ⚔️)`;
+                                    }
+                                } else {
+                                    optLabel = isLevelT10Req ? `+ Add Level ${l} (T10 Target)` : `+ Add Level ${l} (Non-T10 Required ⚙️)`;
+                                }
                             }
                             dropdownHtml += `<option value="${l}">${optLabel}</option>`;
                         }
