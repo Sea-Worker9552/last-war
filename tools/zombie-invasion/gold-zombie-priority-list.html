@@ -259,6 +259,76 @@
       font-variant-numeric: tabular-nums;
     }
 
+    /* My Alliance Card */
+    .my-alliance-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .my-alliance-card label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--accent-gold);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .alliance-input-field {
+      display: flex;
+      align-items: center;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 4px 8px;
+      gap: 4px;
+    }
+
+    .alliance-input-field input {
+      background: transparent;
+      border: none;
+      color: var(--heading-color);
+      font-weight: 700;
+      font-size: 0.92rem;
+      width: 105px;
+      outline: none;
+      font-family: inherit;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .alliance-input-field input::placeholder {
+      text-transform: none;
+      letter-spacing: normal;
+      color: var(--text-muted);
+      opacity: 0.75;
+      font-weight: 500;
+    }
+
+    .btn-clear-alliance {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.75rem;
+      padding: 0 2px;
+      line-height: 1;
+      display: none;
+    }
+
+    .btn-clear-alliance:hover {
+      color: var(--heading-color);
+    }
+
     /* Layout Sections */
     .input-section {
       background: var(--bg-secondary);
@@ -542,8 +612,8 @@
       border: 1px solid var(--border-color);
       border-radius: 8px;
       box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
-      min-width: 340px;
-      max-width: min(390px, 95vw);
+      min-width: 375px;
+      max-width: min(420px, 96vw);
       padding: 8px;
       display: none;
       flex-direction: column;
@@ -670,11 +740,11 @@
     .dropdown-range-bar {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       background: rgba(255, 255, 255, 0.03);
       border: 1px solid var(--border-color);
       border-radius: 6px;
-      padding: 5px 8px;
+      padding: 4px 6px;
     }
 
     html[data-applied-theme="light"] .dropdown-range-bar {
@@ -684,7 +754,7 @@
     .range-select-group {
       display: flex;
       align-items: center;
-      gap: 5px;
+      gap: 4px;
       flex: 1;
       min-width: 0;
     }
@@ -707,7 +777,7 @@
       color: var(--text-main);
       font-size: 0.76rem;
       font-weight: 600;
-      padding: 3px 6px;
+      padding: 3px 4px 3px 6px;
       outline: none;
       cursor: pointer;
       font-family: inherit;
@@ -830,6 +900,46 @@
 
     .dropdown-item-count.count-zero {
       opacity: 0.4;
+    }
+
+    .btn-set-my-alliance {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      border-radius: 4px;
+      padding: 1px 5px;
+      font-size: 0.68rem;
+      cursor: pointer;
+      margin-left: auto;
+      margin-right: 6px;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      font-family: inherit;
+      line-height: 1.3;
+    }
+
+    .btn-set-my-alliance:hover {
+      border-color: var(--accent-gold);
+      color: var(--accent-gold);
+      background: rgba(234, 179, 8, 0.1);
+    }
+
+    .badge-is-my-alliance {
+      margin-left: auto;
+      margin-right: 6px;
+      font-size: 0.68rem;
+      font-weight: 800;
+      color: var(--accent-gold);
+      background: rgba(234, 179, 8, 0.15);
+      border: 1px solid rgba(234, 179, 8, 0.4);
+      padding: 1px 6px;
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      line-height: 1.3;
     }
 
     .dropdown-empty-msg {
@@ -1223,6 +1333,21 @@
       font-variant-numeric: tabular-nums;
     }
 
+    .status-alliance-protected {
+      background: rgba(14, 165, 233, 0.18);
+      border: 1px solid rgba(14, 165, 233, 0.5);
+      color: #38bdf8;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .status-alliance-urgent {
+      background: rgba(245, 158, 11, 0.2);
+      border: 1px solid rgba(245, 158, 11, 0.6);
+      color: #fbbf24;
+      font-variant-numeric: tabular-nums;
+      animation: pulse-urgent 1.5s infinite;
+    }
+
     .status-unlocked-now {
       background: rgba(16, 185, 129, 0.3);
       border: 1px solid #10b981;
@@ -1242,6 +1367,18 @@
       color: #c2410c;
     }
 
+    html[data-applied-theme="light"] .status-alliance-protected {
+      background: #e0f2fe;
+      border-color: #7dd3fc;
+      color: #0369a1;
+    }
+
+    html[data-applied-theme="light"] .status-alliance-urgent {
+      background: #fef3c7;
+      border-color: #fcd34d;
+      color: #b45309;
+    }
+
     html[data-applied-theme="light"] .status-unlocked-now {
       background: #bbf7d0;
       border-color: #22c55e;
@@ -1259,6 +1396,16 @@
         border-color: #fdba74;
         color: #c2410c;
       }
+      html:not([data-applied-theme="dark"]) .status-alliance-protected {
+        background: #e0f2fe;
+        border-color: #7dd3fc;
+        color: #0369a1;
+      }
+      html:not([data-applied-theme="dark"]) .status-alliance-urgent {
+        background: #fef3c7;
+        border-color: #fcd34d;
+        color: #b45309;
+      }
       html:not([data-applied-theme="dark"]) .status-unlocked-now {
         background: #bbf7d0;
         border-color: #22c55e;
@@ -1270,6 +1417,34 @@
       0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
       70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
       100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+
+    @keyframes pulse-urgent {
+      0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7); }
+      70% { box-shadow: 0 0 0 7px rgba(245, 158, 11, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+    }
+
+    tr.row-my-alliance {
+      background: rgba(234, 179, 8, 0.04);
+      box-shadow: inset 3px 0 0 0 var(--accent-gold);
+    }
+
+    html[data-applied-theme="light"] tr.row-my-alliance {
+      background: rgba(234, 179, 8, 0.08);
+    }
+
+    .alliance-tag.my-alliance-tag {
+      background: rgba(234, 179, 8, 0.18);
+      border: 1px solid rgba(234, 179, 8, 0.6);
+      color: var(--accent-gold);
+      font-weight: 800;
+    }
+
+    html[data-applied-theme="light"] .alliance-tag.my-alliance-tag {
+      background: #fef9c3;
+      border-color: #facc15;
+      color: #854d0e;
     }
 
     .server-cell {
@@ -1333,6 +1508,14 @@
               <span>Y:</span>
               <input type="number" id="baseY" placeholder="500" min="0" max="1200">
             </div>
+          </div>
+        </div>
+
+        <div class="my-alliance-card">
+          <label for="myAllianceInput">🛡️ My Alliance</label>
+          <div class="alliance-input-field">
+            <input type="text" id="myAllianceInput" placeholder="e.g. WAR" maxlength="10" spellcheck="false" autocomplete="off" title="Your Alliance Tag (attackable before 10m protection timer expires)">
+            <button type="button" class="btn-clear-alliance" id="btnClearMyAlliance" title="Clear My Alliance">✕</button>
           </div>
         </div>
       </div>
@@ -1413,6 +1596,7 @@
             <div class="dropdown-panel-header">
               <span class="dropdown-panel-title">Alliances</span>
               <div class="dropdown-quick-actions">
+                <button type="button" class="btn-dropdown-action" id="btnAllianceOnlyMine" title="Filter to only My Alliance">★ Only Mine</button>
                 <button type="button" class="btn-dropdown-action" id="btnAllianceSelectAll">Select All</button>
                 <button type="button" class="btn-dropdown-action" id="btnAllianceClear">Clear</button>
               </div>
@@ -1463,6 +1647,9 @@
       <!-- Secondary Row: View Toggles & Summary -->
       <div class="filter-row">
         <div class="view-toggles">
+          <label class="checkbox-label" title="Always float My Alliance targets to the top of the table">
+            <input type="checkbox" id="prioritizeAllianceCheckbox"> ⭐ Prioritize My Alliance
+          </label>
           <label class="checkbox-label">
             <input type="checkbox" id="hideDoneCheckbox"> Hide Cleared Bosses
           </label>
@@ -1613,6 +1800,13 @@
     let excludedAlliances = new Set(); // Lowercase string tags excluded (Blacklist)
     let includedAlliances = new Set(); // Lowercase string tags included (Whitelist)
 
+    // My Alliance & Target Prioritization State
+    const STORAGE_KEY_MY_ALLIANCE = 'lastwar_my_alliance_tag';
+    let myAllianceTag = (localStorage.getItem(STORAGE_KEY_MY_ALLIANCE) || '').replace(/[\[\]]/g, '').trim().toUpperCase();
+
+    const STORAGE_KEY_PRIORITIZE_ALLIANCE = 'lastwar_prioritize_my_alliance';
+    let prioritizeMyAlliance = localStorage.getItem(STORAGE_KEY_PRIORITIZE_ALLIANCE) === 'true';
+
     let selectedStatus = 'ALL';
     let summonerFilterQuery = '';
     let hideDone = false;
@@ -1664,6 +1858,12 @@
     const btnAllianceClear = document.getElementById('btnAllianceClear');
     const btnAllianceModeExclude = document.getElementById('btnAllianceModeExclude');
     const btnAllianceModeInclude = document.getElementById('btnAllianceModeInclude');
+    const btnAllianceOnlyMine = document.getElementById('btnAllianceOnlyMine');
+
+    // My Alliance & Prioritize Elements
+    const myAllianceInput = document.getElementById('myAllianceInput');
+    const btnClearMyAlliance = document.getElementById('btnClearMyAlliance');
+    const prioritizeAllianceCheckbox = document.getElementById('prioritizeAllianceCheckbox');
 
     const summonerInput = document.getElementById('summonerInput');
     const hideDoneCheckbox = document.getElementById('hideDoneCheckbox');
@@ -1720,6 +1920,84 @@
         }
       }
     });
+
+    // Init My Alliance & Prioritize State
+    if (myAllianceInput) {
+      myAllianceInput.value = myAllianceTag;
+      if (btnClearMyAlliance) {
+        btnClearMyAlliance.style.display = myAllianceTag ? 'inline-block' : 'none';
+      }
+    }
+    if (prioritizeAllianceCheckbox) {
+      prioritizeAllianceCheckbox.checked = prioritizeMyAlliance;
+    }
+
+    // Helper: check if a boss belongs to My Alliance
+    function isMyAlliance(tag) {
+      if (!myAllianceTag) return false;
+      const cleanA = (tag || '').replace(/[\[\]]/g, '').trim().toUpperCase();
+      const cleanMy = myAllianceTag.replace(/[\[\]]/g, '').trim().toUpperCase();
+      return cleanA.length > 0 && cleanA === cleanMy;
+    }
+
+    function setMyAlliance(rawTag) {
+      const clean = (rawTag || '').replace(/[\[\]]/g, '').trim().toUpperCase();
+      myAllianceTag = clean;
+      localStorage.setItem(STORAGE_KEY_MY_ALLIANCE, clean);
+      if (myAllianceInput) {
+        myAllianceInput.value = clean;
+        if (btnClearMyAlliance) {
+          btnClearMyAlliance.style.display = clean ? 'inline-block' : 'none';
+        }
+      }
+      updateAllianceDropdownOptions();
+      renderTable();
+    }
+
+    if (myAllianceInput) {
+      myAllianceInput.addEventListener('input', (e) => {
+        const raw = e.target.value.replace(/[\[\]]/g, '').trim().toUpperCase();
+        myAllianceTag = raw;
+        localStorage.setItem(STORAGE_KEY_MY_ALLIANCE, raw);
+        if (btnClearMyAlliance) {
+          btnClearMyAlliance.style.display = raw ? 'inline-block' : 'none';
+        }
+        updateAllianceDropdownOptions();
+        renderTable();
+      });
+    }
+
+    if (btnClearMyAlliance) {
+      btnClearMyAlliance.addEventListener('click', () => {
+        setMyAlliance('');
+      });
+    }
+
+    if (prioritizeAllianceCheckbox) {
+      prioritizeAllianceCheckbox.addEventListener('change', (e) => {
+        prioritizeMyAlliance = e.target.checked;
+        localStorage.setItem(STORAGE_KEY_PRIORITIZE_ALLIANCE, prioritizeMyAlliance ? 'true' : 'false');
+        renderTable();
+      });
+    }
+
+    if (btnAllianceOnlyMine) {
+      btnAllianceOnlyMine.addEventListener('click', () => {
+        if (!myAllianceTag) {
+          if (myAllianceInput) {
+            myAllianceInput.focus();
+            myAllianceInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+          return;
+        }
+        allianceFilterMode = 'INCLUDE';
+        includedAlliances = new Set([myAllianceTag.toLowerCase()]);
+        excludedAlliances.clear();
+        updateAllianceModeUI();
+        updateAllianceDropdownOptions();
+        renderTable();
+      });
+    }
 
     // Helper: calculate Euclidean distance
     function calcDistance(x, y, bx, by) {
@@ -2470,18 +2748,33 @@
       alliances.forEach(tag => {
         const lower = tag.toLowerCase();
         const isChecked = isAllianceActive(lower);
+        const isMine = isMyAlliance(tag);
         html += `
           <label class="dropdown-item" data-alliance="${escapeHtml(lower)}">
             <input type="checkbox" data-alliance="${escapeHtml(lower)}" ${isChecked ? 'checked' : ''}>
             <span class="dropdown-item-content">
-              <span class="alliance-tag">${escapeHtml(tag)}</span>
+              <span class="alliance-tag ${isMine ? 'my-alliance-tag' : ''}">${escapeHtml(tag)}</span>
             </span>
+            ${isMine 
+              ? `<span class="badge-is-my-alliance" title="Your configured alliance">⭐ Mine</span>` 
+              : `<button type="button" class="btn-set-my-alliance" data-tag="${escapeHtml(tag)}" title="Set ${escapeHtml(tag)} as My Alliance">⭐ Set</button>`
+            }
             <span class="dropdown-item-count">(${allianceCounts[tag]})</span>
           </label>
         `;
       });
       allianceDropdownList.innerHTML = html;
       allianceDropdownList.scrollTop = prevScroll;
+
+      // Attach click listeners to "⭐ Set" buttons
+      allianceDropdownList.querySelectorAll('.btn-set-my-alliance').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const tag = e.currentTarget.dataset.tag;
+          setMyAlliance(tag);
+        });
+      });
 
       // Filter list based on existing search text if any
       if (allianceSearchInput) {
@@ -2649,8 +2942,10 @@
       const filtered = parsedBosses.filter(boss => {
         const secsLeft = getCurrentSecondsLeft(boss);
         const isAvail = secsLeft === 0;
+        const isMyAll = isMyAlliance(boss.alliance);
+        const isAttackableByMe = isAvail || isMyAll;
 
-        if (isAvail) totalAvail++;
+        if (isAttackableByMe) totalAvail++;
         else totalLocked++;
 
         const isDone = doneBossKeys.has(boss.id);
@@ -2667,8 +2962,8 @@
         }
 
         // Status Filter
-        if (selectedStatus === 'AVAIL' && !isAvail) return false;
-        if (selectedStatus === 'LOCKED' && isAvail) return false;
+        if (selectedStatus === 'AVAIL' && !isAttackableByMe) return false;
+        if (selectedStatus === 'LOCKED' && isAttackableByMe) return false;
 
         // Route Filter (when Capitol War is active)
         if (capitolWarMode && selectedPathFilter !== 'ALL') {
@@ -2697,6 +2992,13 @@
 
       // Sorting
       filtered.sort((a, b) => {
+        if (prioritizeMyAlliance) {
+          const isMyA = isMyAlliance(a.alliance);
+          const isMyB = isMyAlliance(b.alliance);
+          if (isMyA && !isMyB) return -1;
+          if (!isMyA && isMyB) return 1;
+        }
+
         let valA, valB;
         const dir = currentSort.direction === 'asc' ? 1 : -1;
 
@@ -2751,16 +3053,33 @@
         const secsLeft = getCurrentSecondsLeft(boss);
         const isDone = doneBossKeys.has(boss.id);
         const isAvail = secsLeft === 0;
+        const isMyAll = isMyAlliance(boss.alliance);
 
         let statusBadgeHtml = '';
-        if (isAvail) {
-          if (boss.justUnlocked) {
-            statusBadgeHtml = `<span class="status-badge status-unlocked-now">⚡ UNLOCKED!</span>`;
+        if (isMyAll) {
+          if (secsLeft > 0) {
+            if (secsLeft <= 120) {
+              statusBadgeHtml = `<span class="status-badge status-alliance-urgent" title="Attack now! Protection from enemies expires in ${formatTime(secsLeft)}">⚠️ ${formatTime(secsLeft)} (Ending Soon)</span>`;
+            } else {
+              statusBadgeHtml = `<span class="status-badge status-alliance-protected" title="Attackable now by your alliance! Protected from enemies for ${formatTime(secsLeft)}">🛡️ ${formatTime(secsLeft)} (Alliance)</span>`;
+            }
           } else {
-            statusBadgeHtml = `<span class="status-badge status-available">✔ Available</span>`;
+            if (boss.justUnlocked) {
+              statusBadgeHtml = `<span class="status-badge status-unlocked-now">⚡ UNLOCKED!</span>`;
+            } else {
+              statusBadgeHtml = `<span class="status-badge status-available">✔ Available</span>`;
+            }
           }
         } else {
-          statusBadgeHtml = `<span class="status-badge status-locked">🔒 ${formatTime(secsLeft)}</span>`;
+          if (isAvail) {
+            if (boss.justUnlocked) {
+              statusBadgeHtml = `<span class="status-badge status-unlocked-now">⚡ UNLOCKED!</span>`;
+            } else {
+              statusBadgeHtml = `<span class="status-badge status-available">✔ Available</span>`;
+            }
+          } else {
+            statusBadgeHtml = `<span class="status-badge status-locked">🔒 ${formatTime(secsLeft)}</span>`;
+          }
         }
 
         // Distance Cell: shows Capitol War mud alert & effective distance when Capitol War is ON
@@ -2792,8 +3111,13 @@
 
         const trClasses = [
           isDone ? 'is-done' : '',
-          (capitolWarMode && boss.crossesMud) ? 'row-mud' : ''
+          (capitolWarMode && boss.crossesMud) ? 'row-mud' : '',
+          isMyAll ? 'row-my-alliance' : ''
         ].filter(Boolean).join(' ');
+
+        const allianceTagHtml = isMyAll
+          ? `<span class="alliance-tag my-alliance-tag" title="Your configured alliance">⭐ ${escapeHtml(boss.alliance)}</span>`
+          : `<span class="alliance-tag">${escapeHtml(boss.alliance)}</span>`;
 
         rowsHtml += `
           <tr class="${trClasses}" data-id="${boss.id}">
@@ -2806,7 +3130,7 @@
             <td class="coords-cell">${boss.x}, ${boss.y}</td>
             <td><span class="level-badge ${getLevelClass(boss.levelNum)}">${boss.levelStr.replace(/^Lv(?!\s)/i, 'Lv ')}</span></td>
             <td class="status-cell">${statusBadgeHtml}</td>
-            <td><span class="alliance-tag">${escapeHtml(boss.alliance)}</span></td>
+            <td>${allianceTagHtml}</td>
             <td class="summoner-cell name-cell">${escapeHtml(boss.summoner || boss.owner)}</td>
             <td class="server-cell">${escapeHtml(boss.server)}</td>
           </tr>
