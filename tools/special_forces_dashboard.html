@@ -7309,6 +7309,30 @@ Automatically queues secondary filler research to reach your targeted weekly Val
             let totalSfNodeCount = 221;
             let bottleneckState = { isGoldBottleneck: false, blockedTechName: '', blockedLevel: 0, requiredGold: 0, currentGoldCap: 0, bottleneckWeek: null };
 
+            // Helper to get total distinct completed SF levels across the full tree
+            let getSfLevelsDone = () => {
+                let count = 0;
+                Object.keys(fullSfTechs).forEach(t_id => {
+                    if (fullSfTechs[t_id] && fullSfTechs[t_id].levels) {
+                        fullSfTechs[t_id].levels.forEach(lvl => {
+                            if (completedSet.has(t_id + ':' + lvl.level) || 
+                                nonT10SfCompletedSet.has('sf_filler:' + t_id + ':' + lvl.level) || 
+                                nonT10SfCompletedSet.has(t_id + ':' + lvl.level)) {
+                                count++;
+                            }
+                        });
+                    }
+                });
+                return count;
+            };
+
+            // Detect whether milestones were ALREADY unlocked prior to starting schedule
+            let isT10InitiallyUnlocked = (state.startingBaseline && (state.startingBaseline['unit-x'] || 0) >= 1) || 
+                                         (requiredT10Keys.size > 0 && Array.from(requiredT10Keys).every(k => completedSet.has(k)));
+            let initialSfLevels = getSfLevelsDone();
+            let isMasteryInitiallyUnlocked = (initialSfLevels >= 177);
+            let isSfInitiallyCompleted = (initialSfLevels >= totalSfNodeCount);
+
             let isTargetGoalReached = () => {
                 if (state.preset === 'sf-full' && state.stopAtMastery80 !== false) {
                     return essentialTroopTechKeys.size > 0 && Array.from(essentialTroopTechKeys).every(k => completedSet.has(k));
@@ -7498,13 +7522,7 @@ Automatically queues secondary filler research to reach your targeted weekly Val
 
                     // Filler Research Execution: Dynamically evaluate 40% SF threshold per week
                     let fillerTargetValor = isSaveWeek ? effectiveValorCap : state.valorTarget;
-                    let initialSfCount = 0;
-                    if (state.startingBaseline) {
-                        Object.keys(state.startingBaseline).forEach(tid => {
-                            initialSfCount += state.startingBaseline[tid] || 0;
-                        });
-                    }
-                    let checkSf40Unlocked = () => (initialSfCount + completedSet.size >= 89);
+                    let checkSf40Unlocked = () => (getSfLevelsDone() >= 89);
 
                     // Dual Resource Bottleneck Auditor for Filler Allocation
                     if (available.length > 0) {
@@ -7673,8 +7691,8 @@ Automatically queues secondary filler research to reach your targeted weekly Val
 
                     cumGold += wGold; cumValor += wValor; cumSpeedups += (wSpeedSec / 86400);
 
-                    // Check T10 unlock milestone
-                    if (!t10UnlockedWeek) {
+                    // Check T10 unlock milestone (only if not already unlocked prior to schedule)
+                    if (!t10UnlockedWeek && !isT10InitiallyUnlocked) {
                         let isT10Done = true;
                         for (let reqKey of requiredT10Keys) {
                             if (!completedSet.has(reqKey)) { isT10Done = false; break; }
@@ -7682,24 +7700,16 @@ Automatically queues secondary filler research to reach your targeted weekly Val
                         if (isT10Done) t10UnlockedWeek = currentWeek;
                     }
 
+                    let totalSfLevelsDone = getSfLevelsDone();
+
                     // Check 80% SF Mastery unlock milestone (177 levels / 80% of 221)
-                    if (!masteryUnlockedWeek) {
-                        let totalDone = 0;
-                        if (state.startingBaseline) {
-                            Object.keys(state.startingBaseline).forEach(k => totalDone += state.startingBaseline[k] || 0);
-                        }
-                        totalDone += completedSet.size;
-                        if (totalDone >= 177) masteryUnlockedWeek = currentWeek;
+                    if (!masteryUnlockedWeek && !isMasteryInitiallyUnlocked) {
+                        if (totalSfLevelsDone >= 177) masteryUnlockedWeek = currentWeek;
                     }
 
-                    // Check SF completion milestone
-                    if (!sfCompletedWeek) {
-                        let totalDone = 0;
-                        if (state.startingBaseline) {
-                            Object.keys(state.startingBaseline).forEach(k => totalDone += state.startingBaseline[k] || 0);
-                        }
-                        totalDone += completedSet.size;
-                        if (totalDone >= totalSfNodeCount) sfCompletedWeek = currentWeek;
+                    // Check SF completion milestone (221 levels)
+                    if (!sfCompletedWeek && !isSfInitiallyCompleted) {
+                        if (totalSfLevelsDone >= totalSfNodeCount) sfCompletedWeek = currentWeek;
                     }
 
                     weeks.push({
@@ -7723,7 +7733,7 @@ Automatically queues secondary filler research to reach your targeted weekly Val
             }
 
             let t10Diagnostic = null;
-            if (!t10UnlockedWeek) {
+            if (!t10UnlockedWeek && !isT10InitiallyUnlocked) {
                 let blockedKey = null;
                 for (let reqKey of requiredT10Keys) {
                     if (!completedSet.has(reqKey)) {
@@ -7770,6 +7780,9 @@ Automatically queues secondary filler research to reach your targeted weekly Val
             state.t10UnlockedWeek = t10UnlockedWeek;
             state.sfCompletedWeek = sfCompletedWeek;
             state.masteryUnlockedWeek = masteryUnlockedWeek;
+            state.isT10InitiallyUnlocked = isT10InitiallyUnlocked;
+            state.isMasteryInitiallyUnlocked = isMasteryInitiallyUnlocked;
+            state.isSfInitiallyCompleted = isSfInitiallyCompleted;
             state.bottleneckState = bottleneckState;
             state.t10Diagnostic = t10Diagnostic;
 
@@ -7907,8 +7920,9 @@ Automatically queues secondary filler research to reach your targeted weekly Val
             html += `<line x1="55" y1="${capY}" x2="${svgW-55}" y2="${capY}" stroke="#dc2626" stroke-width="2" stroke-dasharray="6" />`;
 
             let goldLabelY = capY - 6;
-            if (state.t10UnlockedWeek && state.t10UnlockedWeek <= weeks.length) {
-                let mX = 65 + (state.t10UnlockedWeek - 1) * ((svgW - 120) / weeks.length) + barW;
+            let checkGoldMilestoneWeek = state.t10UnlockedWeek || state.masteryUnlockedWeek || state.sfCompletedWeek;
+            if (checkGoldMilestoneWeek && checkGoldMilestoneWeek <= weeks.length) {
+                let mX = 65 + (checkGoldMilestoneWeek - 1) * ((svgW - 120) / weeks.length) + barW;
                 if (mX > svgW - 190 && Math.abs(capY - 14) < 24) {
                     goldLabelY = capY + 14;
                 }
@@ -7978,21 +7992,30 @@ Automatically queues secondary filler research to reach your targeted weekly Val
             }
 
             // Draw Vertical Milestone Line & Badge for 80% Mastery Unlock
-            if (state.masteryUnlockedWeek && state.masteryUnlockedWeek <= weeks.length && state.masteryUnlockedWeek !== state.t10UnlockedWeek && state.masteryUnlockedWeek !== state.sfCompletedWeek) {
+            if (state.masteryUnlockedWeek && state.masteryUnlockedWeek <= weeks.length) {
                 let mIdx = state.masteryUnlockedWeek - 1;
                 let mX = 65 + mIdx * ((svgW - 120) / weeks.length) + barW;
+                let badgeY = (state.masteryUnlockedWeek === state.t10UnlockedWeek) ? 26 : 4;
+                let textY = badgeY + 14;
                 html += `<line x1="${mX}" y1="20" x2="${mX}" y2="${svgH-35}" stroke="#8b5cf6" stroke-width="2.5" stroke-dasharray="4" />`;
-                html += `<rect x="${mX - 60}" y="4" width="120" height="20" fill="#8b5cf6" rx="4" />`;
-                html += `<text x="${mX}" y="18" text-anchor="middle" fill="#ffffff" font-size="9.5" font-weight="bold">🧬 80% MASTERY UNLOCKED!</text>`;
+                html += `<rect x="${mX - 60}" y="${badgeY}" width="120" height="20" fill="#8b5cf6" rx="4" />`;
+                html += `<text x="${mX}" y="${textY}" text-anchor="middle" fill="#ffffff" font-size="9.5" font-weight="bold">🧬 80% MASTERY UNLOCKED!</text>`;
             }
 
-            // Draw Vertical Milestone Line & Badge for SF Tree Completion (if full SF preset or different week)
-            if (state.preset === 'sf-full' && state.sfCompletedWeek && state.sfCompletedWeek <= weeks.length && state.sfCompletedWeek !== state.t10UnlockedWeek && state.sfCompletedWeek !== state.masteryUnlockedWeek) {
+            // Draw Vertical Milestone Line & Badge for SF Tree Completion (if full SF preset)
+            if (state.preset === 'sf-full' && state.sfCompletedWeek && state.sfCompletedWeek <= weeks.length) {
                 let mIdx = state.sfCompletedWeek - 1;
                 let mX = 65 + mIdx * ((svgW - 120) / weeks.length) + barW;
+                let badgeY = 4;
+                if (state.sfCompletedWeek === state.masteryUnlockedWeek && state.sfCompletedWeek === state.t10UnlockedWeek) {
+                    badgeY = 48;
+                } else if (state.sfCompletedWeek === state.masteryUnlockedWeek || state.sfCompletedWeek === state.t10UnlockedWeek) {
+                    badgeY = 26;
+                }
+                let textY = badgeY + 14;
                 html += `<line x1="${mX}" y1="20" x2="${mX}" y2="${svgH-35}" stroke="#10b981" stroke-width="2.5" stroke-dasharray="4" />`;
-                html += `<rect x="${mX - 52}" y="4" width="104" height="20" fill="#10b981" rx="4" />`;
-                html += `<text x="${mX}" y="18" text-anchor="middle" fill="#ffffff" font-size="10" font-weight="bold">⚔️ SF COMPLETE!</text>`;
+                html += `<rect x="${mX - 52}" y="${badgeY}" width="104" height="20" fill="#10b981" rx="4" />`;
+                html += `<text x="${mX}" y="${textY}" text-anchor="middle" fill="#ffffff" font-size="10" font-weight="bold">⚔️ SF COMPLETE!</text>`;
             }
 
             html += `</svg>`;
@@ -8025,8 +8048,9 @@ Automatically queues secondary filler research to reach your targeted weekly Val
             html += `<line x1="55" y1="${targetY}" x2="${svgW-55}" y2="${targetY}" stroke="${valorLineColor}" stroke-width="2" stroke-dasharray="6" />`;
 
             let valorLabelY = targetY - 6;
-            if (state.t10UnlockedWeek && state.t10UnlockedWeek <= weeks.length) {
-                let mX = 65 + (state.t10UnlockedWeek - 1) * ((svgW - 120) / weeks.length) + barW;
+            let checkValorMilestoneWeek = state.t10UnlockedWeek || state.masteryUnlockedWeek || state.sfCompletedWeek;
+            if (checkValorMilestoneWeek && checkValorMilestoneWeek <= weeks.length) {
+                let mX = 65 + (checkValorMilestoneWeek - 1) * ((svgW - 120) / weeks.length) + barW;
                 if (mX > svgW - 190 && Math.abs(targetY - 14) < 24) {
                     valorLabelY = targetY + 14;
                 }
@@ -8075,21 +8099,30 @@ Automatically queues secondary filler research to reach your targeted weekly Val
             }
 
             // Draw Vertical Milestone Line & Badge for 80% Mastery Unlock
-            if (state.masteryUnlockedWeek && state.masteryUnlockedWeek <= weeks.length && state.masteryUnlockedWeek !== state.t10UnlockedWeek && state.masteryUnlockedWeek !== state.sfCompletedWeek) {
+            if (state.masteryUnlockedWeek && state.masteryUnlockedWeek <= weeks.length) {
                 let mIdx = state.masteryUnlockedWeek - 1;
                 let mX = 65 + mIdx * ((svgW - 120) / weeks.length) + barW;
+                let badgeY = (state.masteryUnlockedWeek === state.t10UnlockedWeek) ? 26 : 4;
+                let textY = badgeY + 14;
                 html += `<line x1="${mX}" y1="20" x2="${mX}" y2="${svgH-35}" stroke="#8b5cf6" stroke-width="2.5" stroke-dasharray="4" />`;
-                html += `<rect x="${mX - 60}" y="4" width="120" height="20" fill="#8b5cf6" rx="4" />`;
-                html += `<text x="${mX}" y="18" text-anchor="middle" fill="#ffffff" font-size="9.5" font-weight="bold">🧬 80% MASTERY UNLOCKED!</text>`;
+                html += `<rect x="${mX - 60}" y="${badgeY}" width="120" height="20" fill="#8b5cf6" rx="4" />`;
+                html += `<text x="${mX}" y="${textY}" text-anchor="middle" fill="#ffffff" font-size="9.5" font-weight="bold">🧬 80% MASTERY UNLOCKED!</text>`;
             }
 
             // Draw Vertical Milestone Line & Badge for SF Tree Completion
-            if (state.preset === 'sf-full' && state.sfCompletedWeek && state.sfCompletedWeek <= weeks.length && state.sfCompletedWeek !== state.t10UnlockedWeek && state.sfCompletedWeek !== state.masteryUnlockedWeek) {
+            if (state.preset === 'sf-full' && state.sfCompletedWeek && state.sfCompletedWeek <= weeks.length) {
                 let mIdx = state.sfCompletedWeek - 1;
                 let mX = 65 + mIdx * ((svgW - 120) / weeks.length) + barW;
+                let badgeY = 4;
+                if (state.sfCompletedWeek === state.masteryUnlockedWeek && state.sfCompletedWeek === state.t10UnlockedWeek) {
+                    badgeY = 48;
+                } else if (state.sfCompletedWeek === state.masteryUnlockedWeek || state.sfCompletedWeek === state.t10UnlockedWeek) {
+                    badgeY = 26;
+                }
+                let textY = badgeY + 14;
                 html += `<line x1="${mX}" y1="20" x2="${mX}" y2="${svgH-35}" stroke="#10b981" stroke-width="2.5" stroke-dasharray="4" />`;
-                html += `<rect x="${mX - 52}" y="4" width="104" height="20" fill="#10b981" rx="4" />`;
-                html += `<text x="${mX}" y="18" text-anchor="middle" fill="#ffffff" font-size="10" font-weight="bold">⚔️ SF COMPLETE!</text>`;
+                html += `<rect x="${mX - 52}" y="${badgeY}" width="104" height="20" fill="#10b981" rx="4" />`;
+                html += `<text x="${mX}" y="${textY}" text-anchor="middle" fill="#ffffff" font-size="10" font-weight="bold">⚔️ SF COMPLETE!</text>`;
             }
 
             html += `</svg>`;
@@ -8338,7 +8371,7 @@ Automatically queues secondary filler research to reach your targeted weekly Val
                     </td>
                 </tr>`;
                 
-                if (w.week === state.t10UnlockedWeek) {
+                if (state.t10UnlockedWeek && w.week === state.t10UnlockedWeek) {
                     html += `<tr style="background:rgba(217, 119, 6, 0.08); border-bottom:2px solid var(--accent-gold)">
                         <td colspan="7" style="padding:8px 16px; text-align:center;">
                             <span class="badge-milestone-t10">🎖️ MILESTONE REACHED IN WEEK ${w.week}: T10 TROOPS UNLOCKED! (UNIT X RESEARCH COMPLETE)</span>
@@ -8346,7 +8379,7 @@ Automatically queues secondary filler research to reach your targeted weekly Val
                     </tr>`;
                 }
 
-                if (w.week === state.masteryUnlockedWeek && w.week !== state.t10UnlockedWeek && w.week !== state.sfCompletedWeek) {
+                if (state.masteryUnlockedWeek && w.week === state.masteryUnlockedWeek) {
                     html += `<tr style="background:rgba(139, 92, 246, 0.08); border-bottom:2px solid #8b5cf6">
                         <td colspan="7" style="padding:8px 16px; text-align:center;">
                             <span class="badge-milestone-sf" style="background:rgba(139,92,246,0.18); color:#a78bfa; border:1px solid #8b5cf6;">
@@ -8356,7 +8389,7 @@ Automatically queues secondary filler research to reach your targeted weekly Val
                     </tr>`;
                 }
                 
-                if (state.preset === 'sf-full' && w.week === state.sfCompletedWeek && w.week !== state.t10UnlockedWeek && w.week !== state.masteryUnlockedWeek) {
+                if (state.preset === 'sf-full' && state.sfCompletedWeek && w.week === state.sfCompletedWeek) {
                     html += `<tr style="background:rgba(16, 185, 129, 0.08); border-bottom:2px solid var(--accent-green)">
                         <td colspan="7" style="padding:8px 16px; text-align:center;">
                             <span class="badge-milestone-sf">⚔️ MILESTONE REACHED IN WEEK ${w.week}: 100% SPECIAL FORCES TECH TREE COMPLETED! (221/221)</span>
