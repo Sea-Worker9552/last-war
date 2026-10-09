@@ -944,8 +944,7 @@
                     <button class="theme-btn" id="btn-theme-system" onclick="setTheme('system')">💻 System</button>
                 </div>
                 <div class="preset-buttons">
-                    <button class="btn-preset active" id="btn-preset-t10-balanced" onclick="selectPreset('t10-balanced')">⚖️ Paced T10 Rush (Gold Capped)</button>
-                    <button class="btn-preset" id="btn-preset-t10-pure" onclick="selectPreset('t10-pure')">🚀 Pure T10 Rush (Uncapped)</button>
+                    <button class="btn-preset active" id="btn-preset-t10" onclick="selectPreset('t10')">🎖️ T10 Only</button>
                     <button class="btn-preset" id="btn-preset-sf-full" onclick="selectPreset('sf-full')">⚔️ Full Special Forces Tech Tree</button>
                     <button class="btn-reset-data" onclick="resetAllSettings()" title="Reset all progress and custom week plans">↺ Reset Defaults</button>
                 </div>
@@ -1032,7 +1031,7 @@
                             <span style="font-weight:700; color:var(--accent-green); font-size:0.8rem; white-space:nowrap;"> / WEEK</span>
                         </div>
                     </label>
-                    <input type="range" id="input-valor-target" min="1000" max="25000" step="250" value="9000" oninput="syncValorFromSlider(this.value)">
+                    <input type="range" id="input-valor-target" min="1000" max="30000" step="250" value="9000" oninput="syncValorFromSlider(this.value)">
 
                     <!-- Embedded Valor Flex Buffer Sub-Control -->
                     <div style="border-top:1px dashed var(--border-color); padding-top:8px; margin-top:4px;">
@@ -1058,11 +1057,11 @@
                     <label>
                         <span>💰 Gold Limit (Millions):</span>
                         <div style="display:flex; align-items:center; gap:6px; white-space:nowrap;">
-                            <input type="number" class="control-num-input" id="input-num-gold-cap" min="50" max="5000" step="25" value="600" style="color:var(--accent-gold)" oninput="syncGoldFromNumber(this.value)">
+                            <input type="number" class="control-num-input" id="input-num-gold-cap" min="50" max="10000" step="25" value="600" style="color:var(--accent-gold)" oninput="syncGoldFromNumber(this.value)">
                             <span style="font-weight:700; color:var(--accent-gold); font-size:0.8rem; white-space:nowrap;">M Gold / WEEK</span>
                         </div>
                     </label>
-                    <input type="range" id="input-gold-cap" min="50" max="5000" step="25" value="600" oninput="syncGoldFromSlider(this.value)">
+                    <input type="range" id="input-gold-cap" min="50" max="6000" step="25" value="600" oninput="syncGoldFromSlider(this.value)">
 
                     <!-- Embedded Gold Flex Buffer Sub-Control -->
                     <div style="border-top:1px dashed var(--border-color); padding-top:8px; margin-top:4px;">
@@ -6100,7 +6099,7 @@
 
         let state = {
             theme: 'light',
-            preset: 't10-balanced',
+            preset: 't10',
             baseSpeed: 200,
             capitol: 'science',
             conquerorBuff: false,
@@ -6274,6 +6273,7 @@
             if (!state.startingSiegeBaseline) state.startingSiegeBaseline = {};
             if (!state.startingDefenseFortBaseline) state.startingDefenseFortBaseline = {};
             if (state.stopAtMastery80 === undefined) state.stopAtMastery80 = true;
+            if (state.preset === 't10-balanced' || state.preset === 't10-pure') state.preset = 't10';
 
             if (!Array.isArray(state.fillerOptions) || state.fillerOptions.length !== 4 || !state.fillerOptions[0].id) {
                 state.fillerOptions = JSON.parse(JSON.stringify(DEFAULT_FILLER_OPTIONS));
@@ -6568,8 +6568,9 @@ Automatically queues secondary filler research to reach your targeted weekly Val
 
         function syncUIFromState() {
             document.querySelectorAll('.btn-preset').forEach(b => b.classList.remove('active'));
-            if (document.getElementById('btn-preset-' + state.preset)) {
-                document.getElementById('btn-preset-' + state.preset).classList.add('active');
+            let activePreset = (state.preset === 'sf-full') ? 'sf-full' : 't10';
+            if (document.getElementById('btn-preset-' + activePreset)) {
+                document.getElementById('btn-preset-' + activePreset).classList.add('active');
             }
 
             document.getElementById('input-base-speed').value = state.baseSpeed;
@@ -6757,12 +6758,9 @@ Automatically queues secondary filler research to reach your targeted weekly Val
 
         function restorePresetMemory(preset) {
             if (!state.presetSettings) state.presetSettings = {};
+            if (preset === 't10-balanced' || preset === 't10-pure') preset = 't10';
             if (!state.presetSettings[preset]) {
-                if (preset === 't10-pure') {
-                    state.presetSettings[preset] = { goldCap: 5000000000, valorTarget: 25000, goldFlex: 'strict', valorFlex: 'flex' };
-                } else {
-                    state.presetSettings[preset] = { goldCap: 600000000, valorTarget: 9000, goldFlex: 'strict', valorFlex: 'flex' };
-                }
+                state.presetSettings[preset] = { goldCap: 600000000, valorTarget: 9000, goldFlex: 'strict', valorFlex: 'flex' };
             }
             let mem = state.presetSettings[preset];
             state.goldCap = mem.goldCap;
@@ -6772,13 +6770,15 @@ Automatically queues secondary filler research to reach your targeted weekly Val
         }
 
         function selectPreset(preset) {
+            if (preset === 't10-balanced' || preset === 't10-pure') preset = 't10';
             saveCurrentToPresetMemory();
             state.preset = preset;
             restorePresetMemory(preset);
 
             document.querySelectorAll('.btn-preset').forEach(b => b.classList.remove('active'));
-            if (document.getElementById('btn-preset-' + preset)) {
-                document.getElementById('btn-preset-' + preset).classList.add('active');
+            let activePreset = (preset === 'sf-full') ? 'sf-full' : 't10';
+            if (document.getElementById('btn-preset-' + activePreset)) {
+                document.getElementById('btn-preset-' + activePreset).classList.add('active');
             }
 
             syncUIFromState();
