@@ -1326,7 +1326,8 @@
       color: #34d399;
     }
 
-    .status-locked {
+    .status-locked,
+    .status-protected {
       background: rgba(249, 115, 22, 0.15);
       border: 1px solid rgba(249, 115, 22, 0.4);
       color: #fb923c;
@@ -1361,7 +1362,8 @@
       color: #15803d;
     }
 
-    html[data-applied-theme="light"] .status-locked {
+    html[data-applied-theme="light"] .status-locked,
+    html[data-applied-theme="light"] .status-protected {
       background: #ffedd5;
       border-color: #fdba74;
       color: #c2410c;
@@ -1391,7 +1393,8 @@
         border-color: #86efac;
         color: #15803d;
       }
-      html:not([data-applied-theme="dark"]) .status-locked {
+      html:not([data-applied-theme="dark"]) .status-locked,
+      html:not([data-applied-theme="dark"]) .status-protected {
         background: #ffedd5;
         border-color: #fdba74;
         color: #c2410c;
@@ -1617,13 +1620,13 @@
           </div>
         </div>
 
-        <!-- Status Filter -->
+        <!-- Protection Filter -->
         <div class="filter-group">
-          <span class="filter-label">Status:</span>
+          <span class="filter-label">Protection:</span>
           <div class="filter-pills">
             <button class="pill-btn active" data-status="ALL" id="statusAll">All</button>
             <button class="pill-btn" data-status="AVAIL" id="statusAvail">✔ Available</button>
-            <button class="pill-btn" data-status="LOCKED" id="statusLocked">🔒 Locked</button>
+            <button class="pill-btn" data-status="LOCKED" id="statusLocked" title="Protected bosses (10-minute countdown active)">🔒 Protected</button>
           </div>
         </div>
 
@@ -1662,7 +1665,7 @@
         <div class="summary-strip" id="summaryStrip">
           <span class="stat-badge">Total: <strong id="statTotal">0</strong></span>
           <span class="stat-badge">Available: <strong id="statAvail" style="color: var(--accent-green);">0</strong></span>
-          <span class="stat-badge">Locked: <strong id="statLocked" style="color: var(--accent-orange);">0</strong></span>
+          <span class="stat-badge">Protected: <strong id="statLocked" style="color: var(--accent-orange);">0</strong></span>
           <span class="stat-badge">Cleared: <strong id="statCleared">0</strong></span>
           <span class="stat-badge stat-capitol-metric" id="statClearWrap" style="display: none;">Clear: <strong id="statClearCount" style="color: var(--accent-green);">0</strong></span>
           <span class="stat-badge stat-capitol-metric" id="statMudWrap" style="display: none;">Mud: <strong id="statMudCount" style="color: var(--accent-orange);">0</strong></span>
@@ -2859,6 +2862,33 @@
       return Math.max(0, boss.initialSecondsLeft - elapsedSec);
     }
 
+    // Generate HTML for Protection / Status badge
+    function getStatusBadgeHtml(boss, secsLeft) {
+      const isAvail = secsLeft === 0;
+      const isMyAll = isMyAlliance(boss.alliance);
+
+      if (isMyAll) {
+        if (secsLeft > 0) {
+          if (secsLeft <= 120) {
+            return `<span class="status-badge status-alliance-urgent" title="Attack now! Protection from enemies expires in ${formatTime(secsLeft)}">⚠️ ${formatTime(secsLeft)} (Ending Soon)</span>`;
+          }
+          return `<span class="status-badge status-alliance-protected" title="Attackable now by your alliance! Protected from enemies for ${formatTime(secsLeft)}">🛡️ ${formatTime(secsLeft)} (Alliance)</span>`;
+        }
+        if (boss.justUnlocked) {
+          return `<span class="status-badge status-unlocked-now">⚡ UNLOCKED!</span>`;
+        }
+        return `<span class="status-badge status-available">✔ Available</span>`;
+      }
+
+      if (isAvail) {
+        if (boss.justUnlocked) {
+          return `<span class="status-badge status-unlocked-now">⚡ UNLOCKED!</span>`;
+        }
+        return `<span class="status-badge status-available">✔ Available</span>`;
+      }
+      return `<span class="status-badge status-locked status-protected" title="Protected: ${formatTime(secsLeft)} remaining">🔒 ${formatTime(secsLeft)}</span>`;
+    }
+
     // Level CSS Class (Unique styling for all tiers Lv 5 to Lv 100)
     function getLevelClass(lvl) {
       if (lvl >= 100) return 'lvl-100';
@@ -3055,32 +3085,7 @@
         const isAvail = secsLeft === 0;
         const isMyAll = isMyAlliance(boss.alliance);
 
-        let statusBadgeHtml = '';
-        if (isMyAll) {
-          if (secsLeft > 0) {
-            if (secsLeft <= 120) {
-              statusBadgeHtml = `<span class="status-badge status-alliance-urgent" title="Attack now! Protection from enemies expires in ${formatTime(secsLeft)}">⚠️ ${formatTime(secsLeft)} (Ending Soon)</span>`;
-            } else {
-              statusBadgeHtml = `<span class="status-badge status-alliance-protected" title="Attackable now by your alliance! Protected from enemies for ${formatTime(secsLeft)}">🛡️ ${formatTime(secsLeft)} (Alliance)</span>`;
-            }
-          } else {
-            if (boss.justUnlocked) {
-              statusBadgeHtml = `<span class="status-badge status-unlocked-now">⚡ UNLOCKED!</span>`;
-            } else {
-              statusBadgeHtml = `<span class="status-badge status-available">✔ Available</span>`;
-            }
-          }
-        } else {
-          if (isAvail) {
-            if (boss.justUnlocked) {
-              statusBadgeHtml = `<span class="status-badge status-unlocked-now">⚡ UNLOCKED!</span>`;
-            } else {
-              statusBadgeHtml = `<span class="status-badge status-available">✔ Available</span>`;
-            }
-          } else {
-            statusBadgeHtml = `<span class="status-badge status-locked">🔒 ${formatTime(secsLeft)}</span>`;
-          }
-        }
+        const statusBadgeHtml = getStatusBadgeHtml(boss, secsLeft);
 
         // Distance Cell: shows Capitol War mud alert & effective distance when Capitol War is ON
         let distCellHtml = '';
@@ -3208,15 +3213,7 @@
           if (!cell) return;
 
           const secsLeft = getCurrentSecondsLeft(boss);
-          if (secsLeft === 0) {
-            if (boss.justUnlocked) {
-              cell.innerHTML = `<span class="status-badge status-unlocked-now">⚡ UNLOCKED!</span>`;
-            } else {
-              cell.innerHTML = `<span class="status-badge status-available">✔ Available</span>`;
-            }
-          } else {
-            cell.innerHTML = `<span class="status-badge status-locked">🔒 ${formatTime(secsLeft)}</span>`;
-          }
+          cell.innerHTML = getStatusBadgeHtml(boss, secsLeft);
         });
       }
 
