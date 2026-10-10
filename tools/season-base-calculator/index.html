@@ -1,1 +1,4759 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="system">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Last War: Season Building Cumulative Cost Calculator</title>
+  <style>
+    /* ==========================================================================
+       THEME CONFIGURATION: HIGH CONTRAST DARK (DEFAULT)
+       ========================================================================== */
+    :root, html[data-theme="dark"] {
+      color-scheme: dark;
+      --theme-name: "dark";
+      --bg-body: #070d19;
+      --bg-surface: #0f192d;
+      --bg-card: #15223c;
+      --bg-card-hover: #1c2c4c;
+      --bg-input: #091222;
+      
+      --border-color: rgba(255, 255, 255, 0.18);
+      --border-subtle: rgba(255, 255, 255, 0.1);
+      --border-accent: rgba(251, 191, 36, 0.5);
 
+      /* High-contrast Typography for Dark Mode: 100% readable text */
+      --text-main: #ffffff;        /* Pure crisp white for all titles, values, numbers */
+      --text-muted: #e2e8f0;       /* Slate-200: Bright readable labels & cumulative cells */
+      --text-dim: #cbd5e1;         /* Slate-300: High contrast for helpers, axis, subtitles */
+      --text-placeholder: #94a3b8; /* Slate-400: Clear contrast for input placeholders */
+
+      /* High Vibrancy Accents */
+      --tank-color: #fbbf24;       /* Amber-400 */
+      --tank-glow: rgba(251, 191, 36, 0.25);
+      --tank-bg: rgba(251, 191, 36, 0.16);
+
+      --air-color: #38bdf8;        /* Sky-400 */
+      --air-glow: rgba(56, 189, 248, 0.25);
+      --air-bg: rgba(56, 189, 248, 0.16);
+
+      --missile-color: #fb7185;    /* Rose-400 */
+      --missile-glow: rgba(251, 113, 133, 0.25);
+      --missile-bg: rgba(251, 113, 133, 0.16);
+
+      --virus-color: #34d399;      /* Emerald-400 */
+      --virus-glow: rgba(52, 211, 153, 0.25);
+      --virus-bg: rgba(52, 211, 153, 0.16);
+
+      --farm-color: #c084fc;       /* Purple-400 */
+      --farm-glow: rgba(192, 132, 252, 0.25);
+      --farm-bg: rgba(192, 132, 252, 0.16);
+
+      --res1-color: #34d399;       /* Immune Protein: Emerald */
+      --res1-bg: rgba(52, 211, 153, 0.16);
+      --res2-color: #c084fc;       /* Mutant Crystals: Purple */
+      --res2-bg: rgba(192, 132, 252, 0.16);
+
+      --gold: #fbbf24;
+      --purple: #c084fc;
+      --emerald: #34d399;
+      --cyan: #38bdf8;
+
+      /* Clean Normal System Fonts */
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --font-mono: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 20px;
+      --shadow-card: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
+    }
+
+    /* ==========================================================================
+       THEME CONFIGURATION: HIGH CONTRAST LIGHT
+       ========================================================================== */
+    html[data-theme="light"] {
+      color-scheme: light;
+      --theme-name: "light";
+      --bg-body: #f8fafc;
+      --bg-surface: #ffffff;
+      --bg-card: #f1f5f9;
+      --bg-card-hover: #e2e8f0;
+      --bg-input: #ffffff;
+      
+      --border-color: #cbd5e1;
+      --border-subtle: #e2e8f0;
+      --border-accent: rgba(180, 83, 9, 0.5);
+
+      --text-main: #090e17;
+      --text-muted: #1e293b;
+      --text-dim: #475569;
+      --text-placeholder: #64748b;
+
+      --tank-color: #b45309;
+      --tank-glow: rgba(180, 83, 9, 0.15);
+      --tank-bg: rgba(245, 158, 11, 0.14);
+
+      --air-color: #0369a1;
+      --air-glow: rgba(3, 105, 161, 0.15);
+      --air-bg: rgba(14, 165, 233, 0.14);
+
+      --missile-color: #be123c;
+      --missile-glow: rgba(190, 18, 60, 0.15);
+      --missile-bg: rgba(244, 63, 94, 0.14);
+
+      --virus-color: #047857;
+      --virus-glow: rgba(4, 120, 87, 0.15);
+      --virus-bg: rgba(16, 185, 129, 0.14);
+
+      --farm-color: #6d28d9;
+      --farm-glow: rgba(109, 40, 217, 0.15);
+      --farm-bg: rgba(168, 85, 247, 0.14);
+
+      --res1-color: #047857;
+      --res1-bg: rgba(16, 185, 129, 0.14);
+      --res2-color: #6d28d9;
+      --res2-bg: rgba(168, 85, 247, 0.14);
+
+      --gold: #b45309;
+      --purple: #6d28d9;
+      --emerald: #047857;
+      --cyan: #0369a1;
+
+      --shadow-card: 0 4px 18px -2px rgba(0, 0, 0, 0.08);
+    }
+
+    /* ==========================================================================
+       THEME CONFIGURATION: SYSTEM (DYNAMIC OS MATCHING)
+       ========================================================================== */
+    @media (prefers-color-scheme: dark) {
+      html[data-theme="system"] {
+        color-scheme: dark;
+        --theme-name: "system-dark";
+      }
+    }
+
+    @media (prefers-color-scheme: light) {
+      html[data-theme="system"] {
+        color-scheme: light;
+        --theme-name: "system-light";
+        --bg-body: #f8fafc;
+        --bg-surface: #ffffff;
+        --bg-card: #f1f5f9;
+        --bg-card-hover: #e2e8f0;
+        --bg-input: #ffffff;
+        
+        --border-color: #cbd5e1;
+        --border-subtle: #e2e8f0;
+        --border-accent: rgba(180, 83, 9, 0.5);
+
+        --text-main: #090e17;
+        --text-muted: #1e293b;
+        --text-dim: #475569;
+        --text-placeholder: #64748b;
+
+        --tank-color: #b45309;
+        --tank-glow: rgba(180, 83, 9, 0.15);
+        --tank-bg: rgba(245, 158, 11, 0.14);
+
+        --air-color: #0369a1;
+        --air-glow: rgba(3, 105, 161, 0.15);
+        --air-bg: rgba(14, 165, 233, 0.14);
+
+        --missile-color: #be123c;
+        --missile-glow: rgba(190, 18, 60, 0.15);
+        --missile-bg: rgba(244, 63, 94, 0.14);
+
+        --virus-color: #047857;
+        --virus-glow: rgba(4, 120, 87, 0.15);
+        --virus-bg: rgba(16, 185, 129, 0.14);
+
+        --farm-color: #6d28d9;
+        --farm-glow: rgba(109, 40, 217, 0.15);
+        --farm-bg: rgba(168, 85, 247, 0.14);
+
+        --res1-color: #047857;
+        --res1-bg: rgba(16, 185, 129, 0.14);
+        --res2-color: #6d28d9;
+        --res2-bg: rgba(168, 85, 247, 0.14);
+
+        --gold: #b45309;
+        --purple: #6d28d9;
+        --emerald: #047857;
+        --cyan: #0369a1;
+
+        --shadow-card: 0 4px 18px -2px rgba(0, 0, 0, 0.08);
+      }
+    }
+
+    /* High-contrast Deficit & Surplus Badges */
+    html[data-theme="light"] .badge-deficit,
+    html[data-theme="light"] .badge-deficit strong {
+      background: rgba(239, 68, 68, 0.12);
+      color: #b91c1c;
+      border-color: #dc2626;
+    }
+    html[data-theme="light"] .badge-surplus,
+    html[data-theme="light"] .badge-surplus strong {
+      background: rgba(16, 185, 129, 0.12);
+      color: #047857;
+      border-color: #059669;
+    }
+
+    @media (prefers-color-scheme: light) {
+      html[data-theme="system"] .badge-deficit,
+      html[data-theme="system"] .badge-deficit strong {
+        background: rgba(239, 68, 68, 0.12);
+        color: #b91c1c;
+        border-color: #dc2626;
+      }
+      html[data-theme="system"] .badge-surplus,
+      html[data-theme="system"] .badge-surplus strong {
+        background: rgba(16, 185, 129, 0.12);
+        color: #047857;
+        border-color: #059669;
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      min-height: 100vh;
+      line-height: 1.5;
+      font-size: 15px;
+      font-weight: 400;
+      -webkit-font-smoothing: antialiased;
+      padding: 24px 16px 60px;
+      transition: background-color 0.25s ease, color 0.25s ease;
+      background-image: 
+        radial-gradient(circle at 10% 10%, rgba(245, 158, 11, 0.04) 0%, transparent 40%),
+        radial-gradient(circle at 90% 20%, rgba(14, 165, 233, 0.04) 0%, transparent 40%),
+        radial-gradient(circle at 50% 85%, rgba(16, 185, 129, 0.04) 0%, transparent 50%);
+      background-attachment: fixed;
+    }
+
+    .container {
+      max-width: 1240px;
+      margin: 0 auto;
+    }
+
+    /* Top Nav & Breadcrumbs */
+    .top-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .nav-breadcrumbs {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .nav-breadcrumbs a {
+      color: var(--tank-color);
+      text-decoration: none;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: opacity 0.2s;
+    }
+
+    .nav-breadcrumbs a:hover {
+      opacity: 0.85;
+      text-decoration: underline;
+    }
+
+    .nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* Theme 3-Way Segmented Control */
+    .theme-segmented-ctrl {
+      display: inline-flex;
+      background: var(--bg-input);
+      border: 1.5px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 3px;
+      gap: 3px;
+    }
+
+    .theme-pill-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-family: inherit;
+      white-space: nowrap;
+    }
+
+    .theme-pill-btn:hover {
+      color: var(--text-main);
+    }
+
+    .theme-pill-btn.active {
+      background: var(--tank-color);
+      color: #070d19;
+      font-weight: 600;
+      box-shadow: 0 1px 6px rgba(0, 0, 0, 0.25);
+    }
+
+    html[data-theme="light"] .theme-pill-btn.active {
+      color: #ffffff;
+    }
+
+    @media (prefers-color-scheme: light) {
+      html[data-theme="system"] .theme-pill-btn.active {
+        color: #ffffff;
+      }
+    }
+
+    .btn-icon {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      font-family: inherit;
+      text-decoration: none;
+    }
+
+    .btn-icon:hover {
+      border-color: var(--tank-color);
+      background: var(--bg-card);
+      transform: translateY(-1px);
+    }
+
+    /* Hero Header */
+    .hero-header {
+      background: linear-gradient(135deg, rgba(251, 191, 36, 0.12) 0%, rgba(56, 189, 248, 0.08) 35%, rgba(52, 211, 153, 0.08) 70%, rgba(192, 132, 252, 0.08) 100%);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-xl);
+      padding: 26px 30px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-card);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--tank-color), var(--air-color), var(--missile-color), var(--virus-color), var(--farm-color));
+    }
+
+    .header-badge-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+
+    .badge-gold { background: var(--tank-bg); color: var(--tank-color); border: 1.5px solid var(--tank-color); }
+    .badge-cyan { background: var(--air-bg); color: var(--air-color); border: 1.5px solid var(--air-color); }
+    .badge-rose { background: var(--missile-bg); color: var(--missile-color); border: 1.5px solid var(--missile-color); }
+    .badge-green { background: var(--virus-bg); color: var(--virus-color); border: 1.5px solid var(--virus-color); }
+    .badge-purple { background: var(--farm-bg); color: var(--farm-color); border: 1.5px solid var(--farm-color); }
+
+    .hero-title {
+      font-size: 1.95rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .hero-subtitle {
+      color: var(--text-muted);
+      font-size: 0.96rem;
+      font-weight: 400;
+      max-width: 980px;
+      line-height: 1.6;
+    }
+
+    .hero-subtitle a {
+      color: var(--tank-color);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .hero-subtitle a:hover {
+      text-decoration: underline;
+    }
+
+    /* Mode Switcher Bar */
+    .mode-bar {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .mode-label {
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .pill-tabs {
+      display: inline-flex;
+      background: var(--bg-input);
+      padding: 4px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-subtle);
+      gap: 4px;
+    }
+
+    .pill-btn {
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .pill-btn:hover {
+      color: var(--text-main);
+    }
+
+    .pill-btn.active {
+      background: var(--tank-color);
+      color: #070d19;
+      font-weight: 600;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    }
+
+    html[data-theme="light"] .pill-btn.active {
+      color: #ffffff;
+    }
+
+    /* PULLDOWN SELECTOR HERO BOX */
+    .pulldown-card {
+      background: var(--bg-surface);
+      border: 2px solid var(--border-accent);
+      border-radius: var(--radius-xl);
+      padding: 22px 26px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      position: relative;
+    }
+
+    .pulldown-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .pulldown-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .building-select-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+      max-width: 580px;
+    }
+
+    .building-select {
+      width: 100%;
+      background-color: var(--bg-input);
+      border: 2px solid var(--tank-color);
+      border-radius: var(--radius-md);
+      color: var(--text-main);
+      font-size: 1rem;
+      font-weight: 600;
+      font-family: inherit;
+      padding: 11px 18px;
+      cursor: pointer;
+      outline: none;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      transition: all 0.2s ease;
+    }
+
+    .building-select option {
+      background-color: var(--bg-surface);
+      color: var(--text-main);
+      font-weight: 500;
+      padding: 8px 12px;
+    }
+
+    .building-select optgroup {
+      background-color: var(--bg-surface);
+      color: var(--tank-color);
+      font-weight: 700;
+      padding: 8px 12px;
+      font-style: normal;
+    }
+
+    .building-select:focus {
+      border-color: #fbbf24;
+      box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.35);
+    }
+
+    /* 5 Building Chips Bar */
+    .chips-selector-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .chips-label {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .b-chip {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 9px 14px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      font-family: inherit;
+      color: var(--text-main);
+      user-select: none;
+      transition: all 0.2s ease;
+    }
+
+    .b-chip:hover {
+      border-color: var(--text-muted);
+      background: var(--bg-card-hover);
+      transform: translateY(-1px);
+    }
+
+    .b-chip.active-tank { border-color: var(--tank-color); background: var(--tank-bg); color: var(--tank-color); font-weight: 600; }
+    .b-chip.active-air { border-color: var(--air-color); background: var(--air-bg); color: var(--air-color); font-weight: 600; }
+    .b-chip.active-missile { border-color: var(--missile-color); background: var(--missile-bg); color: var(--missile-color); font-weight: 600; }
+    .b-chip.active-virus { border-color: var(--virus-color); background: var(--virus-bg); color: var(--virus-color); font-weight: 600; }
+    .b-chip.active-protein { border-color: var(--farm-color); background: var(--farm-bg); color: var(--farm-color); font-weight: 600; }
+    .b-chip.active-group { border-color: var(--cyan); background: rgba(56, 189, 248, 0.18); color: var(--cyan); font-weight: 600; }
+
+    /* Farm Count Multiplier */
+    .farm-multiplier-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--farm-bg);
+      border: 1.5px solid var(--farm-color);
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--farm-color);
+    }
+
+    .farm-btn {
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 4px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+      font-family: inherit;
+    }
+
+    .farm-btn.active {
+      background: var(--farm-color);
+      color: #ffffff;
+      border-color: var(--farm-color);
+    }
+
+    /* Section Cards */
+    .card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-xl);
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-card);
+      position: relative;
+    }
+
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .card-title-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Range Controls: Slider & Inputs */
+    .range-control-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      margin-bottom: 20px;
+    }
+
+    .range-inputs-row {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 20px;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 680px) {
+      .range-inputs-row {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+    }
+
+    .range-input-card {
+      background: var(--bg-input);
+      border: 1.5px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .range-input-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .helper-text {
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      font-weight: 500;
+    }
+
+    .helper-text.highlight {
+      color: var(--tank-color);
+      font-weight: 600;
+    }
+
+    .stepper-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .stepper-btn {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-color);
+      color: var(--text-main);
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-sm);
+      font-size: 1.35rem;
+      font-weight: 600;
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.15s;
+      user-select: none;
+    }
+
+    .stepper-btn:hover {
+      border-color: var(--tank-color);
+      background: var(--bg-card-hover);
+    }
+
+    .level-num-input {
+      flex: 1;
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      color: var(--text-main);
+      font-size: 1.65rem;
+      font-weight: 700;
+      font-family: var(--font-sans);
+      font-variant-numeric: tabular-nums;
+      text-align: center;
+      padding: 6px;
+      width: 100%;
+    }
+
+    .level-num-input:focus {
+      outline: none;
+      border-color: var(--tank-color);
+      box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.35);
+    }
+
+    input::placeholder {
+      color: var(--text-placeholder);
+      opacity: 1;
+    }
+
+    .range-arrow {
+      font-size: 1.6rem;
+      color: var(--tank-color);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Card Dedicated Slider */
+    .card-slider-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 10px;
+      border-radius: 5px;
+      background: rgba(255, 255, 255, 0.16);
+      outline: none;
+      cursor: pointer;
+      margin: 6px 0;
+    }
+
+    html[data-theme="light"] .slider {
+      background: #cbd5e1;
+    }
+
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--tank-color);
+      cursor: pointer;
+      border: 2.5px solid #ffffff;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      transition: transform 0.1s;
+    }
+
+    .slider::-moz-range-thumb {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--tank-color);
+      cursor: pointer;
+      border: 2.5px solid #ffffff;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      transition: transform 0.1s;
+    }
+
+    .slider::-webkit-slider-thumb:hover,
+    .slider::-moz-range-thumb:hover {
+      transform: scale(1.15);
+    }
+
+    .slider-ticks-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-dim);
+      padding: 0 2px;
+    }
+
+    /* Preset Buttons */
+    .presets-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px dashed var(--border-subtle);
+    }
+
+    .preset-label {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .preset-chip {
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 6px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.86rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-family: inherit;
+    }
+
+    .preset-chip:hover {
+      color: var(--text-main);
+      border-color: var(--tank-color);
+      background: var(--bg-card-hover);
+    }
+
+    .preset-chip.active {
+      background: var(--tank-color);
+      color: #070d19;
+      font-weight: 600;
+      border-color: var(--tank-color);
+    }
+
+    html[data-theme="light"] .preset-chip.active {
+      color: #ffffff;
+    }
+
+    /* Independent 5-Building Planner Grid */
+    .independent-bases-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .ind-base-card {
+      background: var(--bg-card);
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      position: relative;
+      transition: border-color 0.2s;
+    }
+
+    .ind-base-card.tank-active { border-color: var(--tank-color); }
+    .ind-base-card.air-active { border-color: var(--air-color); }
+    .ind-base-card.missile-active { border-color: var(--missile-color); }
+    .ind-base-card.virus-active { border-color: var(--virus-color); }
+    .ind-base-card.protein-active { border-color: var(--farm-color); }
+
+    .ind-base-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .ind-base-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .ind-label-mini {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    .ind-mini-kpis {
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px dashed var(--border-subtle);
+      font-size: 0.85rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .ind-mini-val {
+      font-weight: 600;
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Modifiers & Buffs Grid */
+    .modifiers-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    @media (max-width: 860px) {
+      .modifiers-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .modifier-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+    }
+
+    .modifier-title {
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modifier-val-badge {
+      font-family: var(--font-sans);
+      font-variant-numeric: tabular-nums;
+      color: var(--tank-color);
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .modifier-desc {
+      font-size: 0.84rem;
+      font-weight: 400;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .modifier-chips {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .mod-chip {
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-size: 0.84rem;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: var(--font-sans);
+      font-variant-numeric: tabular-nums;
+      transition: all 0.15s;
+    }
+
+    .mod-chip:hover, .mod-chip.active {
+      color: var(--tank-color);
+      border-color: var(--tank-color);
+      background: var(--tank-bg);
+      font-weight: 600;
+    }
+
+    /* Stockpile Calculator */
+    .inventory-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-top: 14px;
+    }
+
+    @media (max-width: 640px) {
+      .inventory-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .stockpile-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+    }
+
+    .stockpile-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .stockpile-label {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .stock-input-wrap {
+      position: relative;
+      margin-bottom: 12px;
+    }
+
+    .stock-input {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1.5px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      color: var(--text-main);
+      font-size: 1.05rem;
+      font-weight: 600;
+      font-family: var(--font-sans);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stock-input:focus {
+      outline: none;
+      border-color: var(--tank-color);
+    }
+
+    .progress-bar-bg {
+      background: rgba(255, 255, 255, 0.12);
+      height: 10px;
+      border-radius: 5px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+
+    html[data-theme="light"] .progress-bar-bg {
+      background: #e2e8f0;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #10b981, #059669);
+      border-radius: 5px;
+      transition: width 0.3s ease;
+    }
+
+    .stockpile-stat-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .stockpile-stat-row strong {
+      color: var(--text-main);
+      font-weight: 600;
+    }
+
+    .badge-status {
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 0.78rem;
+    }
+
+    .badge-deficit {
+      background: rgba(239, 68, 68, 0.2);
+      color: #fca5a5;
+      border: 1px solid #ef4444;
+    }
+
+    .badge-surplus {
+      background: rgba(16, 185, 129, 0.2);
+      color: #6ee7b7;
+      border: 1px solid #10b981;
+    }
+
+    /* Executive KPI Dashboard Cards */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 960px) {
+      .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .kpi-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .kpi-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-xl);
+      padding: 20px 22px;
+      box-shadow: var(--shadow-card);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .kpi-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--tank-color);
+    }
+
+    .kpi-card.kpi-res1::after { background: var(--res1-color); }
+    .kpi-card.kpi-res2::after { background: var(--res2-color); }
+    .kpi-card.kpi-time::after { background: var(--cyan); }
+    .kpi-card.kpi-xp::after { background: var(--purple); }
+    .kpi-card.kpi-power::after { background: var(--gold); }
+    .kpi-card.kpi-stats::after { background: var(--missile-color); }
+
+    .kpi-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 6px;
+    }
+
+    .kpi-label {
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .kpi-icon {
+      font-size: 1.45rem;
+    }
+
+    .kpi-value {
+      font-size: 1.9rem;
+      font-weight: 700;
+      font-family: var(--font-sans);
+      font-variant-numeric: tabular-nums;
+      color: var(--text-main);
+      line-height: 1.15;
+      margin-bottom: 6px;
+    }
+
+    .kpi-subtext {
+      font-size: 0.86rem;
+      font-weight: 400;
+      color: var(--text-dim);
+    }
+
+    /* Visual Cost Curve Chart */
+    .chart-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      margin-top: 16px;
+      position: relative;
+    }
+
+    .chart-container {
+      width: 100%;
+      height: 240px;
+      position: relative;
+    }
+
+    .chart-svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    .chart-tooltip {
+      position: absolute;
+      background: #0f192d;
+      border: 2px solid var(--tank-color);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+      color: #ffffff;
+      font-size: 0.84rem;
+      font-weight: 500;
+      pointer-events: none;
+      display: none;
+      z-index: 100;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.6);
+    }
+
+    /* Table Section */
+    .table-container {
+      overflow-x: auto;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      background: var(--bg-input);
+      margin-top: 16px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.94rem;
+      font-family: var(--font-sans);
+      text-align: left;
+    }
+
+    th {
+      background: var(--bg-surface);
+      color: var(--text-main);
+      font-weight: 600;
+      padding: 12px 14px;
+      border-bottom: 2px solid var(--border-color);
+      white-space: nowrap;
+      font-size: 0.88rem;
+    }
+
+    td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border-subtle);
+      font-family: var(--font-sans);
+      font-variant-numeric: tabular-nums;
+      font-weight: 400;
+      white-space: nowrap;
+      color: var(--text-main);
+    }
+
+    tfoot td {
+      background: var(--bg-surface);
+      border-top: 2px solid var(--border-color);
+      border-bottom: none;
+      font-weight: 700;
+      padding: 12px 14px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    html[data-theme="light"] tr:hover td {
+      background: rgba(0, 0, 0, 0.04);
+    }
+
+    tr.in-range td {
+      background: rgba(251, 191, 36, 0.07);
+    }
+
+    tr.in-range:hover td {
+      background: rgba(251, 191, 36, 0.14);
+    }
+
+    .td-lvl {
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .td-milestone {
+      font-weight: 600;
+      color: var(--tank-color);
+    }
+
+    .td-cum {
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    /* Share Bar */
+    .share-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 14px 20px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .btn-action {
+      background: var(--tank-color);
+      color: #070d19;
+      border: none;
+      padding: 10px 20px;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 0.92rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    html[data-theme="light"] .btn-action {
+      color: #ffffff;
+    }
+
+    .btn-action:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.4);
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #10b981;
+      color: #ffffff;
+      font-weight: 600;
+      padding: 12px 20px;
+      border-radius: var(--radius-md);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 1000;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      font-weight: 400;
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .footer a {
+      color: var(--tank-color);
+      text-decoration: underline;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Top Navigation Bar -->
+    <nav class="top-nav">
+      <div class="nav-breadcrumbs">
+        <a href="../hub/index_local.html">⚡ Last War Hub</a>
+        <span>/</span>
+        <a href="../hub/index.html">Calculators</a>
+        <span>/</span>
+        <span>Season Building Cumulative Cost Calculator</span>
+      </div>
+      <div class="nav-controls">
+        <!-- 3-Way Theme Segmented Control -->
+        <div class="theme-segmented-ctrl" id="themeSegmented">
+          <button class="theme-pill-btn" data-theme-val="dark" title="Dark Theme">🌙 Dark</button>
+          <button class="theme-pill-btn" data-theme-val="light" title="Light Theme">☀️ Light</button>
+          <button class="theme-pill-btn active" data-theme-val="system" title="Follow OS Preference">💻 System</button>
+        </div>
+        <a href="https://cpt-hedge.com/buildings/tank-base" target="_blank" rel="noopener" class="btn-icon" title="View Source on cpt-hedge.com">
+          🌐 cpt-hedge.com ↗
+        </a>
+      </div>
+    </nav>
+
+    <!-- Hero Header -->
+    <header class="hero-header">
+      <div class="header-badge-row">
+        <span class="badge badge-gold">🛡️ Tank Base</span>
+        <span class="badge badge-cyan">✈️ Air Force Base</span>
+        <span class="badge badge-rose">🚀 Missile Base</span>
+        <span class="badge badge-green">🔬 Virus Institute</span>
+        <span class="badge badge-purple">🌾 Protein Farm</span>
+      </div>
+      <h1 class="hero-title">
+        Season Building Cumulative Cost Calculator
+      </h1>
+      <p class="hero-subtitle">
+        Calculate exact cumulative resource costs, build durations, Season XP, Virus Resistance, Protein farm yields, and hero combat stats for all <strong>5 Season Buildings</strong> (Levels 1 to 30).
+        Data verified against <a href="https://cpt-hedge.com/buildings/tank-base" target="_blank" rel="noopener">cpt-hedge.com</a>.
+      </p>
+    </header>
+
+    <!-- Mode Switcher Bar -->
+    <div class="mode-bar">
+      <span class="mode-label">🎛️ Planning Mode:</span>
+      <div class="pill-tabs" id="modePillTabs">
+        <button class="pill-btn active" id="btnModeUnified">
+          🎯 Single / Group Mode
+        </button>
+        <button class="pill-btn" id="btnModeIndependent">
+          🔀 Independent 5-Building Planner
+        </button>
+      </div>
+    </div>
+
+    <!-- PULLDOWN BUILDING SELECTOR CARD -->
+    <section class="pulldown-card">
+      <div class="pulldown-header-row">
+        <div class="pulldown-title">
+          <span>🏛️ Select Building to Calculate:</span>
+        </div>
+        <div class="building-select-wrap">
+          <select id="buildingPulldown" class="building-select" aria-label="Select Season Building">
+            <optgroup label="── Individual Season Buildings ──">
+              <option value="tank" selected>🛡️ Tank Base (+1% Tank Hero HP/ATK/DEF per level)</option>
+              <option value="air">✈️ Air Force Base (+1% Aircraft Hero HP/ATK/DEF per level)</option>
+              <option value="missile">🚀 Missile Base (+1% Missile Hero HP/ATK/DEF per level)</option>
+              <option value="virus">🔬 Virus Research Institute (+100 to +10,000 Virus Resistance)</option>
+              <option value="protein">🌾 Protein Farm (+720/h to +21,600/h Protein Output)</option>
+            </optgroup>
+            <optgroup label="── Combined Presets & Multi-Planner ──">
+              <option value="combat_bases">⚡ All 3 Combat Bases Combined (Tank + Air + Missile)</option>
+              <option value="all_season">🌐 All 5 Season Buildings Combined</option>
+              <option value="independent">🔀 Independent Multi-Building Planner</option>
+            </optgroup>
+          </select>
+        </div>
+      </div>
+
+      <!-- 5 Quick-Select Visual Chips -->
+      <div class="chips-selector-row">
+        <span class="chips-label">Quick Pick:</span>
+        <button class="b-chip active-tank" data-b="tank">🛡️ Tank Base</button>
+        <button class="b-chip" data-b="air">✈️ Air Force Base</button>
+        <button class="b-chip" data-b="missile">🚀 Missile Base</button>
+        <button class="b-chip" data-b="virus">🔬 Virus Institute</button>
+        <button class="b-chip" data-b="protein">🌾 Protein Farm</button>
+        <button class="b-chip" data-b="combat_bases">⚡ 3 Combat Bases</button>
+        <button class="b-chip" data-b="all_season">🌐 All 5 Buildings</button>
+
+        <!-- Protein Farm Count Multiplier -->
+        <div class="farm-multiplier-wrap" id="farmMultiplierWrap" style="display:none;">
+          <span>Farms:</span>
+          <button class="farm-btn" data-farms="1">1</button>
+          <button class="farm-btn" data-farms="2">2</button>
+          <button class="farm-btn" data-farms="3">3</button>
+          <button class="farm-btn active" data-farms="4">4 Farms</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- UNIFIED / SINGLE RANGE CARD -->
+    <section class="card" id="unifiedRangeCard">
+      <div class="card-title">
+        <div class="card-title-left">
+          <span id="activeBuildingTitle">🛡️ Tank Base — Level Range & Upgrade Target</span>
+        </div>
+        <div style="font-size:0.9rem; color:var(--tank-color); font-weight:600;" id="activeBuildingBenefit">
+          +1% Tank HP / ATK / DEF per level
+        </div>
+      </div>
+
+      <!-- Interactive Level Stepper & Slider Box -->
+      <div class="range-control-box">
+        <div class="range-inputs-row">
+          <!-- Current Level Card -->
+          <div class="range-input-card">
+            <div class="range-input-header">
+              <span>Current Level</span>
+              <span class="helper-text">(0 = Not Built)</span>
+            </div>
+            <div class="stepper-row">
+              <button class="stepper-btn" id="startMinusBtn" title="Decrease Current Level">−</button>
+              <input type="number" id="startLevelInput" class="level-num-input" min="0" max="29" value="0">
+              <button class="stepper-btn" id="startPlusBtn" title="Increase Current Level">+</button>
+            </div>
+            <!-- Dedicated Slider for Current Level -->
+            <div class="card-slider-wrap">
+              <input type="range" class="slider" id="startLevelSlider" min="0" max="29" value="0">
+              <div class="slider-ticks-row">
+                <span>0</span>
+                <span>5</span>
+                <span>10</span>
+                <span>15</span>
+                <span>20</span>
+                <span>25</span>
+                <span>29</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="range-arrow">➔</div>
+
+          <!-- Target Level Card -->
+          <div class="range-input-card">
+            <div class="range-input-header">
+              <span>Target Level</span>
+              <span class="helper-text highlight">(Max 30)</span>
+            </div>
+            <div class="stepper-row">
+              <button class="stepper-btn" id="targetMinusBtn" title="Decrease Target Level">−</button>
+              <input type="number" id="targetLevelInput" class="level-num-input" min="1" max="30" value="30">
+              <button class="stepper-btn" id="targetPlusBtn" title="Increase Target Level">+</button>
+            </div>
+            <!-- Dedicated Slider for Target Level -->
+            <div class="card-slider-wrap">
+              <input type="range" class="slider" id="targetLevelSlider" min="1" max="30" value="30">
+              <div class="slider-ticks-row">
+                <span>1</span>
+                <span>5</span>
+                <span>10</span>
+                <span>15</span>
+                <span>20</span>
+                <span>25</span>
+                <span>30</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Presets -->
+        <div class="presets-row">
+          <span class="preset-label">Quick Ranges:</span>
+          <button class="preset-chip" data-start="0" data-target="10">0 → 10</button>
+          <button class="preset-chip" data-start="10" data-target="20">10 → 20</button>
+          <button class="preset-chip" data-start="20" data-target="30">20 → 30</button>
+          <button class="preset-chip active" data-start="0" data-target="30">0 → 30 (Full Max)</button>
+          <button class="preset-chip" id="btnNextLevel">+1 Next Level</button>
+          <button class="preset-chip" id="btnPlusFive">+5 Levels</button>
+          <button class="preset-chip" data-start="0" data-target="25">Milestone 25</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- INDEPENDENT 5-BUILDING PLANNER CARD (Hidden by default) -->
+    <section class="card" id="independentPlannerCard" style="display:none;">
+      <div class="card-title">
+        <div class="card-title-left">
+          <span>🔀 Independent 5-Building Upgrade Portfolio</span>
+        </div>
+        <div style="font-size:0.85rem; color:var(--text-muted); font-weight:500;">
+          Customize separate level ranges for each seasonal building
+        </div>
+      </div>
+
+      <div class="independent-bases-grid">
+        <!-- Tank Base -->
+        <div class="ind-base-card tank-active" id="indCard_tank">
+          <div class="ind-base-header">
+            <span class="ind-base-title">🛡️ Tank Base</span>
+            <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:0.82rem; font-weight:600;">
+              <input type="checkbox" id="indCheck_tank" class="chip-checkbox" checked>
+              <span id="indBadge_tank" class="badge badge-gold">Active</span>
+            </label>
+          </div>
+          <div class="stepper-row" style="margin-bottom:8px;">
+            <div style="flex:1;">
+              <span class="ind-label-mini">Current</span>
+              <input type="number" id="indStart_tank" class="level-num-input" min="0" max="29" value="0">
+            </div>
+            <span class="range-arrow" style="font-size:1rem;">➔</span>
+            <div style="flex:1;">
+              <span class="ind-label-mini">Target</span>
+              <input type="number" id="indTarget_tank" class="level-num-input" min="1" max="30" value="30">
+            </div>
+          </div>
+          <div class="ind-mini-kpis">
+            <div>Protein: <span class="ind-mini-val" id="indMiniRes1_tank">0</span></div>
+            <div>Crystals: <span class="ind-mini-val" id="indMiniRes2_tank">0</span></div>
+            <div>Time: <span class="ind-mini-val" id="indMiniTime_tank">0s</span></div>
+            <div>Stats: <span class="ind-mini-val" id="indMiniStat_tank">+0%</span></div>
+          </div>
+        </div>
+
+        <!-- Air Force Base -->
+        <div class="ind-base-card air-active" id="indCard_air">
+          <div class="ind-base-header">
+            <span class="ind-base-title">✈️ Air Base</span>
+            <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:0.82rem; font-weight:600;">
+              <input type="checkbox" id="indCheck_air" class="chip-checkbox" checked>
+              <span id="indBadge_air" class="badge badge-cyan">Active</span>
+            </label>
+          </div>
+          <div class="stepper-row" style="margin-bottom:8px;">
+            <div style="flex:1;">
+              <span class="ind-label-mini">Current</span>
+              <input type="number" id="indStart_air" class="level-num-input" min="0" max="29" value="0">
+            </div>
+            <span class="range-arrow" style="font-size:1rem;">➔</span>
+            <div style="flex:1;">
+              <span class="ind-label-mini">Target</span>
+              <input type="number" id="indTarget_air" class="level-num-input" min="1" max="30" value="20">
+            </div>
+          </div>
+          <div class="ind-mini-kpis">
+            <div>Protein: <span class="ind-mini-val" id="indMiniRes1_air">0</span></div>
+            <div>Crystals: <span class="ind-mini-val" id="indMiniRes2_air">0</span></div>
+            <div>Time: <span class="ind-mini-val" id="indMiniTime_air">0s</span></div>
+            <div>Stats: <span class="ind-mini-val" id="indMiniStat_air">+0%</span></div>
+          </div>
+        </div>
+
+        <!-- Missile Base -->
+        <div class="ind-base-card missile-active" id="indCard_missile">
+          <div class="ind-base-header">
+            <span class="ind-base-title">🚀 Missile Base</span>
+            <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:0.82rem; font-weight:600;">
+              <input type="checkbox" id="indCheck_missile" class="chip-checkbox" checked>
+              <span id="indBadge_missile" class="badge badge-rose">Active</span>
+            </label>
+          </div>
+          <div class="stepper-row" style="margin-bottom:8px;">
+            <div style="flex:1;">
+              <span class="ind-label-mini">Current</span>
+              <input type="number" id="indStart_missile" class="level-num-input" min="0" max="29" value="0">
+            </div>
+            <span class="range-arrow" style="font-size:1rem;">➔</span>
+            <div style="flex:1;">
+              <span class="ind-label-mini">Target</span>
+              <input type="number" id="indTarget_missile" class="level-num-input" min="1" max="30" value="10">
+            </div>
+          </div>
+          <div class="ind-mini-kpis">
+            <div>Protein: <span class="ind-mini-val" id="indMiniRes1_missile">0</span></div>
+            <div>Crystals: <span class="ind-mini-val" id="indMiniRes2_missile">0</span></div>
+            <div>Time: <span class="ind-mini-val" id="indMiniTime_missile">0s</span></div>
+            <div>Stats: <span class="ind-mini-val" id="indMiniStat_missile">+0%</span></div>
+          </div>
+        </div>
+
+        <!-- Virus Institute -->
+        <div class="ind-base-card virus-active" id="indCard_virus">
+          <div class="ind-base-header">
+            <span class="ind-base-title">🔬 Virus Inst.</span>
+            <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:0.82rem; font-weight:600;">
+              <input type="checkbox" id="indCheck_virus" class="chip-checkbox" checked>
+              <span id="indBadge_virus" class="badge badge-green">Active</span>
+            </label>
+          </div>
+          <div class="stepper-row" style="margin-bottom:8px;">
+            <div style="flex:1;">
+              <span class="ind-label-mini">Current</span>
+              <input type="number" id="indStart_virus" class="level-num-input" min="0" max="29" value="0">
+            </div>
+            <span class="range-arrow" style="font-size:1rem;">➔</span>
+            <div style="flex:1;">
+              <span class="ind-label-mini">Target</span>
+              <input type="number" id="indTarget_virus" class="level-num-input" min="1" max="30" value="30">
+            </div>
+          </div>
+          <div class="ind-mini-kpis">
+            <div>Protein: <span class="ind-mini-val" id="indMiniRes1_virus">0</span></div>
+            <div>Crystals: <span class="ind-mini-val" id="indMiniRes2_virus">0</span></div>
+            <div>Time: <span class="ind-mini-val" id="indMiniTime_virus">0s</span></div>
+            <div>Resist: <span class="ind-mini-val" id="indMiniStat_virus">+0</span></div>
+          </div>
+        </div>
+
+        <!-- Protein Farm -->
+        <div class="ind-base-card protein-active" id="indCard_protein">
+          <div class="ind-base-header">
+            <span class="ind-base-title">🌾 Protein Farm</span>
+            <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:0.82rem; font-weight:600;">
+              <input type="checkbox" id="indCheck_protein" class="chip-checkbox" checked>
+              <span id="indBadge_protein" class="badge badge-purple">Active</span>
+            </label>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; font-size:0.82rem; font-weight:600;">
+            <span style="color:var(--text-muted);">Number of Farms:</span>
+            <select id="indFarmCountSelect" style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-main); border-radius:4px; padding:3px 8px; font-weight:600; font-family:inherit;">
+              <option value="1">1 Farm</option>
+              <option value="2">2 Farms</option>
+              <option value="3">3 Farms</option>
+              <option value="4" selected>4 Farms</option>
+            </select>
+          </div>
+          <div class="stepper-row" style="margin-bottom:8px;">
+            <div style="flex:1;">
+              <span class="ind-label-mini">Current</span>
+              <input type="number" id="indStart_protein" class="level-num-input" min="0" max="29" value="0">
+            </div>
+            <span class="range-arrow" style="font-size:1rem;">➔</span>
+            <div style="flex:1;">
+              <span class="ind-label-mini">Target</span>
+              <input type="number" id="indTarget_protein" class="level-num-input" min="1" max="30" value="30">
+            </div>
+          </div>
+          <div class="ind-mini-kpis">
+            <div>Protein: <span class="ind-mini-val" id="indMiniRes1_protein">0</span></div>
+            <div>Crystals: <span class="ind-mini-val" id="indMiniRes2_protein">0</span></div>
+            <div>Time: <span class="ind-mini-val" id="indMiniTime_protein">0s</span></div>
+            <div>Output: <span class="ind-mini-val" id="indMiniStat_protein">+0/h</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <button class="preset-chip" id="btnSetAllIndMax">Set All Enabled to Lvl 30 Max</button>
+        <button class="preset-chip" id="btnResetAllInd">Reset All to Lvl 0 → 1</button>
+      </div>
+    </section>
+
+    <!-- EXECUTIVE KPI DASHBOARD -->
+    <div class="kpi-grid">
+      <!-- KPI 1: Immune Protein -->
+      <div class="kpi-card kpi-res1">
+        <div class="kpi-header">
+          <span class="kpi-label" id="kpiRes1Label">Total Immune Protein</span>
+          <span class="kpi-icon" id="kpiRes1Icon">🧪</span>
+        </div>
+        <div class="kpi-value" id="kpiRes1Value" style="color:var(--res1-color);">0</div>
+        <div class="kpi-subtext" id="kpiRes1Exact">Cumulative Immune Protein cost</div>
+      </div>
+
+      <!-- KPI 2: Mutant Crystals -->
+      <div class="kpi-card kpi-res2">
+        <div class="kpi-header">
+          <span class="kpi-label" id="kpiRes2Label">Total Mutant Crystals</span>
+          <span class="kpi-icon" id="kpiRes2Icon">💎</span>
+        </div>
+        <div class="kpi-value" id="kpiRes2Value" style="color:var(--res2-color);">0</div>
+        <div class="kpi-subtext" id="kpiRes2Exact">Cumulative Mutant Crystals cost</div>
+      </div>
+
+      <!-- KPI 3: Calendar Build Duration -->
+      <div class="kpi-card kpi-time">
+        <div class="kpi-header">
+          <span class="kpi-label">Calendar Build Duration</span>
+          <span class="kpi-icon">⏱️</span>
+        </div>
+        <div class="kpi-value" id="kpiTimeBuffed" style="color:var(--cyan);">0s</div>
+        <div class="kpi-subtext" id="kpiTimeSubtext">Base: 0s • Saved: 0s</div>
+      </div>
+
+      <!-- KPI 4: Total Season XP -->
+      <div class="kpi-card kpi-xp">
+        <div class="kpi-header">
+          <span class="kpi-label">Total Season XP</span>
+          <span class="kpi-icon">⭐</span>
+        </div>
+        <div class="kpi-value" id="kpiXPValue" style="color:var(--gold);">0</div>
+        <div class="kpi-subtext" id="kpiXPExact">Season pass & milestone XP</div>
+      </div>
+
+      <!-- KPI 5: Building Power Score -->
+      <div class="kpi-card kpi-power">
+        <div class="kpi-header">
+          <span class="kpi-label">Building Power Score</span>
+          <span class="kpi-icon">⚡</span>
+        </div>
+        <div class="kpi-value" id="kpiPowerValue" style="color:var(--text-main);">+0</div>
+        <div class="kpi-subtext" id="kpiPowerExact">Profile power score (not hero CP)</div>
+      </div>
+
+      <!-- KPI 6: Primary Benefit Gain -->
+      <div class="kpi-card kpi-stats">
+        <div class="kpi-header">
+          <span class="kpi-label" id="kpiBenefitHeaderLabel">Primary Benefit Gain</span>
+          <span class="kpi-icon" id="kpiBenefitHeaderIcon">🎯</span>
+        </div>
+        <div class="kpi-value" id="kpiStatsValue" style="color:var(--missile-color); font-size:1.55rem;">+0%</div>
+        <div class="kpi-subtext" id="kpiStatsSubtext">Hero combat & defense stats</div>
+      </div>
+    </div>
+
+    <!-- MODIFIERS & SPEED BUFFS CARD -->
+    <section class="card">
+      <div class="card-title">
+        <div class="card-title-left">
+          <span>⚙️ Construction Speed Buffs & Modifiers</span>
+        </div>
+        <div style="font-size:0.85rem; color:var(--text-muted); font-weight:500;">
+          Calculates real calendar time using Last War game formulas
+        </div>
+      </div>
+
+      <div class="modifiers-grid">
+        <!-- Speed Buff -->
+        <div class="modifier-card">
+          <div class="modifier-title">
+            <span>⚡ Construction Speed Buff</span>
+            <span class="modifier-val-badge" id="speedBuffValLabel">+100%</span>
+          </div>
+          <div class="modifier-desc">From Tech Research, VIP, Alliance Titles & Monuments.</div>
+          <input type="range" class="slider" id="speedBuffSlider" min="0" max="300" step="5" value="100">
+          <div class="modifier-chips">
+            <button class="mod-chip" data-buff="0">+0%</button>
+            <button class="mod-chip" data-buff="50">+50%</button>
+            <button class="mod-chip active" data-buff="100">+100%</button>
+            <button class="mod-chip" data-buff="150">+150%</button>
+            <button class="mod-chip" data-buff="200">+200%</button>
+            <button class="mod-chip" data-buff="250">+250%</button>
+          </div>
+        </div>
+
+        <!-- Resource Discount -->
+        <div class="modifier-card">
+          <div class="modifier-title">
+            <span>🏷️ Resource Cost Reduction</span>
+            <span class="modifier-val-badge" id="discountValLabel">0%</span>
+          </div>
+          <div class="modifier-desc">Alliance territory & Ministry buffs reducing building costs.</div>
+          <input type="range" class="slider" id="discountSlider" min="0" max="20" step="1" value="0">
+          <div class="modifier-chips">
+            <button class="mod-chip active" data-discount="0">0%</button>
+            <button class="mod-chip" data-discount="3">3%</button>
+            <button class="mod-chip" data-discount="5">5%</button>
+            <button class="mod-chip" data-discount="10">10%</button>
+            <button class="mod-chip" data-discount="15">15%</button>
+          </div>
+        </div>
+
+        <!-- Builder Queues -->
+        <div class="modifier-card">
+          <div class="modifier-title">
+            <span>🔨 Active Builder Queues</span>
+            <span class="modifier-val-badge" id="builderQueueValLabel">1 Builder</span>
+          </div>
+          <div class="modifier-desc">Concurrent building queues divide total calendar duration.</div>
+          <div class="modifier-chips" style="margin-top:22px;">
+            <button class="mod-chip active" data-builders="1">1 Builder (Sequential)</button>
+            <button class="mod-chip" data-builders="2">2 Builders (Parallel)</button>
+            <button class="mod-chip" data-builders="3">3 Builders (Parallel)</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STOCKPILE & DEFICIT SOLVER -->
+    <section class="card">
+      <div class="card-title">
+        <div class="card-title-left">
+          <span>📦 Stockpile Inventory & Deficit Solver</span>
+        </div>
+        <div style="font-size:0.85rem; color:var(--text-muted); font-weight:500;">
+          Input current bags to see funding status and farming days needed
+        </div>
+      </div>
+
+      <div class="inventory-grid">
+        <!-- Resource 1 Stock -->
+        <div class="stockpile-card">
+          <div class="stockpile-header">
+            <span class="stockpile-label" id="stockLabel1">🧪 Current Immune Protein:</span>
+            <span class="badge-status badge-deficit" id="stockStatus1">Deficit</span>
+          </div>
+          <div class="stock-input-wrap">
+            <input type="text" id="stockInput1" class="stock-input" placeholder="e.g. 15M, 500k, 12,000,000">
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="stockBar1" style="width: 0%;"></div>
+          </div>
+          <div class="stockpile-stat-row">
+            <span>Funded: <strong id="stockPct1">0.0%</strong></span>
+            <span id="stockDeficit1" style="color:var(--text-main); font-weight:600;">-0 needed</span>
+          </div>
+        </div>
+
+        <!-- Resource 2 Stock -->
+        <div class="stockpile-card">
+          <div class="stockpile-header">
+            <span class="stockpile-label" id="stockLabel2">💎 Current Mutant Crystals:</span>
+            <span class="badge-status badge-deficit" id="stockStatus2">Deficit</span>
+          </div>
+          <div class="stock-input-wrap">
+            <input type="text" id="stockInput2" class="stock-input" placeholder="e.g. 10M, 250k, 8,000,000">
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="stockBar2" style="width: 0%;"></div>
+          </div>
+          <div class="stockpile-stat-row">
+            <span>Funded: <strong id="stockPct2">0.0%</strong></span>
+            <span id="stockDeficit2" style="color:var(--text-main); font-weight:600;">-0 needed</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:16px; background:var(--bg-input); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:14px 18px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+        <div style="font-size:0.88rem; color:var(--text-main); font-weight:500; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+          <span>🌾 <strong>Daily Farming Projection</strong>: If your Protein farms generate</span>
+          <input type="text" id="dailyFarmRateInput" style="width:96px; padding:6px 10px; background:var(--bg-surface); border:1px solid var(--border-color); border-radius:4px; color:var(--text-main); font-weight:600; font-family:inherit; text-align:center;" value="1.5M">
+          <span>per day:</span>
+          <button class="preset-chip" id="btnAutoFillFarmYield" style="padding:4px 10px; font-size:0.78rem;">Use Max 4-Farm Output (2.07M/d)</button>
+        </div>
+        <div style="font-weight:600; color:var(--tank-color); font-size:0.95rem;" id="daysRemainingEstimate">
+          Approx. 0 days to fund deficit
+        </div>
+      </div>
+    </section>
+
+    <!-- VISUAL COST ESCALATION CHART -->
+    <section class="card">
+      <div class="card-title">
+        <div class="card-title-left">
+          <span>📈 Visual Cost Escalation Curve</span>
+        </div>
+        <div style="font-size:0.85rem; color:var(--text-muted); font-weight:500;">
+          Hover bars to view single-level costs • Emerald bars indicate active selected range
+        </div>
+      </div>
+      <div class="chart-box">
+        <div class="chart-container" id="chartContainer">
+          <svg class="chart-svg" id="chartSvg"></svg>
+          <div class="chart-tooltip" id="chartTooltip"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LEVEL-BY-LEVEL BREAKDOWN TABLE -->
+    <section class="card">
+      <div class="card-title">
+        <div class="card-title-left">
+          <span>📑 Level-by-Level Detailed Cost Breakdown (Exact Numbers)</span>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button class="preset-chip" id="toggleTableRangeBtn">Show Selected Range Only</button>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Level Upgrade</th>
+              <th id="thRes1">Immune Protein</th>
+              <th>Cum. Protein</th>
+              <th id="thRes2">Mutant Crystals</th>
+              <th>Cum. Crystals</th>
+              <th>Build Time</th>
+              <th>Cum. Time</th>
+              <th>Season XP</th>
+              <th title="Commander profile building power rating added to account total">Building Power</th>
+              <th id="thBenefit">Benefit Gain</th>
+            </tr>
+          </thead>
+          <tbody id="breakdownTableBody"></tbody>
+          <tfoot id="breakdownTableFoot"></tfoot>
+        </table>
+      </div>
+
+      <!-- Share / Export Plan Bar -->
+      <div class="share-bar">
+        <div>
+          <span style="font-size:0.92rem; font-weight:600; color:var(--text-main);">📋 Export Upgrade Plan</span>
+          <span style="font-size:0.85rem; color:var(--text-muted); font-weight:400; margin-left:6px;">
+            Copy a clean Markdown summary for alliance Discord or in-game mail
+          </span>
+        </div>
+        <button class="btn-action" id="copyPlanBtn">
+          <span>📋 Copy Plan Summary</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toastMessage">
+      <span>✅ Plan Summary Copied to Clipboard!</span>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>
+        Last War: Survival Season Building Cumulative Cost Calculator •
+        Data verified from <a href="https://cpt-hedge.com/buildings/tank-base" target="_blank" rel="noopener">cpt-hedge.com</a> •
+        Supports <strong>Tank Base</strong>, <strong>Air Force Base</strong>, <strong>Missile Base</strong>, <strong>Virus Research Institute</strong>, and <strong>Protein Farm</strong>.
+      </p>
+    </footer>
+  </div>
+
+  <script>
+    // Dataset for all 5 Season 1 Buildings
+    const ALL_BUILDING_DATA = {
+  "tank": [
+    {
+      "lvl": 1,
+      "res1": 4200.0,
+      "res2": 4200.0,
+      "sec": 6,
+      "xp": 27000.0,
+      "power": 600.0,
+      "stat": 1.0,
+      "time_str": "00:00:06"
+    },
+    {
+      "lvl": 2,
+      "res1": 16800.0,
+      "res2": 8400.0,
+      "sec": 1125,
+      "xp": 31100.0,
+      "power": 1200.0,
+      "stat": 2.0,
+      "time_str": "00:18:45"
+    },
+    {
+      "lvl": 3,
+      "res1": 33600.0,
+      "res2": 16800.0,
+      "sec": 1688,
+      "xp": 35700.0,
+      "power": 1900.0,
+      "stat": 3.0,
+      "time_str": "00:28:08"
+    },
+    {
+      "lvl": 4,
+      "res1": 67200.0,
+      "res2": 33600.0,
+      "sec": 2532,
+      "xp": 41100.0,
+      "power": 3000.0,
+      "stat": 4.0,
+      "time_str": "00:42:12"
+    },
+    {
+      "lvl": 5,
+      "res1": 134400.0,
+      "res2": 67200.0,
+      "sec": 3797,
+      "xp": 47200.0,
+      "power": 4600.0,
+      "stat": 5.0,
+      "time_str": "01:03:17"
+    },
+    {
+      "lvl": 6,
+      "res1": 188200.0,
+      "res2": 100800.0,
+      "sec": 5696,
+      "xp": 54300.0,
+      "power": 6500.0,
+      "stat": 6.0,
+      "time_str": "01:34:56"
+    },
+    {
+      "lvl": 7,
+      "res1": 244600.0,
+      "res2": 151200.0,
+      "sec": 8543,
+      "xp": 62500.0,
+      "power": 8800.0,
+      "stat": 7.0,
+      "time_str": "02:22:23"
+    },
+    {
+      "lvl": 8,
+      "res1": 293500.0,
+      "res2": 226800.0,
+      "sec": 12815,
+      "xp": 71800.0,
+      "power": 11500.0,
+      "stat": 8.0,
+      "time_str": "03:33:35"
+    },
+    {
+      "lvl": 9,
+      "res1": 352200.0,
+      "res2": 340200.0,
+      "sec": 19222,
+      "xp": 82600.0,
+      "power": 14700.0,
+      "stat": 9.0,
+      "time_str": "05:20:22"
+    },
+    {
+      "lvl": 10,
+      "res1": 422700.0,
+      "res2": 510300.0,
+      "sec": 28833,
+      "xp": 95000.0,
+      "power": 18600.0,
+      "stat": 10.0,
+      "time_str": "08:00:33"
+    },
+    {
+      "lvl": 11,
+      "res1": 507200.0,
+      "res2": 561300.0,
+      "sec": 31716,
+      "xp": 104500.0,
+      "power": 22800.0,
+      "stat": 11.0,
+      "time_str": "08:48:36"
+    },
+    {
+      "lvl": 12,
+      "res1": 608700.0,
+      "res2": 617500.0,
+      "sec": 34888,
+      "xp": 114900.0,
+      "power": 27300.0,
+      "stat": 12.0,
+      "time_str": "09:41:28"
+    },
+    {
+      "lvl": 13,
+      "res1": 730400.0,
+      "res2": 679200.0,
+      "sec": 38377,
+      "xp": 126400.0,
+      "power": 32200.000000000004,
+      "stat": 13.0,
+      "time_str": "10:39:37"
+    },
+    {
+      "lvl": 14,
+      "res1": 876500.0,
+      "res2": 747100.0,
+      "sec": 42214,
+      "xp": 139100.0,
+      "power": 37600.0,
+      "stat": 14.0,
+      "time_str": "11:43:34"
+    },
+    {
+      "lvl": 15,
+      "res1": 1050000.0,
+      "res2": 821800.0,
+      "sec": 46436,
+      "xp": 153000.0,
+      "power": 43500.0,
+      "stat": 15.0,
+      "time_str": "12:53:56"
+    },
+    {
+      "lvl": 16,
+      "res1": 1160000.0,
+      "res2": 904000.0,
+      "sec": 51079,
+      "xp": 168300.0,
+      "power": 49700.0,
+      "stat": 16.0,
+      "time_str": "14:11:19"
+    },
+    {
+      "lvl": 17,
+      "res1": 1270000.0,
+      "res2": 994400.0,
+      "sec": 56187,
+      "xp": 185100.0,
+      "power": 56300.0,
+      "stat": 17.0,
+      "time_str": "15:36:27"
+    },
+    {
+      "lvl": 18,
+      "res1": 1400000.0,
+      "res2": 1090000.0,
+      "sec": 61806,
+      "xp": 203600.0,
+      "power": 63200.0,
+      "stat": 18.0,
+      "time_str": "17:10:06"
+    },
+    {
+      "lvl": 19,
+      "res1": 1540000.0,
+      "res2": 1200000.0,
+      "sec": 67986,
+      "xp": 224000.0,
+      "power": 70500.0,
+      "stat": 19.0,
+      "time_str": "18:53:06"
+    },
+    {
+      "lvl": 20,
+      "res1": 1690000.0,
+      "res2": 1320000.0,
+      "sec": 74785,
+      "xp": 246400.0,
+      "power": 78300.0,
+      "stat": 20.0,
+      "time_str": "20:46:25"
+    },
+    {
+      "lvl": 21,
+      "res1": 1860000.0,
+      "res2": 1390000.0,
+      "sec": 82263,
+      "xp": 258700.0,
+      "power": 86400.0,
+      "stat": 21.0,
+      "time_str": "22:51:03"
+    },
+    {
+      "lvl": 22,
+      "res1": 2049999.9999999998,
+      "res2": 1460000.0,
+      "sec": 90489,
+      "xp": 271600.0,
+      "power": 94900.0,
+      "stat": 22.0,
+      "time_str": "1d 01:08:09"
+    },
+    {
+      "lvl": 23,
+      "res1": 2250000.0,
+      "res2": 1530000.0,
+      "sec": 99538,
+      "xp": 285200.0,
+      "power": 103800.0,
+      "stat": 23.0,
+      "time_str": "1d 03:38:58"
+    },
+    {
+      "lvl": 24,
+      "res1": 2480000.0,
+      "res2": 1610000.0,
+      "sec": 109492,
+      "xp": 299500.0,
+      "power": 113100.0,
+      "stat": 24.0,
+      "time_str": "1d 06:24:52"
+    },
+    {
+      "lvl": 25,
+      "res1": 2730000.0,
+      "res2": 1690000.0,
+      "sec": 120441,
+      "xp": 314400.0,
+      "power": 122900.0,
+      "stat": 25.0,
+      "time_str": "1d 09:27:21"
+    },
+    {
+      "lvl": 26,
+      "res1": 2860000.0,
+      "res2": 1770000.0,
+      "sec": 132485,
+      "xp": 330100.0,
+      "power": 132900.0,
+      "stat": 26.0,
+      "time_str": "1d 12:48:05"
+    },
+    {
+      "lvl": 27,
+      "res1": 3010000.0,
+      "res2": 1860000.0,
+      "sec": 145734,
+      "xp": 346700.0,
+      "power": 143200.0,
+      "stat": 27.0,
+      "time_str": "1d 16:28:54"
+    },
+    {
+      "lvl": 28,
+      "res1": 3160000.0,
+      "res2": 1960000.0,
+      "sec": 160307,
+      "xp": 364000.0,
+      "power": 153800.0,
+      "stat": 28.0,
+      "time_str": "1d 20:31:47"
+    },
+    {
+      "lvl": 29,
+      "res1": 3320000.0,
+      "res2": 2049999.9999999998,
+      "sec": 176338,
+      "xp": 382200.0,
+      "power": 164800.0,
+      "stat": 29.0,
+      "time_str": "2d 00:58:58"
+    },
+    {
+      "lvl": 30,
+      "res1": 3480000.0,
+      "res2": 2160000.0,
+      "sec": 193971,
+      "xp": 401300.0,
+      "power": 176100.0,
+      "stat": 30.0,
+      "time_str": "2d 05:52:51"
+    }
+  ],
+  "air": [
+    {
+      "lvl": 1,
+      "res1": 4200.0,
+      "res2": 4200.0,
+      "sec": 6,
+      "xp": 27000.0,
+      "power": 600.0,
+      "stat": 1.0,
+      "time_str": "00:00:06"
+    },
+    {
+      "lvl": 2,
+      "res1": 16800.0,
+      "res2": 8400.0,
+      "sec": 1125,
+      "xp": 31100.0,
+      "power": 1200.0,
+      "stat": 2.0,
+      "time_str": "00:18:45"
+    },
+    {
+      "lvl": 3,
+      "res1": 33600.0,
+      "res2": 16800.0,
+      "sec": 1688,
+      "xp": 35700.0,
+      "power": 1900.0,
+      "stat": 3.0,
+      "time_str": "00:28:08"
+    },
+    {
+      "lvl": 4,
+      "res1": 67200.0,
+      "res2": 33600.0,
+      "sec": 2532,
+      "xp": 41100.0,
+      "power": 3000.0,
+      "stat": 4.0,
+      "time_str": "00:42:12"
+    },
+    {
+      "lvl": 5,
+      "res1": 134400.0,
+      "res2": 67200.0,
+      "sec": 3797,
+      "xp": 47200.0,
+      "power": 4600.0,
+      "stat": 5.0,
+      "time_str": "01:03:17"
+    },
+    {
+      "lvl": 6,
+      "res1": 188200.0,
+      "res2": 100800.0,
+      "sec": 5696,
+      "xp": 54300.0,
+      "power": 6500.0,
+      "stat": 6.0,
+      "time_str": "01:34:56"
+    },
+    {
+      "lvl": 7,
+      "res1": 244600.0,
+      "res2": 151200.0,
+      "sec": 8543,
+      "xp": 62500.0,
+      "power": 8800.0,
+      "stat": 7.0,
+      "time_str": "02:22:23"
+    },
+    {
+      "lvl": 8,
+      "res1": 293500.0,
+      "res2": 226800.0,
+      "sec": 12815,
+      "xp": 71800.0,
+      "power": 11500.0,
+      "stat": 8.0,
+      "time_str": "03:33:35"
+    },
+    {
+      "lvl": 9,
+      "res1": 352200.0,
+      "res2": 340200.0,
+      "sec": 19222,
+      "xp": 82600.0,
+      "power": 14700.0,
+      "stat": 9.0,
+      "time_str": "05:20:22"
+    },
+    {
+      "lvl": 10,
+      "res1": 422700.0,
+      "res2": 510300.0,
+      "sec": 28833,
+      "xp": 95000.0,
+      "power": 18600.0,
+      "stat": 10.0,
+      "time_str": "08:00:33"
+    },
+    {
+      "lvl": 11,
+      "res1": 507200.0,
+      "res2": 561300.0,
+      "sec": 31716,
+      "xp": 104500.0,
+      "power": 22800.0,
+      "stat": 11.0,
+      "time_str": "08:48:36"
+    },
+    {
+      "lvl": 12,
+      "res1": 608700.0,
+      "res2": 617500.0,
+      "sec": 34888,
+      "xp": 114900.0,
+      "power": 27300.0,
+      "stat": 12.0,
+      "time_str": "09:41:28"
+    },
+    {
+      "lvl": 13,
+      "res1": 730400.0,
+      "res2": 679200.0,
+      "sec": 38377,
+      "xp": 126400.0,
+      "power": 32200.000000000004,
+      "stat": 13.0,
+      "time_str": "10:39:37"
+    },
+    {
+      "lvl": 14,
+      "res1": 876500.0,
+      "res2": 747100.0,
+      "sec": 42214,
+      "xp": 139100.0,
+      "power": 37600.0,
+      "stat": 14.0,
+      "time_str": "11:43:34"
+    },
+    {
+      "lvl": 15,
+      "res1": 1050000.0,
+      "res2": 821800.0,
+      "sec": 46436,
+      "xp": 153000.0,
+      "power": 43500.0,
+      "stat": 15.0,
+      "time_str": "12:53:56"
+    },
+    {
+      "lvl": 16,
+      "res1": 1160000.0,
+      "res2": 904000.0,
+      "sec": 51079,
+      "xp": 168300.0,
+      "power": 49700.0,
+      "stat": 16.0,
+      "time_str": "14:11:19"
+    },
+    {
+      "lvl": 17,
+      "res1": 1270000.0,
+      "res2": 994400.0,
+      "sec": 56187,
+      "xp": 185100.0,
+      "power": 56300.0,
+      "stat": 17.0,
+      "time_str": "15:36:27"
+    },
+    {
+      "lvl": 18,
+      "res1": 1400000.0,
+      "res2": 1090000.0,
+      "sec": 61806,
+      "xp": 203600.0,
+      "power": 63200.0,
+      "stat": 18.0,
+      "time_str": "17:10:06"
+    },
+    {
+      "lvl": 19,
+      "res1": 1540000.0,
+      "res2": 1200000.0,
+      "sec": 67986,
+      "xp": 224000.0,
+      "power": 70500.0,
+      "stat": 19.0,
+      "time_str": "18:53:06"
+    },
+    {
+      "lvl": 20,
+      "res1": 1690000.0,
+      "res2": 1320000.0,
+      "sec": 74785,
+      "xp": 246400.0,
+      "power": 78300.0,
+      "stat": 20.0,
+      "time_str": "20:46:25"
+    },
+    {
+      "lvl": 21,
+      "res1": 1860000.0,
+      "res2": 1390000.0,
+      "sec": 82263,
+      "xp": 258700.0,
+      "power": 86400.0,
+      "stat": 21.0,
+      "time_str": "22:51:03"
+    },
+    {
+      "lvl": 22,
+      "res1": 2049999.9999999998,
+      "res2": 1460000.0,
+      "sec": 90489,
+      "xp": 271600.0,
+      "power": 94900.0,
+      "stat": 22.0,
+      "time_str": "1d 01:08:09"
+    },
+    {
+      "lvl": 23,
+      "res1": 2250000.0,
+      "res2": 1530000.0,
+      "sec": 99538,
+      "xp": 285200.0,
+      "power": 103800.0,
+      "stat": 23.0,
+      "time_str": "1d 03:38:58"
+    },
+    {
+      "lvl": 24,
+      "res1": 2480000.0,
+      "res2": 1610000.0,
+      "sec": 109492,
+      "xp": 299500.0,
+      "power": 113100.0,
+      "stat": 24.0,
+      "time_str": "1d 06:24:52"
+    },
+    {
+      "lvl": 25,
+      "res1": 2730000.0,
+      "res2": 1690000.0,
+      "sec": 120441,
+      "xp": 314400.0,
+      "power": 122900.0,
+      "stat": 25.0,
+      "time_str": "1d 09:27:21"
+    },
+    {
+      "lvl": 26,
+      "res1": 2860000.0,
+      "res2": 1770000.0,
+      "sec": 132485,
+      "xp": 330100.0,
+      "power": 132900.0,
+      "stat": 26.0,
+      "time_str": "1d 12:48:05"
+    },
+    {
+      "lvl": 27,
+      "res1": 3010000.0,
+      "res2": 1860000.0,
+      "sec": 145734,
+      "xp": 346700.0,
+      "power": 143200.0,
+      "stat": 27.0,
+      "time_str": "1d 16:28:54"
+    },
+    {
+      "lvl": 28,
+      "res1": 3160000.0,
+      "res2": 1960000.0,
+      "sec": 160307,
+      "xp": 364000.0,
+      "power": 153800.0,
+      "stat": 28.0,
+      "time_str": "1d 20:31:47"
+    },
+    {
+      "lvl": 29,
+      "res1": 3320000.0,
+      "res2": 2049999.9999999998,
+      "sec": 176338,
+      "xp": 382200.0,
+      "power": 164800.0,
+      "stat": 29.0,
+      "time_str": "2d 00:58:58"
+    },
+    {
+      "lvl": 30,
+      "res1": 3480000.0,
+      "res2": 2160000.0,
+      "sec": 193971,
+      "xp": 401300.0,
+      "power": 176100.0,
+      "stat": 30.0,
+      "time_str": "2d 05:52:51"
+    }
+  ],
+  "missile": [
+    {
+      "lvl": 1,
+      "res1": 4200.0,
+      "res2": 4200.0,
+      "sec": 6,
+      "xp": 27000.0,
+      "power": 600.0,
+      "stat": 1.0,
+      "time_str": "00:00:06"
+    },
+    {
+      "lvl": 2,
+      "res1": 16800.0,
+      "res2": 8400.0,
+      "sec": 1125,
+      "xp": 31100.0,
+      "power": 1200.0,
+      "stat": 2.0,
+      "time_str": "00:18:45"
+    },
+    {
+      "lvl": 3,
+      "res1": 33600.0,
+      "res2": 16800.0,
+      "sec": 1688,
+      "xp": 35700.0,
+      "power": 1900.0,
+      "stat": 3.0,
+      "time_str": "00:28:08"
+    },
+    {
+      "lvl": 4,
+      "res1": 67200.0,
+      "res2": 33600.0,
+      "sec": 2532,
+      "xp": 41100.0,
+      "power": 3000.0,
+      "stat": 4.0,
+      "time_str": "00:42:12"
+    },
+    {
+      "lvl": 5,
+      "res1": 134400.0,
+      "res2": 67200.0,
+      "sec": 3797,
+      "xp": 47200.0,
+      "power": 4600.0,
+      "stat": 5.0,
+      "time_str": "01:03:17"
+    },
+    {
+      "lvl": 6,
+      "res1": 188200.0,
+      "res2": 100800.0,
+      "sec": 5696,
+      "xp": 54300.0,
+      "power": 6500.0,
+      "stat": 6.0,
+      "time_str": "01:34:56"
+    },
+    {
+      "lvl": 7,
+      "res1": 244600.0,
+      "res2": 151200.0,
+      "sec": 8543,
+      "xp": 62500.0,
+      "power": 8800.0,
+      "stat": 7.0,
+      "time_str": "02:22:23"
+    },
+    {
+      "lvl": 8,
+      "res1": 293500.0,
+      "res2": 226800.0,
+      "sec": 12815,
+      "xp": 71800.0,
+      "power": 11500.0,
+      "stat": 8.0,
+      "time_str": "03:33:35"
+    },
+    {
+      "lvl": 9,
+      "res1": 352200.0,
+      "res2": 340200.0,
+      "sec": 19222,
+      "xp": 82600.0,
+      "power": 14700.0,
+      "stat": 9.0,
+      "time_str": "05:20:22"
+    },
+    {
+      "lvl": 10,
+      "res1": 422700.0,
+      "res2": 510300.0,
+      "sec": 28833,
+      "xp": 95000.0,
+      "power": 18600.0,
+      "stat": 10.0,
+      "time_str": "08:00:33"
+    },
+    {
+      "lvl": 11,
+      "res1": 507200.0,
+      "res2": 561300.0,
+      "sec": 31716,
+      "xp": 104500.0,
+      "power": 22800.0,
+      "stat": 11.0,
+      "time_str": "08:48:36"
+    },
+    {
+      "lvl": 12,
+      "res1": 608700.0,
+      "res2": 617500.0,
+      "sec": 34888,
+      "xp": 114900.0,
+      "power": 27300.0,
+      "stat": 12.0,
+      "time_str": "09:41:28"
+    },
+    {
+      "lvl": 13,
+      "res1": 730400.0,
+      "res2": 679200.0,
+      "sec": 38377,
+      "xp": 126400.0,
+      "power": 32200.000000000004,
+      "stat": 13.0,
+      "time_str": "10:39:37"
+    },
+    {
+      "lvl": 14,
+      "res1": 876500.0,
+      "res2": 747100.0,
+      "sec": 42214,
+      "xp": 139100.0,
+      "power": 37600.0,
+      "stat": 14.0,
+      "time_str": "11:43:34"
+    },
+    {
+      "lvl": 15,
+      "res1": 1050000.0,
+      "res2": 821800.0,
+      "sec": 46436,
+      "xp": 153000.0,
+      "power": 43500.0,
+      "stat": 15.0,
+      "time_str": "12:53:56"
+    },
+    {
+      "lvl": 16,
+      "res1": 1160000.0,
+      "res2": 904000.0,
+      "sec": 51079,
+      "xp": 168300.0,
+      "power": 49700.0,
+      "stat": 16.0,
+      "time_str": "14:11:19"
+    },
+    {
+      "lvl": 17,
+      "res1": 1270000.0,
+      "res2": 994400.0,
+      "sec": 56187,
+      "xp": 185100.0,
+      "power": 56300.0,
+      "stat": 17.0,
+      "time_str": "15:36:27"
+    },
+    {
+      "lvl": 18,
+      "res1": 1400000.0,
+      "res2": 1090000.0,
+      "sec": 61806,
+      "xp": 203600.0,
+      "power": 63200.0,
+      "stat": 18.0,
+      "time_str": "17:10:06"
+    },
+    {
+      "lvl": 19,
+      "res1": 1540000.0,
+      "res2": 1200000.0,
+      "sec": 67986,
+      "xp": 224000.0,
+      "power": 70500.0,
+      "stat": 19.0,
+      "time_str": "18:53:06"
+    },
+    {
+      "lvl": 20,
+      "res1": 1690000.0,
+      "res2": 1320000.0,
+      "sec": 74785,
+      "xp": 246400.0,
+      "power": 78300.0,
+      "stat": 20.0,
+      "time_str": "20:46:25"
+    },
+    {
+      "lvl": 21,
+      "res1": 1860000.0,
+      "res2": 1390000.0,
+      "sec": 82263,
+      "xp": 258700.0,
+      "power": 86400.0,
+      "stat": 21.0,
+      "time_str": "22:51:03"
+    },
+    {
+      "lvl": 22,
+      "res1": 2049999.9999999998,
+      "res2": 1460000.0,
+      "sec": 90489,
+      "xp": 271600.0,
+      "power": 94900.0,
+      "stat": 22.0,
+      "time_str": "1d 01:08:09"
+    },
+    {
+      "lvl": 23,
+      "res1": 2250000.0,
+      "res2": 1530000.0,
+      "sec": 99538,
+      "xp": 285200.0,
+      "power": 103800.0,
+      "stat": 23.0,
+      "time_str": "1d 03:38:58"
+    },
+    {
+      "lvl": 24,
+      "res1": 2480000.0,
+      "res2": 1610000.0,
+      "sec": 109492,
+      "xp": 299500.0,
+      "power": 113100.0,
+      "stat": 24.0,
+      "time_str": "1d 06:24:52"
+    },
+    {
+      "lvl": 25,
+      "res1": 2730000.0,
+      "res2": 1690000.0,
+      "sec": 120441,
+      "xp": 314400.0,
+      "power": 122900.0,
+      "stat": 25.0,
+      "time_str": "1d 09:27:21"
+    },
+    {
+      "lvl": 26,
+      "res1": 2860000.0,
+      "res2": 1770000.0,
+      "sec": 132485,
+      "xp": 330100.0,
+      "power": 132900.0,
+      "stat": 26.0,
+      "time_str": "1d 12:48:05"
+    },
+    {
+      "lvl": 27,
+      "res1": 3010000.0,
+      "res2": 1860000.0,
+      "sec": 145734,
+      "xp": 346700.0,
+      "power": 143200.0,
+      "stat": 27.0,
+      "time_str": "1d 16:28:54"
+    },
+    {
+      "lvl": 28,
+      "res1": 3160000.0,
+      "res2": 1960000.0,
+      "sec": 160307,
+      "xp": 364000.0,
+      "power": 153800.0,
+      "stat": 28.0,
+      "time_str": "1d 20:31:47"
+    },
+    {
+      "lvl": 29,
+      "res1": 3320000.0,
+      "res2": 2049999.9999999998,
+      "sec": 176338,
+      "xp": 382200.0,
+      "power": 164800.0,
+      "stat": 29.0,
+      "time_str": "2d 00:58:58"
+    },
+    {
+      "lvl": 30,
+      "res1": 3480000.0,
+      "res2": 2160000.0,
+      "sec": 193971,
+      "xp": 401300.0,
+      "power": 176100.0,
+      "stat": 30.0,
+      "time_str": "2d 05:52:51"
+    }
+  ],
+  "virus": [
+    {
+      "lvl": 1,
+      "res1": 0.0,
+      "res2": 0.0,
+      "sec": 4,
+      "xp": 3600.0,
+      "power": 0.0,
+      "stat": 100.0,
+      "time_str": "00:00:04"
+    },
+    {
+      "lvl": 2,
+      "res1": 5000.0,
+      "res2": 0.0,
+      "sec": 750,
+      "xp": 16560.0,
+      "power": 0.0,
+      "stat": 200.0,
+      "time_str": "00:12:30"
+    },
+    {
+      "lvl": 3,
+      "res1": 15000.0,
+      "res2": 0.0,
+      "sec": 1125,
+      "xp": 19040.0,
+      "power": 0.0,
+      "stat": 300.0,
+      "time_str": "00:18:45"
+    },
+    {
+      "lvl": 4,
+      "res1": 44800.0,
+      "res2": 0.0,
+      "sec": 1688,
+      "xp": 21920.0,
+      "power": 0.0,
+      "stat": 400.0,
+      "time_str": "00:28:08"
+    },
+    {
+      "lvl": 5,
+      "res1": 89600.0,
+      "res2": 0.0,
+      "sec": 2532,
+      "xp": 25200.0,
+      "power": 0.0,
+      "stat": 500.0,
+      "time_str": "00:42:12"
+    },
+    {
+      "lvl": 6,
+      "res1": 125400.0,
+      "res2": 0.0,
+      "sec": 3797,
+      "xp": 28960.0,
+      "power": 0.0,
+      "stat": 750.0,
+      "time_str": "01:03:17"
+    },
+    {
+      "lvl": 7,
+      "res1": 163100.0,
+      "res2": 0.0,
+      "sec": 5696,
+      "xp": 33280.0,
+      "power": 0.0,
+      "stat": 1000.0,
+      "time_str": "01:34:56"
+    },
+    {
+      "lvl": 8,
+      "res1": 195700.0,
+      "res2": 0.0,
+      "sec": 8543,
+      "xp": 38320.0,
+      "power": 0.0,
+      "stat": 1250.0,
+      "time_str": "02:22:23"
+    },
+    {
+      "lvl": 9,
+      "res1": 234800.0,
+      "res2": 0.0,
+      "sec": 12815,
+      "xp": 44080.0,
+      "power": 0.0,
+      "stat": 1500.0,
+      "time_str": "03:33:35"
+    },
+    {
+      "lvl": 10,
+      "res1": 281800.0,
+      "res2": 0.0,
+      "sec": 19222,
+      "xp": 50640.0,
+      "power": 0.0,
+      "stat": 1750.0,
+      "time_str": "05:20:22"
+    },
+    {
+      "lvl": 11,
+      "res1": 338100.0,
+      "res2": 0.0,
+      "sec": 21144,
+      "xp": 55760.0,
+      "power": 0.0,
+      "stat": 2000.0,
+      "time_str": "05:52:24"
+    },
+    {
+      "lvl": 12,
+      "res1": 405800.0,
+      "res2": 0.0,
+      "sec": 23259,
+      "xp": 61280.0,
+      "power": 0.0,
+      "stat": 2250.0,
+      "time_str": "06:27:39"
+    },
+    {
+      "lvl": 13,
+      "res1": 486900.0,
+      "res2": 0.0,
+      "sec": 25585,
+      "xp": 67440.0,
+      "power": 0.0,
+      "stat": 2500.0,
+      "time_str": "07:06:25"
+    },
+    {
+      "lvl": 14,
+      "res1": 584300.0,
+      "res2": 0.0,
+      "sec": 28143,
+      "xp": 74160.0,
+      "power": 0.0,
+      "stat": 2750.0,
+      "time_str": "07:49:03"
+    },
+    {
+      "lvl": 15,
+      "res1": 701200.0,
+      "res2": 0.0,
+      "sec": 30957,
+      "xp": 81600.0,
+      "power": 0.0,
+      "stat": 3000.0,
+      "time_str": "08:35:57"
+    },
+    {
+      "lvl": 16,
+      "res1": 771300.0,
+      "res2": 0.0,
+      "sec": 34053,
+      "xp": 89760.0,
+      "power": 0.0,
+      "stat": 3400.0,
+      "time_str": "09:27:33"
+    },
+    {
+      "lvl": 17,
+      "res1": 848400.0,
+      "res2": 0.0,
+      "sec": 37458,
+      "xp": 98720.0,
+      "power": 0.0,
+      "stat": 3800.0,
+      "time_str": "10:24:18"
+    },
+    {
+      "lvl": 18,
+      "res1": 933300.0,
+      "res2": 0.0,
+      "sec": 41204,
+      "xp": 108560.0,
+      "power": 0.0,
+      "stat": 4200.0,
+      "time_str": "11:26:44"
+    },
+    {
+      "lvl": 19,
+      "res1": 1030000.0,
+      "res2": 0.0,
+      "sec": 45324,
+      "xp": 119440.0,
+      "power": 0.0,
+      "stat": 4600.0,
+      "time_str": "12:35:24"
+    },
+    {
+      "lvl": 20,
+      "res1": 1130000.0,
+      "res2": 0.0,
+      "sec": 49857,
+      "xp": 131360.0,
+      "power": 0.0,
+      "stat": 5000.0,
+      "time_str": "13:50:57"
+    },
+    {
+      "lvl": 21,
+      "res1": 1240000.0,
+      "res2": 0.0,
+      "sec": 54842,
+      "xp": 138000.0,
+      "power": 0.0,
+      "stat": 5500.0,
+      "time_str": "15:14:02"
+    },
+    {
+      "lvl": 22,
+      "res1": 1370000.0,
+      "res2": 0.0,
+      "sec": 60326,
+      "xp": 144880.0,
+      "power": 0.0,
+      "stat": 6000.0,
+      "time_str": "16:45:26"
+    },
+    {
+      "lvl": 23,
+      "res1": 1500000.0,
+      "res2": 0.0,
+      "sec": 66359,
+      "xp": 152080.0,
+      "power": 0.0,
+      "stat": 6500.0,
+      "time_str": "18:25:59"
+    },
+    {
+      "lvl": 24,
+      "res1": 1650000.0,
+      "res2": 0.0,
+      "sec": 72995,
+      "xp": 159680.0,
+      "power": 0.0,
+      "stat": 7000.0,
+      "time_str": "20:16:35"
+    },
+    {
+      "lvl": 25,
+      "res1": 1820000.0,
+      "res2": 0.0,
+      "sec": 80294,
+      "xp": 167680.0,
+      "power": 0.0,
+      "stat": 7500.0,
+      "time_str": "22:18:14"
+    },
+    {
+      "lvl": 26,
+      "res1": 2160000.0,
+      "res2": 0.0,
+      "sec": 88324,
+      "xp": 176080.0,
+      "power": 0.0,
+      "stat": 8000.0,
+      "time_str": "1d 00:32:04"
+    },
+    {
+      "lvl": 27,
+      "res1": 2510000.0,
+      "res2": 0.0,
+      "sec": 97156,
+      "xp": 184880.0,
+      "power": 0.0,
+      "stat": 8500.0,
+      "time_str": "1d 02:59:16"
+    },
+    {
+      "lvl": 28,
+      "res1": 2860000.0,
+      "res2": 0.0,
+      "sec": 106871,
+      "xp": 194160.0,
+      "power": 0.0,
+      "stat": 9000.0,
+      "time_str": "1d 05:41:11"
+    },
+    {
+      "lvl": 29,
+      "res1": 3460000.0,
+      "res2": 0.0,
+      "sec": 117559,
+      "xp": 203840.0,
+      "power": 0.0,
+      "stat": 9500.0,
+      "time_str": "1d 08:39:19"
+    },
+    {
+      "lvl": 30,
+      "res1": 4320000.0,
+      "res2": 0.0,
+      "sec": 129314,
+      "xp": 214000.0,
+      "power": 0.0,
+      "stat": 10000.0,
+      "time_str": "1d 11:55:14"
+    }
+  ],
+  "protein": [
+    {
+      "lvl": 1,
+      "res1": 0.0,
+      "res2": 700.0,
+      "sec": 2,
+      "xp": 3600.0,
+      "power": 100.0,
+      "stat": 720.0,
+      "time_str": "00:00:02"
+    },
+    {
+      "lvl": 2,
+      "res1": 0.0,
+      "res2": 1400.0,
+      "sec": 375,
+      "xp": 4160.0,
+      "power": 200.0,
+      "stat": 1440.0,
+      "time_str": "00:06:15"
+    },
+    {
+      "lvl": 3,
+      "res1": 0.0,
+      "res2": 2800.0,
+      "sec": 563,
+      "xp": 4800.0,
+      "power": 400.0,
+      "stat": 2160.0,
+      "time_str": "00:09:23"
+    },
+    {
+      "lvl": 4,
+      "res1": 0.0,
+      "res2": 5600.0,
+      "sec": 844,
+      "xp": 5440.0,
+      "power": 600.0,
+      "stat": 2880.0,
+      "time_str": "00:14:04"
+    },
+    {
+      "lvl": 5,
+      "res1": 0.0,
+      "res2": 11200.0,
+      "sec": 1266,
+      "xp": 6320.0,
+      "power": 900.0,
+      "stat": 3600.0,
+      "time_str": "00:21:06"
+    },
+    {
+      "lvl": 6,
+      "res1": 0.0,
+      "res2": 16800.0,
+      "sec": 1899,
+      "xp": 7280.0,
+      "power": 1300.0,
+      "stat": 4320.0,
+      "time_str": "00:31:39"
+    },
+    {
+      "lvl": 7,
+      "res1": 0.0,
+      "res2": 25200.0,
+      "sec": 2848,
+      "xp": 8320.0,
+      "power": 1800.0,
+      "stat": 5040.0,
+      "time_str": "00:47:28"
+    },
+    {
+      "lvl": 8,
+      "res1": 0.0,
+      "res2": 37800.0,
+      "sec": 4272,
+      "xp": 9600.0,
+      "power": 2400.0,
+      "stat": 5760.0,
+      "time_str": "01:11:12"
+    },
+    {
+      "lvl": 9,
+      "res1": 0.0,
+      "res2": 56700.0,
+      "sec": 6408,
+      "xp": 11040.0,
+      "power": 3200.0,
+      "stat": 6480.0,
+      "time_str": "01:46:48"
+    },
+    {
+      "lvl": 10,
+      "res1": 0.0,
+      "res2": 85100.0,
+      "sec": 9611,
+      "xp": 12640.0,
+      "power": 4200.0,
+      "stat": 7200.0,
+      "time_str": "02:40:11"
+    },
+    {
+      "lvl": 11,
+      "res1": 0.0,
+      "res2": 93600.0,
+      "sec": 10572,
+      "xp": 13920.0,
+      "power": 5200.0,
+      "stat": 7920.0,
+      "time_str": "02:56:12"
+    },
+    {
+      "lvl": 12,
+      "res1": 0.0,
+      "res2": 102900.0,
+      "sec": 11630,
+      "xp": 15360.0,
+      "power": 6300.0,
+      "stat": 8640.0,
+      "time_str": "03:13:50"
+    },
+    {
+      "lvl": 13,
+      "res1": 0.0,
+      "res2": 113200.0,
+      "sec": 12793,
+      "xp": 16880.0,
+      "power": 7400.0,
+      "stat": 9360.0,
+      "time_str": "03:33:13"
+    },
+    {
+      "lvl": 14,
+      "res1": 0.0,
+      "res2": 124500.0,
+      "sec": 14072,
+      "xp": 18560.0,
+      "power": 8600.0,
+      "stat": 10080.0,
+      "time_str": "03:54:32"
+    },
+    {
+      "lvl": 15,
+      "res1": 0.0,
+      "res2": 137000.0,
+      "sec": 15479,
+      "xp": 20400.0,
+      "power": 9900.0,
+      "stat": 10800.0,
+      "time_str": "04:17:59"
+    },
+    {
+      "lvl": 16,
+      "res1": 0.0,
+      "res2": 150700.0,
+      "sec": 17027,
+      "xp": 22400.0,
+      "power": 11200.0,
+      "stat": 11520.0,
+      "time_str": "04:43:47"
+    },
+    {
+      "lvl": 17,
+      "res1": 0.0,
+      "res2": 165700.0,
+      "sec": 18729,
+      "xp": 24640.0,
+      "power": 12600.0,
+      "stat": 12240.0,
+      "time_str": "05:12:09"
+    },
+    {
+      "lvl": 18,
+      "res1": 0.0,
+      "res2": 182300.0,
+      "sec": 20602,
+      "xp": 27120.0,
+      "power": 14100.0,
+      "stat": 12960.0,
+      "time_str": "05:43:22"
+    },
+    {
+      "lvl": 19,
+      "res1": 0.0,
+      "res2": 200500.0,
+      "sec": 22662,
+      "xp": 29840.0,
+      "power": 15700.0,
+      "stat": 13680.0,
+      "time_str": "06:17:42"
+    },
+    {
+      "lvl": 20,
+      "res1": 0.0,
+      "res2": 220600.0,
+      "sec": 24929,
+      "xp": 32880.0,
+      "power": 17400.0,
+      "stat": 14400.0,
+      "time_str": "06:55:29"
+    },
+    {
+      "lvl": 21,
+      "res1": 0.0,
+      "res2": 231600.0,
+      "sec": 27421,
+      "xp": 34480.0,
+      "power": 19100.0,
+      "stat": 15120.0,
+      "time_str": "07:37:01"
+    },
+    {
+      "lvl": 22,
+      "res1": 0.0,
+      "res2": 243200.0,
+      "sec": 30163,
+      "xp": 36240.0,
+      "power": 20900.0,
+      "stat": 15840.0,
+      "time_str": "08:22:43"
+    },
+    {
+      "lvl": 23,
+      "res1": 0.0,
+      "res2": 255400.0,
+      "sec": 33180,
+      "xp": 38000.0,
+      "power": 22700.0,
+      "stat": 16560.0,
+      "time_str": "09:13:00"
+    },
+    {
+      "lvl": 24,
+      "res1": 0.0,
+      "res2": 268100.0,
+      "sec": 36498,
+      "xp": 39920.0,
+      "power": 24600.0,
+      "stat": 17280.0,
+      "time_str": "10:08:18"
+    },
+    {
+      "lvl": 25,
+      "res1": 0.0,
+      "res2": 281500.0,
+      "sec": 40147,
+      "xp": 41920.0,
+      "power": 26500.0,
+      "stat": 18000.0,
+      "time_str": "11:09:07"
+    },
+    {
+      "lvl": 26,
+      "res1": 0.0,
+      "res2": 295600.0,
+      "sec": 44162,
+      "xp": 44000.0,
+      "power": 28500.0,
+      "stat": 18720.0,
+      "time_str": "12:16:02"
+    },
+    {
+      "lvl": 27,
+      "res1": 0.0,
+      "res2": 310400.0,
+      "sec": 48578,
+      "xp": 46240.0,
+      "power": 30500.0,
+      "stat": 19440.0,
+      "time_str": "13:29:38"
+    },
+    {
+      "lvl": 28,
+      "res1": 0.0,
+      "res2": 325900.0,
+      "sec": 53436,
+      "xp": 48560.0,
+      "power": 32600.0,
+      "stat": 20160.0,
+      "time_str": "14:50:36"
+    },
+    {
+      "lvl": 29,
+      "res1": 0.0,
+      "res2": 342200.0,
+      "sec": 58780,
+      "xp": 50960.0,
+      "power": 34700.0,
+      "stat": 20880.0,
+      "time_str": "16:19:40"
+    },
+    {
+      "lvl": 30,
+      "res1": 0.0,
+      "res2": 359300.0,
+      "sec": 64657,
+      "xp": 53520.0,
+      "power": 36900.0,
+      "stat": 21600.0,
+      "time_str": "17:57:37"
+    }
+  ]
+};
+
+    const BUILDING_META = {
+      tank: { name: 'Tank Base', icon: '🛡️', desc: '+1% Tank Hero HP / ATK / DEF per level (Max +30%)', benefitName: 'Tank Hero Boosts', unit: '%' },
+      air: { name: 'Air Force Base', icon: '✈️', desc: '+1% Aircraft Hero HP / ATK / DEF per level (Max +30%)', benefitName: 'Aircraft Hero Boosts', unit: '%' },
+      missile: { name: 'Missile Base', icon: '🚀', desc: '+1% Missile Hero HP / ATK / DEF per level (Max +30%)', benefitName: 'Missile Hero Boosts', unit: '%' },
+      virus: { name: 'Virus Research Institute', icon: '🔬', desc: '+100 to +10,000 Virus Resistance', benefitName: 'Virus Resistance', unit: ' pts' },
+      protein: { name: 'Protein Farm', icon: '🌾', desc: '+720/h to +21,600/h Protein Output (Per Farm)', benefitName: 'Protein Farm Output', unit: '/h' }
+    };
+
+    // State
+    const state = {
+      selectedBuilding: 'tank',
+      startLevel: 0,
+      targetLevel: 30,
+      farmCount: 4,
+      builders: 1,
+      speedBuff: 100,
+      discount: 0,
+      stock1: 0,
+      stock2: 0,
+      dailyRate: 1500000,
+      tableSelectedOnly: false,
+      ind: {
+        tank: { enabled: true, start: 0, target: 30 },
+        air: { enabled: true, start: 0, target: 20 },
+        missile: { enabled: true, start: 0, target: 10 },
+        virus: { enabled: true, start: 0, target: 30 },
+        protein: { enabled: true, start: 0, target: 30, farms: 4 }
+      }
+    };
+
+    // Compact summary formatter for KPI cards, stockpile, mini-cards, and chart axis
+    function formatNumber(num) {
+      if (num === 0) return '0';
+      if (num >= 1000000) {
+        const m = num / 1000000;
+        return m >= 100 ? m.toFixed(1) + 'M' : m.toFixed(2).replace(/\.00$/, '') + 'M';
+      }
+      if (num >= 1000) {
+        const k = num / 1000;
+        return k >= 100 ? k.toFixed(0) + 'k' : k.toFixed(1).replace(/\.0$/, '') + 'k';
+      }
+      return Math.round(num).toString();
+    }
+
+    // Full exact comma-separated formatter used exclusively in the breakdown table
+    function formatExact(num) {
+      return Math.round(num).toLocaleString('en-US');
+    }
+
+    function formatTime(totalSeconds) {
+      if (totalSeconds <= 0) return '0s';
+      const days = Math.floor(totalSeconds / 86400);
+      const hours = Math.floor((totalSeconds % 86400) / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+
+      const parts = [];
+      if (days > 0) parts.push(`${days}d`);
+      if (hours > 0) parts.push(`${hours}h`);
+      if (minutes > 0) parts.push(`${minutes}m`);
+      if (days === 0 && seconds > 0) parts.push(`${seconds}s`);
+
+      return parts.join(' ') || '0s';
+    }
+
+    function parseNumberInput(valStr) {
+      if (!valStr) return 0;
+      let clean = valStr.toString().trim().toUpperCase().replace(/,/g, '');
+      let mult = 1;
+      if (clean.endsWith('M')) {
+        mult = 1000000;
+        clean = clean.slice(0, -1);
+      } else if (clean.endsWith('K')) {
+        mult = 1000;
+        clean = clean.slice(0, -1);
+      } else if (clean.endsWith('B')) {
+        mult = 1000000000;
+        clean = clean.slice(0, -1);
+      }
+      const num = parseFloat(clean);
+      return isNaN(num) ? 0 : Math.round(num * mult);
+    }
+
+    function calculateRangeForBuilding(bKey, startLvl, targetLvl, mult = 1) {
+      const levels = ALL_BUILDING_DATA[bKey] || ALL_BUILDING_DATA['tank'];
+
+      if (targetLvl <= startLvl) {
+        return { res1: 0, res2: 0, baseSec: 0, buffSec: 0, xp: 0, power: 0, stat: 0, statFinal: 0, breakdown: [] };
+      }
+
+      let res1 = 0;
+      let res2 = 0;
+      let baseSec = 0;
+      let xp = 0;
+      const breakdown = [];
+
+      const discountMult = 1 - (state.discount / 100);
+      const speedMult = 1 + (state.speedBuff / 100);
+
+      let cumRes1 = 0;
+      let cumRes2 = 0;
+      let cumSec = 0;
+      let cumXP = 0;
+
+      for (let lvl = startLvl + 1; lvl <= targetLvl; lvl++) {
+        const item = levels[lvl - 1];
+        const lvlRes1 = item.res1 * discountMult * mult;
+        const lvlRes2 = item.res2 * discountMult * mult;
+        const lvlBaseSec = item.sec * mult;
+        const lvlBuffSec = Math.round(lvlBaseSec / speedMult);
+        const lvlXP = item.xp * mult;
+        const lvlPowerGain = (lvl === 1 ? item.power : (item.power - levels[lvl - 2].power)) * mult;
+        const lvlStatGain = (lvl === 1 ? item.stat : (item.stat - levels[lvl - 2].stat)) * mult;
+
+        res1 += lvlRes1;
+        res2 += lvlRes2;
+        baseSec += lvlBaseSec;
+        xp += lvlXP;
+
+        cumRes1 += lvlRes1;
+        cumRes2 += lvlRes2;
+        cumSec += lvlBuffSec;
+        cumXP += lvlXP;
+
+        breakdown.push({
+          lvl,
+          step: `${lvl - 1} → ${lvl}`,
+          res1: lvlRes1,
+          res2: lvlRes2,
+          cumRes1,
+          cumRes2,
+          baseSec: lvlBaseSec,
+          buffSec: lvlBuffSec,
+          cumSec,
+          xp: lvlXP,
+          cumXP,
+          powerGain: lvlPowerGain,
+          totalPower: item.power * mult,
+          statGain: lvlStatGain,
+          totalStat: item.stat * mult
+        });
+      }
+
+      const targetItem = levels[targetLvl - 1];
+      const startItem = startLvl > 0 ? levels[startLvl - 1] : null;
+
+      const power = (startItem ? (targetItem.power - startItem.power) : targetItem.power) * mult;
+      const stat = (startItem ? (targetItem.stat - startItem.stat) : targetItem.stat) * mult;
+      const statFinal = targetItem.stat * mult;
+      const buffSec = Math.round(baseSec / speedMult);
+
+      return {
+        bKey,
+        res1,
+        res2,
+        baseSec,
+        buffSec,
+        xp,
+        power,
+        stat,
+        statFinal,
+        breakdown
+      };
+    }
+
+    function calculateActive() {
+      const bSel = state.selectedBuilding;
+
+      let totalRes1 = 0;
+      let totalRes2 = 0;
+      let totalBaseSec = 0;
+      let totalBuffSec = 0;
+      let totalXP = 0;
+      let totalPower = 0;
+      let primaryBenefitText = '';
+      let exactBenefitText = '';
+      let activeBreakdown = [];
+
+      if (bSel === 'tank' || bSel === 'air' || bSel === 'missile' || bSel === 'virus' || bSel === 'protein') {
+        const mult = (bSel === 'protein') ? state.farmCount : 1;
+        const res = calculateRangeForBuilding(bSel, state.startLevel, state.targetLevel, mult);
+        totalRes1 = res.res1;
+        totalRes2 = res.res2;
+        totalBaseSec = res.baseSec;
+        totalBuffSec = res.buffSec;
+        totalXP = res.xp;
+        totalPower = res.power;
+        activeBreakdown = res.breakdown;
+
+        const meta = BUILDING_META[bSel];
+        if (bSel === 'virus') {
+          primaryBenefitText = `+${formatNumber(res.stat)}${meta.unit} Virus Resistance`;
+          exactBenefitText = `+${formatExact(res.stat)} pts (${formatExact(res.statFinal)} pts)`;
+        } else if (bSel === 'protein') {
+          primaryBenefitText = `+${formatNumber(res.stat)}${meta.unit} Output (${formatNumber(res.stat * 24)}/day)`;
+          exactBenefitText = `+${formatExact(res.stat)}/h (${formatExact(res.statFinal)}/h)`;
+        } else {
+          primaryBenefitText = `+${res.stat.toFixed(1).replace(/\.0$/, '')}${meta.unit} HP / ATK / DEF`;
+          exactBenefitText = `+${res.stat.toFixed(1).replace(/\.0$/, '')}% (${res.statFinal.toFixed(1).replace(/\.0$/, '')}%)`;
+        }
+      } else if (bSel === 'combat_bases') {
+        // All 3 combat bases
+        const t = calculateRangeForBuilding('tank', state.startLevel, state.targetLevel, 1);
+        const a = calculateRangeForBuilding('air', state.startLevel, state.targetLevel, 1);
+        const m = calculateRangeForBuilding('missile', state.startLevel, state.targetLevel, 1);
+
+        totalRes1 = t.res1 + a.res1 + m.res1;
+        totalRes2 = t.res2 + a.res2 + m.res2;
+        totalBaseSec = t.baseSec + a.baseSec + m.baseSec;
+        totalBuffSec = t.buffSec + a.buffSec + m.buffSec;
+        totalXP = t.xp + a.xp + m.xp;
+        totalPower = t.power + a.power + m.power;
+
+        primaryBenefitText = `Tank, Air & Missile +${t.stat.toFixed(1).replace(/\.0$/, '')}% HP / ATK / DEF`;
+        exactBenefitText = `+${t.stat.toFixed(1).replace(/\.0$/, '')}% each (${t.statFinal.toFixed(1).replace(/\.0$/, '')}%)`;
+
+        activeBreakdown = t.breakdown.map((row) => {
+          return {
+            lvl: row.lvl,
+            step: row.step,
+            res1: row.res1 * 3,
+            res2: row.res2 * 3,
+            cumRes1: row.cumRes1 * 3,
+            cumRes2: row.cumRes2 * 3,
+            baseSec: row.baseSec * 3,
+            buffSec: row.buffSec * 3,
+            cumSec: row.cumSec * 3,
+            xp: row.xp * 3,
+            cumXP: row.cumXP * 3,
+            powerGain: row.powerGain * 3,
+            totalPower: row.totalPower * 3,
+            statGain: row.statGain,
+            totalStat: row.totalStat
+          };
+        });
+      } else if (bSel === 'all_season') {
+        // All 5 Season Buildings
+        const t = calculateRangeForBuilding('tank', state.startLevel, state.targetLevel, 1);
+        const a = calculateRangeForBuilding('air', state.startLevel, state.targetLevel, 1);
+        const m = calculateRangeForBuilding('missile', state.startLevel, state.targetLevel, 1);
+        const v = calculateRangeForBuilding('virus', state.startLevel, state.targetLevel, 1);
+        const p = calculateRangeForBuilding('protein', state.startLevel, state.targetLevel, state.farmCount);
+
+        totalRes1 = t.res1 + a.res1 + m.res1 + v.res1 + p.res1;
+        totalRes2 = t.res2 + a.res2 + m.res2 + v.res2 + p.res2;
+        totalBaseSec = t.baseSec + a.baseSec + m.baseSec + v.baseSec + p.baseSec;
+        totalBuffSec = t.buffSec + a.buffSec + m.buffSec + v.buffSec + p.buffSec;
+        totalXP = t.xp + a.xp + m.xp + v.xp + p.xp;
+        totalPower = t.power + a.power + m.power + v.power + p.power;
+
+        primaryBenefitText = `Resist +${formatNumber(v.stat)} • Output +${formatNumber(p.stat)}/h • Bases +${t.stat.toFixed(1).replace(/\.0$/, '')}%`;
+        exactBenefitText = `Resist +${formatExact(v.stat)} • Output +${formatExact(p.stat)}/h • Bases +${t.stat.toFixed(1).replace(/\.0$/, '')}%`;
+
+        activeBreakdown = t.breakdown.map((row, i) => {
+          const rRes1 = row.res1 * 3 + v.breakdown[i].res1 + p.breakdown[i].res1;
+          const rRes2 = row.res2 * 3 + v.breakdown[i].res2 + p.breakdown[i].res2;
+          const rBuffSec = row.buffSec * 3 + v.breakdown[i].buffSec + p.breakdown[i].buffSec;
+          const rXP = row.xp * 3 + v.breakdown[i].xp + p.breakdown[i].xp;
+          const rPower = row.powerGain * 3 + v.breakdown[i].powerGain + p.breakdown[i].powerGain;
+
+          return {
+            lvl: row.lvl,
+            step: row.step,
+            res1: rRes1,
+            res2: rRes2,
+            cumRes1: (row.cumRes1 * 3) + v.breakdown[i].cumRes1 + p.breakdown[i].cumRes1,
+            cumRes2: (row.cumRes2 * 3) + v.breakdown[i].cumRes2 + p.breakdown[i].cumRes2,
+            baseSec: (row.baseSec * 3) + v.breakdown[i].baseSec + p.breakdown[i].baseSec,
+            buffSec: rBuffSec,
+            cumSec: (row.cumSec * 3) + v.breakdown[i].cumSec + p.breakdown[i].cumSec,
+            xp: rXP,
+            cumXP: (row.cumXP * 3) + v.breakdown[i].cumXP + p.breakdown[i].cumXP,
+            powerGain: rPower,
+            totalPower: (row.totalPower * 3) + v.breakdown[i].totalPower + p.breakdown[i].totalPower,
+            statGain: row.statGain,
+            totalStat: row.totalStat
+          };
+        });
+      } else if (bSel === 'independent') {
+        // Independent Mode across 5 buildings
+        ['tank', 'air', 'missile', 'virus', 'protein'].forEach(k => {
+          if (state.ind[k].enabled) {
+            const mult = (k === 'protein') ? state.ind.protein.farms : 1;
+            const res = calculateRangeForBuilding(k, state.ind[k].start, state.ind[k].target, mult);
+            totalRes1 += res.res1;
+            totalRes2 += res.res2;
+            totalBaseSec += res.baseSec;
+            totalBuffSec += res.buffSec;
+            totalXP += res.xp;
+            totalPower += res.power;
+          }
+        });
+        primaryBenefitText = `Custom Multi-Building Portfolio (5 Buildings)`;
+        exactBenefitText = `Custom Multi-Building Portfolio`;
+      }
+
+      const calendarSec = Math.ceil(totalBuffSec / (state.builders || 1));
+
+      return {
+        totalRes1,
+        totalRes2,
+        totalBaseSec,
+        totalBuffSec,
+        calendarSec,
+        totalXP,
+        totalPower,
+        primaryBenefitText,
+        exactBenefitText,
+        activeBreakdown
+      };
+    }
+
+    // Render View
+    function render() {
+      const res = calculateActive();
+      const bSel = state.selectedBuilding;
+
+      // Pulldown Sync
+      const pulldown = document.getElementById('buildingPulldown');
+      if (pulldown && pulldown.value !== bSel) {
+        pulldown.value = bSel;
+      }
+
+      // Chips sync
+      document.querySelectorAll('.b-chip').forEach(c => {
+        c.className = 'b-chip';
+        if (c.dataset.b === bSel) {
+          if (bSel === 'tank') c.classList.add('active-tank');
+          else if (bSel === 'air') c.classList.add('active-air');
+          else if (bSel === 'missile') c.classList.add('active-missile');
+          else if (bSel === 'virus') c.classList.add('active-virus');
+          else if (bSel === 'protein') c.classList.add('active-protein');
+          else c.classList.add('active-group');
+        }
+      });
+
+      // Show/hide Farm count wrapper
+      const showFarmMult = (bSel === 'protein' || bSel === 'all_season');
+      const farmWrap = document.getElementById('farmMultiplierWrap');
+      if (farmWrap) farmWrap.style.display = showFarmMult ? 'inline-flex' : 'none';
+
+      // Show/hide Unified vs Independent Planner
+      const unifiedCard = document.getElementById('unifiedRangeCard');
+      const indCard = document.getElementById('independentPlannerCard');
+      const btnModeUnified = document.getElementById('btnModeUnified');
+      const btnModeInd = document.getElementById('btnModeIndependent');
+
+      if (bSel === 'independent') {
+        if (unifiedCard) unifiedCard.style.display = 'none';
+        if (indCard) indCard.style.display = 'block';
+        if (btnModeUnified) btnModeUnified.classList.remove('active');
+        if (btnModeInd) btnModeInd.classList.add('active');
+      } else {
+        if (unifiedCard) unifiedCard.style.display = 'block';
+        if (indCard) indCard.style.display = 'none';
+        if (btnModeUnified) btnModeUnified.classList.add('active');
+        if (btnModeInd) btnModeInd.classList.remove('active');
+      }
+
+      // Title & benefit description in Range Card
+      const activeTitle = document.getElementById('activeBuildingTitle');
+      const activeDesc = document.getElementById('activeBuildingBenefit');
+      const kpiBenefitHeader = document.getElementById('kpiBenefitHeaderLabel');
+
+      if (BUILDING_META[bSel]) {
+        const meta = BUILDING_META[bSel];
+        if (activeTitle) activeTitle.textContent = `${meta.icon} ${meta.name} — Level Range & Upgrade Target`;
+        if (activeDesc) activeDesc.textContent = meta.desc;
+        if (kpiBenefitHeader) kpiBenefitHeader.textContent = meta.benefitName;
+      } else if (bSel === 'combat_bases') {
+        if (activeTitle) activeTitle.textContent = `⚡ All 3 Combat Bases (Tank + Air + Missile) — Level Range`;
+        if (activeDesc) activeDesc.textContent = `Combined upgrade for all 3 bases (+30% HP / ATK / DEF each)`;
+        if (kpiBenefitHeader) kpiBenefitHeader.textContent = `Combat Hero Boosts`;
+      } else if (bSel === 'all_season') {
+        if (activeTitle) activeTitle.textContent = `🌐 All 5 Season Buildings Combined — Level Range`;
+        if (activeDesc) activeDesc.textContent = `3 Bases + Virus Institute + Protein Farm (${state.farmCount} Farms)`;
+        if (kpiBenefitHeader) kpiBenefitHeader.textContent = `Total Season Benefits`;
+      } else {
+        if (kpiBenefitHeader) kpiBenefitHeader.textContent = `Custom Portfolio`;
+      }
+
+      // KPI Summary Values (clean compact numbers; exact numbers are in the table only)
+      document.getElementById('kpiRes1Value').textContent = formatNumber(res.totalRes1);
+      document.getElementById('kpiRes1Exact').textContent = state.discount > 0
+        ? `Includes ${state.discount}% resource cost reduction`
+        : 'Cumulative Immune Protein cost';
+
+      document.getElementById('kpiRes2Value').textContent = formatNumber(res.totalRes2);
+      document.getElementById('kpiRes2Exact').textContent = state.discount > 0
+        ? `Includes ${state.discount}% resource cost reduction`
+        : 'Cumulative Mutant Crystals cost';
+
+      document.getElementById('kpiTimeBuffed').textContent = formatTime(res.calendarSec);
+      const timeSaved = Math.max(0, res.totalBaseSec - res.calendarSec);
+      document.getElementById('kpiTimeSubtext').textContent = 
+        `Base: ${formatTime(res.totalBaseSec)} • Saved: ${formatTime(timeSaved)} (${state.builders} Queue${state.builders > 1 ? 's' : ''})`;
+
+      document.getElementById('kpiXPValue').textContent = formatNumber(res.totalXP);
+      document.getElementById('kpiXPExact').textContent = 'Season pass & milestone XP';
+
+      document.getElementById('kpiPowerValue').textContent = '+' + formatNumber(res.totalPower);
+      document.getElementById('kpiPowerExact').textContent = 'Profile power score (not hero CP)';
+
+      document.getElementById('kpiStatsValue').textContent = res.primaryBenefitText;
+      document.getElementById('kpiStatsSubtext').textContent = (bSel === 'virus') ? 'Reduces troop poison losses on zombie tiles' : 
+        (bSel === 'protein') ? 'Harvested from seasonal farm grounds' : 'Hero & building rating stats';
+
+      // Update Independent Cards mini-KPIs
+      updateIndependentMiniKPIs();
+
+      // Stockpile
+      renderStockpile(res.totalRes1, res.totalRes2);
+
+      // Table (Full, Exact Numbers Only)
+      renderTable(res);
+
+      // Chart
+      renderChart();
+    }
+
+    function updateIndependentMiniKPIs() {
+      ['tank', 'air', 'missile', 'virus', 'protein'].forEach(k => {
+        const mult = (k === 'protein') ? state.ind.protein.farms : 1;
+        const mini = calculateRangeForBuilding(k, state.ind[k].start, state.ind[k].target, mult);
+        const meta = BUILDING_META[k];
+
+        const elRes1 = document.getElementById(`indMiniRes1_${k}`);
+        const elRes2 = document.getElementById(`indMiniRes2_${k}`);
+        const elTime = document.getElementById(`indMiniTime_${k}`);
+        const elStat = document.getElementById(`indMiniStat_${k}`);
+
+        if (elRes1) elRes1.textContent = formatNumber(mini.res1);
+        if (elRes2) elRes2.textContent = formatNumber(mini.res2);
+        if (elTime) elTime.textContent = formatTime(mini.buffSec);
+        if (elStat) {
+          if (k === 'virus') elStat.textContent = `+${formatNumber(mini.stat)}`;
+          else if (k === 'protein') elStat.textContent = `+${formatNumber(mini.stat)}/h`;
+          else elStat.textContent = `+${mini.stat.toFixed(1).replace(/\.0$/, '')}${meta.unit}`;
+        }
+      });
+    }
+
+    function renderStockpile(needed1, needed2) {
+      const stock1 = state.stock1;
+      const stock2 = state.stock2;
+
+      // Res 1: Immune Protein
+      const pct1 = needed1 > 0 ? Math.min(100, (stock1 / needed1) * 100) : 100;
+      const deficit1 = Math.max(0, needed1 - stock1);
+      const surplus1 = Math.max(0, stock1 - needed1);
+
+      const stockBar1 = document.getElementById('stockBar1');
+      if (stockBar1) stockBar1.style.width = pct1.toFixed(1) + '%';
+      const stockPct1 = document.getElementById('stockPct1');
+      if (stockPct1) stockPct1.textContent = pct1.toFixed(1) + '%';
+
+      const status1El = document.getElementById('stockStatus1');
+      const def1El = document.getElementById('stockDeficit1');
+      if (status1El && def1El) {
+        if (deficit1 > 0) {
+          status1El.className = 'badge-status badge-deficit';
+          status1El.textContent = 'Deficit';
+          def1El.textContent = `-${formatNumber(deficit1)} needed`;
+        } else {
+          status1El.className = 'badge-status badge-surplus';
+          status1El.textContent = 'Ready';
+          def1El.textContent = `+${formatNumber(surplus1)} surplus`;
+        }
+      }
+
+      // Res 2: Mutant Crystals
+      const pct2 = needed2 > 0 ? Math.min(100, (stock2 / needed2) * 100) : 100;
+      const deficit2 = Math.max(0, needed2 - stock2);
+      const surplus2 = Math.max(0, stock2 - needed2);
+
+      const stockBar2 = document.getElementById('stockBar2');
+      if (stockBar2) stockBar2.style.width = pct2.toFixed(1) + '%';
+      const stockPct2 = document.getElementById('stockPct2');
+      if (stockPct2) stockPct2.textContent = pct2.toFixed(1) + '%';
+
+      const status2El = document.getElementById('stockStatus2');
+      const def2El = document.getElementById('stockDeficit2');
+      if (status2El && def2El) {
+        if (deficit2 > 0) {
+          status2El.className = 'badge-status badge-deficit';
+          status2El.textContent = 'Deficit';
+          def2El.textContent = `-${formatNumber(deficit2)} needed`;
+        } else {
+          status2El.className = 'badge-status badge-surplus';
+          status2El.textContent = 'Ready';
+          def2El.textContent = `+${formatNumber(surplus2)} surplus`;
+        }
+      }
+
+      // Daily estimate
+      const daysNotice = document.getElementById('daysRemainingEstimate');
+      if (daysNotice) {
+        if (deficit1 > 0 && state.dailyRate > 0) {
+          const days = Math.ceil(deficit1 / state.dailyRate);
+          daysNotice.textContent = `Approx. ${days} day${days > 1 ? 's' : ''} to fund deficit`;
+        } else if (deficit1 === 0 && deficit2 === 0) {
+          daysNotice.textContent = `🎉 100% Stockpiled & Ready to Upgrade!`;
+        } else {
+          daysNotice.textContent = `Funded for current targets`;
+        }
+      }
+    }
+
+    function renderTable(res) {
+      const tbody = document.getElementById('breakdownTableBody');
+      const tfoot = document.getElementById('breakdownTableFoot');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+      if (tfoot) tfoot.innerHTML = '';
+
+      const bSel = state.selectedBuilding;
+      const activeMin = state.startLevel + 1;
+      const activeMax = state.targetLevel;
+
+      const thBenefit = document.getElementById('thBenefit');
+      if (thBenefit) {
+        if (bSel === 'virus') thBenefit.textContent = 'Virus Resistance';
+        else if (bSel === 'protein') thBenefit.textContent = 'Protein Output';
+        else thBenefit.textContent = 'Benefit Gain';
+      }
+
+      if (bSel === 'independent') {
+        tbody.innerHTML = `<tr><td colspan="10" style="text-align:center; padding:20px; color:var(--text-muted); font-weight:500;">Table breakdown displays when a specific building or group is selected in the pulldown above.</td></tr>`;
+        return;
+      }
+
+      const speedMult = 1 + (state.speedBuff / 100);
+      const discountMult = 1 - (state.discount / 100);
+      const tankLevels = ALL_BUILDING_DATA['tank'];
+      const virusLevels = ALL_BUILDING_DATA['virus'];
+      const proteinLevels = ALL_BUILDING_DATA['protein'];
+
+      // Build full 30-level dataset for current selection
+      const fullRows = [];
+      for (let i = 0; i < 30; i++) {
+        const lvl = i + 1;
+        let lvlRes1 = 0, lvlRes2 = 0, lvlBaseSec = 0, lvlBuffSec = 0, lvlXP = 0, lvlPowerGain = 0;
+        let statColText = '';
+
+        if (bSel === 'all_season') {
+          const tItem = tankLevels[i];
+          const vItem = virusLevels[i];
+          const pItem = proteinLevels[i];
+          const fMult = state.farmCount;
+
+          lvlRes1 = (tItem.res1 * 3 + vItem.res1 + pItem.res1 * fMult) * discountMult;
+          lvlRes2 = (tItem.res2 * 3 + vItem.res2 + pItem.res2 * fMult) * discountMult;
+          lvlBaseSec = tItem.sec * 3 + vItem.sec + pItem.sec * fMult;
+          lvlBuffSec = Math.round((tItem.sec * 3) / speedMult) + Math.round(vItem.sec / speedMult) + Math.round((pItem.sec * fMult) / speedMult);
+          lvlXP = tItem.xp * 3 + vItem.xp + pItem.xp * fMult;
+
+          const tPow = i === 0 ? tItem.power : (tItem.power - tankLevels[i - 1].power);
+          const vPow = i === 0 ? vItem.power : (vItem.power - virusLevels[i - 1].power);
+          const pPow = i === 0 ? pItem.power : (pItem.power - proteinLevels[i - 1].power);
+          lvlPowerGain = tPow * 3 + vPow + pPow * fMult;
+
+          const vStatGain = i === 0 ? vItem.stat : (vItem.stat - virusLevels[i - 1].stat);
+          const pStatGain = (i === 0 ? pItem.stat : (pItem.stat - proteinLevels[i - 1].stat)) * fMult;
+          statColText = `+1% Bases • +${formatExact(vStatGain)} Resist • +${formatExact(pStatGain)}/h`;
+        } else {
+          const rawLevels = ALL_BUILDING_DATA[bSel] || tankLevels;
+          const item = rawLevels[i];
+          const mult = (bSel === 'protein') ? state.farmCount : ((bSel === 'combat_bases') ? 3 : 1);
+
+          lvlRes1 = item.res1 * discountMult * mult;
+          lvlRes2 = item.res2 * discountMult * mult;
+          lvlBaseSec = item.sec * mult;
+          lvlBuffSec = Math.round(lvlBaseSec / speedMult);
+          lvlXP = item.xp * mult;
+          lvlPowerGain = (i === 0 ? item.power : (item.power - rawLevels[i - 1].power)) * mult;
+
+          const singleStatGain = i === 0 ? item.stat : (item.stat - rawLevels[i - 1].stat);
+          if (bSel === 'virus') {
+            statColText = `+${formatExact(singleStatGain)} (${formatExact(item.stat)} pts)`;
+          } else if (bSel === 'protein') {
+            statColText = `+${formatExact(singleStatGain * mult)}/h (${formatExact(item.stat * mult)}/h)`;
+          } else {
+            statColText = `+${singleStatGain.toFixed(1).replace(/\.0$/, '')}% (${item.stat.toFixed(1).replace(/\.0$/, '')}%)`;
+          }
+        }
+
+        fullRows.push({
+          lvl,
+          lvlRes1,
+          lvlRes2,
+          lvlBuffSec,
+          lvlXP,
+          lvlPowerGain,
+          statColText
+        });
+      }
+
+      const displayRows = state.tableSelectedOnly
+        ? fullRows.filter(r => r.lvl >= activeMin && r.lvl <= activeMax)
+        : fullRows;
+
+      if (displayRows.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="10" style="text-align:center; padding:20px; color:var(--text-muted); font-weight:500;">No upgrades selected in this range.</td></tr>`;
+        return;
+      }
+
+      let runRes1 = 0;
+      let runRes2 = 0;
+      let runSec = 0;
+      let runXP = 0;
+
+      displayRows.forEach(row => {
+        const lvl = row.lvl;
+        const inActive = (lvl >= activeMin && lvl <= activeMax);
+        const isMilestone = (lvl % 5 === 0);
+
+        runRes1 += row.lvlRes1;
+        runRes2 += row.lvlRes2;
+        runSec += row.lvlBuffSec;
+        runXP += row.lvlXP;
+
+        const tr = document.createElement('tr');
+        if (inActive) tr.classList.add('in-range');
+
+        tr.innerHTML = `
+          <td class="${isMilestone ? 'td-milestone' : 'td-lvl'}">
+            ${isMilestone ? '★ ' : ''}Lvl ${lvl - 1} → ${lvl}
+          </td>
+          <td style="color:var(--res1-color); font-weight:500;">${formatExact(row.lvlRes1)}</td>
+          <td class="td-cum">${formatExact(runRes1)}</td>
+          <td style="color:var(--res2-color); font-weight:500;">${formatExact(row.lvlRes2)}</td>
+          <td class="td-cum">${formatExact(runRes2)}</td>
+          <td style="color:var(--cyan); font-weight:500;">${formatTime(row.lvlBuffSec)}</td>
+          <td class="td-cum">${formatTime(runSec)}</td>
+          <td style="color:var(--gold); font-weight:500;">${formatExact(row.lvlXP)}</td>
+          <td style="font-weight:500;">+${formatExact(row.lvlPowerGain)}</td>
+          <td style="font-weight:500;">${row.statColText}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      // Render exact total row in tfoot for the selected range
+      if (tfoot) {
+        tfoot.innerHTML = `
+          <tr>
+            <td style="text-align:left;">Total (Lvl ${state.startLevel} → ${state.targetLevel})</td>
+            <td style="color:var(--res1-color);">${formatExact(res.totalRes1)}</td>
+            <td style="color:var(--res1-color);">${formatExact(res.totalRes1)}</td>
+            <td style="color:var(--res2-color);">${formatExact(res.totalRes2)}</td>
+            <td style="color:var(--res2-color);">${formatExact(res.totalRes2)}</td>
+            <td style="color:var(--cyan);">${formatTime(res.calendarSec)}</td>
+            <td style="color:var(--cyan);">${formatTime(res.totalBuffSec)}</td>
+            <td style="color:var(--gold);">${formatExact(res.totalXP)}</td>
+            <td>+${formatExact(res.totalPower)}</td>
+            <td>${res.exactBenefitText}</td>
+          </tr>
+        `;
+      }
+    }
+
+    function renderChart() {
+      const svg = document.getElementById('chartSvg');
+      const container = document.getElementById('chartContainer');
+      const tooltip = document.getElementById('chartTooltip');
+      if (!svg || !container || !tooltip) return;
+
+      const width = container.clientWidth || 800;
+      const height = 240;
+      svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+      svg.innerHTML = '';
+
+      const paddingLeft = 48;
+      const paddingRight = 20;
+      const paddingTop = 20;
+      const paddingBottom = 30;
+
+      const chartW = width - paddingLeft - paddingRight;
+      const chartH = height - paddingTop - paddingBottom;
+
+      const bSel = state.selectedBuilding;
+      const levels = (bSel === 'independent' || bSel === 'combat_bases' || bSel === 'all_season') ? ALL_BUILDING_DATA['tank'] : ALL_BUILDING_DATA[bSel];
+
+      const mult = (bSel === 'protein') ? state.farmCount : 1;
+      const maxVal = Math.max(...levels.map(l => Math.max(l.res1 * mult, l.res2 * mult)));
+      const barW = Math.max(4, (chartW / levels.length) - 4);
+
+      // Detect active theme
+      const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+      const isLight = currentTheme === 'light' || 
+        (currentTheme === 'system' && window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches);
+
+      const gridStroke = isLight ? 'rgba(15, 23, 42, 0.12)' : 'rgba(255, 255, 255, 0.14)';
+      const textFill = isLight ? '#334155' : '#cbd5e1';
+      const unselectedBarFill = isLight ? 'rgba(100, 116, 139, 0.22)' : 'rgba(255, 255, 255, 0.18)';
+      const activeBarFill = '#10b981';
+
+      // Draw Grid
+      [0, 0.25, 0.5, 0.75, 1].forEach(pct => {
+        const y = paddingTop + chartH - (pct * chartH);
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', paddingLeft);
+        line.setAttribute('x2', width - paddingRight);
+        line.setAttribute('y1', y);
+        line.setAttribute('y2', y);
+        line.setAttribute('stroke', gridStroke);
+        line.setAttribute('stroke-dasharray', '3 3');
+        svg.appendChild(line);
+
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', paddingLeft - 8);
+        text.setAttribute('y', y + 4);
+        text.setAttribute('fill', textFill);
+        text.setAttribute('font-size', '11px');
+        text.setAttribute('font-weight', '600');
+        text.setAttribute('text-anchor', 'end');
+        text.textContent = formatNumber(pct * maxVal);
+        svg.appendChild(text);
+      });
+
+      levels.forEach((l, i) => {
+        const x = paddingLeft + (i * (chartW / levels.length)) + 2;
+        const costVal = Math.max(l.res1, l.res2) * mult;
+        const barH = maxVal > 0 ? (costVal / maxVal) * chartH : 0;
+        const y = paddingTop + chartH - barH;
+
+        let inRange = true;
+        if (state.selectedBuilding !== 'independent') {
+          inRange = (l.lvl > state.startLevel && l.lvl <= state.targetLevel);
+        }
+
+        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        rect.setAttribute('x', x);
+        rect.setAttribute('y', y);
+        rect.setAttribute('width', barW);
+        rect.setAttribute('height', Math.max(2, barH));
+        rect.setAttribute('rx', '2');
+        rect.setAttribute('fill', inRange ? activeBarFill : unselectedBarFill);
+        rect.setAttribute('opacity', inRange ? '0.95' : '0.45');
+        rect.style.cursor = 'pointer';
+
+        rect.addEventListener('mouseenter', () => {
+          rect.setAttribute('fill', '#f59e0b');
+          tooltip.style.display = 'block';
+          tooltip.style.background = isLight ? '#ffffff' : '#0f192d';
+          tooltip.style.color = isLight ? '#0f172a' : '#ffffff';
+          tooltip.style.borderColor = isLight ? '#b45309' : '#fbbf24';
+          tooltip.innerHTML = `
+            <strong>Level ${l.lvl}</strong><br>
+            Protein: ${formatNumber(l.res1 * mult)}<br>
+            Crystals: ${formatNumber(l.res2 * mult)}<br>
+            Time: ${l.time_str}
+          `;
+          tooltip.style.left = (x - 20) + 'px';
+          tooltip.style.top = Math.max(10, y - 60) + 'px';
+        });
+
+        rect.addEventListener('mouseleave', () => {
+          rect.setAttribute('fill', inRange ? activeBarFill : unselectedBarFill);
+          tooltip.style.display = 'none';
+        });
+
+        svg.appendChild(rect);
+
+        if (l.lvl % 5 === 0 || l.lvl === 1) {
+          const xText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          xText.setAttribute('x', x + barW / 2);
+          xText.setAttribute('y', height - 8);
+          xText.setAttribute('fill', l.lvl % 10 === 0 ? 'var(--tank-color)' : textFill);
+          xText.setAttribute('font-size', '11px');
+          xText.setAttribute('font-weight', l.lvl % 10 === 0 ? '700' : '500');
+          xText.setAttribute('text-anchor', 'middle');
+          xText.textContent = l.lvl;
+          svg.appendChild(xText);
+        }
+      });
+    }
+
+    function copyPlan() {
+      const res = calculateActive();
+      const bSel = state.selectedBuilding;
+
+      let bName = 'Season Building';
+      if (BUILDING_META[bSel]) {
+        bName = BUILDING_META[bSel].name;
+        if (bSel === 'protein') bName += ` (${state.farmCount} Farms)`;
+      } else if (bSel === 'combat_bases') {
+        bName = 'All 3 Combat Bases (Tank + Air + Missile)';
+      } else if (bSel === 'all_season') {
+        bName = `All 5 Season Buildings (3 Bases + Virus Inst. + ${state.farmCount} Farms)`;
+      } else {
+        bName = 'Independent 5-Building Portfolio';
+      }
+
+      const rangeStr = (bSel === 'independent') ? 'Multi-Level Plan' : `Lvl ${state.startLevel} → ${state.targetLevel}`;
+
+      const text = `🎖️ **[LAST WAR: SURVIVAL] SEASON UPGRADE PLAN**
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🏛️ **Building**: ${bName} (${rangeStr})
+🧪 **Total Immune Protein**: ${formatExact(res.totalRes1)} (${formatNumber(res.totalRes1)})
+💎 **Total Mutant Crystals**: ${formatExact(res.totalRes2)} (${formatNumber(res.totalRes2)})
+⏱️ **Build Duration**: ${formatTime(res.calendarSec)} (Buff: +${state.speedBuff}%, ${state.builders} Queue${state.builders > 1 ? 's' : ''})
+⭐ **Season XP**: +${formatExact(res.totalXP)} XP
+⚡ **Building Power Score**: +${formatExact(res.totalPower)}
+🎯 **Benefit**: ${res.primaryBenefitText}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📊 *Calculated via Last War Season Building Calculator*`;
+
+      navigator.clipboard.writeText(text).then(() => {
+        const toast = document.getElementById('toastMessage');
+        if (toast) {
+          toast.classList.add('show');
+          setTimeout(() => toast.classList.remove('show'), 2500);
+        }
+      }).catch(() => {
+        prompt("Copy this plan:", text);
+      });
+    }
+
+    // Theme Management Engine
+    function applyTheme(themeMode) {
+      document.documentElement.setAttribute('data-theme', themeMode);
+      try {
+        localStorage.setItem('lastwar_theme', themeMode);
+      } catch (e) {}
+
+      document.querySelectorAll('.theme-pill-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.themeVal === themeMode);
+      });
+
+      renderChart();
+    }
+
+    // Main App Initialization
+    function initApp() {
+      // Theme Selector Buttons
+      document.querySelectorAll('.theme-pill-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          applyTheme(btn.dataset.themeVal);
+        });
+      });
+
+      // Load theme from storage (default: system)
+      let savedTheme = 'system';
+      try {
+        savedTheme = localStorage.getItem('lastwar_theme') || 'system';
+      } catch (e) {}
+      applyTheme(savedTheme);
+
+      // Listen for OS scheme change if in system mode
+      if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+          if (document.documentElement.getAttribute('data-theme') === 'system') {
+            renderChart();
+          }
+        });
+      }
+
+      // Pulldown change
+      const pulldown = document.getElementById('buildingPulldown');
+      if (pulldown) {
+        pulldown.addEventListener('change', (e) => {
+          state.selectedBuilding = e.target.value;
+          render();
+        });
+      }
+
+      // Chips click
+      document.querySelectorAll('.b-chip').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.selectedBuilding = btn.dataset.b;
+          render();
+        });
+      });
+
+      // Farm count buttons
+      document.querySelectorAll('.farm-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.farm-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          state.farmCount = parseInt(btn.dataset.farms);
+          render();
+        });
+      });
+
+      // Mode Pill Tabs
+      const btnModeUnified = document.getElementById('btnModeUnified');
+      if (btnModeUnified) {
+        btnModeUnified.addEventListener('click', () => {
+          if (state.selectedBuilding === 'independent') state.selectedBuilding = 'tank';
+          render();
+        });
+      }
+      const btnModeInd = document.getElementById('btnModeIndependent');
+      if (btnModeInd) {
+        btnModeInd.addEventListener('click', () => {
+          state.selectedBuilding = 'independent';
+          render();
+        });
+      }
+
+      // Range Steppers & Sliders
+      const startIn = document.getElementById('startLevelInput');
+      const targetIn = document.getElementById('targetLevelInput');
+      const startSl = document.getElementById('startLevelSlider');
+      const targetSl = document.getElementById('targetLevelSlider');
+
+      function updateRange(newStart, newTarget) {
+        newStart = Math.max(0, Math.min(29, parseInt(newStart) || 0));
+        newTarget = Math.max(1, Math.min(30, parseInt(newTarget) || 1));
+        if (newStart >= newTarget) {
+          if (newStart >= 29) newStart = 29;
+          newTarget = Math.min(30, newStart + 1);
+        }
+        state.startLevel = newStart;
+        state.targetLevel = newTarget;
+
+        if (startIn) startIn.value = newStart;
+        if (targetIn) targetIn.value = newTarget;
+        if (startSl) startSl.value = newStart;
+        if (targetSl) targetSl.value = newTarget;
+
+        // Highlight active preset chip if matching
+        document.querySelectorAll('.presets-row button[data-start]').forEach(b => {
+          const isMatch = parseInt(b.dataset.start) === newStart && parseInt(b.dataset.target) === newTarget;
+          b.classList.toggle('active', isMatch);
+        });
+
+        render();
+      }
+
+      // Inputs & Sliders Event Listeners (both 'input' and 'change' for instant updates)
+      if (startIn) {
+        startIn.addEventListener('input', () => updateRange(startIn.value, state.targetLevel));
+        startIn.addEventListener('change', () => updateRange(startIn.value, state.targetLevel));
+      }
+      if (targetIn) {
+        targetIn.addEventListener('input', () => updateRange(state.startLevel, targetIn.value));
+        targetIn.addEventListener('change', () => updateRange(state.startLevel, targetIn.value));
+      }
+      if (startSl) {
+        startSl.addEventListener('input', () => updateRange(startSl.value, state.targetLevel));
+        startSl.addEventListener('change', () => updateRange(startSl.value, state.targetLevel));
+      }
+      if (targetSl) {
+        targetSl.addEventListener('input', () => updateRange(state.startLevel, targetSl.value));
+        targetSl.addEventListener('change', () => updateRange(state.startLevel, targetSl.value));
+      }
+
+      // Stepper +/- Buttons
+      const startMinusBtn = document.getElementById('startMinusBtn');
+      if (startMinusBtn) startMinusBtn.addEventListener('click', () => updateRange(state.startLevel - 1, state.targetLevel));
+      const startPlusBtn = document.getElementById('startPlusBtn');
+      if (startPlusBtn) startPlusBtn.addEventListener('click', () => updateRange(state.startLevel + 1, state.targetLevel));
+      const targetMinusBtn = document.getElementById('targetMinusBtn');
+      if (targetMinusBtn) targetMinusBtn.addEventListener('click', () => updateRange(state.startLevel, state.targetLevel - 1));
+      const targetPlusBtn = document.getElementById('targetPlusBtn');
+      if (targetPlusBtn) targetPlusBtn.addEventListener('click', () => updateRange(state.startLevel, state.targetLevel + 1));
+
+      // Range Presets
+      document.querySelectorAll('.presets-row button[data-start]').forEach(b => {
+        b.addEventListener('click', () => updateRange(parseInt(b.dataset.start), parseInt(b.dataset.target)));
+      });
+      const btnNextLevel = document.getElementById('btnNextLevel');
+      if (btnNextLevel) btnNextLevel.addEventListener('click', () => updateRange(state.startLevel, Math.min(30, state.startLevel + 1)));
+      const btnPlusFive = document.getElementById('btnPlusFive');
+      if (btnPlusFive) btnPlusFive.addEventListener('click', () => updateRange(state.startLevel, Math.min(30, state.startLevel + 5)));
+
+      // Independent 5-Building Inputs
+      ['tank', 'air', 'missile', 'virus', 'protein'].forEach(k => {
+        const chk = document.getElementById(`indCheck_${k}`);
+        const sIn = document.getElementById(`indStart_${k}`);
+        const tIn = document.getElementById(`indTarget_${k}`);
+        const card = document.getElementById(`indCard_${k}`);
+        const badge = document.getElementById(`indBadge_${k}`);
+
+        if (chk) {
+          chk.addEventListener('change', () => {
+            state.ind[k].enabled = chk.checked;
+            if (card) card.classList.toggle(`${k}-active`, chk.checked);
+            if (badge) {
+              badge.textContent = chk.checked ? 'Active' : 'Off';
+              badge.className = chk.checked ? 'badge badge-gold' : 'badge';
+            }
+            render();
+          });
+        }
+
+        if (sIn) {
+          const onStartChange = () => {
+            let val = Math.max(0, Math.min(29, parseInt(sIn.value) || 0));
+            if (val >= state.ind[k].target) {
+              state.ind[k].target = Math.min(30, val + 1);
+              if (tIn) tIn.value = state.ind[k].target;
+            }
+            state.ind[k].start = val;
+            render();
+          };
+          sIn.addEventListener('input', onStartChange);
+          sIn.addEventListener('change', onStartChange);
+        }
+
+        if (tIn) {
+          const onTargetChange = () => {
+            let val = Math.max(1, Math.min(30, parseInt(tIn.value) || 1));
+            if (val <= state.ind[k].start) {
+              state.ind[k].start = Math.max(0, val - 1);
+              if (sIn) sIn.value = state.ind[k].start;
+            }
+            state.ind[k].target = val;
+            render();
+          };
+          tIn.addEventListener('input', onTargetChange);
+          tIn.addEventListener('change', onTargetChange);
+        }
+      });
+
+      const indFarmSel = document.getElementById('indFarmCountSelect');
+      if (indFarmSel) {
+        indFarmSel.addEventListener('change', (e) => {
+          state.ind.protein.farms = parseInt(e.target.value) || 1;
+          render();
+        });
+      }
+
+      const btnSetAllIndMax = document.getElementById('btnSetAllIndMax');
+      if (btnSetAllIndMax) {
+        btnSetAllIndMax.addEventListener('click', () => {
+          ['tank', 'air', 'missile', 'virus', 'protein'].forEach(k => {
+            state.ind[k].start = 0;
+            state.ind[k].target = 30;
+            state.ind[k].enabled = true;
+            const s = document.getElementById(`indStart_${k}`);
+            const t = document.getElementById(`indTarget_${k}`);
+            const c = document.getElementById(`indCheck_${k}`);
+            if (s) s.value = 0;
+            if (t) t.value = 30;
+            if (c) c.checked = true;
+          });
+          render();
+        });
+      }
+
+      const btnResetAllInd = document.getElementById('btnResetAllInd');
+      if (btnResetAllInd) {
+        btnResetAllInd.addEventListener('click', () => {
+          ['tank', 'air', 'missile', 'virus', 'protein'].forEach(k => {
+            state.ind[k].start = 0;
+            state.ind[k].target = 1;
+            const s = document.getElementById(`indStart_${k}`);
+            const t = document.getElementById(`indTarget_${k}`);
+            if (s) s.value = 0;
+            if (t) t.value = 1;
+          });
+          render();
+        });
+      }
+
+      // Speed Buff
+      const buffSlider = document.getElementById('speedBuffSlider');
+      const buffLabel = document.getElementById('speedBuffValLabel');
+      if (buffSlider && buffLabel) {
+        const onBuff = () => {
+          state.speedBuff = parseInt(buffSlider.value) || 0;
+          buffLabel.textContent = `+${state.speedBuff}%`;
+          document.querySelectorAll('.modifier-chips button[data-buff]').forEach(b => {
+            b.classList.toggle('active', parseInt(b.dataset.buff) === state.speedBuff);
+          });
+          render();
+        };
+        buffSlider.addEventListener('input', onBuff);
+        buffSlider.addEventListener('change', onBuff);
+      }
+
+      document.querySelectorAll('.modifier-chips button[data-buff]').forEach(b => {
+        b.addEventListener('click', () => {
+          state.speedBuff = parseInt(b.dataset.buff);
+          if (buffSlider) buffSlider.value = state.speedBuff;
+          if (buffLabel) buffLabel.textContent = `+${state.speedBuff}%`;
+          document.querySelectorAll('.modifier-chips button[data-buff]').forEach(x => x.classList.remove('active'));
+          b.classList.add('active');
+          render();
+        });
+      });
+
+      // Discount
+      const discSlider = document.getElementById('discountSlider');
+      const discLabel = document.getElementById('discountValLabel');
+      if (discSlider && discLabel) {
+        const onDisc = () => {
+          state.discount = parseInt(discSlider.value) || 0;
+          discLabel.textContent = `${state.discount}%`;
+          document.querySelectorAll('.modifier-chips button[data-discount]').forEach(b => {
+            b.classList.toggle('active', parseInt(b.dataset.discount) === state.discount);
+          });
+          render();
+        };
+        discSlider.addEventListener('input', onDisc);
+        discSlider.addEventListener('change', onDisc);
+      }
+
+      document.querySelectorAll('.modifier-chips button[data-discount]').forEach(b => {
+        b.addEventListener('click', () => {
+          state.discount = parseInt(b.dataset.discount);
+          if (discSlider) discSlider.value = state.discount;
+          if (discLabel) discLabel.textContent = `${state.discount}%`;
+          document.querySelectorAll('.modifier-chips button[data-discount]').forEach(x => x.classList.remove('active'));
+          b.classList.add('active');
+          render();
+        });
+      });
+
+      // Builders
+      document.querySelectorAll('.modifier-chips button[data-builders]').forEach(b => {
+        b.addEventListener('click', () => {
+          state.builders = parseInt(b.dataset.builders);
+          const queueLabel = document.getElementById('builderQueueValLabel');
+          if (queueLabel) queueLabel.textContent = `${state.builders} Builder${state.builders > 1 ? 's' : ''}`;
+          document.querySelectorAll('.modifier-chips button[data-builders]').forEach(x => x.classList.remove('active'));
+          b.classList.add('active');
+          render();
+        });
+      });
+
+      // Stockpile
+      const stockIn1 = document.getElementById('stockInput1');
+      if (stockIn1) {
+        stockIn1.addEventListener('input', (e) => {
+          state.stock1 = parseNumberInput(e.target.value);
+          const active = calculateActive();
+          renderStockpile(active.totalRes1, active.totalRes2);
+        });
+      }
+
+      const stockIn2 = document.getElementById('stockInput2');
+      if (stockIn2) {
+        stockIn2.addEventListener('input', (e) => {
+          state.stock2 = parseNumberInput(e.target.value);
+          const active = calculateActive();
+          renderStockpile(active.totalRes1, active.totalRes2);
+        });
+      }
+
+      const dailyRateIn = document.getElementById('dailyFarmRateInput');
+      if (dailyRateIn) {
+        dailyRateIn.addEventListener('input', (e) => {
+          state.dailyRate = parseNumberInput(e.target.value);
+          const active = calculateActive();
+          renderStockpile(active.totalRes1, active.totalRes2);
+        });
+      }
+
+      const btnAutoYield = document.getElementById('btnAutoFillFarmYield');
+      if (btnAutoYield) {
+        btnAutoYield.addEventListener('click', () => {
+          // At lvl 30, 4 farms = 86,400/hr = 2,073,600 / day
+          const daily = 21600 * 4 * 24;
+          state.dailyRate = daily;
+          if (dailyRateIn) dailyRateIn.value = formatNumber(daily);
+          const active = calculateActive();
+          renderStockpile(active.totalRes1, active.totalRes2);
+        });
+      }
+
+      // Table range toggle
+      const tableToggleBtn = document.getElementById('toggleTableRangeBtn');
+      if (tableToggleBtn) {
+        tableToggleBtn.addEventListener('click', () => {
+          state.tableSelectedOnly = !state.tableSelectedOnly;
+          tableToggleBtn.textContent = state.tableSelectedOnly ? 'Show All 30 Levels' : 'Show Selected Range Only';
+          render();
+        });
+      }
+
+      // Copy Button
+      const copyBtn = document.getElementById('copyPlanBtn');
+      if (copyBtn) copyBtn.addEventListener('click', copyPlan);
+
+      window.addEventListener('resize', renderChart);
+
+      // Initial Render
+      render();
+    }
+
+    // Safe Initialization: Execute immediately or on DOM ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initApp);
+    } else {
+      initApp();
+    }
+  </script>
+</body>
+</html>
