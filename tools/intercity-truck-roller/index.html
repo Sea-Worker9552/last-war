@@ -1,1 +1,2547 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="system">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Last War: Intercity Truck Rolling Simulator & Odds Calculator</title>
+  <script>
+    // Apply theme immediately to prevent flash of wrong theme
+    (function() {
+      const saved = localStorage.getItem('lastwar-theme-mode') || 'system';
+      let theme = saved;
+      if (saved === 'system') {
+        theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+  <style>
+    :root {
+      /* Dark Theme (Default variables) */
+      --bg-body: #090d16;
+      --bg-tactical: radial-gradient(circle at 50% 0%, rgba(30, 58, 138, 0.22) 0%, rgba(9, 13, 22, 1) 75%);
+      --bg-panel: rgba(18, 26, 44, 0.88);
+      --bg-card: rgba(13, 20, 36, 0.92);
+      --bg-card-inner: #0a0f1d;
+      --border-color: rgba(255, 255, 255, 0.12);
+      --border-subtle: rgba(255, 255, 255, 0.06);
+      --border-active: rgba(245, 158, 11, 0.7);
 
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+
+      --input-bg: #0d1527;
+      --input-border: rgba(255, 255, 255, 0.18);
+      --input-text: #ffffff;
+
+      /* Rarity Palette */
+      --rarity-n-color: #94a3b8;
+      --rarity-n-bg: rgba(148, 163, 184, 0.12);
+      --rarity-n-border: rgba(148, 163, 184, 0.35);
+
+      --rarity-r-color: #22c55e;
+      --rarity-r-bg: rgba(34, 197, 94, 0.12);
+      --rarity-r-border: rgba(34, 197, 94, 0.45);
+
+      --rarity-sr-color: #3b82f6;
+      --rarity-sr-bg: rgba(59, 130, 246, 0.14);
+      --rarity-sr-border: rgba(59, 130, 246, 0.5);
+
+      --rarity-ssr-color: #a855f7;
+      --rarity-ssr-bg: rgba(168, 85, 247, 0.15);
+      --rarity-ssr-border: rgba(168, 85, 247, 0.55);
+
+      --rarity-ur-color: #f59e0b;
+      --rarity-ur-bg: rgba(245, 158, 11, 0.16);
+      --rarity-ur-border: rgba(245, 158, 11, 0.75);
+      --rarity-ur-glow: 0 0 35px rgba(245, 158, 11, 0.45);
+
+      --rarity-sleigh-color: #ef4444;
+      --rarity-sleigh-gold: #fbbf24;
+      --rarity-sleigh-bg: rgba(239, 68, 68, 0.15);
+      --rarity-sleigh-border: rgba(239, 68, 68, 0.75);
+      --rarity-sleigh-glow: 0 0 35px rgba(239, 68, 68, 0.5);
+
+      /* General Accents */
+      --gold-primary: #f59e0b;
+      --gold-hover: #d97706;
+      --cyan-accent: #06b6d4;
+      --red-accent: #ef4444;
+
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --radius-xl: 20px;
+    }
+
+    html[data-theme="light"] {
+      --bg-body: #f1f5f9;
+      --bg-tactical: radial-gradient(circle at 50% 0%, rgba(219, 234, 254, 0.7) 0%, rgba(241, 245, 249, 1) 75%);
+      --bg-panel: rgba(255, 255, 255, 0.94);
+      --bg-card: #ffffff;
+      --bg-card-inner: #f8fafc;
+      --border-color: #cbd5e1;
+      --border-subtle: #e2e8f0;
+      --border-active: #d97706;
+
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --text-dim: #64748b;
+
+      --input-bg: #ffffff;
+      --input-border: #cbd5e1;
+      --input-text: #0f172a;
+
+      --rarity-n-color: #64748b;
+      --rarity-n-bg: rgba(100, 116, 139, 0.1);
+      --rarity-n-border: rgba(100, 116, 139, 0.3);
+
+      --rarity-r-color: #16a34a;
+      --rarity-r-bg: rgba(22, 163, 74, 0.1);
+      --rarity-r-border: rgba(22, 163, 74, 0.35);
+
+      --rarity-sr-color: #2563eb;
+      --rarity-sr-bg: rgba(37, 99, 235, 0.1);
+      --rarity-sr-border: rgba(37, 99, 235, 0.35);
+
+      --rarity-ssr-color: #9333ea;
+      --rarity-ssr-bg: rgba(147, 51, 234, 0.12);
+      --rarity-ssr-border: rgba(147, 51, 234, 0.4);
+
+      --rarity-ur-color: #d97706;
+      --rarity-ur-bg: rgba(217, 119, 6, 0.12);
+      --rarity-ur-border: rgba(217, 119, 6, 0.6);
+      --rarity-ur-glow: 0 0 25px rgba(217, 119, 6, 0.3);
+
+      --rarity-sleigh-color: #dc2626;
+      --rarity-sleigh-gold: #d97706;
+      --rarity-sleigh-bg: rgba(220, 38, 38, 0.1);
+      --rarity-sleigh-border: rgba(220, 38, 38, 0.5);
+      --rarity-sleigh-glow: 0 0 25px rgba(220, 38, 38, 0.3);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg-body);
+      color: var(--text-main);
+      font-family: var(--font-family);
+      line-height: 1.5;
+      padding: 24px 16px 60px;
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    .tactical-background {
+      position: fixed;
+      inset: 0;
+      background: var(--bg-tactical);
+      z-index: -2;
+      pointer-events: none;
+    }
+
+    .grid-lines {
+      position: fixed;
+      inset: 0;
+      background-image: 
+        linear-gradient(to right, var(--border-subtle) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--border-subtle) 1px, transparent 1px);
+      background-size: 40px 40px;
+      z-index: -1;
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* Top Nav / Header */
+    header.app-header {
+      background: var(--bg-panel);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-xl);
+      padding: 16px 24px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .header-branding {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .header-logo-badge {
+      width: 46px;
+      height: 46px;
+      background: linear-gradient(135deg, #f59e0b, #b45309);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      box-shadow: 0 4px 15px rgba(245, 158, 11, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+    }
+
+    .header-title-group h1 {
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tag-pill {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--rarity-ur-bg);
+      color: var(--rarity-ur-color);
+      border: 1px solid var(--rarity-ur-border);
+      letter-spacing: 0.05em;
+    }
+
+    .header-title-group p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-nav {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 14px;
+      border-radius: var(--radius-md);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+
+    .btn-nav:hover {
+      background: var(--bg-card-inner);
+      border-color: var(--gold-primary);
+      transform: translateY(-1px);
+    }
+
+    .btn-nav:active {
+      transform: translateY(0);
+    }
+
+    /* 3-Way Theme Switcher */
+    .theme-switcher {
+      display: inline-flex;
+      background: var(--bg-card-inner);
+      border: 1px solid var(--border-color);
+      padding: 3px;
+      border-radius: var(--radius-md);
+      gap: 2px;
+      align-items: center;
+    }
+
+    .theme-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      font-family: var(--font-family);
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 5px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      user-select: none;
+    }
+
+    .theme-btn:hover {
+      color: var(--text-main);
+    }
+
+    .theme-btn.active {
+      background: var(--bg-card);
+      color: var(--text-main);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      border-color: var(--border-color);
+    }
+
+    /* Main Grid Layout */
+    .dashboard-layout {
+      display: grid;
+      grid-template-columns: 1.25fr 1fr;
+      gap: 24px;
+    }
+
+    @media (max-width: 960px) {
+      .dashboard-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Stage Panel: Interactive Roller */
+    .panel {
+      background: var(--bg-panel);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-xl);
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 14px;
+    }
+
+    .panel-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Slot Selector (Truck 1 to 5) */
+    .slot-selector-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg-card-inner);
+      padding: 4px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .slot-pill {
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s ease;
+    }
+
+    .slot-pill.active {
+      background: var(--bg-card);
+      color: var(--text-main);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--border-color);
+      font-weight: 700;
+    }
+
+    .slot-pill.dispatched {
+      border-bottom: 2px solid var(--gold-primary);
+    }
+
+    /* Pity & Refresh Step Track (7 Steps: Spawn + Rolls 1-6) */
+    .refresh-step-track {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 5px;
+      background: var(--bg-card-inner);
+      padding: 10px 8px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .step-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      padding: 6px 2px;
+      border-radius: var(--radius-sm);
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid transparent;
+      text-align: center;
+      transition: all 0.2s ease;
+    }
+
+    .step-item .step-num {
+      font-size: 0.68rem;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: var(--text-dim);
+    }
+
+    .step-item .step-badge {
+      font-size: 0.66rem;
+      font-weight: 700;
+      padding: 1px 4px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .step-item.active {
+      background: var(--rarity-ur-bg);
+      border-color: var(--gold-primary);
+      transform: scale(1.03);
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25);
+    }
+
+    .step-item.active .step-num {
+      color: var(--gold-primary);
+    }
+
+    .step-item.active .step-badge {
+      background: var(--gold-primary);
+      color: #000;
+      font-weight: 800;
+    }
+
+    .step-item.pity-guarantee {
+      border-color: rgba(245, 158, 11, 0.3);
+    }
+
+    .step-item.pity-guarantee .step-badge {
+      color: var(--gold-primary);
+    }
+
+    /* THE TRUCK CARD STAGE */
+    .truck-stage-wrapper {
+      position: relative;
+      border-radius: var(--radius-xl);
+      padding: 2px;
+      background: linear-gradient(135deg, var(--border-color), transparent);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .truck-card {
+      background: var(--bg-card);
+      border-radius: calc(var(--radius-xl) - 2px);
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 16px;
+      min-height: 380px;
+      justify-content: space-between;
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Card Tier Styling */
+    .truck-card.tier-N {
+      border: 2px solid var(--rarity-n-border);
+      background: radial-gradient(circle at 50% 30%, rgba(148, 163, 148, 0.12) 0%, var(--bg-card) 75%);
+    }
+
+    .truck-card.tier-R {
+      border: 2px solid var(--rarity-r-border);
+      background: radial-gradient(circle at 50% 30%, rgba(34, 197, 94, 0.14) 0%, var(--bg-card) 75%);
+    }
+
+    .truck-card.tier-SR {
+      border: 2px solid var(--rarity-sr-border);
+      background: radial-gradient(circle at 50% 30%, rgba(59, 130, 246, 0.16) 0%, var(--bg-card) 75%);
+    }
+
+    .truck-card.tier-SSR {
+      border: 2px solid var(--rarity-ssr-border);
+      background: radial-gradient(circle at 50% 30%, rgba(168, 85, 247, 0.18) 0%, var(--bg-card) 75%);
+      box-shadow: 0 0 25px rgba(168, 85, 247, 0.18);
+    }
+
+    .truck-card.tier-UR {
+      border: 2px solid var(--rarity-ur-border);
+      background: radial-gradient(circle at 50% 30%, rgba(245, 158, 11, 0.22) 0%, var(--bg-card) 75%);
+      box-shadow: var(--rarity-ur-glow);
+    }
+
+    .truck-card.tier-SLEIGH {
+      border: 2px solid var(--rarity-sleigh-border);
+      background: radial-gradient(circle at 50% 30%, rgba(239, 68, 68, 0.22) 0%, rgba(245, 158, 11, 0.1) 50%, var(--bg-card) 85%);
+      box-shadow: var(--rarity-sleigh-glow);
+    }
+
+    /* Rarity Emblem Banner */
+    .truck-badge-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .rarity-pill {
+      font-size: 0.82rem;
+      font-weight: 800;
+      padding: 6px 16px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .rarity-pill.tier-N {
+      background: var(--rarity-n-bg);
+      color: var(--rarity-n-color);
+      border: 1px solid var(--rarity-n-border);
+    }
+    .rarity-pill.tier-R {
+      background: var(--rarity-r-bg);
+      color: var(--rarity-r-color);
+      border: 1px solid var(--rarity-r-border);
+    }
+    .rarity-pill.tier-SR {
+      background: var(--rarity-sr-bg);
+      color: var(--rarity-sr-color);
+      border: 1px solid var(--rarity-sr-border);
+    }
+    .rarity-pill.tier-SSR {
+      background: var(--rarity-ssr-bg);
+      color: var(--rarity-ssr-color);
+      border: 1px solid var(--rarity-ssr-border);
+    }
+    .rarity-pill.tier-UR {
+      background: var(--rarity-ur-bg);
+      color: var(--rarity-ur-color);
+      border: 1px solid var(--rarity-ur-border);
+    }
+    .rarity-pill.tier-SLEIGH {
+      background: linear-gradient(90deg, rgba(239, 68, 68, 0.25), rgba(245, 158, 11, 0.25));
+      color: #fbbf24;
+      border: 1px solid var(--rarity-sleigh-border);
+    }
+
+    .cost-tag {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg-card-inner);
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border-subtle);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .cost-tag .cost-highlight {
+      font-weight: 700;
+      color: var(--gold-primary);
+    }
+
+    /* SVG Truck Display Area */
+    .truck-visual-stage {
+      width: 100%;
+      height: 180px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .truck-svg-container {
+      width: 260px;
+      height: 150px;
+      transition: transform 0.3s ease;
+      filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.45));
+    }
+
+    /* Shaking & Roll animations */
+    @keyframes diceRolling {
+      0% { transform: rotate(0deg) scale(1); }
+      25% { transform: rotate(-20deg) scale(1.15); }
+      50% { transform: rotate(25deg) scale(1.1); }
+      75% { transform: rotate(-15deg) scale(1.05); }
+      100% { transform: rotate(0deg) scale(1); }
+    }
+
+    @keyframes truckRevealPop {
+      0% { transform: scale(0.85) translateY(20px); opacity: 0.4; }
+      60% { transform: scale(1.06) translateY(-4px); opacity: 1; }
+      100% { transform: scale(1) translateY(0); opacity: 1; }
+    }
+
+    @keyframes legendaryPulse {
+      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 20px rgba(245, 158, 11, 0.5)); }
+      50% { transform: scale(1.02); filter: drop-shadow(0 0 35px rgba(245, 158, 11, 0.8)); }
+    }
+
+    .anim-roll {
+      animation: diceRolling 0.4s ease-in-out infinite;
+    }
+
+    .anim-pop {
+      animation: truckRevealPop 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .tier-UR .truck-svg-container {
+      animation: legendaryPulse 2.8s ease-in-out infinite;
+    }
+
+    .tier-SLEIGH .truck-svg-container {
+      animation: legendaryPulse 2.4s ease-in-out infinite;
+    }
+
+    /* Truck Title & Cargo Breakdown */
+    .truck-info-block {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      width: 100%;
+    }
+
+    .truck-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+    }
+
+    .truck-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* Probability & Tier Meta Chips */
+    .prob-meta-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      margin-top: 8px;
+    }
+
+    .prob-meta-chip {
+      background: var(--bg-card-inner);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 6px 12px;
+      font-size: 0.78rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 600;
+    }
+
+    .prob-meta-chip .chip-label {
+      color: var(--text-muted);
+    }
+
+    .prob-meta-chip .chip-val {
+      color: var(--gold-primary);
+      font-weight: 700;
+      font-family: var(--font-mono);
+    }
+
+    /* Button Action Bar */
+    .action-button-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .main-roll-row {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+
+    .btn-main-roll {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: #0b1120;
+      border: none;
+      border-radius: var(--radius-lg);
+      padding: 14px 20px;
+      font-size: 1.05rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 4px 20px rgba(245, 158, 11, 0.4);
+      transition: all 0.2s ease;
+      user-select: none;
+      letter-spacing: 0.02em;
+    }
+
+    .btn-main-roll:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 26px rgba(245, 158, 11, 0.55);
+      background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    }
+
+    .btn-main-roll:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .btn-main-roll:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      filter: grayscale(0.5);
+    }
+
+    .sub-roll-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .btn-sub-action {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+
+    .btn-sub-action:hover:not(:disabled) {
+      background: var(--bg-card-inner);
+      border-color: var(--gold-primary);
+      color: var(--gold-primary);
+    }
+
+    .btn-sub-action.dispatch-btn {
+      border-color: rgba(34, 197, 94, 0.5);
+      color: #22c55e;
+      background: rgba(34, 197, 94, 0.08);
+    }
+
+    .btn-sub-action.dispatch-btn:hover:not(:disabled) {
+      background: rgba(34, 197, 94, 0.18);
+      border-color: #22c55e;
+      color: #4ade80;
+    }
+
+    /* RIGHT COLUMN: Fleet & Rates Tabs */
+    .secondary-column {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* Daily Fleet Dispatch Tracker */
+    .fleet-tracker-card {
+      background: var(--bg-panel);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-xl);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .fleet-slots-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 10px;
+    }
+
+    .fleet-bay {
+      background: var(--bg-card);
+      border: 1px dashed var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 12px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 6px;
+      min-height: 110px;
+      justify-content: center;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .fleet-bay.filled {
+      border-style: solid;
+      background: var(--bg-card-inner);
+    }
+
+    .fleet-bay.tier-N { border-color: var(--rarity-n-border); }
+    .fleet-bay.tier-R { border-color: var(--rarity-r-border); }
+    .fleet-bay.tier-SR { border-color: var(--rarity-sr-border); }
+    .fleet-bay.tier-SSR { border-color: var(--rarity-ssr-border); }
+    .fleet-bay.tier-UR { border-color: var(--rarity-ur-border); box-shadow: 0 0 10px rgba(245, 158, 11, 0.2); }
+    .fleet-bay.tier-SLEIGH { border-color: var(--rarity-sleigh-border); box-shadow: 0 0 10px rgba(239, 68, 68, 0.25); }
+
+    .fleet-bay .slot-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--text-dim);
+      text-transform: uppercase;
+    }
+
+    .fleet-bay .fleet-icon {
+      font-size: 1.6rem;
+    }
+
+    .fleet-bay .fleet-rarity {
+      font-size: 0.76rem;
+      font-weight: 800;
+    }
+
+    .fleet-bay .fleet-tickets {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    /* Fleet Summary Stat Box */
+    .fleet-stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      background: var(--bg-card-inner);
+      padding: 12px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .stat-mini-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .stat-mini-card .val {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--gold-primary);
+      font-family: var(--font-mono);
+    }
+
+    .stat-mini-card .lbl {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    /* PROBABILITY TABLE CARD */
+    .rates-card {
+      background: var(--bg-panel);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-xl);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .table-container {
+      overflow-x: auto;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+    }
+
+    table.rates-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+      text-align: center;
+    }
+
+    table.rates-table th, 
+    table.rates-table td {
+      padding: 10px 8px;
+      border-bottom: 1px solid var(--border-subtle);
+      white-space: nowrap;
+    }
+
+    table.rates-table th {
+      background: var(--bg-card-inner);
+      font-weight: 700;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    table.rates-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Highlight active column matching next roll */
+    table.rates-table th.col-active {
+      background: var(--rarity-ur-bg);
+      color: var(--gold-primary);
+      font-weight: 800;
+      border-top: 2px solid var(--gold-primary);
+    }
+
+    table.rates-table td.col-active {
+      background: rgba(245, 158, 11, 0.07);
+      font-weight: 700;
+      color: #ffffff;
+      border-left: 1px solid rgba(245, 158, 11, 0.3);
+      border-right: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .row-n td:first-child { color: var(--rarity-n-color); font-weight: 700; text-align: left; }
+    .row-r td:first-child { color: var(--rarity-r-color); font-weight: 700; text-align: left; }
+    .row-sr td:first-child { color: var(--rarity-sr-color); font-weight: 700; text-align: left; }
+    .row-ssr td:first-child { color: var(--rarity-ssr-color); font-weight: 700; text-align: left; }
+    .row-ur td:first-child { color: var(--rarity-ur-color); font-weight: 700; text-align: left; }
+    .row-sleigh td:first-child { color: var(--rarity-sleigh-gold); font-weight: 700; text-align: left; }
+
+    /* TOGGLE SWITCHES */
+    .switch-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 12px;
+      background: var(--bg-card-inner);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .switch-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .switch-info .title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .switch-info .hint {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .toggle-control {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+
+    .toggle-control input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background-color: var(--border-color);
+      border-radius: 24px;
+      transition: .25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: #ffffff;
+      border-radius: 50%;
+      transition: .25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    input:checked + .toggle-slider {
+      background-color: var(--gold-primary);
+    }
+
+    input:checked + .toggle-slider:before {
+      transform: translateX(20px);
+    }
+
+    /* STATS & MONTE CARLO CARD */
+    .analytics-card {
+      background: var(--bg-panel);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-xl);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .math-insight-box {
+      background: var(--bg-card-inner);
+      border-left: 4px solid var(--gold-primary);
+      padding: 14px 16px;
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      font-size: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .math-insight-box strong {
+      color: var(--gold-primary);
+    }
+
+    .sim-bar-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .sim-bar-row {
+      display: grid;
+      grid-template-columns: 95px 1fr 50px;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.78rem;
+    }
+
+    .sim-bar-label {
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .sim-bar-track {
+      height: 12px;
+      background: var(--bg-card-inner);
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .sim-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #f59e0b, #fbbf24);
+      border-radius: 6px;
+      transition: width 0.4s ease;
+    }
+
+    .sim-bar-val {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      text-align: right;
+      color: var(--text-main);
+    }
+
+    /* Modal Styling */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+      padding: 16px;
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-dialog {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-xl);
+      max-width: 600px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 24px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      position: relative;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 12px;
+    }
+
+    .modal-close-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.5rem;
+      cursor: pointer;
+      line-height: 1;
+      padding: 4px;
+    }
+
+    .modal-close-btn:hover {
+      color: var(--text-main);
+    }
+
+    .rules-block {
+      background: var(--bg-card-inner);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      font-size: 0.88rem;
+      line-height: 1.6;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .rules-block h3 {
+      font-size: 0.95rem;
+      color: var(--gold-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Toast Notification */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: none;
+    }
+
+    .toast {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 10px 18px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-main);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      animation: toastIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes toastIn {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    /* Footer */
+    footer.app-footer {
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="tactical-background"></div>
+  <div class="grid-lines"></div>
+
+  <div class="container">
+    <!-- Top Header -->
+    <header class="app-header">
+      <div class="header-branding">
+        <div class="header-logo-badge">🚚</div>
+        <div class="header-title-group">
+          <h1>
+            Last War: Intercity Truck Simulator
+            <span class="tag-pill">VS Strategy</span>
+          </h1>
+          <p>Faithful in-game refresh rates • 1 free roll • Trade Contract pity progression • Reindeer Sleigh</p>
+        </div>
+      </div>
+
+      <div class="header-controls">
+        <button class="btn-nav" id="btnOpenRules">📖 Instructions</button>
+        <button class="btn-nav" id="btnToggleSound">🔊 Sound: ON</button>
+        
+        <!-- Segmented 3-Way Theme Switcher (System / Light / Dark) -->
+        <div class="theme-switcher" role="radiogroup" aria-label="Color Theme Switcher">
+          <button class="theme-btn active" data-theme-val="system" onclick="setTheme('system')" title="System Theme">🖥️ System</button>
+          <button class="theme-btn" data-theme-val="light" onclick="setTheme('light')" title="Light Theme">☀️ Light</button>
+          <button class="theme-btn" data-theme-val="dark" onclick="setTheme('dark')" title="Dark Theme">🌙 Dark</button>
+        </div>
+
+        <a href="../hub/index_local.html" class="btn-nav">🏠 Hub</a>
+      </div>
+    </header>
+
+    <!-- Main 2-Column Layout -->
+    <div class="dashboard-layout">
+      
+      <!-- LEFT COLUMN: The Interactive Truck Rolling Station -->
+      <section class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span>🎲 Truck Refresh Station</span>
+          </div>
+
+          <!-- Slot Selector -->
+          <div class="slot-selector-group">
+            <button class="slot-pill active" data-slot="0">Truck 1</button>
+            <button class="slot-pill" data-slot="1">Truck 2</button>
+            <button class="slot-pill" data-slot="2">Truck 3</button>
+            <button class="slot-pill" data-slot="3">Truck 4</button>
+            <button class="slot-pill" id="extraTruckSlotBtn" data-slot="4" style="display: none;">Truck 5</button>
+          </div>
+        </div>
+
+        <!-- Pity & Refresh Count Step Track (7 Steps: Spawn + Rolls 1-6) -->
+        <div class="refresh-step-track">
+          <div class="step-item active" id="stepIndicator0">
+            <span class="step-num">SPAWN</span>
+            <span class="step-badge">FREE</span>
+          </div>
+          <div class="step-item" id="stepIndicator1">
+            <span class="step-num">ROLL 1</span>
+            <span class="step-badge">FREE 🎲</span>
+          </div>
+          <div class="step-item" id="stepIndicator2">
+            <span class="step-num">ROLL 2</span>
+            <span class="step-badge">1 🎫</span>
+          </div>
+          <div class="step-item" id="stepIndicator3">
+            <span class="step-num">ROLL 3</span>
+            <span class="step-badge">1 🎫</span>
+          </div>
+          <div class="step-item" id="stepIndicator4">
+            <span class="step-num">ROLL 4</span>
+            <span class="step-badge">1 🎫</span>
+          </div>
+          <div class="step-item" id="stepIndicator5">
+            <span class="step-num">ROLL 5</span>
+            <span class="step-badge">1 🎫</span>
+          </div>
+          <div class="step-item pity-guarantee" id="stepIndicator6">
+            <span class="step-num">ROLL 6+</span>
+            <span class="step-badge">PITY 🔥</span>
+          </div>
+        </div>
+
+        <!-- The Hero Truck Card Stage -->
+        <div class="truck-stage-wrapper">
+          <div class="truck-card tier-N" id="truckCard">
+            <!-- Top Badge Bar -->
+            <div class="truck-badge-bar">
+              <span class="rarity-pill tier-N" id="truckRarityBadge">Normal (N)</span>
+              <span class="cost-tag" id="currentRollCostTag">
+                Next Action: <span class="cost-highlight" id="costText">FREE Refresh Available</span>
+              </span>
+            </div>
+
+            <!-- SVG Visual Truck Illustration -->
+            <div class="truck-visual-stage">
+              <div class="truck-svg-container" id="truckSvgHolder">
+                <!-- SVG injected via JS -->
+              </div>
+            </div>
+
+            <!-- Truck Title & Description -->
+            <div class="truck-info-block">
+              <h2 class="truck-title" id="truckTitle">Standard Cargo Hauler</h2>
+              <p class="truck-desc" id="truckDescription">Standard supply carrier dispatched with baseline provisions.</p>
+              
+              <!-- Probability & Tier Metadata Grid -->
+              <div class="prob-meta-grid" id="probMetaGrid">
+                <!-- Chips injected via JS -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Control Buttons -->
+        <div class="action-button-group">
+          <div class="main-roll-row">
+            <button class="btn-main-roll" id="btnRollTruck">
+              <span id="btnRollDiceIcon">🎲</span>
+              <span id="btnRollLabel">Free Refresh (1 Available)</span>
+            </button>
+          </div>
+
+          <div class="sub-roll-row">
+            <button class="btn-sub-action" id="btnAutoRollUR">
+              <span>⚡</span> Auto-Roll to UR
+            </button>
+            <button class="btn-sub-action dispatch-btn" id="btnDispatchTruck">
+              <span>🚀</span> Lock In & Dispatch
+            </button>
+          </div>
+
+          <div class="sub-roll-row">
+            <button class="btn-sub-action" id="btnAutoRollSSR">
+              <span>🔮</span> Auto-Roll to SSR+
+            </button>
+            <button class="btn-sub-action" id="btnResetSlot">
+              <span>🔄</span> New Random Truck
+            </button>
+          </div>
+        </div>
+
+        <!-- Running Ticket Counter for this truck -->
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 12px; font-size: 0.8rem; color: var(--text-muted); background: var(--bg-card-inner); border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
+          <span>Tickets used on this truck: <strong style="color: var(--gold-primary);" id="slotTicketsSpent">0</strong></span>
+          <span>Total session tickets: <strong style="color: var(--gold-primary);" id="sessionTicketsSpent">0</strong></span>
+        </div>
+      </section>
+
+      <!-- RIGHT COLUMN: Fleet Tracker, Odds Matrix & Strategy -->
+      <div class="secondary-column">
+
+        <!-- 1. Daily Fleet Dispatch Dock -->
+        <section class="fleet-tracker-card">
+          <div class="panel-header" style="border: none; padding-bottom: 0;">
+            <div class="panel-title">
+              <span>🚛 Daily Dispatched Fleet</span>
+            </div>
+            <button class="btn-nav" id="btnClearFleet" style="padding: 4px 10px; font-size: 0.75rem;">Reset All Truck Bays</button>
+          </div>
+
+          <!-- Slots (4 or 5) -->
+          <div class="fleet-slots-grid" id="fleetSlotsGrid">
+            <!-- Rendered by JS -->
+          </div>
+
+          <!-- Fleet Running Metrics -->
+          <div class="fleet-stats-row">
+            <div class="stat-mini-card">
+              <span class="val" id="fleetTotalTickets">0</span>
+              <span class="lbl">Tickets Used</span>
+            </div>
+            <div class="stat-mini-card">
+              <span class="val" id="fleetTotalDiamonds">0</span>
+              <span class="lbl">💎 Value (100ea)</span>
+            </div>
+            <div class="stat-mini-card">
+              <span class="val" id="fleetUrCount">0 / 4</span>
+              <span class="lbl">UR / Sleighs</span>
+            </div>
+          </div>
+
+          <button class="btn-sub-action" id="btnSimulateFullDay" style="width: 100%; border-color: var(--gold-primary); color: var(--gold-primary);">
+            ✨ Quick Auto-Roll Complete Daily Fleet to UR
+          </button>
+        </section>
+
+        <!-- 2. Settings & Toggles -->
+        <section class="rates-card" style="padding: 16px;">
+          <!-- Reindeer Sleigh Toggle -->
+          <div class="switch-row">
+            <div class="switch-info">
+              <span class="title">🦌 Reindeer Sleigh Ride Unlocked</span>
+              <span class="hint">Rule 2: Adds 10 fixed chances in refreshes with Trade Contracts</span>
+            </div>
+            <label class="toggle-control">
+              <input type="checkbox" id="toggleReindeer">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <!-- 5th Extra Truck Tech Toggle -->
+          <div class="switch-row">
+            <div class="switch-info">
+              <span class="title">🚚 Extra Truck (Lvl 1 Researched)</span>
+              <span class="hint">Unlocks 5th daily truck dispatch lane</span>
+            </div>
+            <label class="toggle-control">
+              <input type="checkbox" id="toggleExtraTruck">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </section>
+
+        <!-- 3. Exact In-Game Probability Rate Matrix -->
+        <section class="rates-card">
+          <div class="panel-header" style="border: none; padding-bottom: 0;">
+            <div class="panel-title">
+              <span>📊 Exact In-Game Refresh Odds</span>
+            </div>
+            <span style="font-size: 0.75rem; color: var(--text-dim);">Live Odds Matrix</span>
+          </div>
+
+          <div class="table-container">
+            <table class="rates-table" id="ratesTable">
+              <thead>
+                <tr>
+                  <th style="text-align: left;">Rarity</th>
+                  <th id="thCol1" class="col-active">Roll 1<br><small>(Free / Spawn)</small></th>
+                  <th id="thCol2">Roll 2<br><small>(1 🎫)</small></th>
+                  <th id="thCol3">Roll 3<br><small>(1 🎫)</small></th>
+                  <th id="thCol4">Roll 4<br><small>(1 🎫)</small></th>
+                  <th id="thCol5">Roll 5<br><small>(1 🎫)</small></th>
+                  <th id="thCol6">Roll 6+<br><small>(Pity 🔥)</small></th>
+                </tr>
+              </thead>
+              <tbody id="ratesTableBody">
+                <!-- Injected by JS -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- 4. Expected Cost & Monte Carlo Analytics -->
+        <section class="analytics-card">
+          <div class="panel-header" style="border: none; padding-bottom: 0;">
+            <div class="panel-title">
+              <span>🧮 Strategy & Expected Value (EV)</span>
+            </div>
+            <button class="btn-nav" id="btnRunMonteCarlo" style="padding: 4px 10px; font-size: 0.75rem;">Run 10k Sim</button>
+          </div>
+
+          <div class="math-insight-box">
+            <div><strong>Initial Spawn Advantage:</strong> Trucks spawn randomly with <strong>5% chance of UR right away</strong> (0 tickets used)!</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">
+              • If initial spawn is UR, dispatch with <strong>0 tickets</strong>.<br>
+              • If not, 1 Free Refresh offers another 5% chance at <strong>0 tickets</strong> (~9.8% total chance of 0-cost UR).<br>
+              • Average cost per UR factoring initial spawn & free roll is <strong>~3.37 tickets</strong> (~13.5 tickets for 4 trucks, ~16.9 for 5 trucks).
+            </div>
+          </div>
+
+          <!-- Roll Distribution Bars -->
+          <div>
+            <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">
+              PROBABILITY OF SECURING UR BY STAGE:
+            </div>
+            <div class="sim-bar-grid">
+              <div class="sim-bar-row">
+                <span class="sim-bar-label">Initial Spawn</span>
+                <div class="sim-bar-track"><div class="sim-bar-fill" style="width: 5.0%; background: #22c55e;"></div></div>
+                <span class="sim-bar-val" style="color: #22c55e;">5.0%</span>
+              </div>
+              <div class="sim-bar-row">
+                <span class="sim-bar-label">Free Refresh</span>
+                <div class="sim-bar-track"><div class="sim-bar-fill" style="width: 4.8%; background: #10b981;"></div></div>
+                <span class="sim-bar-val" style="color: #10b981;">4.8%</span>
+              </div>
+              <div class="sim-bar-row">
+                <span class="sim-bar-label">Roll 2 (1 🎫)</span>
+                <div class="sim-bar-track"><div class="sim-bar-fill" style="width: 9.0%;"></div></div>
+                <span class="sim-bar-val">9.0%</span>
+              </div>
+              <div class="sim-bar-row">
+                <span class="sim-bar-label">Roll 3 (2 🎫)</span>
+                <div class="sim-bar-track"><div class="sim-bar-fill" style="width: 12.2%;"></div></div>
+                <span class="sim-bar-val">12.2%</span>
+              </div>
+              <div class="sim-bar-row">
+                <span class="sim-bar-label">Roll 4 (3 🎫)</span>
+                <div class="sim-bar-track"><div class="sim-bar-fill" style="width: 13.8%;"></div></div>
+                <span class="sim-bar-val">13.8%</span>
+              </div>
+              <div class="sim-bar-row">
+                <span class="sim-bar-label">Roll 5 (4 🎫)</span>
+                <div class="sim-bar-track"><div class="sim-bar-fill" style="width: 13.8%;"></div></div>
+                <span class="sim-bar-val">13.8%</span>
+              </div>
+              <div class="sim-bar-row">
+                <span class="sim-bar-label" style="color: var(--gold-primary);">Roll 6 (Pity)</span>
+                <div class="sim-bar-track"><div class="sim-bar-fill" style="width: 41.4%; background: var(--gold-primary);"></div></div>
+                <span class="sim-bar-val" style="color: var(--gold-primary);">41.4%</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>Last War: Survival • Intercity Truck Rolling Simulator • Standalone Web Tool • powered by bananas 🍌</p>
+    </footer>
+  </div>
+
+  <!-- INSTRUCTIONS MODAL -->
+  <div class="modal-overlay" id="rulesModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h2 style="font-size: 1.2rem; font-weight: 800; display: flex; align-items: center; gap: 8px;">
+          <span>📋</span> Official Game Instructions
+        </h2>
+        <button class="modal-close-btn" id="btnCloseRules">&times;</button>
+      </div>
+
+      <div class="rules-block">
+        <h3>[Probability Details]</h3>
+        <p><strong>1. Different rarity Trucks have varying refresh weights based on refresh counts (including free refreshes):</strong></p>
+        <ul style="padding-left: 20px; font-family: var(--font-mono); font-size: 0.84rem; display: flex; flex-direction: column; gap: 4px;">
+          <li>(1): N(50) R(30) SR(10) SSR(5) UR(5)</li>
+          <li>(2): N(30) R(30) SR(20) SSR(10) UR(10)</li>
+          <li>(3): N(20) R(20) SR(30) SSR(15) UR(15)</li>
+          <li>(4): N(0) R(20) SR(40) SSR(20) UR(20)</li>
+          <li>(5): N(0) R(0) SR(50) SSR(25) UR(25)</li>
+          <li>(>5): N(0) R(0) SR(0) SSR(0) UR(100)</li>
+        </ul>
+
+        <h3 style="margin-top: 10px;">[Reindeer Sleigh Ride]</h3>
+        <p><strong>2.</strong> After unlocking the <strong>Reindeer Sleigh Ride</strong>, it has <strong>10 fixed chances</strong> in Truck refreshes with Trade Contracts, independent of refresh frequency.</p>
+        <p><strong>3. Probability calculation:</strong> If the Truck weight is UR(100), Reindeer Sleigh Ride(10), the chance for a UR truck is 90.9% (100/110), and for a Reindeer Sleigh Ride is 9.1% (10/110).</p>
+
+        <h3 style="margin-top: 10px;">[Cost & Dispatch Rules]</h3>
+        <p>• <strong>Initial truck is randomized</strong> automatically upon spawning (weights: 50% N, 30% R, 10% SR, 5% SSR, 5% UR).</p>
+        <p>• <strong>1 Free Refresh</strong> is granted on each truck lane.</p>
+        <p>• Subsequent refreshes cost <strong>1 Trade Contract</strong> (or 100 Diamonds) each.</p>
+        <p>• Roll 6 triggers the pity guarantee (100% UR, or 90.9% UR / 9.1% Sleigh if researched).</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- MAIN JAVASCRIPT LOGIC -->
+  <script>
+    /* ==========================================================================
+       1. GAME CONSTANTS & WEIGHT TABLES (DIRECT FROM OFFICIAL SCREENSHOT)
+       ========================================================================== */
+    const BASE_WEIGHTS = {
+      1: { N: 50, R: 30, SR: 10, SSR: 5,  UR: 5 },
+      2: { N: 30, R: 30, SR: 20, SSR: 10, UR: 10 },
+      3: { N: 20, R: 20, SR: 30, SSR: 15, UR: 15 },
+      4: { N: 0,  R: 20, SR: 40, SSR: 20, UR: 20 },
+      5: { N: 0,  R: 0,  SR: 50, SSR: 25, UR: 25 },
+      6: { N: 0,  R: 0,  SR: 0,  SSR: 0,  UR: 100 }
+    };
+
+    const RARITY_INFO = {
+      N: {
+        name: "Normal (N)",
+        color: "#94a3b8",
+        badgeText: "Normal (N)",
+        title: "Normal Truck",
+        colorName: "Gray",
+        desc: "Gray Convoy • Baseline tier (50% on spawn & free refresh).",
+        icon: "🚛"
+      },
+      R: {
+        name: "Rare (R)",
+        color: "#22c55e",
+        badgeText: "Rare (R)",
+        title: "Rare Truck",
+        colorName: "Green",
+        desc: "Green Convoy • 30% on spawn & free refresh.",
+        icon: "🚛"
+      },
+      SR: {
+        name: "Super Rare (SR)",
+        color: "#3b82f6",
+        badgeText: "Super Rare (SR)",
+        title: "Super Rare Truck",
+        colorName: "Blue",
+        desc: "Blue Convoy • 10% on spawn & free refresh.",
+        icon: "🚚"
+      },
+      SSR: {
+        name: "Super Super Rare (SSR)",
+        color: "#a855f7",
+        badgeText: "Super Super Rare (SSR)",
+        title: "Super Super Rare Truck",
+        colorName: "Purple",
+        desc: "Purple Convoy • 5% on spawn & free refresh.",
+        icon: "🚚"
+      },
+      UR: {
+        name: "Ultimate Rare (UR)",
+        color: "#f59e0b",
+        badgeText: "Ultimate Rare (UR)",
+        title: "Ultimate Rare Truck",
+        colorName: "Gold",
+        desc: "Gold Convoy • Primary dispatch goal! 100% guaranteed on Roll 6+ pity.",
+        icon: "🚚"
+      },
+      SLEIGH: {
+        name: "Reindeer Sleigh Ride",
+        color: "#ef4444",
+        badgeText: "Reindeer Sleigh 🦌",
+        title: "Reindeer Sleigh Ride",
+        colorName: "Festive Red & Gold",
+        desc: "Special Holiday Convoy • 10 fixed chances on trade contract refreshes.",
+        icon: "🛷"
+      }
+    };
+
+    /* ==========================================================================
+       2. SVG TRUCK ARTWORK GENERATOR
+       ========================================================================== */
+    function getTruckSvg(rarity) {
+      if (rarity === 'SLEIGH') {
+        return `
+        <svg viewBox="0 0 260 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Festive Sleigh Runner -->
+          <path d="M 20 135 Q 35 142 60 135 L 210 135 Q 240 135 250 115 Q 255 105 245 102" stroke="#fbbf24" stroke-width="5" stroke-linecap="round"/>
+          <path d="M 45 135 L 60 105 M 100 135 L 105 105 M 160 135 L 160 105 M 200 135 L 195 105" stroke="#fbbf24" stroke-width="3"/>
+          
+          <!-- Sleigh Body (Festive Red & Gold) -->
+          <path d="M 35 85 Q 30 110 55 110 L 215 110 Q 240 110 235 80 Q 230 55 190 70 L 60 70 Q 38 70 35 85 Z" fill="#b91c1c" stroke="#f59e0b" stroke-width="3"/>
+          <path d="M 50 78 L 220 78" stroke="#fbbf24" stroke-width="2" stroke-dasharray="6 4"/>
+
+          <!-- Gift Boxes Stacked -->
+          <rect x="70" y="42" width="32" height="30" rx="3" fill="#15803d" stroke="#fbbf24" stroke-width="2"/>
+          <path d="M 86 42 L 86 72 M 70 57 L 102 57" stroke="#fbbf24" stroke-width="2"/>
+
+          <rect x="110" y="32" width="38" height="40" rx="3" fill="#d97706" stroke="#fbbf24" stroke-width="2"/>
+          <path d="M 129 32 L 129 72 M 110 52 L 148 52" stroke="#fef08a" stroke-width="2"/>
+
+          <rect x="155" y="46" width="30" height="26" rx="3" fill="#9333ea" stroke="#fbbf24" stroke-width="2"/>
+          <path d="M 170 46 L 170 72 M 155 59 L 185 59" stroke="#fef08a" stroke-width="2"/>
+
+          <!-- Reindeer Antlers Silhouette Crest -->
+          <circle cx="215" cy="72" r="14" fill="#7f1d1d" stroke="#fbbf24" stroke-width="2"/>
+          <text x="215" y="77" font-size="14" text-anchor="middle" fill="#fbbf24">🦌</text>
+
+          <!-- Golden Bell -->
+          <circle cx="45" cy="98" r="6" fill="#fbbf24" stroke="#d97706" stroke-width="1.5"/>
+          <circle cx="45" cy="99" r="2" fill="#78350f"/>
+
+          <!-- Sparkle Stars -->
+          <text x="35" y="40" font-size="16" fill="#fbbf24">✨</text>
+          <text x="225" y="45" font-size="14" fill="#fbbf24">⭐</text>
+        </svg>`;
+      }
+
+      const colors = {
+        N:  { cab: '#64748b', cargo: '#475569', trim: '#94a3b8', glow: 'none', wheel: '#1e293b' },
+        R:  { cab: '#15803d', cargo: '#166534', trim: '#4ade80', glow: 'none', wheel: '#1e293b' },
+        SR: { cab: '#1d4ed8', cargo: '#1e40af', trim: '#60a5fa', glow: 'rgba(59, 130, 246, 0.4)', wheel: '#0f172a' },
+        SSR:{ cab: '#7e22ce', cargo: '#6b21a8', trim: '#c084fc', glow: 'rgba(168, 85, 247, 0.5)', wheel: '#0f172a' },
+        UR: { cab: '#d97706', cargo: '#b45309', trim: '#fef08a', glow: 'rgba(245, 158, 11, 0.7)', wheel: '#451a03' }
+      }[rarity] || { cab: '#64748b', cargo: '#475569', trim: '#94a3b8', glow: 'none', wheel: '#1e293b' };
+
+      return `
+      <svg viewBox="0 0 260 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <filter id="truckShadow" x="-10%" y="-10%" width="120%" height="130%">
+            <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="rgba(0,0,0,0.5)"/>
+          </filter>
+        </defs>
+
+        <!-- Shadow Base -->
+        <ellipse cx="130" cy="138" rx="105" ry="8" fill="rgba(0,0,0,0.4)"/>
+
+        <!-- Chassis Frame -->
+        <rect x="25" y="112" width="205" height="10" rx="3" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
+
+        <!-- Main Cargo Container -->
+        <rect x="25" y="42" width="135" height="72" rx="4" fill="${colors.cargo}" stroke="${colors.trim}" stroke-width="2.5" filter="url(#truckShadow)"/>
+        
+        <!-- Cargo Ribs / Panels -->
+        <line x1="55" y1="44" x2="55" y2="112" stroke="${colors.trim}" stroke-width="1.5" stroke-dasharray="4 2" opacity="0.6"/>
+        <line x1="85" y1="44" x2="85" y2="112" stroke="${colors.trim}" stroke-width="1.5" stroke-dasharray="4 2" opacity="0.6"/>
+        <line x1="115" y1="44" x2="115" y2="112" stroke="${colors.trim}" stroke-width="1.5" stroke-dasharray="4 2" opacity="0.6"/>
+        <line x1="140" y1="44" x2="140" y2="112" stroke="${colors.trim}" stroke-width="1.5" opacity="0.8"/>
+
+        <!-- Rarity Brand Insignia on Cargo -->
+        <rect x="68" y="66" width="50" height="24" rx="4" fill="rgba(0,0,0,0.4)" stroke="${colors.trim}" stroke-width="1.5"/>
+        <text x="93" y="83" font-size="12" font-weight="900" text-anchor="middle" fill="${colors.trim}" font-family="sans-serif">${rarity}</text>
+
+        <!-- Truck Cabin (Front) -->
+        <path d="M 160 56 L 195 56 L 216 80 L 222 114 L 160 114 Z" fill="${colors.cab}" stroke="${colors.trim}" stroke-width="2.5"/>
+
+        <!-- Windshield -->
+        <path d="M 190 62 L 170 62 L 170 82 L 208 82 Z" fill="#38bdf8" stroke="#0284c7" stroke-width="1.5" opacity="0.85"/>
+
+        <!-- Side Window Glass Reflection -->
+        <line x1="175" y1="65" x2="198" y2="78" stroke="#ffffff" stroke-width="1.5" opacity="0.7"/>
+
+        <!-- Bumper & Headlight -->
+        <rect x="218" y="105" width="12" height="9" rx="2" fill="#475569" stroke="#334155" stroke-width="1"/>
+        <circle cx="222" cy="94" r="4" fill="#fef08a" stroke="#eab308" stroke-width="1.5"/>
+        <path d="M 226 94 L 246 86 L 246 102 Z" fill="rgba(254, 240, 138, 0.25)"/>
+
+        <!-- Exhaust Pipe -->
+        <rect x="157" y="32" width="6" height="26" rx="2" fill="#475569" stroke="#64748b" stroke-width="1"/>
+        <rect x="155" y="29" width="10" height="4" rx="1" fill="#64748b"/>
+
+        <!-- Wheels (Heavy Duty 3-Axle Truck) -->
+        <circle cx="55" cy="122" r="16" fill="${colors.wheel}" stroke="#475569" stroke-width="3"/>
+        <circle cx="55" cy="122" r="7" fill="#64748b" stroke="${colors.trim}" stroke-width="1.5"/>
+
+        <circle cx="95" cy="122" r="16" fill="${colors.wheel}" stroke="#475569" stroke-width="3"/>
+        <circle cx="95" cy="122" r="7" fill="#64748b" stroke="${colors.trim}" stroke-width="1.5"/>
+
+        <circle cx="195" cy="122" r="16" fill="${colors.wheel}" stroke="#475569" stroke-width="3"/>
+        <circle cx="195" cy="122" r="7" fill="#64748b" stroke="${colors.trim}" stroke-width="1.5"/>
+      </svg>`;
+    }
+
+    /* ==========================================================================
+       3. SYNTHESIZED WEB AUDIO API SYSTEM
+       ========================================================================== */
+    class SoundEngine {
+      constructor() {
+        this.ctx = null;
+        this.enabled = true;
+      }
+
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) this.ctx = new AudioContext();
+        }
+      }
+
+      playClick() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(440, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(880, this.ctx.currentTime + 0.05);
+
+        gain.gain.setValueAtTime(0.12, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.05);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.05);
+      }
+
+      playDiceRoll() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+
+        for (let i = 0; i < 4; i++) {
+          setTimeout(() => {
+            if (!this.ctx) return;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(180 + Math.random() * 200, this.ctx.currentTime);
+
+            gain.gain.setValueAtTime(0.08, this.ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.04);
+
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start();
+            osc.stop(this.ctx.currentTime + 0.04);
+          }, i * 60);
+        }
+      }
+
+      playRarityFanfare(rarity) {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+
+        const now = this.ctx.currentTime;
+
+        if (rarity === 'UR') {
+          const notes = [523.25, 659.25, 783.99, 1046.50];
+          notes.forEach((freq, idx) => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, now + idx * 0.09);
+
+            gain.gain.setValueAtTime(0, now + idx * 0.09);
+            gain.gain.linearRampToValueAtTime(0.2, now + idx * 0.09 + 0.03);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.09 + 0.45);
+
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now + idx * 0.09);
+            osc.stop(now + idx * 0.09 + 0.45);
+          });
+        } else if (rarity === 'SLEIGH') {
+          const bells = [1200, 1500, 1800, 2400];
+          bells.forEach((freq, idx) => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, now + idx * 0.07);
+
+            gain.gain.setValueAtTime(0.18, now + idx * 0.07);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.07 + 0.35);
+
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now + idx * 0.07);
+            osc.stop(now + idx * 0.07 + 0.35);
+          });
+        } else if (rarity === 'SSR') {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(659.25, now);
+          osc.frequency.setValueAtTime(880.00, now + 0.1);
+
+          gain.gain.setValueAtTime(0.15, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.3);
+        } else if (rarity === 'SR') {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(587.33, now);
+
+          gain.gain.setValueAtTime(0.1, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.2);
+        } else {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(330, now);
+
+          gain.gain.setValueAtTime(0.08, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.12);
+        }
+      }
+    }
+
+    const sound = new SoundEngine();
+
+    /* ==========================================================================
+       4. THEME CONTROLLER (SYSTEM DEFAULT, SYSTEM / LIGHT / DARK OPTIONS)
+       ========================================================================== */
+    let currentThemeMode = localStorage.getItem('lastwar-theme-mode') || 'system';
+
+    function setTheme(mode) {
+      currentThemeMode = mode;
+      localStorage.setItem('lastwar-theme-mode', mode);
+      applyTheme();
+      sound.playClick();
+    }
+
+    function applyTheme() {
+      const root = document.documentElement;
+      const buttons = document.querySelectorAll('.theme-btn');
+      buttons.forEach(btn => {
+        if (btn.getAttribute('data-theme-val') === currentThemeMode) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+
+      if (currentThemeMode === 'system') {
+        const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        root.setAttribute('data-theme', isDark ? 'dark' : 'light');
+      } else {
+        root.setAttribute('data-theme', currentThemeMode);
+      }
+    }
+
+    // Listen to OS dark/light mode switches dynamically
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+      if (currentThemeMode === 'system') {
+        applyTheme();
+      }
+    });
+
+    /* ==========================================================================
+       5. APPLICATION STATE & ROLLING LOGIC
+       ========================================================================== */
+    // Calculate exact probabilities for a given refresh count
+    function getOddsForCount(count, isReindeerActive) {
+      const step = Math.min(Math.max(count, 1), 6);
+      const base = BASE_WEIGHTS[step];
+      const weights = { ...base };
+
+      // Rule 2: "After unlocking the Reindeer Sleigh Ride, it has 10 fixed chances in Truck refreshes with Trade Contracts, independent of refresh frequency."
+      // Refreshes with Trade Contracts are count >= 2.
+      let hasSleigh = false;
+      if (isReindeerActive && count >= 2) {
+        weights.SLEIGH = 10;
+        hasSleigh = true;
+      }
+
+      let total = 0;
+      for (const k in weights) total += weights[k];
+
+      const percentages = {};
+      for (const k in weights) {
+        percentages[k] = (weights[k] / total) * 100;
+      }
+
+      return { weights, total, percentages, hasSleigh };
+    }
+
+    // Roll a single random rarity according to odds
+    function rollRandomRarity(count, isReindeerActive) {
+      const { percentages } = getOddsForCount(count, isReindeerActive);
+      const rand = Math.random() * 100;
+      let cum = 0;
+
+      for (const [rarity, pct] of Object.entries(percentages)) {
+        cum += pct;
+        if (rand <= cum) {
+          return rarity;
+        }
+      }
+      return 'UR';
+    }
+
+    // Helper to generate a fresh slot with a RANDOM initial truck (weights: 50% N, 30% R, 10% SR, 5% SSR, 5% UR)
+    function createFreshSlot() {
+      return {
+        currentRarity: rollRandomRarity(1, false), // Initial random truck on spawn!
+        refreshesUsed: 0,                          // 0 = Initial Spawn; 1 = Free refresh used; 2 = 1 ticket, etc.
+        ticketsSpent: 0,                           // 0 tickets spent on spawn
+        dispatched: false
+      };
+    }
+
+    const state = {
+      reindeerUnlocked: false,
+      extraTruckUnlocked: false,
+      activeSlotIndex: 0,
+      sessionTotalTickets: 0,
+      slots: [
+        createFreshSlot(),
+        createFreshSlot(),
+        createFreshSlot(),
+        createFreshSlot(),
+        createFreshSlot()
+      ]
+    };
+
+    /* ==========================================================================
+       6. UI RENDER & INTERACTION
+       ========================================================================== */
+    const elements = {
+      truckCard: document.getElementById('truckCard'),
+      truckRarityBadge: document.getElementById('truckRarityBadge'),
+      truckSvgHolder: document.getElementById('truckSvgHolder'),
+      truckTitle: document.getElementById('truckTitle'),
+      truckDescription: document.getElementById('truckDescription'),
+      probMetaGrid: document.getElementById('probMetaGrid'),
+      currentRollCostTag: document.getElementById('currentRollCostTag'),
+      costText: document.getElementById('costText'),
+      btnRollTruck: document.getElementById('btnRollTruck'),
+      btnRollLabel: document.getElementById('btnRollLabel'),
+      btnRollDiceIcon: document.getElementById('btnRollDiceIcon'),
+      btnAutoRollUR: document.getElementById('btnAutoRollUR'),
+      btnAutoRollSSR: document.getElementById('btnAutoRollSSR'),
+      btnDispatchTruck: document.getElementById('btnDispatchTruck'),
+      btnResetSlot: document.getElementById('btnResetSlot'),
+      slotTicketsSpent: document.getElementById('slotTicketsSpent'),
+      sessionTicketsSpent: document.getElementById('sessionTicketsSpent'),
+      fleetSlotsGrid: document.getElementById('fleetSlotsGrid'),
+      fleetTotalTickets: document.getElementById('fleetTotalTickets'),
+      fleetTotalDiamonds: document.getElementById('fleetTotalDiamonds'),
+      fleetUrCount: document.getElementById('fleetUrCount'),
+      btnClearFleet: document.getElementById('btnClearFleet'),
+      btnSimulateFullDay: document.getElementById('btnSimulateFullDay'),
+      toggleReindeer: document.getElementById('toggleReindeer'),
+      toggleExtraTruck: document.getElementById('toggleExtraTruck'),
+      extraTruckSlotBtn: document.getElementById('extraTruckSlotBtn'),
+      ratesTableBody: document.getElementById('ratesTableBody'),
+      btnOpenRules: document.getElementById('btnOpenRules'),
+      btnCloseRules: document.getElementById('btnCloseRules'),
+      rulesModal: document.getElementById('rulesModal'),
+      btnToggleSound: document.getElementById('btnToggleSound'),
+      btnRunMonteCarlo: document.getElementById('btnRunMonteCarlo'),
+      toastContainer: document.getElementById('toastContainer')
+    };
+
+    function showToast(message, icon = '🚚') {
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.innerHTML = `<span>${icon}</span> <span>${message}</span>`;
+      elements.toastContainer.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(10px)';
+        toast.style.transition = 'all 0.25s ease';
+        setTimeout(() => toast.remove(), 250);
+      }, 2600);
+    }
+
+    function renderRatesTable() {
+      const rarities = [
+        { key: 'N', name: 'Normal (N)', rowClass: 'row-n' },
+        { key: 'R', name: 'Rare (R)', rowClass: 'row-r' },
+        { key: 'SR', name: 'Super Rare (SR)', rowClass: 'row-sr' },
+        { key: 'SSR', name: 'Super Super Rare (SSR)', rowClass: 'row-ssr' },
+        { key: 'UR', name: 'Ultimate Rare (UR)', rowClass: 'row-ur' }
+      ];
+
+      if (state.reindeerUnlocked) {
+        rarities.push({ key: 'SLEIGH', name: 'Reindeer Sleigh 🦌', rowClass: 'row-sleigh' });
+      }
+
+      const activeSlot = state.slots[state.activeSlotIndex];
+      // Next roll column to highlight:
+      // If refreshesUsed === 0, next roll is Roll 1 (Free).
+      // If refreshesUsed >= 1, next roll is Roll (refreshesUsed + 1), capped at 6.
+      const nextStepCol = Math.min(activeSlot.refreshesUsed + 1, 6);
+
+      // Update active column header styling
+      for (let c = 1; c <= 6; c++) {
+        const th = document.getElementById(`thCol${c}`);
+        if (th) {
+          if (c === nextStepCol) th.classList.add('col-active');
+          else th.classList.remove('col-active');
+        }
+      }
+
+      let html = '';
+      rarities.forEach(r => {
+        html += `<tr class="${r.rowClass}">`;
+        html += `<td>${r.name}</td>`;
+
+        for (let col = 1; col <= 6; col++) {
+          const odds = getOddsForCount(col, state.reindeerUnlocked);
+          const pct = odds.percentages[r.key] || 0;
+          const isColActive = (col === nextStepCol) ? 'col-active' : '';
+
+          if (pct === 0) {
+            html += `<td class="${isColActive}" style="color: var(--text-dim);">-</td>`;
+          } else {
+            const formatted = (pct % 1 === 0) ? `${pct}%` : `${pct.toFixed(1)}%`;
+            html += `<td class="${isColActive}">${formatted}</td>`;
+          }
+        }
+        html += `</tr>`;
+      });
+
+      elements.ratesTableBody.innerHTML = html;
+    }
+
+    function renderActiveSlot() {
+      const slot = state.slots[state.activeSlotIndex];
+      const rarity = slot.currentRarity;
+      const info = RARITY_INFO[rarity] || RARITY_INFO.N;
+
+      // Update Card Visuals & Classes
+      elements.truckCard.className = `truck-card tier-${rarity}`;
+      elements.truckRarityBadge.className = `rarity-pill tier-${rarity}`;
+      elements.truckRarityBadge.textContent = info.badgeText;
+      elements.truckSvgHolder.innerHTML = getTruckSvg(rarity);
+      elements.truckTitle.textContent = info.title;
+      elements.truckDescription.textContent = info.desc;
+
+      // Tier & Probability Metadata Chips
+      const rollStep = Math.min(Math.max(slot.refreshesUsed, 1), 6);
+      const currentOdds = getOddsForCount(rollStep, state.reindeerUnlocked);
+      const currentPct = currentOdds.percentages[rarity] || 0;
+      const formattedPct = (currentPct % 1 === 0) ? `${currentPct}%` : `${currentPct.toFixed(1)}%`;
+      const isTopTier = (rarity === 'UR' || rarity === 'SLEIGH');
+
+      elements.probMetaGrid.innerHTML = `
+        <div class="prob-meta-chip">
+          <span class="chip-label">🎨 Color:</span>
+          <span class="chip-val" style="color: ${info.color}; font-family: inherit;">${info.colorName}</span>
+        </div>
+        <div class="prob-meta-chip">
+          <span class="chip-label">🎲 Tier Rate:</span>
+          <span class="chip-val">${formattedPct}</span>
+        </div>
+        <div class="prob-meta-chip">
+          <span class="chip-label">🎯 Status:</span>
+          <span class="chip-val" style="color: ${isTopTier ? 'var(--gold-primary)' : 'var(--text-muted)'}; font-family: inherit;">
+            ${isTopTier ? '🏆 Target Secured' : '🔄 Reroll Available'}
+          </span>
+        </div>
+      `;
+
+      // Refresh Step Indicator (7 steps: 0=Spawn, 1=Roll 1 Free, 2..6)
+      const currentStepKey = Math.min(slot.refreshesUsed, 6);
+      for (let i = 0; i <= 6; i++) {
+        const el = document.getElementById(`stepIndicator${i}`);
+        if (el) {
+          if (i === currentStepKey) el.classList.add('active');
+          else el.classList.remove('active');
+        }
+      }
+
+      // Cost Tag & Button Label
+      if (slot.refreshesUsed === 0) {
+        elements.costText.textContent = "FREE Refresh Available";
+        elements.costText.style.color = "var(--rarity-r-color)";
+        elements.btnRollLabel.textContent = "Free Refresh (1 Available)";
+      } else {
+        const nextRollNum = slot.refreshesUsed + 1;
+        elements.costText.textContent = "1 🎫 Trade Contract";
+        elements.costText.style.color = "var(--gold-primary)";
+        if (nextRollNum >= 6) {
+          elements.btnRollLabel.textContent = "Roll Truck #6+ (Pity Guaranteed UR! 🎫)";
+        } else {
+          elements.btnRollLabel.textContent = `Roll Truck #${nextRollNum} (Costs 1 🎫)`;
+        }
+      }
+
+      // Tickets Spent on this truck
+      elements.slotTicketsSpent.textContent = `${slot.ticketsSpent} Trade Contracts`;
+      elements.sessionTicketsSpent.textContent = `${state.sessionTotalTickets} Trade Contracts`;
+
+      // Reset button label
+      elements.btnResetSlot.innerHTML = `<span>🔄</span> New Random Truck #${state.activeSlotIndex + 1}`;
+
+      // Dispatch button state
+      if (slot.dispatched) {
+        elements.btnDispatchTruck.innerHTML = `<span>✅</span> Already Dispatched`;
+        elements.btnDispatchTruck.disabled = true;
+      } else {
+        elements.btnDispatchTruck.innerHTML = `<span>🚀</span> Lock In & Dispatch`;
+        elements.btnDispatchTruck.disabled = false;
+      }
+
+      // Update Rates Table Active Column
+      renderRatesTable();
+    }
+
+    function renderFleetDock() {
+      const maxSlots = state.extraTruckUnlocked ? 5 : 4;
+      let totalTickets = 0;
+      let urCount = 0;
+
+      let html = '';
+      for (let i = 0; i < maxSlots; i++) {
+        const s = state.slots[i];
+        totalTickets += s.ticketsSpent;
+        if (s.dispatched && (s.currentRarity === 'UR' || s.currentRarity === 'SLEIGH')) {
+          urCount++;
+        }
+
+        const isCurrent = (i === state.activeSlotIndex);
+        const activeBorder = isCurrent ? 'style="border-color: var(--gold-primary);"' : '';
+        const info = RARITY_INFO[s.currentRarity];
+
+        if (s.dispatched) {
+          html += `
+            <div class="fleet-bay filled tier-${s.currentRarity}" ${activeBorder} onclick="selectSlot(${i})">
+              <span class="slot-label">Truck ${i + 1} • Dispatched</span>
+              <span class="fleet-icon">${info.icon}</span>
+              <span class="fleet-rarity" style="color: ${info.color};">${info.badgeText}</span>
+              <span class="fleet-tickets">${s.ticketsSpent} 🎫 used</span>
+            </div>
+          `;
+        } else {
+          const statusText = (s.refreshesUsed === 0) ? 'Ready • Free Roll' : `${s.ticketsSpent} 🎫 spent`;
+          html += `
+            <div class="fleet-bay filled tier-${s.currentRarity}" ${activeBorder} onclick="selectSlot(${i})">
+              <span class="slot-label">Truck ${i + 1} • Ready</span>
+              <span class="fleet-icon">${info.icon}</span>
+              <span class="fleet-rarity" style="color: ${info.color};">${info.badgeText}</span>
+              <span class="fleet-tickets">${statusText}</span>
+            </div>
+          `;
+        }
+      }
+
+      elements.fleetSlotsGrid.innerHTML = html;
+      elements.fleetTotalTickets.textContent = totalTickets;
+      elements.fleetTotalDiamonds.textContent = (totalTickets * 100).toLocaleString();
+      elements.fleetUrCount.textContent = `${urCount} / ${maxSlots}`;
+
+      // Update Slot Selector buttons
+      document.querySelectorAll('.slot-pill').forEach(btn => {
+        const slotIdx = parseInt(btn.getAttribute('data-slot'), 10);
+        if (slotIdx === state.activeSlotIndex) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+
+        if (state.slots[slotIdx] && state.slots[slotIdx].dispatched) {
+          btn.classList.add('dispatched');
+        } else {
+          btn.classList.remove('dispatched');
+        }
+      });
+    }
+
+    /* ==========================================================================
+       7. ROLLING LOGIC & EVENT HANDLERS
+       ========================================================================== */
+    function doSingleRoll(isAutomated = false) {
+      const slot = state.slots[state.activeSlotIndex];
+      
+      // Cost calculation:
+      // If refreshesUsed === 0, this roll uses the FREE refresh!
+      // If refreshesUsed >= 1, this roll costs 1 Trade Contract.
+      if (slot.refreshesUsed >= 1) {
+        slot.ticketsSpent += 1;
+        state.sessionTotalTickets += 1;
+      }
+      slot.refreshesUsed += 1;
+
+      // Roll rarity based on refresh step (1 to 6)
+      const rollStep = Math.min(slot.refreshesUsed, 6);
+      const rolledRarity = rollRandomRarity(rollStep, state.reindeerUnlocked);
+      slot.currentRarity = rolledRarity;
+
+      if (!isAutomated) {
+        sound.playDiceRoll();
+        elements.btnRollDiceIcon.classList.add('anim-roll');
+        elements.truckCard.classList.add('anim-pop');
+
+        setTimeout(() => {
+          elements.btnRollDiceIcon.classList.remove('anim-roll');
+          elements.truckCard.classList.remove('anim-pop');
+          sound.playRarityFanfare(rolledRarity);
+        }, 220);
+
+        renderActiveSlot();
+        renderFleetDock();
+
+        if (rolledRarity === 'UR' || rolledRarity === 'SLEIGH') {
+          showToast(`Jackpot! Rolled ${RARITY_INFO[rolledRarity].name}!`, rolledRarity === 'SLEIGH' ? '🦌' : '⭐');
+        }
+      }
+
+      return rolledRarity;
+    }
+
+    function selectSlot(index) {
+      sound.playClick();
+      state.activeSlotIndex = index;
+      renderActiveSlot();
+      renderFleetDock();
+    }
+
+    function dispatchCurrentTruck() {
+      const slot = state.slots[state.activeSlotIndex];
+      slot.dispatched = true;
+      sound.playClick();
+      showToast(`Truck #${state.activeSlotIndex + 1} locked in: ${RARITY_INFO[slot.currentRarity].badgeText}! (${slot.ticketsSpent} tickets)`, '🚀');
+
+      // Auto-advance to next un-dispatched slot if available
+      const maxSlots = state.extraTruckUnlocked ? 5 : 4;
+      let nextSlot = -1;
+      for (let i = 0; i < maxSlots; i++) {
+        if (!state.slots[i].dispatched) {
+          nextSlot = i;
+          break;
+        }
+      }
+
+      if (nextSlot !== -1) {
+        state.activeSlotIndex = nextSlot;
+      }
+
+      renderActiveSlot();
+      renderFleetDock();
+    }
+
+    function resetCurrentSlot() {
+      sound.playClick();
+      // Generates a fresh random truck for this slot
+      state.slots[state.activeSlotIndex] = createFreshSlot();
+      renderActiveSlot();
+      renderFleetDock();
+      showToast(`Truck #${state.activeSlotIndex + 1} re-spawned with fresh random truck!`, '🔄');
+    }
+
+    function autoRollToTarget(targetTiers = ['UR', 'SLEIGH']) {
+      const slot = state.slots[state.activeSlotIndex];
+      
+      // If already at target, stop immediately without spending anything!
+      if (targetTiers.includes(slot.currentRarity)) {
+        sound.playRarityFanfare(slot.currentRarity);
+        showToast(`Truck is already ${RARITY_INFO[slot.currentRarity].badgeText}! 0 tickets needed.`, '⭐');
+        return;
+      }
+
+      const initialTickets = slot.ticketsSpent;
+      elements.btnRollTruck.disabled = true;
+      sound.playDiceRoll();
+
+      let rollsDone = 0;
+      const interval = setInterval(() => {
+        const res = doSingleRoll(true);
+        rollsDone++;
+
+        if (targetTiers.includes(res) || rollsDone >= 15) {
+          clearInterval(interval);
+          elements.btnRollTruck.disabled = false;
+          sound.playRarityFanfare(res);
+
+          renderActiveSlot();
+          renderFleetDock();
+
+          const ticketsUsed = slot.ticketsSpent - initialTickets;
+          showToast(`Reached ${RARITY_INFO[res].badgeText}! Used ${ticketsUsed} tickets.`, '⚡');
+        }
+      }, 90);
+    }
+
+    function simulateFullDayFleet() {
+      sound.playClick();
+      const maxSlots = state.extraTruckUnlocked ? 5 : 4;
+      let totalTicketsUsed = 0;
+
+      for (let i = 0; i < maxSlots; i++) {
+        const slot = state.slots[i];
+        
+        // If already UR/Sleigh on initial spawn, keep it with 0 tickets used!
+        if (slot.currentRarity === 'UR' || slot.currentRarity === 'SLEIGH') {
+          slot.dispatched = true;
+          continue;
+        }
+
+        // Otherwise roll until UR or Sleigh
+        while (true) {
+          if (slot.refreshesUsed >= 1) {
+            slot.ticketsSpent += 1;
+            state.sessionTotalTickets += 1;
+          }
+          slot.refreshesUsed += 1;
+
+          const rollStep = Math.min(slot.refreshesUsed, 6);
+          const res = rollRandomRarity(rollStep, state.reindeerUnlocked);
+          slot.currentRarity = res;
+
+          if (res === 'UR' || res === 'SLEIGH') {
+            slot.dispatched = true;
+            break;
+          }
+        }
+        totalTicketsUsed += slot.ticketsSpent;
+      }
+
+      state.activeSlotIndex = 0;
+      sound.playRarityFanfare('UR');
+      renderActiveSlot();
+      renderFleetDock();
+      showToast(`Dispatched all ${maxSlots} trucks to UR! Total tickets used: ${totalTicketsUsed}.`, '🏆');
+    }
+
+    function clearFleet() {
+      sound.playClick();
+      state.slots = [
+        createFreshSlot(),
+        createFreshSlot(),
+        createFreshSlot(),
+        createFreshSlot(),
+        createFreshSlot()
+      ];
+      state.activeSlotIndex = 0;
+      renderActiveSlot();
+      renderFleetDock();
+      showToast("All daily fleet bays re-spawned with fresh random trucks.", "🔄");
+    }
+
+    /* ==========================================================================
+       8. MONTE CARLO SIMULATOR (10,000 DISPATCH RUNNER)
+       ========================================================================== */
+    function runMonteCarloSim() {
+      sound.playClick();
+      const N = 10000;
+      let totalTickets = 0;
+      let counts = { spawn: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
+      let urTotal = 0;
+      let sleighTotal = 0;
+
+      for (let i = 0; i < N; i++) {
+        // Initial random truck upon spawn (0 tickets)
+        let initial = rollRandomRarity(1, false);
+        if (initial === 'UR') {
+          counts.spawn++;
+          urTotal++;
+          continue; // Kept initial UR with 0 tickets!
+        }
+
+        let step = 1;
+        let tickets = 0;
+
+        while (true) {
+          // Free refresh is step 1 (0 tickets). Subsequent steps cost 1 ticket.
+          if (step > 1) tickets += 1;
+          const res = rollRandomRarity(step, state.reindeerUnlocked);
+          if (res === 'UR' || res === 'SLEIGH') {
+            if (res === 'UR') urTotal++;
+            else sleighTotal++;
+            counts[Math.min(step, 6)]++;
+            totalTickets += tickets;
+            break;
+          }
+          step++;
+        }
+      }
+
+      const avgTickets = (totalTickets / N).toFixed(2);
+      const avgFleet = (avgTickets * (state.extraTruckUnlocked ? 5 : 4)).toFixed(1);
+
+      alert(
+        `🎲 Monte Carlo Simulation Results (10,000 Dispatches):\n\n` +
+        `• Average Tickets per UR/Sleigh: ${avgTickets} Trade Contracts\n` +
+        `• Estimated Daily Cost (${state.extraTruckUnlocked ? 5 : 4} trucks): ~${avgFleet} Trade Contracts\n\n` +
+        `• Initial Spawn Hit UR (0 🎫): ${(counts.spawn / N * 100).toFixed(1)}%\n` +
+        `• Hit on Free Refresh (0 🎫): ${(counts[1] / N * 100).toFixed(1)}%\n` +
+        `  -> Combined 0-Ticket Jackpot Chance: ${((counts.spawn + counts[1]) / N * 100).toFixed(1)}%!\n` +
+        `• Hit on Roll 2 (1 🎫): ${(counts[2] / N * 100).toFixed(1)}%\n` +
+        `• Hit on Roll 3 (2 🎫): ${(counts[3] / N * 100).toFixed(1)}%\n` +
+        `• Hit on Roll 4 (3 🎫): ${(counts[4] / N * 100).toFixed(1)}%\n` +
+        `• Hit on Roll 5 (4 🎫): ${(counts[5] / N * 100).toFixed(1)}%\n` +
+        `• Hit on Roll 6 (Pity): ${(counts[6] / N * 100).toFixed(1)}%\n\n` +
+        (state.reindeerUnlocked ? `• Sleighs obtained: ${sleighTotal} (${(sleighTotal / N * 100).toFixed(1)}%)\n` : '') +
+        `Because trucks spawn randomly, ~9.8% of trucks reach UR without spending a single trade contract!`
+      );
+    }
+
+    /* ==========================================================================
+       9. INITIALIZATION & EVENT LISTENERS
+       ========================================================================== */
+    elements.btnRollTruck.addEventListener('click', () => doSingleRoll(false));
+    elements.btnAutoRollUR.addEventListener('click', () => autoRollToTarget(['UR', 'SLEIGH']));
+    elements.btnAutoRollSSR.addEventListener('click', () => autoRollToTarget(['SSR', 'UR', 'SLEIGH']));
+    elements.btnDispatchTruck.addEventListener('click', dispatchCurrentTruck);
+    elements.btnResetSlot.addEventListener('click', resetCurrentSlot);
+    elements.btnClearFleet.addEventListener('click', clearFleet);
+    elements.btnSimulateFullDay.addEventListener('click', simulateFullDayFleet);
+    elements.btnRunMonteCarlo.addEventListener('click', runMonteCarloSim);
+
+    // Slot buttons
+    document.querySelectorAll('.slot-pill').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const idx = parseInt(e.target.getAttribute('data-slot'), 10);
+        selectSlot(idx);
+      });
+    });
+
+    // Reindeer Toggle
+    elements.toggleReindeer.addEventListener('change', (e) => {
+      state.reindeerUnlocked = e.target.checked;
+      sound.playClick();
+      renderRatesTable();
+      renderActiveSlot();
+      showToast(state.reindeerUnlocked ? "Reindeer Sleigh unlocked! (Weight 10 on refreshes)" : "Reindeer Sleigh disabled.", "🦌");
+    });
+
+    // Extra Truck Toggle
+    elements.toggleExtraTruck.addEventListener('change', (e) => {
+      state.extraTruckUnlocked = e.target.checked;
+      sound.playClick();
+      elements.extraTruckSlotBtn.style.display = state.extraTruckUnlocked ? 'flex' : 'none';
+      renderFleetDock();
+      showToast(state.extraTruckUnlocked ? "5th Truck Lane Unlocked!" : "5th Truck Lane Disabled (4 Trucks).", "🚚");
+    });
+
+    // Sound toggle
+    elements.btnToggleSound.addEventListener('click', () => {
+      sound.enabled = !sound.enabled;
+      elements.btnToggleSound.textContent = sound.enabled ? "🔊 Sound: ON" : "🔇 Sound: OFF";
+      if (sound.enabled) sound.playClick();
+    });
+
+    // Rules Modal
+    elements.btnOpenRules.addEventListener('click', () => {
+      elements.rulesModal.classList.add('open');
+      sound.playClick();
+    });
+
+    elements.btnCloseRules.addEventListener('click', () => {
+      elements.rulesModal.classList.remove('open');
+    });
+
+    elements.rulesModal.addEventListener('click', (e) => {
+      if (e.target === elements.rulesModal) {
+        elements.rulesModal.classList.remove('open');
+      }
+    });
+
+    // Keyboard Shortcuts (Space to roll, Enter to dispatch)
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' && !['INPUT', 'BUTTON'].includes(document.activeElement.tagName)) {
+        e.preventDefault();
+        doSingleRoll(false);
+      }
+    });
+
+    // Boot App
+    applyTheme();
+    renderActiveSlot();
+    renderFleetDock();
+  </script>
+</body>
+</html>
