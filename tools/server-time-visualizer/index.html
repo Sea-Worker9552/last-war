@@ -1,1 +1,2949 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Server Time vs Local Visualizer & Arms Race Matrix | Last War: Survival Hub</title>
+  <meta name="description" content="Real-time Server Time (SVT) versus Local Time visualizer and interactive 7-Day Arms Race schedule synchronizer for Last War: Survival. Features 24-hour dual timeline, world alliance board, and timezone converters.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
+  <script>
+    // Early theme initialization to prevent flash of wrong theme (default to 'system')
+    (function() {
+      const savedTheme = localStorage.getItem('theme') || 'system';
+      if (savedTheme === 'system') {
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        document.documentElement.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
+      } else {
+        document.documentElement.setAttribute('data-theme', savedTheme);
+      }
+    })();
+  </script>
+
+  <style>
+    /* ==========================================================================
+       Design System & Theme Tokens (Calibrated Soft Dark Slate & Crisp Light)
+       ========================================================================== */
+    :root {
+      --font-main: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+      /* Base Palette - Soft Dark Slate */
+      --bg-base: #0b0f19;
+      --panel-bg: #141d2f;
+      --panel-border: rgba(255, 255, 255, 0.08);
+      --card-inner-bg: rgba(15, 23, 42, 0.55);
+      --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+
+      /* Typography */
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+
+      /* Tactical Tokens */
+      --gold-primary: #eab308;
+      --gold-glow: rgba(234, 179, 8, 0.22);
+      --cyan-primary: #06b6d4;
+      --cyan-glow: rgba(6, 182, 212, 0.22);
+      --green-accent: #10b981;
+      --green-glow: rgba(16, 185, 129, 0.22);
+      --purple-accent: #a855f7;
+      --purple-glow: rgba(168, 85, 247, 0.22);
+      --red-accent: #ef4444;
+      --blue-accent: #38bdf8;
+      --orange-accent: #f97316;
+
+      /* Controls */
+      --input-bg: rgba(10, 15, 28, 0.85);
+      --input-border: rgba(255, 255, 255, 0.12);
+      --input-focus: #06b6d4;
+      --slider-track: #1e293b;
+      --slider-thumb: #eab308;
+
+      /* Timeline Shading */
+      --timeline-night: rgba(15, 23, 42, 0.7);
+      --timeline-day: rgba(14, 165, 233, 0.12);
+      --timeline-dawn: rgba(245, 158, 11, 0.12);
+    }
+
+    [data-theme="light"] {
+      --bg-base: #f8fafc;
+      --panel-bg: #ffffff;
+      --panel-border: rgba(203, 213, 225, 0.8);
+      --card-inner-bg: #f1f5f9;
+      --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.08);
+
+      --text-main: #020617;
+      --text-muted: #334155;
+      --text-dim: #64748b;
+
+      --gold-primary: #ca8a04;
+      --gold-glow: rgba(202, 138, 4, 0.15);
+      --cyan-primary: #0284c7;
+      --cyan-glow: rgba(2, 132, 199, 0.15);
+      --green-accent: #059669;
+      --green-glow: rgba(5, 150, 105, 0.15);
+      --purple-accent: #7c3aed;
+      --purple-glow: rgba(124, 58, 237, 0.15);
+      --red-accent: #dc2626;
+      --blue-accent: #0284c7;
+      --orange-accent: #ea580c;
+
+      --input-bg: #ffffff;
+      --input-border: rgba(148, 163, 184, 0.8);
+      --input-focus: #0284c7;
+      --slider-track: #e2e8f0;
+      --slider-thumb: #ca8a04;
+
+      --timeline-night: rgba(226, 232, 240, 0.75);
+      --timeline-day: rgba(186, 230, 253, 0.4);
+      --timeline-dawn: rgba(254, 243, 199, 0.45);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-main);
+      background-color: var(--bg-base);
+      color: var(--text-main);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    .container {
+      max-width: 1360px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 16px 20px 40px;
+      box-sizing: border-box;
+      flex: 1;
+    }
+
+    /* Top Navigation Bar */
+    .top-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--panel-border);
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--text-main);
+      font-weight: 800;
+      font-size: 1.05rem;
+      letter-spacing: -0.2px;
+    }
+
+    .nav-brand:hover {
+      color: var(--gold-primary);
+    }
+
+    .nav-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(234, 179, 8, 0.15);
+      color: var(--gold-primary);
+      border: 1px solid rgba(234, 179, 8, 0.3);
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+
+    .top-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-tool-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--input-bg);
+      border: 1px solid var(--panel-border);
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-tool-link:hover {
+      color: var(--text-main);
+      border-color: var(--cyan-primary);
+      transform: translateY(-1px);
+    }
+
+    .toggle-pill-group {
+      display: inline-flex;
+      background: var(--input-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: 8px;
+      padding: 3px;
+      gap: 2px;
+    }
+
+    .toggle-pill-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-family: var(--font-main);
+      font-size: 0.76rem;
+      font-weight: 700;
+      padding: 4px 9px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .toggle-pill-btn.active, .toggle-pill-btn:hover {
+      background: var(--panel-bg);
+      color: var(--text-main);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    [data-theme="light"] .toggle-pill-btn.active {
+      background: #ffffff;
+      color: #0f172a;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+    }
+
+    /* Hero Header */
+    .hero-header {
+      margin-bottom: 20px;
+    }
+
+    .hero-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .hero-title-row h1 {
+      font-size: 1.7rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .hero-title-row p {
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      margin-top: 4px;
+    }
+
+    /* Live Clocks 3-Card Command Banner */
+    .clocks-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .clock-card {
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: 14px;
+      padding: 16px 20px;
+      box-shadow: var(--card-shadow);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .clock-card:hover {
+      border-color: rgba(255, 255, 255, 0.18);
+      transform: translateY(-2px);
+    }
+
+    .clock-card.server-card {
+      border-left: 4px solid var(--gold-primary);
+    }
+
+    .clock-card.local-card {
+      border-left: 4px solid var(--cyan-primary);
+    }
+
+    .clock-card.arms-card {
+      border-left: 4px solid var(--green-accent);
+    }
+
+    .clock-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      gap: 8px;
+    }
+
+    .clock-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .clock-badge {
+      font-size: 0.7rem;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-family: var(--font-mono);
+    }
+
+    .badge-gold {
+      background: rgba(234, 179, 8, 0.18);
+      color: var(--gold-primary);
+      border: 1px solid rgba(234, 179, 8, 0.35);
+    }
+
+    .badge-cyan {
+      background: rgba(6, 182, 212, 0.18);
+      color: var(--cyan-primary);
+      border: 1px solid rgba(6, 182, 212, 0.35);
+    }
+
+    .badge-green {
+      background: rgba(16, 185, 129, 0.18);
+      color: var(--green-accent);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+    }
+
+    .clock-digital-time {
+      font-family: var(--font-mono);
+      font-size: 2.15rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      line-height: 1.15;
+      margin: 6px 0 4px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .clock-digital-time.gold { color: var(--gold-primary); text-shadow: 0 0 20px var(--gold-glow); }
+    .clock-digital-time.cyan { color: var(--cyan-primary); text-shadow: 0 0 20px var(--cyan-glow); }
+    .clock-digital-time.green { color: var(--green-accent); text-shadow: 0 0 20px var(--green-glow); }
+
+    .clock-sub-date {
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .clock-meta-row {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--panel-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .tz-select-inline {
+      background: var(--input-bg);
+      color: var(--text-main);
+      border: 1px solid var(--input-border);
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      font-family: var(--font-main);
+      cursor: pointer;
+      max-width: 210px;
+      text-overflow: ellipsis;
+      outline: none;
+    }
+
+    .tz-select-inline:focus {
+      border-color: var(--cyan-primary);
+      box-shadow: 0 0 0 2px var(--cyan-glow);
+    }
+
+    /* Arms Race Progress Bar */
+    .progress-track {
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--green-accent), var(--cyan-primary));
+      width: 0%;
+      transition: width 0.4s ease;
+      border-radius: 999px;
+    }
+
+    /* Golden Synergy Callout Alert */
+    .synergy-callout {
+      background: rgba(234, 179, 8, 0.1);
+      border: 1px solid rgba(234, 179, 8, 0.35);
+      border-radius: 10px;
+      padding: 10px 16px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      font-size: 0.84rem;
+    }
+
+    .synergy-callout.active-synergy {
+      background: linear-gradient(90deg, rgba(234, 179, 8, 0.16), rgba(16, 185, 129, 0.12));
+      border-color: var(--gold-primary);
+    }
+
+    .synergy-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .synergy-icon {
+      font-size: 1.3rem;
+    }
+
+    /* Card Panels */
+    .card-panel {
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: 16px;
+      padding: 22px;
+      box-shadow: var(--card-shadow);
+      margin-bottom: 24px;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .panel-header h2 {
+      font-size: 1.18rem;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .panel-header p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* Day Selector Tabs (Ordered Day 1 thru 7) */
+    .day-tabs {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 8px 4px 10px 4px;
+      margin-bottom: 16px;
+      scrollbar-width: thin;
+    }
+
+    .day-tab-btn {
+      background: var(--input-bg);
+      border: 1px solid var(--panel-border);
+      color: var(--text-muted);
+      font-family: var(--font-main);
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 9px 12px;
+      border-radius: 9px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, color 0.15s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      min-width: 120px;
+      flex: 1;
+      position: relative;
+    }
+
+    .day-tab-btn:hover {
+      color: var(--text-main);
+      border-color: rgba(255, 255, 255, 0.35);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .day-tab-title-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      font-weight: 800;
+    }
+
+    /* Active Selected Tab */
+    .day-tab-btn.active {
+      background: rgba(6, 182, 212, 0.12);
+      border-color: var(--cyan-primary);
+      color: var(--cyan-primary);
+      box-shadow: 0 0 14px var(--cyan-glow);
+    }
+
+    .day-tab-btn.active .day-tab-theme {
+      color: var(--cyan-primary);
+    }
+
+    /* Highlighted Box for Today */
+    .day-tab-btn.is-today {
+      border: 1.5px solid rgba(234, 179, 8, 0.6);
+      background: rgba(234, 179, 8, 0.08);
+    }
+
+    .day-tab-btn.is-today .day-tab-title-row {
+      color: var(--gold-primary);
+    }
+
+    /* Today AND Currently Selected */
+    .day-tab-btn.is-today.active {
+      background: rgba(234, 179, 8, 0.18);
+      border-color: var(--gold-primary);
+      color: var(--gold-primary);
+      box-shadow: 0 0 16px var(--gold-glow);
+    }
+
+    .day-tab-btn.is-today.active .day-tab-theme {
+      color: var(--gold-primary);
+    }
+
+    .day-today-badge {
+      background: var(--gold-primary);
+      color: #000;
+      font-size: 0.58rem;
+      font-weight: 900;
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      letter-spacing: 0.5px;
+      display: inline-block;
+      line-height: 1.2;
+    }
+
+    [data-theme="light"] .day-today-badge {
+      background: #ca8a04;
+      color: #ffffff;
+    }
+
+    .day-tab-theme {
+      font-size: 0.68rem;
+      font-weight: 500;
+      color: var(--text-dim);
+    }
+
+    /* 24-Hour Visualizer Tracks */
+    .timeline-visualizer-container {
+      background: var(--card-inner-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: 12px;
+      padding: 20px 16px 16px;
+      position: relative;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+
+    .timeline-track-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.76rem;
+      font-weight: 800;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .track-wrapper {
+      position: relative;
+      margin-bottom: 18px;
+    }
+
+    .timeline-strip {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 5px;
+      border-radius: 8px;
+      padding: 4px;
+      position: relative;
+      min-height: 74px;
+    }
+
+    .timeline-session-block {
+      background: var(--input-bg);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 6px;
+      padding: 8px 6px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      text-align: center;
+      cursor: pointer;
+      position: relative;
+      transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+      user-select: none;
+    }
+
+    .timeline-session-block:hover {
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+      border-color: rgba(255, 255, 255, 0.35);
+    }
+
+    .timeline-session-block.is-active-now {
+      border: 2px solid var(--gold-primary) !important;
+      box-shadow: 0 0 16px var(--gold-glow);
+    }
+
+    .timeline-session-block.is-synergy {
+      border-top: 3px solid var(--gold-primary);
+    }
+
+    .timeline-session-block.build { background: rgba(245, 158, 11, 0.16); color: #fbbf24; border-color: rgba(245, 158, 11, 0.3); }
+    .timeline-session-block.tech { background: rgba(6, 182, 212, 0.16); color: #22d3ee; border-color: rgba(6, 182, 212, 0.3); }
+    .timeline-session-block.troops { background: rgba(16, 185, 129, 0.16); color: #34d399; border-color: rgba(16, 185, 129, 0.3); }
+    .timeline-session-block.hero { background: rgba(168, 85, 247, 0.16); color: #c084fc; border-color: rgba(168, 85, 247, 0.3); }
+    .timeline-session-block.drone { background: rgba(2, 132, 199, 0.18); color: #38bdf8; border-color: rgba(2, 132, 199, 0.3); }
+
+    [data-theme="light"] .timeline-session-block.build { background: #fef3c7; color: #78350f; border-color: #fde68a; }
+    [data-theme="light"] .timeline-session-block.tech { background: #cffafe; color: #164e63; border-color: #a5f3fc; }
+    [data-theme="light"] .timeline-session-block.troops { background: #d1fae5; color: #064e3b; border-color: #a7f3d0; }
+    [data-theme="light"] .timeline-session-block.hero { background: #f3e8ff; color: #581c87; border-color: #e9d5ff; }
+    [data-theme="light"] .timeline-session-block.drone { background: #e0f2fe; color: #075985; border-color: #bae6fd; }
+
+    .block-header-tag {
+      font-size: 0.68rem;
+      font-weight: 800;
+      font-family: var(--font-mono);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .block-name-label {
+      font-size: 0.76rem;
+      font-weight: 700;
+      line-height: 1.15;
+      margin: 4px 0;
+    }
+
+    .block-time-range {
+      font-size: 0.65rem;
+      font-family: var(--font-mono);
+      font-weight: 600;
+      opacity: 0.85;
+    }
+
+    /* Synchronized Local Time Comparison Strip */
+    .local-axis-strip {
+      display: grid;
+      grid-template-columns: repeat(24, 1fr);
+      height: 38px;
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid var(--panel-border);
+      position: relative;
+    }
+
+    .local-hour-cell {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      font-weight: 700;
+      border-right: 1px solid rgba(255, 255, 255, 0.04);
+      position: relative;
+      transition: background 0.2s ease;
+    }
+
+    .local-hour-cell.is-night {
+      background: var(--timeline-night);
+      color: var(--text-dim);
+    }
+
+    .local-hour-cell.is-day {
+      background: var(--timeline-day);
+      color: var(--cyan-primary);
+    }
+
+    .local-hour-cell.is-dawn {
+      background: var(--timeline-dawn);
+      color: var(--gold-primary);
+    }
+
+    .local-hour-cell .hour-sun-moon {
+      font-size: 0.58rem;
+      margin-top: 1px;
+    }
+
+    /* Live "NOW" Indicator Needle */
+    .now-needle {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: var(--gold-primary);
+      box-shadow: 0 0 10px var(--gold-primary), 0 0 20px var(--gold-glow);
+      z-index: 10;
+      pointer-events: none;
+      transition: left 0.5s linear;
+    }
+
+    .now-needle-tag {
+      position: absolute;
+      top: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--gold-primary);
+      color: #000;
+      font-size: 0.6rem;
+      font-weight: 900;
+      padding: 1px 5px;
+      border-radius: 3px;
+      white-space: nowrap;
+      font-family: var(--font-mono);
+      letter-spacing: 0.5px;
+    }
+
+    /* Interactive Scrubber Slider Bar */
+    .scrubber-bar-container {
+      margin: 18px 0 12px;
+      position: relative;
+    }
+
+    .scrubber-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 8px;
+      border-radius: 6px;
+      background: var(--slider-track);
+      outline: none;
+      cursor: ew-resize;
+    }
+
+    .scrubber-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--gold-primary);
+      border: 3px solid var(--panel-bg);
+      cursor: pointer;
+      box-shadow: 0 0 12px var(--gold-primary);
+      transition: transform 0.1s ease;
+    }
+
+    .scrubber-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+    }
+
+    /* Scrubber Controls Row */
+    .scrubber-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .preset-pills {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .preset-pill-btn {
+      background: var(--input-bg);
+      border: 1px solid var(--panel-border);
+      color: var(--text-muted);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .preset-pill-btn:hover {
+      color: var(--text-main);
+      border-color: var(--cyan-primary);
+    }
+
+    /* Scrubber Live Inspection Card */
+    .inspection-card {
+      background: var(--card-inner-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: 12px;
+      padding: 16px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .inspection-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .inspection-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .inspection-val {
+      font-size: 1.05rem;
+      font-weight: 800;
+      font-family: var(--font-mono);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .inspection-sub {
+      font-size: 0.74rem;
+      color: var(--text-dim);
+    }
+
+    /* Awake & Sleep Schedule Breakdown */
+    .schedule-analysis-box {
+      margin-top: 16px;
+      padding: 12px 16px;
+      background: rgba(6, 182, 212, 0.08);
+      border: 1px solid rgba(6, 182, 212, 0.25);
+      border-radius: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 0.8rem;
+    }
+
+    /* 7-Day Universal Calendar Matrix */
+    .calendar-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .filter-pills {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      background: var(--input-bg);
+      border: 1px solid var(--panel-border);
+      color: var(--text-muted);
+      font-size: 0.74rem;
+      font-weight: 700;
+      padding: 5px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .filter-btn:hover {
+      color: var(--text-main);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .filter-btn.active {
+      background: var(--cyan-primary);
+      color: #000;
+      border-color: var(--cyan-primary);
+      font-weight: 800;
+    }
+
+    .calendar-table-responsive {
+      width: 100%;
+      overflow-x: auto;
+      border-radius: 10px;
+      border: 1px solid var(--panel-border);
+      background: var(--card-inner-bg);
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .calendar-matrix {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 900px;
+      text-align: center;
+      font-size: 0.78rem;
+    }
+
+    .calendar-matrix th {
+      padding: 12px 8px;
+      background: rgba(15, 23, 42, 0.7);
+      border-bottom: 2px solid var(--panel-border);
+      border-right: 1px solid var(--panel-border);
+      color: var(--text-main);
+      font-weight: 800;
+      vertical-align: middle;
+    }
+
+    [data-theme="light"] .calendar-matrix th {
+      background: #e2e8f0;
+    }
+
+    .calendar-matrix th.current-day-col {
+      background: rgba(234, 179, 8, 0.15);
+      border-top: 3px solid var(--gold-primary);
+    }
+
+    .calendar-matrix td {
+      padding: 6px;
+      border-bottom: 1px solid var(--panel-border);
+      border-right: 1px solid var(--panel-border);
+      vertical-align: middle;
+    }
+
+    .session-col-cell {
+      background: rgba(15, 23, 42, 0.4);
+      font-weight: 700;
+      padding: 8px !important;
+      text-align: left;
+    }
+
+    [data-theme="light"] .session-col-cell {
+      background: #f1f5f9;
+    }
+
+    .calendar-event-cell {
+      border-radius: 6px;
+      padding: 8px 6px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      line-height: 1.2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 52px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      position: relative;
+    }
+
+    .calendar-event-cell:hover {
+      transform: scale(1.02);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    }
+
+    .calendar-event-cell.is-now-cell {
+      border: 2px solid var(--gold-primary) !important;
+      box-shadow: 0 0 14px var(--gold-glow);
+    }
+
+    .calendar-event-cell.build { background: rgba(245, 158, 11, 0.16); color: #fbbf24; border-color: rgba(245, 158, 11, 0.3); }
+    .calendar-event-cell.tech { background: rgba(6, 182, 212, 0.16); color: #22d3ee; border-color: rgba(6, 182, 212, 0.3); }
+    .calendar-event-cell.troops { background: rgba(16, 185, 129, 0.16); color: #34d399; border-color: rgba(16, 185, 129, 0.3); }
+    .calendar-event-cell.hero { background: rgba(168, 85, 247, 0.16); color: #c084fc; border-color: rgba(168, 85, 247, 0.3); }
+    .calendar-event-cell.drone { background: rgba(2, 132, 199, 0.18); color: #38bdf8; border-color: rgba(2, 132, 199, 0.3); }
+
+    [data-theme="light"] .calendar-event-cell.build { background: #fef3c7; color: #78350f; border-color: #fde68a; }
+    [data-theme="light"] .calendar-event-cell.tech { background: #cffafe; color: #164e63; border-color: #a5f3fc; }
+    [data-theme="light"] .calendar-event-cell.troops { background: #d1fae5; color: #064e3b; border-color: #a7f3d0; }
+    [data-theme="light"] .calendar-event-cell.hero { background: #f3e8ff; color: #581c87; border-color: #e9d5ff; }
+    [data-theme="light"] .calendar-event-cell.drone { background: #e0f2fe; color: #075985; border-color: #bae6fd; }
+
+    .calendar-event-cell.is-dimmed {
+      opacity: 0.25;
+      filter: grayscale(80%);
+    }
+
+    .synergy-star-badge {
+      font-size: 0.65rem;
+      background: rgba(234, 179, 8, 0.25);
+      color: var(--gold-primary);
+      padding: 1px 5px;
+      border-radius: 4px;
+      margin-top: 3px;
+      font-weight: 800;
+    }
+
+    .now-live-tag {
+      font-size: 0.62rem;
+      background: var(--gold-primary);
+      color: #000;
+      font-weight: 900;
+      padding: 1px 4px;
+      border-radius: 3px;
+      margin-top: 2px;
+      font-family: var(--font-mono);
+    }
+
+    /* Alliance Multi-Timezone World Board */
+    .world-board-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .world-clock-card {
+      background: var(--card-inner-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: 12px;
+      padding: 14px;
+      position: relative;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .world-clock-card:hover {
+      border-color: rgba(255, 255, 255, 0.18);
+      transform: translateY(-2px);
+    }
+
+    .world-clock-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 6px;
+    }
+
+    .world-clock-city {
+      font-size: 0.88rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .world-clock-offset {
+      font-size: 0.68rem;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .world-clock-time {
+      font-family: var(--font-mono);
+      font-size: 1.55rem;
+      font-weight: 700;
+      color: var(--cyan-primary);
+      margin: 4px 0;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .world-clock-details {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid var(--panel-border);
+    }
+
+    .player-state-pill {
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .state-prime { background: rgba(16, 185, 129, 0.15); color: var(--green-accent); }
+    .state-active { background: rgba(6, 182, 212, 0.15); color: var(--cyan-primary); }
+    .state-sleep { background: rgba(100, 116, 139, 0.2); color: var(--text-muted); }
+
+    .btn-remove-clock {
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      cursor: pointer;
+      font-size: 0.9rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+      transition: color 0.15s ease;
+    }
+
+    .btn-remove-clock:hover {
+      color: var(--red-accent);
+    }
+
+    /* Bidirectional Converter & Discord Planner */
+    .tools-split-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .input-styled, .select-styled {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      border-radius: 8px;
+      padding: 8px 12px;
+      color: var(--text-main);
+      font-family: var(--font-main);
+      font-size: 0.85rem;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+
+    .input-styled:focus, .select-styled:focus {
+      border-color: var(--cyan-primary);
+      box-shadow: 0 0 0 2px var(--cyan-glow);
+    }
+
+    .btn-action {
+      background: var(--gold-primary);
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      padding: 9px 16px;
+      font-weight: 800;
+      font-size: 0.84rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-action:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px var(--gold-glow);
+    }
+
+    .btn-secondary {
+      background: var(--input-bg);
+      color: var(--text-main);
+      border: 1px solid var(--panel-border);
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-weight: 700;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--cyan-primary);
+      color: var(--cyan-primary);
+    }
+
+    .conversion-result-box {
+      background: var(--card-inner-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: 10px;
+      padding: 14px;
+      margin-top: 14px;
+    }
+
+    .discord-output-box {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--panel-border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: #38bdf8;
+      word-break: break-all;
+      margin: 10px 0;
+      user-select: all;
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #10b981;
+      color: #000;
+      font-weight: 800;
+      font-size: 0.82rem;
+      padding: 10px 18px;
+      border-radius: 8px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      opacity: 0;
+      transform: translateY(20px);
+      pointer-events: none;
+      transition: all 0.25s ease;
+      z-index: 9999;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Footer */
+    .app-footer {
+      text-align: center;
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid var(--panel-border);
+      font-size: 0.76rem;
+      color: var(--text-dim);
+    }
+
+    /* Responsive Queries */
+    @media (max-width: 768px) {
+      .container { padding: 12px 12px 30px; }
+      .clock-digital-time { font-size: 1.75rem; }
+      .timeline-strip { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+      .local-axis-strip { height: 32px; font-size: 0.55rem; }
+      .panel-header { flex-direction: column; align-items: flex-start; }
+      .day-tabs { flex-wrap: nowrap; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- Top Navigation Bar -->
+    <header class="top-nav">
+      <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+        <a href="../hub/index.html" class="nav-brand">
+          <span style="font-size:1.3rem;">⚡</span>
+          <span>LAST WAR <span style="color:var(--gold-primary);">HUB</span></span>
+        </a>
+        <span class="nav-badge">🌐 Universal Timezone & Arms Race Sync</span>
+      </div>
+
+      <div class="top-controls">
+        <!-- 12h / 24h Toggle -->
+        <div class="toggle-pill-group">
+          <button type="button" class="toggle-pill-btn active" id="timeFmt12Btn" onclick="setTimeFormat(12)">12H</button>
+          <button type="button" class="toggle-pill-btn" id="timeFmt24Btn" onclick="setTimeFormat(24)">24H</button>
+        </div>
+
+        <!-- Color Modes: Light / Dark / System (Defaulting to System) -->
+        <div class="toggle-pill-group" role="radiogroup" aria-label="Theme Color Mode">
+          <button type="button" class="toggle-pill-btn" data-theme-val="light" onclick="setTheme('light')" title="Light Theme">☀️ Light</button>
+          <button type="button" class="toggle-pill-btn" data-theme-val="dark" onclick="setTheme('dark')" title="Dark Theme">🌙 Dark</button>
+          <button type="button" class="toggle-pill-btn" data-theme-val="system" onclick="setTheme('system')" title="System Default Theme">💻 System</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Hero Title -->
+    <div class="hero-header">
+      <div class="hero-title-row">
+        <div>
+          <h1>⏱️ Server Time vs Local Visualizer</h1>
+          <p>Real-time Last War Server Time (00:00 SVT = 02:00 UTC) synchronizer, 24-hour dual timeline visualizer, and complete 7-Day Arms Race schedule matrix.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Clocks 3-Card Command Banner -->
+    <div class="clocks-grid">
+
+      <!-- Card 1: Server Time (SVT) -->
+      <div class="clock-card server-card">
+        <div>
+          <div class="clock-card-header">
+            <span class="clock-label">🌐 Server Time (SVT)</span>
+            <span class="clock-badge badge-gold">UTC - 2h</span>
+          </div>
+          <div class="clock-digital-time gold" id="clockSvtTime">00:00:00</div>
+          <div class="clock-sub-date" id="clockSvtDate">Friday, Oct 9, 2026</div>
+        </div>
+        <div class="clock-meta-row">
+          <div>
+            <span>VS Duel:</span> <strong id="clockVsDayTheme" style="color:var(--gold-primary);">Day 5: Total Mobilization</strong>
+          </div>
+          <div>
+            <span>Reset in:</span> <strong id="clockResetCountdown" style="font-family:var(--font-mono);">06h 44m 11s</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2: Local / Selected Timezone -->
+      <div class="clock-card local-card">
+        <div>
+          <div class="clock-card-header">
+            <span class="clock-label">📍 Comparison Time Zone</span>
+            <select id="userTzSelect" class="tz-select-inline" onchange="onTimezoneChange()">
+              <!-- Dynamically populated with complete canonical IANA list -->
+            </select>
+          </div>
+          <div class="clock-digital-time cyan" id="clockLocalTime">00:00:00</div>
+          <div class="clock-sub-date" id="clockLocalDate">Friday, Oct 9, 2026</div>
+        </div>
+        <div class="clock-meta-row">
+          <div>
+            <span>Difference:</span> <strong id="clockTzOffsetDiff" style="color:var(--cyan-primary);">+2 Hours Ahead of SVT</strong>
+          </div>
+          <div>
+            <span>Daily Reset:</span> <strong id="clockLocalResetTime" style="font-family:var(--font-mono);">10:00 PM</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3: Active Arms Race Block -->
+      <div class="clock-card arms-card">
+        <div>
+          <div class="clock-card-header">
+            <span class="clock-label">🏆 Active Arms Race (4h)</span>
+            <span class="clock-badge badge-green" id="activeBlockBadge">Block 5 of 6</span>
+          </div>
+          <div class="clock-digital-time green" id="activeEventTitle" style="font-size:1.65rem; margin-top:8px;">Base Building</div>
+          <div class="clock-sub-date" id="activeBlockRange">16:00 – 20:00 SVT</div>
+          <div class="progress-track" title="Session Elapsed Progress">
+            <div class="progress-fill" id="blockProgressBar" style="width: 45%;"></div>
+          </div>
+        </div>
+        <div class="clock-meta-row">
+          <div>
+            <span>Remaining:</span> <strong id="blockCountdown" style="font-family:var(--font-mono); color:var(--green-accent);">02h 15m 49s</strong>
+          </div>
+          <div>
+            <span>Up Next:</span> <strong id="nextBlockPreview" style="color:var(--text-main);">Unit Progression</strong>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Active VS Synergy Notification Alert -->
+    <div class="synergy-callout" id="synergyBanner">
+      <div class="synergy-left">
+        <span class="synergy-icon">⚡</span>
+        <div>
+          <strong id="synergyTitle">Arms Race Synergy Status</strong>
+          <span style="display:block; font-size:0.76rem; color:var(--text-muted);" id="synergyDesc">Loading alliance duel synergy...</span>
+        </div>
+      </div>
+      <div id="synergyTagContainer">
+        <span class="clock-badge badge-gold" id="synergyBadge">Synergy Active</span>
+      </div>
+    </div>
+
+    <!-- =====================================================================
+         SECTION 1: Interactive 24-Hour Dual-Time Visualizer Timeline
+         ===================================================================== -->
+    <section class="card-panel">
+      <div class="panel-header">
+        <div>
+          <h2>📊 24-Hour Dual-Time Interactive Visualizer</h2>
+          <p>Inspect how Server Time (00:00 to 24:00 SVT) directly aligns with your local clock, daylight/night cycles, and the six 4-hour Arms Race sessions.</p>
+        </div>
+        <div class="preset-pills">
+          <button type="button" class="preset-pill-btn" onclick="snapToNow()">⚡ Snap to NOW</button>
+          <button type="button" class="preset-pill-btn" onclick="scrubToHour(0)">🌅 Reset (00:00 SVT)</button>
+          <button type="button" class="preset-pill-btn" onclick="jumpToNextSession()">⏭️ Next Session</button>
+          <button type="button" class="preset-pill-btn" id="playCycleBtn" onclick="togglePlayCycle()">▶️ Play Cycle (10x)</button>
+        </div>
+      </div>
+
+      <!-- VS Day Selector Tabs -->
+      <div class="day-tabs" id="dayTabsContainer">
+        <!-- Rendered by JS -->
+      </div>
+
+      <!-- The Visual Timeline Tracks -->
+      <div class="timeline-visualizer-container" id="timelineContainer">
+
+        <!-- Glowing NOW needle across both tracks -->
+        <div class="now-needle" id="nowNeedle" style="left: 0%;">
+          <div class="now-needle-tag">LIVE NOW</div>
+        </div>
+
+        <!-- Upper Track: Server Time & 6 Arms Race Sessions -->
+        <div class="track-wrapper">
+          <div class="timeline-track-title">
+            <span>🌐 Server Time Axis (00:00 – 24:00 SVT)</span>
+            <span style="color:var(--gold-primary);" id="trackVsDayLabel">Day 5: Total Mobilization</span>
+          </div>
+          <div class="timeline-strip" id="armsRaceStrip">
+            <!-- 6 Blocks generated dynamically -->
+          </div>
+        </div>
+
+        <!-- Lower Track: Synchronized Comparison Local Time Axis -->
+        <div class="track-wrapper" style="margin-bottom: 0;">
+          <div class="timeline-track-title">
+            <span>📍 Local Time Axis (<span id="trackLocalTzLabel">Local Time</span>)</span>
+            <span style="color:var(--cyan-primary);">☀️ Day (08-20) • 🌙 Night (20-08)</span>
+          </div>
+          <div class="local-axis-strip" id="localAxisStrip">
+            <!-- 24 Hour ticks generated dynamically -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Scrubber Slider -->
+      <div class="scrubber-bar-container">
+        <input type="range" min="0" max="1439" value="0" class="scrubber-slider" id="timeScrubber" oninput="onScrubberInput(this.value)">
+      </div>
+
+      <!-- Scrubber Inspection HUD / Detailed Card -->
+      <div class="inspection-card" id="inspectionHUD">
+        <div class="inspection-item">
+          <span class="inspection-label">🌐 Server Time Point</span>
+          <div class="inspection-val" id="inspectSvtTime" style="color:var(--gold-primary);">19:15 SVT</div>
+          <div class="inspection-sub" id="inspectSvtDate">Friday, Oct 9, 2026</div>
+        </div>
+
+        <div class="inspection-item">
+          <span class="inspection-label">📍 Comparison Local Time</span>
+          <div class="inspection-val" id="inspectLocalTime" style="color:var(--cyan-primary);">05:15 PM EDT</div>
+          <div class="inspection-sub" id="inspectLocalDate">Friday, Oct 9, 2026</div>
+        </div>
+
+        <div class="inspection-item">
+          <span class="inspection-label">🏆 Active Arms Race Event</span>
+          <div class="inspection-val" id="inspectEventName">🏗️ Base Building</div>
+          <div class="inspection-sub" id="inspectEventRange">Block 5: 16:00 – 20:00 SVT</div>
+        </div>
+
+        <div class="inspection-item">
+          <span class="inspection-label">⚡ Synergy & Tactical Value</span>
+          <div class="inspection-val" id="inspectSynergyRating" style="font-size:0.95rem;">⭐ High Match</div>
+          <div class="inspection-sub" id="inspectSynergyAdvice">Speedups earn points toward both Arms Race & VS!</div>
+        </div>
+      </div>
+
+      <!-- Awake vs Sleep Schedule Breakdown for Selected Timezone -->
+      <div class="schedule-analysis-box" id="scheduleAnalysisBox">
+        <div>
+          <strong>💤 Local Sleep vs ⚔️ Awake Gaming Schedule Analysis:</strong>
+          <span style="display:block; color:var(--text-muted); margin-top:2px;" id="awakeAnalysisText">
+            You are awake (08:00–23:00) for <strong>4 out of 6</strong> Arms Race blocks today.
+          </span>
+        </div>
+        <div id="awakeSynergySummary" style="font-weight:700; color:var(--green-accent);">
+          ⭐ 2 Golden Synergy blocks occur during awake hours!
+        </div>
+      </div>
+
+    </section>
+
+    <!-- =====================================================================
+         SECTION 2: 7-Day Universal Arms Race & VS Calendar Matrix
+         ===================================================================== -->
+    <section class="card-panel">
+      <div class="panel-header">
+        <div>
+          <h2>📅 7-Day Arms Race & VS Event Calendar Matrix</h2>
+          <p>Full weekly transposed schedule across all 6 daily 4-hour sessions with dual timestamps and interactive filters.</p>
+        </div>
+
+        <div class="calendar-toolbar">
+          <!-- Time Display Mode -->
+          <div class="toggle-pill-group">
+            <button type="button" class="toggle-pill-btn active" id="calModeDualBtn" onclick="setCalendarTimeMode('dual')">Dual (SVT + Local)</button>
+            <button type="button" class="toggle-pill-btn" id="calModeLocalBtn" onclick="setCalendarTimeMode('local')">Local Only</button>
+            <button type="button" class="toggle-pill-btn" id="calModeSvtBtn" onclick="setCalendarTimeMode('svt')">SVT Only</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filter Pills -->
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
+        <div class="filter-pills" id="matrixFilterPills">
+          <button type="button" class="filter-btn active" onclick="filterCalendar('all')">All Events (36)</button>
+          <button type="button" class="filter-btn" onclick="filterCalendar('build')">🏗️ Base Building</button>
+          <button type="button" class="filter-btn" onclick="filterCalendar('tech')">🧬 Tech Research</button>
+          <button type="button" class="filter-btn" onclick="filterCalendar('troops')">🎖️ Unit Progression</button>
+          <button type="button" class="filter-btn" onclick="filterCalendar('hero')">🦸 Hero Advancement</button>
+          <button type="button" class="filter-btn" onclick="filterCalendar('drone')">🤖 Drone Boost</button>
+          <button type="button" class="filter-btn" onclick="filterCalendar('synergy')">⭐ VS Synergy Match Only</button>
+        </div>
+        <div style="font-size:0.75rem; color:var(--text-muted);">
+          <span>💡 Click any session cell to inspect or convert</span>
+        </div>
+      </div>
+
+      <!-- Matrix Table -->
+      <div class="calendar-table-responsive">
+        <table class="calendar-matrix" id="calendarMatrixTable">
+          <thead id="calendarMatrixHead">
+            <!-- Headers generated by JS -->
+          </thead>
+          <tbody id="calendarMatrixBody">
+            <!-- 6 Rows generated by JS -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         SECTION 3: Multi-Timezone Alliance World Board
+         ===================================================================== -->
+    <section class="card-panel">
+      <div class="panel-header">
+        <div>
+          <h2>🌍 Alliance Multi-Timezone World Board</h2>
+          <p>Real-time clocks and daily reset times for key alliance member regions. Plan desert storm, marshal summons, and war rallies across continents.</p>
+        </div>
+        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+          <select id="addWorldTzSelect" class="tz-select-inline" style="max-width:240px;">
+            <!-- Populated with canonical zones -->
+          </select>
+          <button type="button" class="btn-action" style="padding:6px 12px; font-size:0.76rem;" onclick="addWorldTimezone()">
+            ➕ Add Timezone
+          </button>
+          <button type="button" class="btn-secondary" style="padding:6px 12px; font-size:0.76rem;" onclick="resetDefaultWorldTimezones()">
+            🔄 Reset Presets
+          </button>
+        </div>
+      </div>
+
+      <!-- World Board Grid -->
+      <div class="world-board-grid" id="worldBoardGrid">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         SECTION 4: Bidirectional Time Converter & Discord Event Generator
+         ===================================================================== -->
+    <section class="card-panel">
+      <div class="panel-header">
+        <div>
+          <h2>🔄 Bidirectional Time Converter & Discord Planner</h2>
+          <p>Instantly convert between Server Time and your local clock, search upcoming sessions, and generate Discord timestamp tags.</p>
+        </div>
+      </div>
+
+      <div class="tools-split-grid">
+
+        <!-- Converter 1: SVT -> Local -->
+        <div style="background:var(--card-inner-bg); border:1px solid var(--panel-border); border-radius:12px; padding:18px;">
+          <h3 style="font-size:0.95rem; font-weight:800; margin-bottom:12px; color:var(--gold-primary);">
+            🌐 Convert Server Time (SVT) ➔ Local
+          </h3>
+          
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <div class="form-group">
+              <label for="svtConvertDate">Server Date</label>
+              <input type="date" id="svtConvertDate" class="input-styled" onchange="runSvtToLocalConvert()">
+            </div>
+            <div class="form-group">
+              <label for="svtConvertTime">Server Time (SVT)</label>
+              <input type="time" id="svtConvertTime" value="18:00" class="input-styled" onchange="runSvtToLocalConvert()">
+            </div>
+          </div>
+
+          <div class="conversion-result-box" id="svtToLocalResult">
+            <div style="font-size:0.75rem; color:var(--text-muted);">Converts in Selected Timezone:</div>
+            <div style="font-size:1.25rem; font-weight:800; color:var(--cyan-primary); font-family:var(--font-mono); margin:4px 0;" id="svtResultLocalTime">
+              --:-- --
+            </div>
+            <div style="font-size:0.78rem; font-weight:600;" id="svtResultLocalDate">--</div>
+            <div style="font-size:0.74rem; color:var(--text-dim); margin-top:6px;" id="svtResultEventInfo">--</div>
+          </div>
+
+          <!-- Discord Format Export -->
+          <div style="margin-top:14px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-size:0.72rem; font-weight:700; color:var(--text-muted);">Discord Dynamic Timestamp Tag:</span>
+              <button type="button" class="btn-secondary" style="padding:3px 8px; font-size:0.7rem;" onclick="copyDiscordTag('svtToLocalResult')">📋 Copy</button>
+            </div>
+            <div class="discord-output-box" id="discordTagSvt">
+              &lt;t:0:F&gt; (&lt;t:0:R&gt;)
+            </div>
+          </div>
+        </div>
+
+        <!-- Converter 2: Local -> SVT -->
+        <div style="background:var(--card-inner-bg); border:1px solid var(--panel-border); border-radius:12px; padding:18px;">
+          <h3 style="font-size:0.95rem; font-weight:800; margin-bottom:12px; color:var(--cyan-primary);">
+            📍 Convert Local Time ➔ Server Time (SVT)
+          </h3>
+
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <div class="form-group">
+              <label for="localConvertDate">Local Date</label>
+              <input type="date" id="localConvertDate" class="input-styled" onchange="runLocalToSvtConvert()">
+            </div>
+            <div class="form-group">
+              <label for="localConvertTime">Local Time</label>
+              <input type="time" id="localConvertTime" value="20:00" class="input-styled" onchange="runLocalToSvtConvert()">
+            </div>
+          </div>
+
+          <div class="conversion-result-box" id="localToSvtResult">
+            <div style="font-size:0.75rem; color:var(--text-muted);">Converts to Server Time (SVT):</div>
+            <div style="font-size:1.25rem; font-weight:800; color:var(--gold-primary); font-family:var(--font-mono); margin:4px 0;" id="localResultSvtTime">
+              --:-- SVT
+            </div>
+            <div style="font-size:0.78rem; font-weight:600;" id="localResultSvtDate">--</div>
+            <div style="font-size:0.74rem; color:var(--text-dim); margin-top:6px;" id="localResultEventInfo">--</div>
+          </div>
+
+          <!-- Quick Event Finder -->
+          <div style="margin-top:14px;">
+            <label style="font-size:0.72rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:6px;">
+              🔍 Next Session Finder:
+            </label>
+            <div style="display:flex; gap:8px;">
+              <select id="quickEventFinderSelect" class="select-styled" style="padding:6px 10px; font-size:0.78rem;" onchange="findNextEventOccurrences(this.value)">
+                <option value="tech">🧬 Tech Research</option>
+                <option value="build">🏗️ Base Building</option>
+                <option value="troops">🎖️ Unit Progression</option>
+                <option value="hero">🦸 Hero Advancement</option>
+                <option value="drone">🤖 Drone Boost</option>
+              </select>
+              <button type="button" class="btn-action" style="padding:6px 12px; font-size:0.76rem;" onclick="findNextEventOccurrences(document.getElementById('quickEventFinderSelect').value)">Find</button>
+            </div>
+            <div id="eventFinderResults" style="margin-top:10px; font-size:0.76rem; color:var(--text-main); max-height:120px; overflow-y:auto; line-height:1.4;">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- App Footer -->
+    <footer class="app-footer">
+      <p>Last War: Survival Toolkit • Server Time & Universal Arms Race Synchronizer</p>
+      <p style="margin-top:4px;">Synchronized with 00:00 SVT Daily Reset (02:00 UTC / 10:00 PM EDT / 7:00 PM PDT)</p>
+    </footer>
+
+  </div>
+
+  <!-- Toast Element -->
+  <div class="toast" id="appToast">
+    <span>✅</span>
+    <span id="toastMessage">Copied to clipboard!</span>
+  </div>
+
+  <!-- =====================================================================
+       Application Logic & Scheduling Engine
+       ===================================================================== -->
+  <script>
+    /* 1. Universal Schedule Constants */
+    const VS_DAYS = [
+      { id: 1, name: "Day 1 (Mon)", shortName: "Mon", theme: "Radar Training", category: "misc", synergyType: null },
+      { id: 2, name: "Day 2 (Tue)", shortName: "Tue", theme: "Base Expansion", category: "build", synergyType: "build" },
+      { id: 3, name: "Day 3 (Wed)", shortName: "Wed", theme: "Age of Science", category: "tech", synergyType: "tech" },
+      { id: 4, name: "Day 4 (Thu)", shortName: "Thu", theme: "Train Heroes", category: "hero", synergyType: "hero" },
+      { id: 5, name: "Day 5 (Fri)", shortName: "Fri", theme: "Total Mobilization", category: "troops", synergyType: "troops" },
+      { id: 6, name: "Day 6 (Sat)", shortName: "Sat", theme: "Enemy Buster", category: "war", synergyType: "troops" },
+      { id: 7, name: "Day 7 (Sun)", shortName: "Sun", theme: "Rest Day (No Event)", category: "rest", synergyType: null }
+    ];
+
+    const EVENT_METADATA = {
+      build: { name: "Base Building", icon: "🏗️", type: "build", description: "Construction speedups & building power" },
+      tech: { name: "Tech Research", icon: "🧬", type: "tech", description: "Research speedups & tech combat power" },
+      troops: { name: "Unit Progression", icon: "🎖️", type: "troops", description: "Troop training, promotions & recruitment" },
+      hero: { name: "Hero Advancement", icon: "🦸", type: "hero", description: "Hero EXP, skill points & shard recruitment" },
+      drone: { name: "Drone Boost", icon: "🤖", type: "drone", description: "Drone combat data & drone parts enhancement" }
+    };
+
+    // Official Universal Arms Race 4-Hour Schedule Matrix (7 Days x 6 Blocks)
+    const ARMS_RACE_ROTATION = {
+      1: [
+        { name: "Base Building", type: "build", icon: "🏗️" },
+        { name: "Unit Progression", type: "troops", icon: "🎖️" },
+        { name: "Hero Advancement", type: "hero", icon: "🦸" },
+        { name: "Tech Research", type: "tech", icon: "🧬" },
+        { name: "Drone Boost", type: "drone", icon: "🤖" },
+        { name: "Hero Advancement", type: "hero", icon: "🦸" }
+      ],
+      2: [
+        { name: "Unit Progression", type: "troops", icon: "🎖️" },
+        { name: "Tech Research", type: "tech", icon: "🧬" },
+        { name: "Base Building", type: "build", icon: "🏗️" },
+        { name: "Drone Boost", type: "drone", icon: "🤖" },
+        { name: "Hero Advancement", type: "hero", icon: "🦸" },
+        { name: "Base Building", type: "build", icon: "🏗️" }
+      ],
+      3: [
+        { name: "Drone Boost", type: "drone", icon: "🤖" },
+        { name: "Hero Advancement", type: "hero", icon: "🦸" },
+        { name: "Tech Research", type: "tech", icon: "🧬" },
+        { name: "Base Building", type: "build", icon: "🏗️" },
+        { name: "Unit Progression", type: "troops", icon: "🎖️" },
+        { name: "Tech Research", type: "tech", icon: "🧬" }
+      ],
+      4: [
+        { name: "Base Building", type: "build", icon: "🏗️" },
+        { name: "Unit Progression", type: "troops", icon: "🎖️" },
+        { name: "Hero Advancement", type: "hero", icon: "🦸" },
+        { name: "Tech Research", type: "tech", icon: "🧬" },
+        { name: "Drone Boost", type: "drone", icon: "🤖" },
+        { name: "Hero Advancement", type: "hero", icon: "🦸" }
+      ],
+      5: [
+        { name: "Tech Research", type: "tech", icon: "🧬" },
+        { name: "Drone Boost", type: "drone", icon: "🤖" },
+        { name: "Unit Progression", type: "troops", icon: "🎖️" },
+        { name: "Hero Advancement", type: "hero", icon: "🦸" },
+        { name: "Base Building", type: "build", icon: "🏗️" },
+        { name: "Unit Progression", type: "troops", icon: "🎖️" }
+      ],
+      6: [
+        { name: "Unit Progression", type: "troops", icon: "🎖️" },
+        { name: "Tech Research", type: "tech", icon: "🧬" },
+        { name: "Base Building", type: "build", icon: "🏗️" },
+        { name: "Drone Boost", type: "drone", icon: "🤖" },
+        { name: "Hero Advancement", type: "hero", icon: "🦸" },
+        { name: "Base Building", type: "build", icon: "🏗️" }
+      ],
+      7: [
+        { name: "Drone Boost", type: "drone", icon: "🤖" },
+        { name: "Hero Advancement", type: "hero", icon: "🦸" },
+        { name: "Tech Research", type: "tech", icon: "🧬" },
+        { name: "Base Building", type: "build", icon: "🏗️" },
+        { name: "Unit Progression", type: "troops", icon: "🎖️" },
+        { name: "Tech Research", type: "tech", icon: "🧬" }
+      ]
+    };
+
+    // Server Reset: 00:00 SVT = 02:00 UTC (i.e. SVT = UTC - 2h)
+    const serverResetHour = 2;
+
+    /* 2. State Management */
+    let selectedTimezone = localStorage.getItem('server-tz-visualizer-user-tz') || 'auto';
+    let timeFormatHours = parseInt(localStorage.getItem('time-format-hours')) || 12; // 12 or 24
+    let calendarTimeMode = localStorage.getItem('calendar-time-mode') || 'dual'; // 'dual', 'local', 'svt'
+    let calendarFilter = 'all';
+    let activeDayTab = null; // initialized to current live VS day (1 to 7)
+
+    // Visualizer Scrubber & Animation State
+    let isPlayingCycle = false;
+    let cyclePlayInterval = null;
+    let currentScrubberMinutes = 0; // 0 to 1439
+    let isUserScrubbing = false;
+
+    // World Board Pinned Timezones
+    const DEFAULT_WORLD_TIMEZONES = [
+      { id: "America/Los_Angeles", city: "Los Angeles / US West" },
+      { id: "America/New_York", city: "New York / US East" },
+      { id: "Europe/London", city: "London / UK (GMT/BST)" },
+      { id: "Europe/Berlin", city: "Berlin / Paris (CET/CEST)" },
+      { id: "Asia/Dubai", city: "Dubai / Gulf (GST)" },
+      { id: "Asia/Kolkata", city: "New Delhi / India (IST)" },
+      { id: "Asia/Singapore", city: "Singapore / Manila (SGT/PHT)" },
+      { id: "Asia/Tokyo", city: "Tokyo / Seoul (JST/KST)" },
+      { id: "Australia/Sydney", city: "Sydney / Melbourne (AEST)" }
+    ];
+
+    let pinnedWorldTimezones = [];
+    try {
+      const savedWorld = localStorage.getItem('server-tz-pinned-world-tzs');
+      if (savedWorld) pinnedWorldTimezones = JSON.parse(savedWorld);
+    } catch(e) {}
+    if (!pinnedWorldTimezones || pinnedWorldTimezones.length === 0) {
+      pinnedWorldTimezones = JSON.parse(JSON.stringify(DEFAULT_WORLD_TIMEZONES));
+    }
+
+    /* 3. Core Date & SVT Calculation Helpers */
+    function getSvtDate(date) {
+      return new Date(date.getTime() - serverResetHour * 3600 * 1000);
+    }
+
+    function getUtcDateFromSvt(svtDate) {
+      return new Date(svtDate.getTime() + serverResetHour * 3600 * 1000);
+    }
+
+    function getVsDayInfo(date) {
+      const svt = getSvtDate(date);
+      const utcDay = svt.getUTCDay(); // 0 = Sunday, 1 = Mon ... 6 = Sat
+      const dayId = (utcDay === 0) ? 7 : utcDay; // 1 = Mon ... 7 = Sun
+      return VS_DAYS.find(d => d.id === dayId) || VS_DAYS[0];
+    }
+
+    function getArmsRaceBlockInfo(date) {
+      const svt = getSvtDate(date);
+      const svtHours = svt.getUTCHours();
+      const svtMins = svt.getUTCMinutes();
+      const svtSecs = svt.getUTCSeconds();
+      const totalMinutes = svtHours * 60 + svtMins;
+
+      const blockIndex = Math.floor(totalMinutes / 240); // 0 to 5
+      const vsDay = getVsDayInfo(date);
+      const daySchedule = ARMS_RACE_ROTATION[vsDay.id] || [];
+      const currentEvent = daySchedule[blockIndex] || { name: "Arms Race Session", type: "misc", icon: "🏆" };
+
+      const blockStartMin = blockIndex * 240;
+      const blockEndMin = (blockIndex + 1) * 240;
+      const elapsedMin = totalMinutes - blockStartMin;
+      const elapsedSecondsInBlock = elapsedMin * 60 + svtSecs;
+      const totalBlockSeconds = 240 * 60; // 14,400s
+      const progressPercent = Math.min(100, Math.max(0, (elapsedSecondsInBlock / totalBlockSeconds) * 100));
+      const remainingSeconds = Math.max(0, totalBlockSeconds - elapsedSecondsInBlock);
+
+      const nextBlockIndex = (blockIndex + 1) % 6;
+      const nextEvent = daySchedule[nextBlockIndex] || { name: "Next Session", type: "misc", icon: "🏆" };
+
+      // Synergy check: does event type match day's theme?
+      const isSynergy = (vsDay.synergyType && currentEvent.type === vsDay.synergyType);
+
+      return {
+        blockIndex,
+        totalMinutes,
+        event: currentEvent,
+        vsDay,
+        blockStartHour: blockIndex * 4,
+        blockEndHour: (blockIndex + 1) * 4,
+        progressPercent,
+        remainingSeconds,
+        nextEvent,
+        isSynergy
+      };
+    }
+
+    function getTzOffsetMinutes(timeZone, refDate = new Date()) {
+      try {
+        const utcDate = new Date(refDate.toLocaleString('en-US', { timeZone: 'UTC' }));
+        const tzDate = new Date(refDate.toLocaleString('en-US', { timeZone }));
+        return Math.round((tzDate.getTime() - utcDate.getTime()) / (60 * 1000));
+      } catch (e) {
+        return 0;
+      }
+    }
+
+    function formatUtcOffset(offsetMinutes) {
+      const sign = offsetMinutes >= 0 ? '+' : '-';
+      const abs = Math.abs(offsetMinutes);
+      const hours = String(Math.floor(abs / 60)).padStart(2, '0');
+      const mins = String(abs % 60).padStart(2, '0');
+      return `UTC${sign}${hours}:${mins}`;
+    }
+
+    function formatInTimezone(date, tz, options = {}) {
+      if (tz === 'auto') {
+        return new Intl.DateTimeFormat('en-US', options).format(date);
+      }
+      try {
+        return new Intl.DateTimeFormat('en-US', { ...options, timeZone: tz }).format(date);
+      } catch (e) {
+        return new Intl.DateTimeFormat('en-US', options).format(date);
+      }
+    }
+
+    function formatTimeDisplay(date, tz) {
+      return formatInTimezone(date, tz, {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: timeFormatHours === 12
+      });
+    }
+
+    function formatTimeShort(date, tz) {
+      return formatInTimezone(date, tz, {
+        hour: timeFormatHours === 12 ? 'numeric' : '2-digit',
+        minute: '2-digit',
+        hour12: timeFormatHours === 12
+      });
+    }
+
+    /* 4. Timezone Selector Population (Industry-standard canonical IANA list) */
+    function populateTimezoneDropdowns() {
+      const selects = [
+        document.getElementById('userTzSelect'),
+        document.getElementById('addWorldTzSelect')
+      ];
+
+      const detectedTz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Los_Angeles';
+      const detectedOffset = formatUtcOffset(getTzOffsetMinutes(detectedTz));
+
+      // Popular Standard Major Zones
+      const popularZones = [
+        { id: "America/Los_Angeles", label: "US Pacific Time (PT - Los Angeles, Vancouver)" },
+        { id: "America/Denver", label: "US Mountain Time (MT - Denver, Phoenix)" },
+        { id: "America/Chicago", label: "US Central Time (CT - Chicago, Dallas)" },
+        { id: "America/New_York", label: "US Eastern Time (ET - New York, Toronto)" },
+        { id: "America/Anchorage", label: "US Alaska Time (AKT - Anchorage)" },
+        { id: "Pacific/Honolulu", label: "US Hawaii Time (HST - Honolulu)" },
+        { id: "America/Sao_Paulo", label: "Brazil (BRT - São Paulo)" },
+        { id: "UTC", label: "Coordinated Universal Time (UTC / GMT)" },
+        { id: "Europe/London", label: "UK / Ireland (BST/GMT - London, Dublin)" },
+        { id: "Europe/Berlin", label: "Central Europe (CEST/CET - Berlin, Paris, Rome)" },
+        { id: "Europe/Athens", label: "Eastern Europe (EEST - Athens, Helsinki, Kyiv)" },
+        { id: "Europe/Moscow", label: "Moscow Standard Time (MSK - Moscow)" },
+        { id: "Asia/Dubai", label: "Gulf Standard Time (GST - Dubai)" },
+        { id: "Asia/Kolkata", label: "India Standard Time (IST - New Delhi, Mumbai)" },
+        { id: "Asia/Bangkok", label: "Indochina Time (ICT - Bangkok, Hanoi, Jakarta)" },
+        { id: "Asia/Singapore", label: "Singapore / Malaysia / Manila (SGT/PHT)" },
+        { id: "Asia/Shanghai", label: "China Standard Time (CST - Beijing, Shanghai)" },
+        { id: "Asia/Tokyo", label: "Japan / Korea (JST/KST - Tokyo, Seoul)" },
+        { id: "Australia/Perth", label: "Western Australia (AWST - Perth)" },
+        { id: "Australia/Sydney", label: "Eastern Australia (AEST - Sydney, Melbourne)" },
+        { id: "Pacific/Auckland", label: "New Zealand (NZST - Auckland)" }
+      ];
+
+      let allTzs = [];
+      if (typeof Intl.supportedValuesOf === 'function') {
+        try {
+          allTzs = Intl.supportedValuesOf('timeZone');
+        } catch (e) {}
+      }
+      if (!allTzs || allTzs.length === 0) {
+        allTzs = popularZones.map(p => p.id);
+      }
+
+      const regionCategories = {
+        'America': '🌐 AMERICAS',
+        'Europe': '🌐 EUROPE',
+        'Asia': '🌐 ASIA',
+        'Australia': '🌐 AUSTRALIA',
+        'Pacific': '🌐 PACIFIC',
+        'Africa': '🌐 AFRICA',
+        'Atlantic': '🌐 ATLANTIC',
+        'Indian': '🌐 INDIAN OCEAN',
+        'Antarctica': '🌐 ANTARCTICA'
+      };
+
+      const groupedByRegion = {};
+      allTzs.forEach(tz => {
+        const parts = tz.split('/');
+        const prefix = parts[0];
+        const categoryKey = regionCategories[prefix] || `🌐 ${prefix.toUpperCase()}`;
+        if (!groupedByRegion[categoryKey]) groupedByRegion[categoryKey] = [];
+
+        const offsetMin = getTzOffsetMinutes(tz);
+        const offsetStr = formatUtcOffset(offsetMin);
+        const cleanName = tz.replace(/_/g, ' ');
+
+        groupedByRegion[categoryKey].push({
+          id: tz,
+          offsetMin,
+          offsetStr,
+          label: `(${offsetStr}) ${cleanName}`
+        });
+      });
+
+      selects.forEach(select => {
+        if (!select) return;
+        select.innerHTML = '';
+
+        if (select.id === 'userTzSelect') {
+          const autoOpt = document.createElement('option');
+          autoOpt.value = 'auto';
+          autoOpt.textContent = `🌐 Auto-Detect: (${detectedOffset}) ${detectedTz}`;
+          if (selectedTimezone === 'auto') autoOpt.selected = true;
+          select.appendChild(autoOpt);
+        }
+
+        const popularGroup = document.createElement('optgroup');
+        popularGroup.label = "⭐ POPULAR TIME ZONES";
+        popularZones.forEach(item => {
+          const offset = formatUtcOffset(getTzOffsetMinutes(item.id));
+          const opt = document.createElement('option');
+          opt.value = item.id;
+          opt.textContent = `(${offset}) ${item.label}`;
+          if (item.id === selectedTimezone && select.id === 'userTzSelect') opt.selected = true;
+          popularGroup.appendChild(opt);
+        });
+        select.appendChild(popularGroup);
+
+        Object.keys(groupedByRegion).forEach(regionLabel => {
+          const optgroup = document.createElement('optgroup');
+          optgroup.label = regionLabel;
+          groupedByRegion[regionLabel].sort((a, b) => a.offsetMin - b.offsetMin || a.id.localeCompare(b.id));
+
+          groupedByRegion[regionLabel].forEach(item => {
+            const opt = document.createElement('option');
+            opt.value = item.id;
+            opt.textContent = item.label;
+            if (item.id === selectedTimezone && select.id === 'userTzSelect') opt.selected = true;
+            optgroup.appendChild(opt);
+          });
+          select.appendChild(optgroup);
+        });
+      });
+    }
+
+    function onTimezoneChange() {
+      selectedTimezone = document.getElementById('userTzSelect').value;
+      localStorage.setItem('server-tz-visualizer-user-tz', selectedTimezone);
+      updateAllClocks();
+      renderTimelineStrip();
+      renderLocalAxis();
+      renderCalendarMatrix();
+      renderAwakeScheduleAnalysis();
+      runSvtToLocalConvert();
+      runLocalToSvtConvert();
+      showToast(`Switched timezone to ${selectedTimezone === 'auto' ? 'Auto-Detect' : selectedTimezone}`);
+    }
+
+    function setTimeFormat(hours) {
+      timeFormatHours = hours;
+      localStorage.setItem('time-format-hours', hours);
+      document.getElementById('timeFmt12Btn').classList.toggle('active', hours === 12);
+      document.getElementById('timeFmt24Btn').classList.toggle('active', hours === 24);
+      updateAllClocks();
+      renderLocalAxis();
+      renderCalendarMatrix();
+      updateInspectionHUD(currentScrubberMinutes);
+      runSvtToLocalConvert();
+      runLocalToSvtConvert();
+    }
+
+    /* 5. Live Clocks & Synchronizer Engine */
+    function updateAllClocks() {
+      const now = new Date();
+
+      // 1. Server Time Clock (SVT)
+      const svt = getSvtDate(now);
+      const svtH = String(svt.getUTCHours()).padStart(2, '0');
+      const svtM = String(svt.getUTCMinutes()).padStart(2, '0');
+      const svtS = String(svt.getUTCSeconds()).padStart(2, '0');
+      document.getElementById('clockSvtTime').textContent = `${svtH}:${svtM}:${svtS}`;
+
+      const svtWeekday = svt.toLocaleDateString('en-US', { timeZone: 'UTC', weekday: 'long' });
+      const svtMonth = svt.toLocaleDateString('en-US', { timeZone: 'UTC', month: 'short' });
+      const svtDay = svt.getUTCDate();
+      const svtYear = svt.getUTCFullYear();
+      document.getElementById('clockSvtDate').textContent = `${svtWeekday}, ${svtMonth} ${svtDay}, ${svtYear}`;
+
+      const vsDay = getVsDayInfo(now);
+      document.getElementById('clockVsDayTheme').textContent = `${vsDay.name}: ${vsDay.theme}`;
+
+      // Reset Countdown (Reset occurs at 00:00:00 SVT)
+      const totalSvtSeconds = svt.getUTCHours() * 3600 + svt.getUTCMinutes() * 60 + svt.getUTCSeconds();
+      const secondsUntilReset = (24 * 3600) - totalSvtSeconds;
+      const rH = String(Math.floor(secondsUntilReset / 3600)).padStart(2, '0');
+      const rM = String(Math.floor((secondsUntilReset % 3600) / 60)).padStart(2, '0');
+      const rS = String(secondsUntilReset % 60).padStart(2, '0');
+      document.getElementById('clockResetCountdown').textContent = `${rH}h ${rM}m ${rS}s`;
+
+      // 2. Comparison Local Clock
+      document.getElementById('clockLocalTime').textContent = formatTimeDisplay(now, selectedTimezone);
+      document.getElementById('clockLocalDate').textContent = formatInTimezone(now, selectedTimezone, {
+        weekday: 'long', month: 'short', day: 'numeric', year: 'numeric'
+      });
+
+      // Offset Difference relative to SVT
+      const effectiveTz = (selectedTimezone === 'auto') ? (Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Los_Angeles') : selectedTimezone;
+      const localOffsetMin = getTzOffsetMinutes(effectiveTz, now);
+      const svtOffsetMin = -serverResetHour * 60; // -120 mins
+      const diffMin = localOffsetMin - svtOffsetMin;
+      const diffHours = (diffMin / 60);
+
+      let diffStr = '';
+      if (diffHours === 0) {
+        diffStr = 'Synchronized with SVT (UTC-2)';
+      } else if (diffHours > 0) {
+        diffStr = `+${diffHours.toFixed(1).replace('.0', '')}h Ahead of SVT`;
+      } else {
+        diffStr = `${Math.abs(diffHours).toFixed(1).replace('.0', '')}h Behind SVT`;
+      }
+      document.getElementById('clockTzOffsetDiff').textContent = diffStr;
+
+      // Next Server Reset in Local Time
+      // Reset is at next 02:00:00 UTC
+      const nextResetUtc = new Date(now);
+      nextResetUtc.setUTCHours(serverResetHour, 0, 0, 0);
+      if (nextResetUtc <= now) {
+        nextResetUtc.setUTCDate(nextResetUtc.getUTCDate() + 1);
+      }
+      const resetLocalFormatted = formatTimeShort(nextResetUtc, selectedTimezone);
+      const resetLocalDay = formatInTimezone(nextResetUtc, selectedTimezone, { weekday: 'short' });
+      document.getElementById('clockLocalResetTime').textContent = `${resetLocalFormatted} (${resetLocalDay})`;
+
+      // 3. Active Arms Race Session
+      const blockInfo = getArmsRaceBlockInfo(now);
+      document.getElementById('activeBlockBadge').textContent = `Block ${blockInfo.blockIndex + 1} of 6`;
+      document.getElementById('activeEventTitle').innerHTML = `${blockInfo.event.icon} ${blockInfo.event.name}`;
+      
+      const bStartH = String(blockInfo.blockStartHour).padStart(2, '0');
+      const bEndH = String(blockInfo.blockEndHour).padStart(2, '0');
+      document.getElementById('activeBlockRange').textContent = `${bStartH}:00 – ${bEndH}:00 SVT`;
+
+      document.getElementById('blockProgressBar').style.width = `${blockInfo.progressPercent.toFixed(1)}%`;
+
+      const remH = String(Math.floor(blockInfo.remainingSeconds / 3600)).padStart(2, '0');
+      const remM = String(Math.floor((blockInfo.remainingSeconds % 3600) / 60)).padStart(2, '0');
+      const remS = String(blockInfo.remainingSeconds % 60).padStart(2, '0');
+      document.getElementById('blockCountdown').textContent = `${remH}h ${remM}m ${remS}s`;
+
+      const nextBlockStartSvt = new Date(nextResetUtc.getTime() - 24 * 3600 * 1000 + (blockInfo.blockIndex + 1) * 4 * 3600 * 1000);
+      const nextLocalStartStr = formatTimeShort(nextBlockStartSvt, selectedTimezone);
+      document.getElementById('nextBlockPreview').textContent = `${blockInfo.nextEvent.icon} ${blockInfo.nextEvent.name} @ ${nextLocalStartStr}`;
+
+      // 4. Synergy Banner
+      updateSynergyBanner(blockInfo);
+
+      // 5. Update Timeline "NOW" Needle Position
+      updateNowNeedle(now);
+
+      // 6. Update World Board Clocks
+      updateWorldBoardClocks(now);
+
+      // If user isn't scrubbing, auto-track scrubber to current minute
+      if (!isUserScrubbing && !isPlayingCycle) {
+        const svtNowMinutes = svt.getUTCHours() * 60 + svt.getUTCMinutes();
+        currentScrubberMinutes = svtNowMinutes;
+        document.getElementById('timeScrubber').value = svtNowMinutes;
+        updateInspectionHUD(svtNowMinutes);
+      }
+    }
+
+    function updateSynergyBanner(blockInfo) {
+      const banner = document.getElementById('synergyBanner');
+      const title = document.getElementById('synergyTitle');
+      const desc = document.getElementById('synergyDesc');
+      const badge = document.getElementById('synergyBadge');
+
+      if (blockInfo.isSynergy) {
+        banner.className = 'synergy-callout active-synergy';
+        badge.className = 'clock-badge badge-gold';
+        badge.textContent = '⭐ GOLDEN SYNERGY ACTIVE';
+        title.textContent = `🎯 Maximum Point Multiplier Active: ${blockInfo.event.name}!`;
+        desc.textContent = `Current Arms Race matches today's Alliance Duel (${blockInfo.vsDay.theme}). Speedups and actions earn points for BOTH events simultaneously!`;
+      } else {
+        banner.className = 'synergy-callout';
+        badge.className = 'clock-badge badge-cyan';
+        badge.textContent = 'Normal Rotation';
+        title.textContent = `Current Session: ${blockInfo.event.name}`;
+        
+        let matchingHint = '';
+        if (blockInfo.vsDay.synergyType) {
+          const matchingEvent = Object.values(EVENT_METADATA).find(e => e.type === blockInfo.vsDay.synergyType);
+          matchingHint = ` Target ${matchingEvent ? matchingEvent.name : ''} sessions for double duel points today!`;
+        }
+        desc.textContent = `Arms Race points active.${matchingHint}`;
+      }
+    }
+
+    function updateNowNeedle(now) {
+      const svt = getSvtDate(now);
+      const totalSvtMins = svt.getUTCHours() * 60 + svt.getUTCMinutes() + svt.getUTCSeconds() / 60;
+      const pct = (totalSvtMins / 1440) * 100;
+      const needle = document.getElementById('nowNeedle');
+      if (needle) {
+        needle.style.left = `${pct}%`;
+      }
+    }
+
+    /* 6. Day Selector Tabs (Strictly Ordered Day 1 thru 7) */
+    function renderDayTabs() {
+      const container = document.getElementById('dayTabsContainer');
+      container.innerHTML = '';
+
+      const now = new Date();
+      const currentVs = getVsDayInfo(now);
+
+      // Strictly ordered Day 1 to Day 7
+      VS_DAYS.forEach(day => {
+        const isToday = (day.id === currentVs.id);
+        const isSelected = (day.id === activeDayTab);
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        let btnClasses = ['day-tab-btn'];
+        if (isSelected) btnClasses.push('active');
+        if (isToday) btnClasses.push('is-today');
+        btn.className = btnClasses.join(' ');
+        btn.onclick = () => selectDayTab(day.id);
+
+        const todayTag = isToday ? '<span class="day-today-badge">TODAY</span>' : '';
+
+        btn.innerHTML = `
+          <div class="day-tab-title-row">
+            <span>${day.name}</span>
+            ${todayTag}
+          </div>
+          <span class="day-tab-theme">${day.theme}</span>
+        `;
+        container.appendChild(btn);
+      });
+    }
+
+    function selectDayTab(dayId) {
+      activeDayTab = dayId;
+      renderDayTabs();
+      renderTimelineStrip();
+      renderLocalAxis();
+      renderAwakeScheduleAnalysis();
+      updateInspectionHUD(currentScrubberMinutes);
+    }
+
+    /* 7. 24-Hour Timeline Rendering (Arms Race Strip & Local Axis) */
+    function getSelectedDayInfo() {
+      const dayId = activeDayTab || getVsDayInfo(new Date()).id;
+      return VS_DAYS.find(d => d.id === dayId) || VS_DAYS[0];
+    }
+
+    function renderTimelineStrip() {
+      const strip = document.getElementById('armsRaceStrip');
+      strip.innerHTML = '';
+
+      const day = getSelectedDayInfo();
+      document.getElementById('trackVsDayLabel').textContent = `${day.name}: ${day.theme}`;
+
+      const blocks = ARMS_RACE_ROTATION[day.id] || [];
+      const now = new Date();
+      const liveBlockInfo = getArmsRaceBlockInfo(now);
+      const isViewingToday = (day.id === liveBlockInfo.vsDay.id);
+
+      blocks.forEach((blk, idx) => {
+        const startH = String(idx * 4).padStart(2, '0');
+        const endH = String((idx + 1) * 4).padStart(2, '0');
+        const isLive = isViewingToday && (idx === liveBlockInfo.blockIndex);
+        const isSynergy = (day.synergyType && blk.type === day.synergyType);
+
+        // Convert block start/end to local time
+        const refDate = new Date();
+        refDate.setUTCHours(serverResetHour + idx * 4, 0, 0, 0);
+        const refEndDate = new Date(refDate.getTime() + 4 * 3600 * 1000);
+        const localStartStr = formatTimeShort(refDate, selectedTimezone);
+        const localEndStr = formatTimeShort(refEndDate, selectedTimezone);
+
+        const card = document.createElement('div');
+        let cardClass = `timeline-session-block ${blk.type}`;
+        if (isLive) cardClass += ' is-active-now';
+        if (isSynergy) cardClass += ' is-synergy';
+        card.className = cardClass;
+        card.onclick = () => scrubToHour(idx * 4);
+
+        card.innerHTML = `
+          <div class="block-header-tag">
+            <span>B${idx + 1}</span>
+            ${isSynergy ? '<span>⭐ VS</span>' : ''}
+            ${isLive ? '<span class="now-live-tag">NOW</span>' : ''}
+          </div>
+          <div class="block-name-label">
+            ${blk.icon} ${blk.name}
+          </div>
+          <div class="block-time-range">
+            ${startH}:00–${endH}:00 SVT<br>
+            <span style="font-weight:700; color:var(--text-main);">(${localStartStr}–${localEndStr})</span>
+          </div>
+        `;
+        strip.appendChild(card);
+      });
+    }
+
+    function renderLocalAxis() {
+      const axis = document.getElementById('localAxisStrip');
+      axis.innerHTML = '';
+
+      const now = new Date();
+      // Reference date for SVT 00:00:00 (which is 02:00:00 UTC)
+      const baseResetDate = new Date(now);
+      baseResetDate.setUTCHours(serverResetHour, 0, 0, 0);
+
+      document.getElementById('trackLocalTzLabel').textContent = 
+        selectedTimezone === 'auto' ? `Auto-Detect: ${Intl.DateTimeFormat().resolvedOptions().timeZone}` : selectedTimezone;
+
+      // 24 hours of the Server Day
+      for (let h = 0; h < 24; h++) {
+        const hourDate = new Date(baseResetDate.getTime() + h * 3600 * 1000);
+        
+        // Get local hour (0-23) in selected timezone
+        const localHourStr = formatInTimezone(hourDate, selectedTimezone, { hour: 'numeric', hourCycle: 'h23' });
+        const localHourNum = parseInt(localHourStr) || 0;
+
+        // Day/Night classification in local timezone
+        const isDay = (localHourNum >= 8 && localHourNum < 20);
+        const isDawn = (localHourNum >= 6 && localHourNum < 8) || (localHourNum >= 20 && localHourNum < 22);
+        const isNight = (!isDay && !isDawn);
+
+        let cellClass = 'local-hour-cell';
+        if (isDay) cellClass += ' is-day';
+        else if (isDawn) cellClass += ' is-dawn';
+        else cellClass += ' is-night';
+
+        const displayHour = formatInTimezone(hourDate, selectedTimezone, {
+          hour: timeFormatHours === 12 ? 'numeric' : '2-digit',
+          hour12: timeFormatHours === 12
+        }).replace(' AM', 'a').replace(' PM', 'p');
+
+        const sunMoonIcon = isDay ? '☀️' : (isDawn ? '🌅' : '🌙');
+
+        const cell = document.createElement('div');
+        cell.className = cellClass;
+        cell.title = `SVT ${String(h).padStart(2, '0')}:00 = Local ${formatTimeShort(hourDate, selectedTimezone)}`;
+        cell.innerHTML = `
+          <span>${displayHour}</span>
+          <span class="hour-sun-moon">${sunMoonIcon}</span>
+        `;
+        axis.appendChild(cell);
+      }
+    }
+
+    /* 8. Scrubber & Inspection HUD */
+    function onScrubberInput(mins) {
+      isUserScrubbing = true;
+      currentScrubberMinutes = parseInt(mins);
+      updateInspectionHUD(currentScrubberMinutes);
+    }
+
+    function updateInspectionHUD(totalSvtMinutes) {
+      const svtHours = Math.floor(totalSvtMinutes / 60);
+      const svtRemainderMins = totalSvtMinutes % 60;
+      const svtHStr = String(svtHours).padStart(2, '0');
+      const svtMStr = String(svtRemainderMins).padStart(2, '0');
+
+      document.getElementById('inspectSvtTime').textContent = `${svtHStr}:${svtMStr} SVT`;
+
+      const day = getSelectedDayInfo();
+      document.getElementById('inspectSvtDate').textContent = `${day.name} • ${day.theme}`;
+
+      // Convert this SVT minute point to Local Time
+      // SVT 00:00 = 02:00 UTC
+      const refBase = new Date();
+      refBase.setUTCHours(serverResetHour, 0, 0, 0);
+      const inspectedDate = new Date(refBase.getTime() + totalSvtMinutes * 60 * 1000);
+
+      document.getElementById('inspectLocalTime').textContent = formatTimeShort(inspectedDate, selectedTimezone);
+      document.getElementById('inspectLocalDate').textContent = formatInTimezone(inspectedDate, selectedTimezone, {
+        weekday: 'short', month: 'short', day: 'numeric'
+      });
+
+      // Active Arms Race block at this minute
+      const blockIndex = Math.min(5, Math.floor(totalSvtMinutes / 240));
+      const blocks = ARMS_RACE_ROTATION[day.id] || [];
+      const blk = blocks[blockIndex] || { name: "Session", type: "misc", icon: "🏆" };
+
+      document.getElementById('inspectEventName').innerHTML = `${blk.icon} ${blk.name}`;
+      const bStart = String(blockIndex * 4).padStart(2, '0');
+      const bEnd = String((blockIndex + 1) * 4).padStart(2, '0');
+      document.getElementById('inspectEventRange').textContent = `Block ${blockIndex + 1}: ${bStart}:00 – ${bEnd}:00 SVT`;
+
+      // Synergy & Advice
+      const isSynergy = (day.synergyType && blk.type === day.synergyType);
+      const ratingEl = document.getElementById('inspectSynergyRating');
+      const adviceEl = document.getElementById('inspectSynergyAdvice');
+
+      if (isSynergy) {
+        ratingEl.innerHTML = `<span style="color:var(--gold-primary);">⭐ 100% Golden Synergy</span>`;
+        adviceEl.textContent = `Double point returns! Spend ${blk.name} speedups & resources during this 4-hour window.`;
+      } else {
+        ratingEl.innerHTML = `<span style="color:var(--cyan-primary);">Standard Arms Race</span>`;
+        adviceEl.textContent = `Good for Arms Race crates. Speedup points won't double with today's duel.`;
+      }
+    }
+
+    function scrubToHour(hour) {
+      isUserScrubbing = true;
+      currentScrubberMinutes = hour * 60;
+      document.getElementById('timeScrubber').value = currentScrubberMinutes;
+      updateInspectionHUD(currentScrubberMinutes);
+    }
+
+    function snapToNow() {
+      isUserScrubbing = false;
+      const now = new Date();
+      const svt = getSvtDate(now);
+      const currentVs = getVsDayInfo(now);
+      currentScrubberMinutes = svt.getUTCHours() * 60 + svt.getUTCMinutes();
+      document.getElementById('timeScrubber').value = currentScrubberMinutes;
+      activeDayTab = currentVs.id;
+      renderDayTabs();
+      renderTimelineStrip();
+      updateInspectionHUD(currentScrubberMinutes);
+      showToast(`Snapped to live Server Time (${currentVs.name})!`);
+    }
+
+    function jumpToNextSession() {
+      const currentBlockIdx = Math.floor(currentScrubberMinutes / 240);
+      const nextBlockIdx = (currentBlockIdx + 1) % 6;
+      scrubToHour(nextBlockIdx * 4);
+    }
+
+    function togglePlayCycle() {
+      const btn = document.getElementById('playCycleBtn');
+      if (isPlayingCycle) {
+        clearInterval(cyclePlayInterval);
+        isPlayingCycle = false;
+        btn.textContent = '▶️ Play Cycle (10x)';
+        btn.classList.remove('active');
+        isUserScrubbing = false;
+      } else {
+        isPlayingCycle = true;
+        isUserScrubbing = true;
+        btn.textContent = '⏸️ Pause Cycle';
+        btn.classList.add('active');
+
+        cyclePlayInterval = setInterval(() => {
+          currentScrubberMinutes = (currentScrubberMinutes + 10) % 1440;
+          document.getElementById('timeScrubber').value = currentScrubberMinutes;
+          updateInspectionHUD(currentScrubberMinutes);
+        }, 150);
+      }
+    }
+
+    /* 9. Awake vs Sleep Schedule Breakdown */
+    function renderAwakeScheduleAnalysis() {
+      const day = getSelectedDayInfo();
+      const blocks = ARMS_RACE_ROTATION[day.id] || [];
+
+      let awakeBlocksCount = 0;
+      let awakeSynergyCount = 0;
+
+      const baseReset = new Date();
+      baseReset.setUTCHours(serverResetHour, 0, 0, 0);
+
+      blocks.forEach((blk, idx) => {
+        const midBlockDate = new Date(baseReset.getTime() + (idx * 4 + 2) * 3600 * 1000);
+        const localHour = parseInt(formatInTimezone(midBlockDate, selectedTimezone, { hour: 'numeric', hourCycle: 'h23' })) || 0;
+
+        // Consider awake if between 07:00 and 23:30 local
+        const isAwake = (localHour >= 7 && localHour <= 23);
+        const isSynergy = (day.synergyType && blk.type === day.synergyType);
+
+        if (isAwake) {
+          awakeBlocksCount++;
+          if (isSynergy) awakeSynergyCount++;
+        }
+      });
+
+      document.getElementById('awakeAnalysisText').innerHTML = 
+        `You are awake (07:00–23:00) during <strong>${awakeBlocksCount} out of 6</strong> Arms Race sessions for ${day.name}.`;
+
+      const summaryEl = document.getElementById('awakeSynergySummary');
+      if (awakeSynergyCount > 0) {
+        summaryEl.style.color = 'var(--gold-primary)';
+        summaryEl.textContent = `⭐ ${awakeSynergyCount} Golden Synergy block${awakeSynergyCount > 1 ? 's' : ''} occur during your awake hours!`;
+      } else {
+        summaryEl.style.color = 'var(--cyan-primary)';
+        summaryEl.textContent = `ℹ️ No Golden Synergy blocks fall in daytime today. Plan alarms if pushing rank!`;
+      }
+    }
+
+    /* 10. 7-Day Universal Calendar Matrix */
+    function setCalendarTimeMode(mode) {
+      calendarTimeMode = mode;
+      localStorage.setItem('calendar-time-mode', mode);
+      document.getElementById('calModeDualBtn').classList.toggle('active', mode === 'dual');
+      document.getElementById('calModeLocalBtn').classList.toggle('active', mode === 'local');
+      document.getElementById('calModeSvtBtn').classList.toggle('active', mode === 'svt');
+      renderCalendarMatrix();
+    }
+
+    function filterCalendar(type) {
+      calendarFilter = type;
+      document.querySelectorAll('#matrixFilterPills .filter-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('onclick').includes(`'${type}'`));
+      });
+      renderCalendarMatrix();
+    }
+
+    function renderCalendarMatrix() {
+      const thead = document.getElementById('calendarMatrixHead');
+      const tbody = document.getElementById('calendarMatrixBody');
+      thead.innerHTML = '';
+      tbody.innerHTML = '';
+
+      const now = new Date();
+      const currentVsDay = getVsDayInfo(now);
+      const currentBlockInfo = getArmsRaceBlockInfo(now);
+
+      // Base reset date for local headers
+      const sampleResetDate = new Date();
+      sampleResetDate.setUTCHours(serverResetHour, 0, 0, 0);
+      const localResetStr = formatTimeShort(sampleResetDate, selectedTimezone);
+
+      // Table Header Row
+      let thCols = `
+        <th style="width:13%;">
+          <div style="font-size:0.78rem; font-weight:800;">Session Block</div>
+          <div style="font-size:0.65rem; color:var(--gold-primary); font-family:var(--font-mono); margin-top:2px;">
+            00:00 SVT<br>(${localResetStr})
+          </div>
+        </th>
+      `;
+
+      VS_DAYS.forEach(day => {
+        const isCurrentDay = (day.id === currentVsDay.id);
+        const thClass = isCurrentDay ? 'current-day-col' : '';
+        thCols += `
+          <th class="${thClass}" style="width:12.4%;">
+            <div style="font-size:0.78rem; font-weight:800;">${day.name}</div>
+            <div style="font-size:0.67rem; color:var(--text-muted); font-weight:600; margin-top:2px;">${day.theme}</div>
+            ${isCurrentDay ? '<div style="margin-top:3px;"><span class="clock-badge badge-gold" style="font-size:0.6rem;">TODAY</span></div>' : ''}
+          </th>
+        `;
+      });
+
+      thead.innerHTML = `<tr>${thCols}</tr>`;
+
+      // 6 Rows for 6 Blocks
+      for (let b = 0; b < 6; b++) {
+        const svtStart = String(b * 4).padStart(2, '0') + ':00';
+        const svtEnd = String((b + 1) * 4).padStart(2, '0') + ':00';
+
+        const bStartDate = new Date(sampleResetDate.getTime() + b * 4 * 3600 * 1000);
+        const localStart = formatTimeShort(bStartDate, selectedTimezone);
+
+        let timeHeaderLabel = '';
+        if (calendarTimeMode === 'svt') {
+          timeHeaderLabel = `<div style="font-size:0.7rem; font-family:var(--font-mono); color:var(--gold-primary);">${svtStart} SVT</div>`;
+        } else if (calendarTimeMode === 'local') {
+          timeHeaderLabel = `<div style="font-size:0.7rem; font-family:var(--font-mono); color:var(--cyan-primary);">${localStart}</div>`;
+        } else {
+          timeHeaderLabel = `
+            <div style="font-size:0.68rem; font-family:var(--font-mono); color:var(--gold-primary);">${svtStart} SVT</div>
+            <div style="font-size:0.65rem; font-family:var(--font-mono); color:var(--cyan-primary);">(${localStart})</div>
+          `;
+        }
+
+        const tr = document.createElement('tr');
+        let rowCells = `
+          <td class="session-col-cell">
+            <div style="font-size:0.78rem; font-weight:800;">Block ${b + 1}</div>
+            ${timeHeaderLabel}
+          </td>
+        `;
+
+        VS_DAYS.forEach(day => {
+          const blocks = ARMS_RACE_ROTATION[day.id] || [];
+          const blk = blocks[b] || { name: "Session", type: "misc", icon: "🏆" };
+          const isCurrentBlock = (day.id === currentVsDay.id && b === currentBlockInfo.blockIndex);
+          const isSynergy = (day.synergyType && blk.type === day.synergyType);
+
+          // Filtering
+          let isDimmed = false;
+          if (calendarFilter === 'synergy' && !isSynergy) isDimmed = true;
+          else if (calendarFilter !== 'all' && calendarFilter !== 'synergy' && blk.type !== calendarFilter) isDimmed = true;
+
+          let cellClass = `calendar-event-cell ${blk.type}`;
+          if (isCurrentBlock) cellClass += ' is-now-cell';
+          if (isDimmed) cellClass += ' is-dimmed';
+
+          rowCells += `
+            <td>
+              <div class="${cellClass}" onclick="loadSessionToConverter(${day.id}, ${b})" title="Click to inspect Block ${b+1} (${blk.name}) in converter!">
+                <span>${blk.icon} ${blk.name}</span>
+                ${isSynergy ? '<span class="synergy-star-badge">⭐ VS MATCH</span>' : ''}
+                ${isCurrentBlock ? '<span class="now-live-tag">LIVE NOW</span>' : ''}
+              </div>
+            </td>
+          `;
+        });
+
+        tr.innerHTML = rowCells;
+        tbody.appendChild(tr);
+      }
+    }
+
+    function loadSessionToConverter(dayId, blockIdx) {
+      selectDayTab(dayId);
+      scrubToHour(blockIdx * 4);
+      document.getElementById('inspectionHUD').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      showToast(`Loaded ${VS_DAYS.find(d=>d.id===dayId)?.name} Block ${blockIdx+1} into Visualizer!`);
+    }
+
+    /* 11. Multi-Timezone Alliance World Board */
+    function renderWorldBoard() {
+      const grid = document.getElementById('worldBoardGrid');
+      grid.innerHTML = '';
+
+      const now = new Date();
+
+      pinnedWorldTimezones.forEach((tzItem, index) => {
+        const offsetMin = getTzOffsetMinutes(tzItem.id, now);
+        const offsetStr = formatUtcOffset(offsetMin);
+        const svtOffsetMin = -serverResetHour * 60;
+        const diffHours = (offsetMin - svtOffsetMin) / 60;
+        const diffStr = diffHours === 0 ? 'Sync with SVT' : (diffHours > 0 ? `+${diffHours}h SVT` : `${diffHours}h SVT`);
+
+        const timeStr = formatTimeDisplay(now, tzItem.id);
+        const dateStr = formatInTimezone(now, tzItem.id, { weekday: 'short', month: 'short', day: 'numeric' });
+
+        // Local hour to classify player state
+        const localHour = parseInt(formatInTimezone(now, tzItem.id, { hour: 'numeric', hourCycle: 'h23' })) || 0;
+        let stateTag = '';
+        if (localHour >= 18 && localHour <= 23) {
+          stateTag = `<span class="player-state-pill state-prime">⚔️ Prime Gaming (${localHour}h)</span>`;
+        } else if (localHour >= 7 && localHour < 18) {
+          stateTag = `<span class="player-state-pill state-active">☀️ Active Day (${localHour}h)</span>`;
+        } else {
+          stateTag = `<span class="player-state-pill state-sleep">🌙 Night / Sleep (${localHour}h)</span>`;
+        }
+
+        // Daily Reset in their time
+        const resetDate = new Date(now);
+        resetDate.setUTCHours(serverResetHour, 0, 0, 0);
+        const resetFormatted = formatTimeShort(resetDate, tzItem.id);
+
+        const card = document.createElement('div');
+        card.className = 'world-clock-card';
+        card.innerHTML = `
+          <div>
+            <div class="world-clock-top">
+              <div>
+                <div class="world-clock-city">${tzItem.city}</div>
+                <div class="world-clock-offset">${offsetStr} • ${diffStr}</div>
+              </div>
+              <button type="button" class="btn-remove-clock" onclick="removeWorldTimezone(${index})" title="Remove Timezone">✕</button>
+            </div>
+            <div class="world-clock-time" id="worldClockTime_${index}">${timeStr}</div>
+            <div style="font-size:0.75rem; color:var(--text-muted); font-weight:600;" id="worldClockDate_${index}">${dateStr}</div>
+          </div>
+          <div class="world-clock-details">
+            <div>${stateTag}</div>
+            <div style="font-family:var(--font-mono); font-weight:700;">Reset: ${resetFormatted}</div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function updateWorldBoardClocks(now) {
+      pinnedWorldTimezones.forEach((tzItem, index) => {
+        const timeEl = document.getElementById(`worldClockTime_${index}`);
+        const dateEl = document.getElementById(`worldClockDate_${index}`);
+        if (timeEl) timeEl.textContent = formatTimeDisplay(now, tzItem.id);
+        if (dateEl) dateEl.textContent = formatInTimezone(now, tzItem.id, { weekday: 'short', month: 'short', day: 'numeric' });
+      });
+    }
+
+    function addWorldTimezone() {
+      const select = document.getElementById('addWorldTzSelect');
+      const tzId = select.value;
+      if (!tzId) return;
+
+      if (pinnedWorldTimezones.some(t => t.id === tzId)) {
+        showToast("Timezone is already on your Alliance Board!");
+        return;
+      }
+
+      const cityName = tzId.split('/').pop().replace(/_/g, ' ');
+      pinnedWorldTimezones.push({ id: tzId, city: cityName });
+      localStorage.setItem('server-tz-pinned-world-tzs', JSON.stringify(pinnedWorldTimezones));
+      renderWorldBoard();
+      showToast(`Added ${cityName} to Alliance World Board!`);
+    }
+
+    function removeWorldTimezone(index) {
+      pinnedWorldTimezones.splice(index, 1);
+      localStorage.setItem('server-tz-pinned-world-tzs', JSON.stringify(pinnedWorldTimezones));
+      renderWorldBoard();
+      showToast("Removed timezone from board.");
+    }
+
+    function resetDefaultWorldTimezones() {
+      pinnedWorldTimezones = JSON.parse(JSON.stringify(DEFAULT_WORLD_TIMEZONES));
+      localStorage.setItem('server-tz-pinned-world-tzs', JSON.stringify(pinnedWorldTimezones));
+      renderWorldBoard();
+      showToast("Alliance board reset to standard defaults.");
+    }
+
+    /* 12. Bidirectional Converter & Discord Planner */
+    function initConverterDates() {
+      const now = new Date();
+      const svt = getSvtDate(now);
+
+      // Set input defaults
+      const svtY = svt.getUTCFullYear();
+      const svtM = String(svt.getUTCMonth() + 1).padStart(2, '0');
+      const svtD = String(svt.getUTCDate()).padStart(2, '0');
+      document.getElementById('svtConvertDate').value = `${svtY}-${svtM}-${svtD}`;
+
+      const localY = now.getFullYear();
+      const localM = String(now.getMonth() + 1).padStart(2, '0');
+      const localD = String(now.getDate()).padStart(2, '0');
+      document.getElementById('localConvertDate').value = `${localY}-${localM}-${localD}`;
+
+      runSvtToLocalConvert();
+      runLocalToSvtConvert();
+      findNextEventOccurrences('tech');
+    }
+
+    function runSvtToLocalConvert() {
+      const dateVal = document.getElementById('svtConvertDate')?.value;
+      const timeVal = document.getElementById('svtConvertTime')?.value;
+      if (!dateVal || !timeVal || !dateVal.includes('-') || !timeVal.includes(':')) return;
+
+      const [year, month, day] = dateVal.split('-').map(Number);
+      const [hours, mins] = timeVal.split(':').map(Number);
+      if (isNaN(year) || isNaN(month) || isNaN(day) || isNaN(hours) || isNaN(mins)) return;
+
+      // SVT Date: In SVT, reset is at 00:00. In UTC, that is 02:00.
+      // UTC Date = SVT Date + 2 hours
+      const svtUtcEpoch = Date.UTC(year, month - 1, day, hours + serverResetHour, mins, 0);
+      const convertedDate = new Date(svtUtcEpoch);
+      if (isNaN(convertedDate.getTime())) return;
+
+      document.getElementById('svtResultLocalTime').textContent = formatTimeShort(convertedDate, selectedTimezone);
+      document.getElementById('svtResultLocalDate').textContent = formatInTimezone(convertedDate, selectedTimezone, {
+        weekday: 'long', month: 'short', day: 'numeric', year: 'numeric'
+      });
+
+      // Find active event at that moment
+      const blockInfo = getArmsRaceBlockInfo(convertedDate);
+      document.getElementById('svtResultEventInfo').innerHTML = 
+        `Active Event: <strong>${blockInfo.event.icon} ${blockInfo.event.name}</strong> • ${blockInfo.vsDay.name} (${blockInfo.vsDay.theme})`;
+
+      // Discord timestamp tag (seconds epoch)
+      const unixSecs = Math.floor(convertedDate.getTime() / 1000);
+      document.getElementById('discordTagSvt').textContent = `<t:${unixSecs}:F> (<t:${unixSecs}:R>)`;
+    }
+
+    function runLocalToSvtConvert() {
+      const dateVal = document.getElementById('localConvertDate')?.value;
+      const timeVal = document.getElementById('localConvertTime')?.value;
+      if (!dateVal || !timeVal || !dateVal.includes('-') || !timeVal.includes(':')) return;
+
+      const [year, month, day] = dateVal.split('-').map(Number);
+      const [hours, mins] = timeVal.split(':').map(Number);
+      if (isNaN(year) || isNaN(month) || isNaN(day) || isNaN(hours) || isNaN(mins)) return;
+
+      // Interpret this date & time in the selected timezone
+      const effectiveTz = (selectedTimezone === 'auto') ? (Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Los_Angeles') : selectedTimezone;
+      
+      // Calculate local epoch by offset
+      const guessUtc = new Date(Date.UTC(year, month - 1, day, hours, mins, 0));
+      if (isNaN(guessUtc.getTime())) return;
+
+      const tzOffsetMin = getTzOffsetMinutes(effectiveTz, guessUtc);
+      const localEpoch = guessUtc.getTime() - tzOffsetMin * 60 * 1000;
+      const localDateObj = new Date(localEpoch);
+      if (isNaN(localDateObj.getTime())) return;
+
+      // SVT is localDateObj - 2h UTC
+      const svt = getSvtDate(localDateObj);
+      const svtH = String(svt.getUTCHours()).padStart(2, '0');
+      const svtM = String(svt.getUTCMinutes()).padStart(2, '0');
+
+      document.getElementById('localResultSvtTime').textContent = `${svtH}:${svtM} SVT`;
+      document.getElementById('localResultSvtDate').textContent = svt.toLocaleDateString('en-US', {
+        timeZone: 'UTC', weekday: 'long', month: 'short', day: 'numeric', year: 'numeric'
+      });
+
+      const blockInfo = getArmsRaceBlockInfo(localDateObj);
+      document.getElementById('localResultEventInfo').innerHTML = 
+        `Active Event: <strong>${blockInfo.event.icon} ${blockInfo.event.name}</strong> • ${blockInfo.vsDay.name}`;
+    }
+
+    function findNextEventOccurrences(eventType) {
+      const resultsContainer = document.getElementById('eventFinderResults');
+      resultsContainer.innerHTML = '';
+
+      const now = new Date();
+      let occurrences = [];
+
+      // Check the next 42 blocks (7 days)
+      const currentBlockInfo = getArmsRaceBlockInfo(now);
+      const baseReset = new Date();
+      baseReset.setUTCHours(serverResetHour, 0, 0, 0);
+
+      for (let dayOffset = 0; dayOffset < 7; dayOffset++) {
+        const checkDayDate = new Date(now.getTime() + dayOffset * 24 * 3600 * 1000);
+        const vsDay = getVsDayInfo(checkDayDate);
+        const blocks = ARMS_RACE_ROTATION[vsDay.id] || [];
+
+        blocks.forEach((blk, bIdx) => {
+          if (blk.type === eventType) {
+            // Block start date
+            const blockStartDate = new Date(checkDayDate);
+            const svt = getSvtDate(blockStartDate);
+            // Construct UTC timestamp for block start
+            const svtY = svt.getUTCFullYear();
+            const svtM = svt.getUTCMonth();
+            const svtD = svt.getUTCDate();
+            const blockEpoch = Date.UTC(svtY, svtM, svtD, bIdx * 4 + serverResetHour, 0, 0);
+            const blkDate = new Date(blockEpoch);
+
+            if (blkDate >= new Date(now.getTime() - 4 * 3600 * 1000)) {
+              occurrences.push({
+                date: blkDate,
+                vsDay,
+                blockIdx: bIdx,
+                event: blk
+              });
+            }
+          }
+        });
+      }
+
+      occurrences.sort((a, b) => a.date - b.date);
+      const next4 = occurrences.slice(0, 4);
+
+      if (next4.length === 0) {
+        resultsContainer.innerHTML = '<div>No sessions found.</div>';
+        return;
+      }
+
+      next4.forEach(item => {
+        const localTimeStr = formatTimeShort(item.date, selectedTimezone);
+        const localDateStr = formatInTimezone(item.date, selectedTimezone, { weekday: 'short', month: 'short', day: 'numeric' });
+        const svtH = String(item.blockIdx * 4).padStart(2, '0');
+        const diffMins = Math.round((item.date.getTime() - now.getTime()) / (60 * 1000));
+        let diffStr = '';
+        if (diffMins < 0 && diffMins > -240) diffStr = '🔴 LIVE RIGHT NOW';
+        else if (diffMins >= 0) diffStr = `in ${Math.floor(diffMins/60)}h ${diffMins%60}m`;
+
+        const row = document.createElement('div');
+        row.style.padding = '4px 0';
+        row.style.borderBottom = '1px solid var(--panel-border)';
+        row.innerHTML = `
+          <strong>${localDateStr} @ ${localTimeStr}</strong> (${svtH}:00 SVT) • 
+          <span style="color:var(--gold-primary); font-weight:700;">${diffStr}</span> • 
+          <span style="color:var(--text-muted);">${item.vsDay.name}</span>
+        `;
+        resultsContainer.appendChild(row);
+      });
+    }
+
+    function copyDiscordTag(sourceId) {
+      const text = document.getElementById('discordTagSvt').textContent.trim();
+      navigator.clipboard.writeText(text).then(() => {
+        showToast("Discord timestamp tag copied!");
+      }).catch(() => {
+        showToast("Copied tag to clipboard!");
+      });
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('appToast');
+      document.getElementById('toastMessage').textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2500);
+    }
+
+    /* 13. Theme Management */
+    function setTheme(theme) {
+      if (theme === 'system') {
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        document.documentElement.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
+        localStorage.setItem('theme', 'system');
+      } else {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
+      }
+      updateThemeButtons(theme);
+    }
+
+    function updateThemeButtons(activeTheme) {
+      document.querySelectorAll('[data-theme-val]').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-theme-val') === activeTheme);
+      });
+    }
+
+    const savedTheme = localStorage.getItem('theme') || 'system';
+    setTheme(savedTheme);
+
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+      const currentStored = localStorage.getItem('theme') || 'system';
+      if (currentStored === 'system') {
+        const prefersDark = e.matches;
+        document.documentElement.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
+        updateThemeButtons('system');
+      }
+    });
+
+    /* 14. Application Initialization */
+    function initApp() {
+      populateTimezoneDropdowns();
+      initConverterDates();
+      setTimeFormat(timeFormatHours);
+      setCalendarTimeMode(calendarTimeMode);
+
+      const now = new Date();
+      const currentVs = getVsDayInfo(now);
+      if (activeDayTab === null) {
+        activeDayTab = currentVs.id;
+      }
+
+      renderDayTabs();
+      renderTimelineStrip();
+      renderLocalAxis();
+      renderCalendarMatrix();
+      renderWorldBoard();
+      renderAwakeScheduleAnalysis();
+
+      updateAllClocks();
+
+      // Tick every second
+      setInterval(updateAllClocks, 1000);
+    }
+
+    // Run on DOM load
+    document.addEventListener('DOMContentLoaded', initApp);
+  </script>
+</body>
+</html>
