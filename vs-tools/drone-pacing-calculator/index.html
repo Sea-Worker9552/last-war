@@ -133,7 +133,7 @@
     }
 
     .container {
-      max-width: 1240px;
+      max-width: 1380px;
       margin: 0 auto;
     }
 
@@ -274,31 +274,18 @@
       color: #ffffff;
     }
 
-    /* Layout Grids */
-    .top-dashboard-grid {
+    /* Layout Grid */
+    .grid-dashboard {
       display: grid;
-      grid-template-columns: 360px 1fr;
+      grid-template-columns: 350px 1fr;
       gap: 24px;
-      align-items: stretch;
-      margin-bottom: 24px;
+      align-items: start;
     }
 
     @media (max-width: 1024px) {
-      .top-dashboard-grid {
+      .grid-dashboard {
         grid-template-columns: 1fr;
-        align-items: start;
       }
-    }
-
-    .analytics-panel {
-      display: flex;
-      flex-direction: column;
-      min-width: 0;
-      height: 100%;
-    }
-
-    .table-panel-fullwidth {
-      width: 100%;
     }
 
     /* Panels */
@@ -536,56 +523,56 @@
       background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(6, 182, 212, 0.08));
       border: 1px solid var(--gold-border);
       border-radius: var(--radius-md);
-      padding: 10px 14px;
+      padding: 12px 16px;
       margin-bottom: 16px;
       display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 12px;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 12.5px;
       color: var(--text-main);
+      line-height: 1.5;
     }
 
     .strategy-banner-icon {
-      font-size: 18px;
+      font-size: 20px;
+      line-height: 1;
+      margin-top: 1px;
     }
 
     /* Analytics / Charts Section */
     .charts-grid {
-      display: flex;
-      flex-direction: column;
-      flex: 1;
-      gap: 14px;
-      margin-bottom: 0;
-      min-height: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 860px) {
+      .charts-grid {
+        grid-template-columns: 1fr;
+      }
     }
 
     .chart-card {
       background: var(--bg-card);
       border: 1px solid var(--border-color);
       border-radius: var(--radius-lg);
-      padding: 14px 16px;
-      display: flex;
-      flex-direction: column;
-      flex: 1;
-      min-height: 0;
+      padding: 16px;
     }
 
     .chart-title {
       font-size: 13px;
       font-weight: 700;
       color: var(--text-main);
-      margin-bottom: 8px;
+      margin-bottom: 12px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      flex-shrink: 0;
     }
 
     .chart-container {
       position: relative;
-      flex: 1;
-      min-height: 235px;
-      height: 100%;
+      height: 220px;
       width: 100%;
     }
 
@@ -621,67 +608,40 @@
       border: 1px solid var(--border-color);
       border-radius: var(--radius-lg);
       background: var(--bg-card);
-      max-height: 720px;
-      overflow-y: auto;
     }
 
     table.ledger-table {
       width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
-      font-size: 12.5px;
+      border-collapse: collapse;
+      font-size: 13px;
       text-align: left;
     }
 
     table.ledger-table th {
-      background: rgba(15, 23, 42, 0.98);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+      background: rgba(15, 23, 42, 0.95);
       color: var(--text-muted);
       font-size: 11px;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      padding: 10px 10px;
-      border-bottom: 2px solid var(--border-color);
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border-color);
       white-space: nowrap;
       position: sticky;
       top: 0;
       z-index: 10;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
     }
 
     html[data-theme="light"] table.ledger-table th {
-      background: rgba(226, 232, 240, 0.98);
+      background: #e2e8f0;
       color: #475569;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     }
 
     table.ledger-table td {
-      padding: 8px 10px;
+      padding: 12px 14px;
       border-bottom: 1px solid var(--border-subtle);
       white-space: nowrap;
       vertical-align: middle;
-    }
-
-    table.ledger-table td.cell-upgrades {
-      white-space: normal;
-      min-width: 150px;
-      max-width: 210px;
-    }
-
-    .upgrade-lines-container {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .upgrade-line {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text-main);
-      line-height: 1.3;
-      white-space: nowrap;
     }
 
     table.ledger-table tbody tr {
@@ -864,252 +824,6 @@
       font-size: 13px;
     }
 
-    /* Custom Drone Training Action & Modal Styles */
-    .btn-custom-week {
-      padding: 4px 10px;
-      font-size: 11px;
-      font-weight: 700;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--border-color);
-      background: var(--bg-card);
-      color: var(--text-muted);
-      cursor: pointer;
-      transition: all 0.15s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      white-space: nowrap;
-      font-family: var(--font-sans);
-    }
-    .btn-custom-week:hover {
-      border-color: var(--cyan);
-      color: var(--text-main);
-      background: var(--bg-card-hover);
-    }
-    .btn-custom-week.active {
-      background: var(--gold-bg);
-      border-color: var(--gold);
-      color: var(--gold);
-    }
-    table.ledger-table tbody tr.custom-override-row {
-      background: rgba(245, 158, 11, 0.09) !important;
-      border-left: 3px solid var(--gold);
-    }
-    .badge-custom-override {
-      background: var(--gold-bg);
-      color: var(--gold);
-      border: 1px solid var(--gold-border);
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-size: 10px;
-      font-weight: 700;
-      font-family: var(--font-mono);
-      display: inline-flex;
-      align-items: center;
-      gap: 3px;
-    }
-
-    .custom-modal-section {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-lg);
-      padding: 14px 16px;
-    }
-    .segment-rail-container {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-top: 10px;
-    }
-    .segment-pips-grid {
-      display: flex;
-      gap: 6px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-    .segment-pip {
-      flex: 1;
-      min-width: 32px;
-      height: 42px;
-      border-radius: var(--radius-sm);
-      background: var(--bg-input);
-      border: 2px solid var(--border-color);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      font-size: 11px;
-      font-weight: 700;
-      font-family: var(--font-mono);
-      color: var(--text-dim);
-      cursor: pointer;
-      transition: all 0.15s ease;
-      user-select: none;
-      position: relative;
-    }
-    .segment-pip:hover:not(.disabled) {
-      border-color: var(--cyan);
-      color: var(--text-main);
-      transform: translateY(-2px);
-    }
-    .segment-pip.disabled {
-      opacity: 0.35;
-      cursor: not-allowed;
-    }
-    .segment-pip.filled {
-      background: var(--cyan-bg);
-      border-color: var(--cyan);
-      color: var(--cyan);
-      box-shadow: 0 0 10px rgba(6, 182, 212, 0.35);
-    }
-    .segment-pip.milestone-pip {
-      border-color: var(--gold-border);
-    }
-    .segment-pip.milestone-pip.filled {
-      background: var(--gold-bg);
-      border-color: var(--gold);
-      color: var(--gold);
-      box-shadow: 0 0 12px rgba(245, 158, 11, 0.45);
-    }
-    .pip-sub {
-      font-size: 8px;
-      font-weight: 600;
-      opacity: 0.8;
-      margin-top: 1px;
-    }
-    .stepper-btn {
-      padding: 5px 10px;
-      font-size: 11px;
-      font-weight: 700;
-      font-family: var(--font-sans);
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--border-color);
-      background: var(--bg-card);
-      color: var(--text-main);
-      cursor: pointer;
-      transition: all 0.15s ease;
-    }
-    .stepper-btn:hover:not(:disabled) {
-      border-color: var(--cyan);
-      background: var(--bg-card-hover);
-    }
-    .stepper-btn:disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
-    }
-
-    /* Multi-Level Journey Breadcrumb */
-    .journey-roadmap {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      flex-wrap: wrap;
-      background: var(--bg-input);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
-      padding: 8px 10px;
-      margin-bottom: 12px;
-    }
-    .journey-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 4px 8px;
-      border-radius: var(--radius-sm);
-      font-size: 11px;
-      font-weight: 700;
-      font-family: var(--font-sans);
-      border: 1px solid var(--border-color);
-      background: var(--bg-card);
-      color: var(--text-muted);
-      transition: all 0.15s ease;
-      user-select: none;
-    }
-    .journey-chip.interactive {
-      cursor: pointer;
-    }
-    .journey-chip.interactive:hover {
-      border-color: var(--cyan);
-      color: var(--text-main);
-      transform: translateY(-1px);
-    }
-    .journey-chip.start-chip {
-      background: rgba(148, 163, 184, 0.12);
-      border-color: var(--border-color);
-      color: var(--text-muted);
-    }
-    .journey-chip.completed-chip {
-      background: var(--green-bg);
-      border-color: var(--green-border);
-      color: var(--green);
-    }
-    .journey-chip.completed-chip:hover {
-      border-color: var(--green);
-      box-shadow: 0 0 8px rgba(16, 185, 129, 0.3);
-    }
-    .journey-chip.target-chip {
-      background: var(--gold-bg);
-      border-color: var(--gold);
-      color: var(--gold);
-      box-shadow: 0 0 10px rgba(245, 158, 11, 0.25);
-    }
-    .journey-arrow {
-      color: var(--text-dim);
-      font-size: 11px;
-    }
-
-    .budget-alert-box {
-      padding: 10px 14px;
-      border-radius: var(--radius-md);
-      font-size: 12px;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .budget-alert-box.ok {
-      background: var(--green-bg);
-      border: 1px solid var(--green-border);
-      color: var(--green);
-    }
-    .budget-alert-box.deficit {
-      background: var(--red-bg);
-      border: 1px solid var(--red-border);
-      color: var(--red);
-    }
-
-    .modal-preview-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-      margin-top: 8px;
-    }
-    @media (max-width: 600px) {
-      .modal-preview-grid { grid-template-columns: 1fr; }
-    }
-    .preview-stat-card {
-      background: var(--bg-input);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
-      padding: 10px 12px;
-    }
-    .preview-stat-lbl {
-      font-size: 10px;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 2px;
-      font-weight: 700;
-    }
-    .preview-stat-val {
-      font-size: 15px;
-      font-weight: 800;
-      font-family: var(--font-mono);
-      color: var(--text-main);
-    }
-
     /* Toast Notification */
     .toast {
       position: fixed;
@@ -1147,7 +861,7 @@
         <div class="brand-icon">⚡</div>
         <div class="brand-text">
           <h1>Last War: Drone VS Pacing <span class="badge-sub">Level 60–300</span></h1>
-          <p>Minimize weekly upgrades to hit exactly 7.2M VS, maximize weeks to bank Drone Parts</p>
+          <p>Advanced weekly upgrade simulator with bottleneck-aware lookahead and pacing models</p>
         </div>
       </div>
       <div class="header-actions">
@@ -1163,11 +877,11 @@
       </div>
     </header>
 
-    <!-- Top Section: Simulation Setup (Left) + Analytics & Charts (Right) -->
-    <div class="top-dashboard-grid">
+    <!-- Main Grid: Controls + Analytics/Table -->
+    <div class="grid-dashboard">
       
       <!-- Left Sidebar: Controls & Inputs -->
-      <aside class="panel setup-panel">
+      <aside class="panel">
         <div class="panel-header">
           <div class="panel-title"><span class="dot"></span> Simulation Setup</div>
           <button class="btn" id="btnResetDefaults" style="padding: 4px 8px; font-size: 11px;">Reset</button>
@@ -1180,19 +894,23 @@
           <select id="pacingMode" class="form-input" style="font-family: var(--font-sans); font-size: 13px;">
             <option value="minimal" selected>🎯 Minimal Pacing (Stretch BD & Max Bank)</option>
             <option value="whole_level">📦 Whole Level Milestones</option>
+            <option value="max_push">🚀 Max Push (Immediate Burn)</option>
+            <option value="alternating_burst">⚔️ Alternating Duel Burst (High Push / Low 7.2M)</option>
+            <option value="safe_sprint">⚡ Safe Sprint (Full-Horizon Lookahead)</option>
+            <option value="even_velocity">⚖️ Smooth Steady Pacing (Even Velocity)</option>
           </select>
         </div>
 
         <div class="control-group">
           <label class="control-label" for="startLevel">
             Current Drone Level (Completed)
-            <span class="control-badge" id="badgeStartLevel">100</span>
+            <span class="control-badge" id="badgeStartLevel">110</span>
           </label>
           <div class="input-row">
-            <input type="text" inputmode="numeric" id="startLevel" class="form-input" value="100">
+            <input type="text" inputmode="numeric" id="startLevel" class="form-input" value="110">
           </div>
-          <input type="range" id="sliderStartLevel" class="range-slider" min="60" max="250" value="100">
-          <p style="font-size: 11px; color: var(--text-dim); margin-top: 4px;">Simulation starts upgrading towards Level <span id="lblNextLevel">101</span></p>
+          <input type="range" id="sliderStartLevel" class="range-slider" min="60" max="250" value="110">
+          <p style="font-size: 11px; color: var(--text-dim); margin-top: 4px;">Simulation starts upgrading towards Level <span id="lblNextLevel">111</span></p>
         </div>
 
         <div class="control-group">
@@ -1214,7 +932,7 @@
 
         <div class="control-group">
           <label class="control-label" for="otherTasksPts">
-            Other Tasks Points (Radar/Skill Chip Chests/Resource Gathering)
+            Other Tasks Points (Radar/Base)
             <span class="control-badge" id="badgeOtherTasks">2,000,000</span>
           </label>
           <input type="text" inputmode="numeric" id="otherTasksPts" class="form-input" value="2,000,000">
@@ -1261,14 +979,14 @@
         <!-- Presets -->
         <div class="presets-container">
           <button class="preset-btn" data-preset="lvl70">Lvl 70 Early Push</button>
-          <button class="preset-btn" data-preset="lvl100">Lvl 100 → 125 F2P</button>
+          <button class="preset-btn" data-preset="lvl110">Lvl 110 → 125 F2P</button>
           <button class="preset-btn" data-preset="lvl125">Lvl 125 → 150 Push</button>
           <button class="preset-btn" data-preset="lvl150">Lvl 151+ S1 Endgame</button>
         </div>
       </aside>
 
-      <!-- Right: Analytics, KPIs & Charts -->
-      <section class="analytics-panel">
+      <!-- Right Main: KPI Cards + Charts + Table -->
+      <main>
         
         <!-- Strategy Description Banner -->
         <div class="strategy-banner" id="strategyBanner">
@@ -1281,7 +999,7 @@
         <!-- KPI Summary Cards -->
         <div class="kpi-grid">
           <div class="kpi-card">
-            <div class="kpi-label" id="kpiWeeksLabel">Weeks Stretched (Goal)</div>
+            <div class="kpi-label">Weeks Stretched (Goal)</div>
             <div class="kpi-value" id="kpiWeeks">19 <span style="font-size: 14px; color: var(--text-muted);">Weeks</span></div>
             <div class="kpi-sub" id="kpiMonths">~4.4 Months of 9/9 Clears</div>
           </div>
@@ -1328,52 +1046,48 @@
           </div>
         </div>
 
-      </section>
+        <!-- Table Toolbar & Ledger Panel -->
+        <div class="panel" style="padding: 16px;">
+          <div class="table-toolbar">
+            <div class="table-stats">
+              Showing <strong id="lblTotalWeeks">19</strong> simulated weeks from <strong id="lblFromTo">Lvl 110 → Lvl 125</strong>
+            </div>
+            <div class="table-actions">
+              <button class="btn" id="btnCopyMarkdown" title="Copy table as Markdown">
+                📋 Copy Markdown
+              </button>
+              <button class="btn btn-primary" id="btnDownloadCsv" title="Download table as CSV">
+                📥 Export CSV
+              </button>
+            </div>
+          </div>
+
+          <!-- Weekly Ledger Table -->
+          <div class="table-wrapper">
+            <table class="ledger-table" id="ledgerTable">
+              <thead>
+                <tr>
+                  <th>Week</th>
+                  <th>Start Lvl</th>
+                  <th>Upgrades Completed</th>
+                  <th>End Lvl</th>
+                  <th>Drone Parts Change <br><span style="font-size: 9px; font-weight: normal;">(+Gain / -Spent)</span></th>
+                  <th>Parts Ending Balance</th>
+                  <th>Battle Data XP</th>
+                  <th>Total Monday VS Pts <br><span style="font-size: 9px; font-weight: normal;">(Hover for Breakdown)</span></th>
+                  <th>VS Status</th>
+                </tr>
+              </thead>
+              <tbody id="ledgerTableBody">
+                <!-- Injected via JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </main>
 
     </div>
-
-    <!-- Bottom Section: Full-Width Table Toolbar & Ledger Panel -->
-    <main class="panel table-panel-fullwidth" style="padding: 16px;">
-      <div class="table-toolbar">
-        <div class="table-stats">
-          Showing <strong id="lblTotalWeeks">25</strong> simulated weeks from <strong id="lblFromTo">Lvl 100 → Lvl 125</strong>
-        </div>
-        <div class="table-actions">
-          <button class="btn" id="btnResetAllOverrides" onclick="resetAllCustomOverrides()" title="Clear all custom weekly overrides and restore auto minimal pacing">
-            🔄 Reset All Overrides
-          </button>
-          <button class="btn" id="btnCopyMarkdown" title="Copy table as Markdown">
-            📋 Copy Markdown
-          </button>
-          <button class="btn btn-primary" id="btnDownloadCsv" title="Download table as CSV">
-            📥 Export CSV
-          </button>
-        </div>
-      </div>
-
-      <!-- Weekly Ledger Table -->
-      <div class="table-wrapper">
-        <table class="ledger-table" id="ledgerTable">
-          <thead>
-            <tr>
-              <th>Week</th>
-              <th>Start Lvl</th>
-              <th>Upgrades Completed</th>
-              <th>End Lvl</th>
-              <th>Drone Parts Change <br><span style="font-size: 9px; font-weight: normal;">(+Gain / -Spent)</span></th>
-              <th>Parts Ending Balance</th>
-              <th>Battle Data XP</th>
-              <th>Total Monday VS Pts <br><span style="font-size: 9px; font-weight: normal;">(Hover for Breakdown)</span></th>
-              <th>VS Status</th>
-              <th style="min-width: 140px;">Custom Training</th>
-            </tr>
-          </thead>
-          <tbody id="ledgerTableBody">
-            <!-- Injected via JavaScript -->
-          </tbody>
-        </table>
-      </div>
-    </main>
   </div>
 
   <!-- Floating Dynamic Tooltip Element -->
@@ -1389,160 +1103,6 @@
       <div class="modal-body" id="modalUnlockList">
         <!-- Injected via JavaScript -->
       </div>
-    </div>
-  </div>
-
-  <!-- Custom Drone Training Modal -->
-  <div class="modal-backdrop" id="customTrainingModalBackdrop">
-    <div class="modal-dialog" style="max-width: 620px;">
-      <div class="modal-header">
-        <div style="display: flex; flex-direction: column; gap: 2px;">
-          <div class="panel-title" id="customModalTitle" style="font-size: 16px; font-weight: 800; color: var(--gold);">
-            ✏️ Custom Drone Training — Week 1 Inspector
-          </div>
-          <div style="font-size: 11px; color: var(--text-muted);" id="customModalSubtitle">
-            Manually configure exact level and segments to advance this week.
-          </div>
-        </div>
-        <button class="btn" onclick="closeCustomTrainingModal()" style="padding: 4px 8px;">✕</button>
-      </div>
-
-      <div class="modal-body" style="padding: 16px 20px; display: flex; flex-direction: column; gap: 14px;">
-        
-        <!-- Top Banner: Starting State & Available Bank -->
-        <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
-          <div>
-            <span style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Week Starting Position:</span>
-            <div style="font-size: 14px; font-weight: 800; color: var(--text-main);" id="modalWeekStartPos">Lvl 100 (Seg 0/5)</div>
-          </div>
-          <div>
-            <span style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Available Bank (+Income):</span>
-            <div style="font-size: 14px; font-weight: 800; color: var(--cyan);" id="modalWeekAvailBank">250 DP Available</div>
-          </div>
-        </div>
-
-        <!-- Level & Segment Advancement Section -->
-        <div class="custom-modal-section">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <label style="font-size: 12px; font-weight: 700; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.5px;">
-              🎯 Target Ending Position for Week
-            </label>
-            <span class="badge badge-gold" id="modalAdvancementBadge">+0 Segments</span>
-          </div>
-
-          <!-- Target Level Dropdown / Steppers -->
-          <div style="display: flex; gap: 10px; align-items: flex-end; margin-bottom: 12px;">
-            <div style="flex: 1;">
-              <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Target Ending Level:</label>
-              <select id="modalTargetLevelSelect" class="form-input" style="padding: 8px 10px; font-size: 13px; font-weight: 700; width: 100%;">
-                <!-- Populated dynamically -->
-              </select>
-            </div>
-            <div>
-              <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Level Adjust:</label>
-              <div style="display: flex; gap: 4px;">
-                <button class="stepper-btn" id="btnModalLevelDec" onclick="adjustModalTargetLevel(-1)" title="Decrease 1 level">−1 Level</button>
-                <button class="stepper-btn" id="btnModalLevelInc" onclick="adjustModalTargetLevel(1)" title="Advance 1 level">+1 Level</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Multi-Level Journey Breadcrumb Roadmap -->
-          <div>
-            <div style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 5px; letter-spacing: 0.5px;">
-              🗺️ Upgrade Progression Roadmap:
-            </div>
-            <div class="journey-roadmap" id="modalJourneyRoadmap">
-              <!-- Injected dynamically: Start, Completed Levels, and Target Chips -->
-            </div>
-          </div>
-
-          <!-- Visual Segment Rail (In-Game Style) -->
-          <div class="segment-rail-container">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-              <span style="font-size: 11px; font-weight: 700; color: var(--text-muted);" id="modalSegmentRailLabel">
-                Segments for Level 111 (0 / 14 Completed):
-              </span>
-              <div style="display: flex; gap: 4px;">
-                <button class="stepper-btn" style="padding: 3px 8px; font-size: 11px;" id="btnModalSegDec" onclick="adjustModalTargetSegment(-1)" title="Decrease 1 segment">−1 Seg</button>
-                <button class="stepper-btn" style="padding: 3px 8px; font-size: 11px;" id="btnModalSegInc" onclick="adjustModalTargetSegment(1)" title="Advance 1 segment">+1 Seg</button>
-                <button class="stepper-btn" style="padding: 3px 8px; font-size: 11px;" id="btnModalSegMax" onclick="snapModalToLevel(modalTargetLevel, getTotalSegmentsForLevel(modalTargetLevel))" title="Complete all segments of this level">Max Segs (Full)</button>
-              </div>
-            </div>
-
-            <!-- Pips Grid -->
-            <div class="segment-pips-grid" id="modalSegmentPipsGrid">
-              <!-- Injected dynamically: Clickable pips 1..N -->
-            </div>
-          </div>
-        </div>
-
-        <!-- Budget Validation & Snap Box -->
-        <div id="modalBudgetAlert" class="budget-alert-box ok">
-          <div id="modalBudgetText">
-            ✓ Within available budget (Spent: 0 / 250 DP)
-          </div>
-          <button class="btn btn-primary" id="btnSnapMaxAffordable" onclick="snapModalToMaxAffordable()" style="padding: 4px 8px; font-size: 11px; display: none;">
-            🎯 Snap to Max Affordable
-          </button>
-        </div>
-
-        <!-- Live Outcome Preview Card -->
-        <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 14px;">
-          <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px;">
-            📊 Live Week Outcome Preview
-          </div>
-          
-          <div class="modal-preview-grid">
-            <div class="preview-stat-card">
-              <div class="preview-stat-lbl">Drone Parts Spent</div>
-              <div class="preview-stat-val" id="prevPartsSpent">0 DP</div>
-              <div style="font-size: 10px; color: var(--cyan); margin-top: 2px;" id="prevEndingBank">Ending Bank: 250 DP</div>
-            </div>
-
-            <div class="preview-stat-card">
-              <div class="preview-stat-lbl">Battle Data XP</div>
-              <div class="preview-stat-val" style="color: var(--purple);" id="prevBattleData">0 XP</div>
-              <div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;" id="prevBdPoints">0 VS Pts from BD</div>
-            </div>
-
-            <div class="preview-stat-card">
-              <div class="preview-stat-lbl">Total Monday VS Points</div>
-              <div class="preview-stat-val" id="prevTotalVs">2.00M</div>
-              <div style="font-size: 10px; margin-top: 2px;" id="prevChestBadge">
-                <span class="badge badge-red">⚠ Short</span>
-              </div>
-            </div>
-
-            <div class="preview-stat-card">
-              <div class="preview-stat-lbl">Upgrades Completed</div>
-              <div style="font-size: 12px; font-weight: 600; color: var(--text-main); line-height: 1.3;" id="prevUpgradeDesc">
-                Waiting for Drone Parts (+Banked)
-              </div>
-            </div>
-          </div>
-
-          <!-- Special Unlock Alert if triggered -->
-          <div id="prevUnlockAlert" style="display: none; margin-top: 10px; padding: 8px 10px; background: var(--purple-bg); border: 1px solid var(--purple-border); border-radius: var(--radius-sm); font-size: 11px; color: var(--purple); font-weight: 700;">
-            🏆 Unlocks: Skill Level 5
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Modal Footer Actions -->
-      <div style="padding: 12px 20px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: var(--bg-panel-solid); gap: 10px; flex-wrap: wrap;">
-        <button class="btn" id="btnResetModalWeek" onclick="resetCurrentModalWeek()" style="color: var(--red);">
-          🔄 Reset Week to Auto
-        </button>
-        <div style="display: flex; gap: 8px;">
-          <button class="btn" onclick="closeCustomTrainingModal()">Cancel</button>
-          <button class="btn btn-primary" id="btnSaveModalOverride" onclick="saveCustomTrainingOverride()">
-            💾 Save Week Override
-          </button>
-        </div>
-      </div>
-
     </div>
   </div>
 
@@ -1586,7 +1146,7 @@
     // Default Settings Definition
     const DEFAULT_SETTINGS = {
       pacingMode: 'minimal',
-      startLevel: 100,
+      startLevel: 110,
       startBankParts: 0,
       weeklyIncome: 250,
       otherTasksPts: 2000000,
@@ -1610,7 +1170,7 @@
       try {
         const settings = {
           pacingMode: document.getElementById('pacingMode')?.value || 'minimal',
-          startLevel: parseCleanInt(document.getElementById('startLevel')?.value, 100),
+          startLevel: parseCleanInt(document.getElementById('startLevel')?.value, 110),
           startBankParts: parseCleanInt(document.getElementById('startBankParts')?.value, 0),
           weeklyIncome: parseCleanInt(document.getElementById('weeklyIncome')?.value, 250),
           otherTasksPts: parseCleanInt(document.getElementById('otherTasksPts')?.value, 2000000),
@@ -1675,12 +1235,9 @@
     const ALL_SEGMENTS = buildSegmentList();
 
     // Helper: Condense upgrades into concise ranges with explicit segment numbers (e.g. seg 1/5, segs 2–3/5, seg 4/5)
-    function getUpgradeDescData(upgradedSegments) {
+    function formatUpgradeDesc(upgradedSegments) {
       if (!upgradedSegments || upgradedSegments.length === 0) {
-        return {
-          text: "Waiting for Drone Parts (+Banked)",
-          items: ["Waiting for Drone Parts (+Banked)"]
-        };
+        return "Waiting for Drone Parts (+Banked)";
       }
 
       const lvlList = [];
@@ -1708,7 +1265,7 @@
         l.isFull = (l.count === l.total);
       });
 
-      const items = [];
+      const formattedItems = [];
       let i = 0;
 
       while (i < lvlList.length) {
@@ -1738,7 +1295,7 @@
             rangeStr += `)`;
           }
 
-          items.push(rangeStr);
+          formattedItems.push(rangeStr);
           i = j;
         } else {
           let segRangeStr = "";
@@ -1754,79 +1311,113 @@
           } else {
             partStr += `)`;
           }
-          items.push(partStr);
+          formattedItems.push(partStr);
           i++;
         }
       }
 
-      return {
-        text: items.join(" + "),
-        items: items
-      };
+      return formattedItems.join(" + ");
     }
 
-    function formatUpgradeDesc(upgradedSegments) {
-      return getUpgradeDescData(upgradedSegments).text;
-    }
+    // Lookahead Feasibility Checker: Tests if remaining path to goal can be completed without any deficit weeks
+    function canCompleteFutureWithoutDeficit(startSegIdx, startBank, weeklyInc, otherTasks, targetVs, goalLevel) {
+      let simSegIdx = startSegIdx;
+      let simBank = startBank;
+      
+      let simCurrentLevel = 0;
+      if (simSegIdx > 0) {
+        const prevSeg = ALL_SEGMENTS[simSegIdx - 1];
+        simCurrentLevel = prevSeg.isLevelComplete ? prevSeg.level : prevSeg.level - 1;
+      }
+      
+      let weeksAhead = 0;
+      const maxLookahead = 100;
 
-    // Weekly Drone Overrides Map: { weekNum: { targetLevel: number, targetSegment: number } }
-    let weeklyDroneOverrides = {};
+      while (simSegIdx < ALL_SEGMENTS.length && weeksAhead < maxLookahead) {
+        if (simCurrentLevel >= goalLevel) return true;
+        simBank += weeklyInc;
+        let weekBD = 0;
+        let weekDPPts = 0;
+        let weekBDPts = 0;
 
-    function loadSavedOverrides() {
-      try {
-        const raw = localStorage.getItem('drone-vs-pacing-overrides');
-        if (raw) {
-          weeklyDroneOverrides = JSON.parse(raw);
+        while (simSegIdx < ALL_SEGMENTS.length) {
+          const seg = ALL_SEGMENTS[simSegIdx];
+          if (simCurrentLevel >= goalLevel) break;
+
+          if (seg.requiresDroneParts && seg.droneParts > 0) {
+            if (simBank < seg.droneParts) break;
+            simBank -= seg.droneParts;
+            weekDPPts += seg.droneParts * 5000;
+          }
+
+          weekBD += seg.battleData;
+          weekBDPts += seg.battleData * 6;
+
+          if (seg.isLevelComplete) simCurrentLevel = seg.level;
+          simSegIdx++;
+
+          if (otherTasks + weekBDPts + weekDPPts >= targetVs) break;
         }
-      } catch (e) {
-        console.warn('Failed to load overrides from localStorage:', e);
+
+        const totalWeekPts = otherTasks + weekBDPts + weekDPPts;
+        if (totalWeekPts < targetVs && targetVs - totalWeekPts > 150000 && simCurrentLevel < goalLevel) {
+          return false; // Future milestone bottleneck causes a deficit
+        }
+        weeksAhead++;
       }
+      return true;
     }
 
-    function saveOverrides() {
-      try {
-        localStorage.setItem('drone-vs-pacing-overrides', JSON.stringify(weeklyDroneOverrides));
-      } catch (e) {
-        console.warn('Failed to save overrides to localStorage:', e);
-      }
+    // Dynamic Strategy Banner Content
+    function updateStrategyBanner(pacingMode) {
+      const iconEl = document.getElementById('strategyBannerIcon');
+      const contentEl = document.getElementById('strategyBannerContent');
+      if (!iconEl || !contentEl) return;
+
+      const BANNERS = {
+        minimal: {
+          icon: '🎯',
+          html: '<strong>Minimal VS Point Pacing:</strong> Upgrades only the exact segments needed to clear 7.2M each Monday, stretching Battle Data across more weeks so your Drone Parts (+250/wk) can naturally accumulate without delays.'
+        },
+        whole_level: {
+          icon: '📦',
+          html: '<strong>Whole Level Milestones:</strong> Upgrades until the active level is 100% completed once 7.2M is cleared. Great for players who prefer clean, integer level upgrades every week.'
+        },
+        max_push: {
+          icon: '🚀',
+          html: '<strong>Max Push (Immediate Burn):</strong> Burns all available Drone Parts and Battle Data as fast as possible every Monday. Maximizes immediate drone combat power speedrun at the expense of point efficiency and produces future drought weeks.'
+        },
+        alternating_burst: {
+          icon: '⚔️',
+          html: '<strong>Alternating Duel Burst:</strong> Cycles between high-scoring Duel Push weeks (Week 1, 3, 5... burning all surplus to win Alliance Duels) and Low weeks (holding at 7.2M to restock bank).'
+        },
+        safe_sprint: {
+          icon: '⚡',
+          html: '<strong>Safe Sprint (Full-Horizon Lookahead):</strong> Rushes as aggressively as possible toward the End Goal, but dynamically throttles back if doing so would cause an upcoming milestone bottleneck to fall below 7.2M.'
+        },
+        even_velocity: {
+          icon: '⚖️',
+          html: '<strong>Smooth Steady Pacing (Even Velocity):</strong> Calculates the minimum feasible weeks to reach your End Goal and distributes segment upgrades evenly, delivering a steady, predictable score (~8–9M+) every Monday.'
+        }
+      };
+
+      const b = BANNERS[pacingMode] || BANNERS.minimal;
+      iconEl.innerText = b.icon;
+      contentEl.innerHTML = b.html;
     }
 
-    // Modal Global State
-    let activeModalWeek = null;
-    let modalStartSegIdx = 0;
-    let modalStartLevel = 100;
-    let modalStartSegment = 0;
-    let modalAvailBank = 0;
-    let modalTargetLevel = 100;
-    let modalTargetSegment = 0;
-
-    function getTotalSegmentsForLevel(lvl) {
-      const lvlData = DRONE_DATA.levels.find(l => l.level === lvl);
-      if (!lvlData) return 5;
-      const totalBD = lvlData.battleData || 0;
-      const totalDP = lvlData.droneParts || 0;
-      const segBD = lvlData.segmentBattleData || totalBD;
-      const segDP = lvlData.segmentParts || 0;
-
-      let numSegs = 1;
-      if (segDP > 0) {
-        numSegs = Math.round(totalDP / segDP);
-      } else if (segBD > 0) {
-        numSegs = Math.round(totalBD / segBD);
-      }
-      return Math.max(1, numSegs);
-    }
-
-    // Simulation Engine: Minimal Pacing with Segment Accuracy, Full Integer Levels, & Weekly Overrides
+    // Simulation Engine: Comprehensive 6-Strategy Suite
     function runSimulation() {
       try {
-        const startLvl = parseCleanInt(document.getElementById('startLevel')?.value, 100);
+        const startLvl = parseCleanInt(document.getElementById('startLevel')?.value, 110);
         const startBank = parseCleanInt(document.getElementById('startBankParts')?.value, 0);
         const weeklyInc = parseCleanInt(document.getElementById('weeklyIncome')?.value, 250);
         const otherTasks = parseCleanInt(document.getElementById('otherTasksPts')?.value, 2000000);
         const targetVs = parseCleanInt(document.getElementById('targetVsPts')?.value, 7200000);
         const targetGoal = document.getElementById('targetGoalLevel')?.value || '125';
         const pacingMode = document.getElementById('pacingMode')?.value || 'minimal';
+
+        updateStrategyBanner(pacingMode);
 
         let goalLevel = 125;
         let maxWeeks = 400;
@@ -1843,8 +1434,25 @@
 
         let currentBank = startBank;
         let currentCompletedLevel = startLvl;
-        let currentCompletedSegment = 0;
         const weeks = [];
+
+        // Pre-calculation for Even Velocity
+        let targetSegsPerWeek = 0;
+        if (pacingMode === 'even_velocity') {
+          let totalPartsNeeded = 0;
+          let totalSegsNeeded = 0;
+          let tempIdx = segIdx;
+          while (tempIdx < ALL_SEGMENTS.length) {
+            const s = ALL_SEGMENTS[tempIdx];
+            if (s.level > goalLevel) break;
+            if (s.requiresDroneParts && s.droneParts > 0) totalPartsNeeded += s.droneParts;
+            totalSegsNeeded++;
+            if (s.isLevelComplete && s.level >= goalLevel) break;
+            tempIdx++;
+          }
+          const minWeeksForParts = Math.max(1, Math.ceil(Math.max(0, totalPartsNeeded - startBank) / weeklyInc));
+          targetSegsPerWeek = Math.max(1, Math.round(totalSegsNeeded / minWeeksForParts));
+        }
 
         let weekNum = 1;
         let totalPartsConsumed = 0;
@@ -1852,7 +1460,7 @@
 
         while (weekNum <= maxWeeks) {
           if (segIdx >= ALL_SEGMENTS.length) break;
-          if (currentCompletedLevel >= goalLevel && !targetGoal.startsWith('custom_weeks_') && !weeklyDroneOverrides[weekNum]) {
+          if (currentCompletedLevel >= goalLevel && !targetGoal.startsWith('custom_weeks_')) {
             break;
           }
 
@@ -1866,102 +1474,75 @@
           let upgradedSegments = [];
 
           const startLevelThisWeek = currentCompletedLevel;
-          const startSegmentThisWeek = currentCompletedSegment;
-          const startSegIdxThisWeek = segIdx;
+          const isDuelPush = (pacingMode === 'alternating_burst') ? (weekNum % 2 === 1) : false;
 
-          const hasOverride = !!weeklyDroneOverrides[weekNum];
-          const override = weeklyDroneOverrides[weekNum];
+          while (segIdx < ALL_SEGMENTS.length) {
+            const seg = ALL_SEGMENTS[segIdx];
+            if (currentCompletedLevel >= goalLevel && !targetGoal.startsWith('custom_weeks_')) break;
 
-          if (hasOverride) {
-            let targetSegIdx = startSegIdxThisWeek;
-            if (override.targetLevel === startLevelThisWeek && override.targetSegment === startSegmentThisWeek) {
-              targetSegIdx = startSegIdxThisWeek;
-            } else {
-              let foundIdx = ALL_SEGMENTS.findIndex(s => s.level === override.targetLevel && s.segmentIndex === override.targetSegment);
-              if (foundIdx !== -1) {
-                targetSegIdx = foundIdx + 1;
-              } else if (override.targetLevel > ALL_SEGMENTS[ALL_SEGMENTS.length - 1].level) {
-                targetSegIdx = ALL_SEGMENTS.length;
+            // Check if milestone requires parts and we have enough
+            if (seg.requiresDroneParts && seg.droneParts > 0) {
+              if (currentBank < seg.droneParts) {
+                // Not enough parts in bank to complete this milestone segment -> stop and wait
+                break;
               }
             }
 
-            while (segIdx < targetSegIdx && segIdx < ALL_SEGMENTS.length) {
-              const seg = ALL_SEGMENTS[segIdx];
-              if (seg.requiresDroneParts && seg.droneParts > 0) {
-                if (currentBank < seg.droneParts) {
-                  break;
-                }
-                currentBank -= seg.droneParts;
-                partsSpent += seg.droneParts;
-                weekDronePartsPts += seg.droneParts * 5000;
+            const currentTotalMondayPts = otherTasks + weekBattleDataPts + weekDronePartsPts;
+
+            // Strategy-specific pre-upgrade throttles:
+            if (pacingMode === 'safe_sprint' && currentTotalMondayPts >= targetVs) {
+              const potentialBank = (seg.requiresDroneParts && seg.droneParts > 0) ? currentBank - seg.droneParts : currentBank;
+              const isSafe = canCompleteFutureWithoutDeficit(segIdx + 1, potentialBank, weeklyInc, otherTasks, targetVs, goalLevel);
+              if (!isSafe) {
+                break; // Stop here to protect future weeks from falling below 7.2M!
               }
-
-              weekBattleData += seg.battleData;
-              weekBattleDataPts += seg.battleData * 6;
-              upgradedSegments.push(seg);
-
-              if (seg.isLevelComplete) {
-                currentCompletedLevel = seg.level;
-                currentCompletedSegment = 0;
-              } else {
-                currentCompletedLevel = seg.level - 1;
-                currentCompletedSegment = seg.segmentIndex;
+            } else if (pacingMode === 'even_velocity') {
+              if (upgradedSegments.length >= targetSegsPerWeek && currentTotalMondayPts >= targetVs) {
+                break; // Met this week's balanced quota
               }
-
-              segIdx++;
             }
-          } else {
-            while (segIdx < ALL_SEGMENTS.length) {
-              const seg = ALL_SEGMENTS[segIdx];
-              if (currentCompletedLevel >= goalLevel && !targetGoal.startsWith('custom_weeks_')) break;
 
-              if (seg.requiresDroneParts && seg.droneParts > 0) {
-                if (currentBank < seg.droneParts) {
-                  break;
-                }
-                currentBank -= seg.droneParts;
-                partsSpent += seg.droneParts;
-                weekDronePartsPts += seg.droneParts * 5000;
-              }
+            // Commit segment upgrade
+            if (seg.requiresDroneParts && seg.droneParts > 0) {
+              currentBank -= seg.droneParts;
+              partsSpent += seg.droneParts;
+              weekDronePartsPts += seg.droneParts * 5000;
+            }
 
-              weekBattleData += seg.battleData;
-              weekBattleDataPts += seg.battleData * 6;
-              upgradedSegments.push(seg);
+            weekBattleData += seg.battleData;
+            weekBattleDataPts += seg.battleData * 6;
+            upgradedSegments.push(seg);
 
-              if (seg.isLevelComplete) {
-                currentCompletedLevel = seg.level;
-                currentCompletedSegment = 0;
-              } else {
-                currentCompletedLevel = seg.level - 1;
-                currentCompletedSegment = seg.segmentIndex;
-              }
+            if (seg.isLevelComplete) {
+              currentCompletedLevel = seg.level;
+            }
 
-              segIdx++;
+            segIdx++;
 
-              const currentTotalMondayPts = otherTasks + weekBattleDataPts + weekDronePartsPts;
+            const newTotalMondayPts = otherTasks + weekBattleDataPts + weekDronePartsPts;
 
-              if (pacingMode === 'minimal') {
-                if (currentTotalMondayPts >= targetVs) {
-                  break;
-                }
-              } else {
-                if (seg.isLevelComplete && currentTotalMondayPts >= targetVs) {
-                  break;
-                }
-              }
+            // Strategy-specific post-upgrade stop decisions:
+            if (pacingMode === 'minimal') {
+              if (newTotalMondayPts >= targetVs) break;
+            } else if (pacingMode === 'whole_level') {
+              if (seg.isLevelComplete && newTotalMondayPts >= targetVs) break;
+            } else if (pacingMode === 'alternating_burst') {
+              if (!isDuelPush && newTotalMondayPts >= targetVs) break; // Low week stops at 7.2M
             }
           }
 
           const endLevelThisWeek = currentCompletedLevel;
-          const endSegmentThisWeek = currentCompletedSegment;
           const totalMondayPts = otherTasks + weekBattleDataPts + weekDronePartsPts;
           const isSuccess = (totalMondayPts >= targetVs) || (targetVs - totalMondayPts <= 150000);
 
           totalPartsConsumed += partsSpent;
           totalBattleDataConsumed += weekBattleData;
 
-          const upgradeData = getUpgradeDescData(upgradedSegments);
+          // Build condensed descriptive string of upgrades done this week
+          const upgradeDesc = formatUpgradeDesc(upgradedSegments);
 
+          // Unlocks
           const unlocksThisWeek = [];
           upgradedSegments.forEach(s => {
             if (s.isLevelComplete) {
@@ -1975,11 +1556,7 @@
           weeks.push({
             week: weekNum,
             startLevel: startLevelThisWeek,
-            startSegment: startSegmentThisWeek,
-            startSegIdx: startSegIdxThisWeek,
             endLevel: endLevelThisWeek,
-            endSegment: endSegmentThisWeek,
-            endSegIdx: segIdx,
             partsGain: weeklyInc,
             partsSpent: partsSpent,
             partsEndingBalance: currentBank,
@@ -1991,11 +1568,9 @@
             targetVs: targetVs,
             isSuccess: isSuccess,
             deficit: Math.max(0, targetVs - totalMondayPts),
-            upgradeDesc: upgradeData.text,
-            upgradeItems: upgradeData.items,
+            upgradeDesc: upgradeDesc,
             unlocksThisWeek: unlocksThisWeek,
-            isCustom: hasOverride,
-            customOverride: override
+            isDuelPush: isDuelPush
           });
 
           weekNum++;
@@ -2010,27 +1585,9 @@
 
     // Update UI Elements
     function updateUI(weeks, totalParts, totalBD, startLvl, goalLvl) {
-      renderStrategyBanner();
       renderKPICards(weeks, totalParts, totalBD, goalLvl);
       renderTable(weeks, startLvl, goalLvl);
       renderCharts(weeks);
-    }
-
-    function renderStrategyBanner() {
-      const bannerIcon = document.getElementById('strategyBannerIcon');
-      const bannerContent = document.getElementById('strategyBannerContent');
-      const pacingMode = document.getElementById('pacingMode')?.value || 'minimal';
-      const weeklyInc = parseCleanInt(document.getElementById('weeklyIncome')?.value, 250);
-
-      if (!bannerContent) return;
-
-      if (pacingMode === 'whole_level') {
-        if (bannerIcon) bannerIcon.innerText = '📦';
-        bannerContent.innerHTML = `<strong>Whole Level Milestones Enabled:</strong> Never stops mid-level; completes entire levels each Monday once 7.2M is reachable. Faster progression when Battle Data and Drone Parts (+${formatNumber(weeklyInc)}/wk) are available, but expends resources in larger bursts.`;
-      } else {
-        if (bannerIcon) bannerIcon.innerText = '🎯';
-        bannerContent.innerHTML = `<strong>Minimal VS Point Pacing Enabled:</strong> Upgrades only the exact segments needed to clear 7.2M each Monday, stretching Battle Data across more weeks so your Drone Parts (+${formatNumber(weeklyInc)}/wk) can naturally accumulate without delays.`;
-      }
     }
 
     function renderKPICards(weeks, totalParts, totalBD, goalLvl) {
@@ -2038,12 +1595,6 @@
       const successCount = weeks.filter(w => w.isSuccess).length;
       const successRate = totalWeeks > 0 ? Math.round((successCount / totalWeeks) * 100) : 0;
       const finalBank = totalWeeks > 0 ? weeks[weeks.length - 1].partsEndingBalance : 0;
-      const pacingMode = document.getElementById('pacingMode')?.value || 'minimal';
-
-      const elWeeksLabel = document.getElementById('kpiWeeksLabel');
-      if (elWeeksLabel) {
-        elWeeksLabel.innerText = (pacingMode === 'whole_level') ? 'Weeks to Goal' : 'Weeks Stretched (Goal)';
-      }
 
       const elWeeks = document.getElementById('kpiWeeks');
       if (elWeeks) elWeeks.innerHTML = `${totalWeeks} <span style="font-size: 14px; color: var(--text-muted);">Weeks</span>`;
@@ -2085,11 +1636,9 @@
 
       weeks.forEach(w => {
         const isMilestoneWeek = w.partsSpent > 0;
-        const isCustom = !!w.isCustom;
         const tr = document.createElement('tr');
         if (isMilestoneWeek) tr.classList.add('milestone-row');
         if (!w.isSuccess) tr.classList.add('deficit-row');
-        if (isCustom) tr.classList.add('custom-override-row');
 
         // Drone parts change string
         let changeHtml = '';
@@ -2107,24 +1656,22 @@
           statusHtml = `<span class="badge badge-red">⚠ Short -${formatShort(w.deficit)}</span>`;
         }
 
-        // Special milestone tag if any
-        let upgradeLinesHtml = '';
-        if (w.upgradeItems && w.upgradeItems.length > 0 && w.upgradeDesc !== "Waiting for Drone Parts (+Banked)") {
-          upgradeLinesHtml = w.upgradeItems.map(it => `<div class="upgrade-line">• ${it}</div>`).join('');
-        } else {
-          upgradeLinesHtml = `<span style="color: var(--text-dim);">${w.upgradeDesc}</span>`;
+        // Duel burst badge if applicable
+        if (w.isDuelPush) {
+          statusHtml += ` <span class="badge badge-gold" style="margin-left: 4px;">⚔️ PUSH</span>`;
         }
 
-        let upgradeBadge = `<div class="upgrade-lines-container">${upgradeLinesHtml}</div>`;
+        // Special milestone tag if any
+        let upgradeBadge = `<span style="font-weight:600;">${w.upgradeDesc}</span>`;
         if (w.unlocksThisWeek.length > 0) {
           const u = w.unlocksThisWeek[0];
-          upgradeBadge += `<div class="badge badge-purple" style="margin-top:4px; display: inline-block;">🏆 ${u.description}</div>`;
+          upgradeBadge += `<br><span class="badge badge-purple" style="margin-top:3px;">🏆 ${u.description}</span>`;
         }
 
         // Breakdown tooltip payload with comma separated figures
         const tooltipPayload = `
           <div style="font-weight:700; margin-bottom: 6px; color: var(--gold); border-bottom: 1px solid var(--border-subtle); padding-bottom: 4px;">
-            Week ${w.week} Monday VS Breakdown ${isCustom ? '(Custom Overridden)' : ''}
+            Week ${w.week} Monday VS Breakdown
           </div>
           <div class="vs-tooltip-row">
             <span style="color: var(--purple);">🔹 Drone Battle Data (×6):</span>
@@ -2135,7 +1682,7 @@
             <span class="num-mono" style="font-weight:600;">${formatNumber(w.dronePartsPts)} pts</span>
           </div>
           <div class="vs-tooltip-row">
-            <span style="color: var(--text-muted);">🎯 Other Tasks (Radar/Skill Chip Chests/Resource Gathering):</span>
+            <span style="color: var(--text-muted);">🎯 Other Tasks (Radar/Base):</span>
             <span class="num-mono" style="font-weight:600;">${formatNumber(w.otherTasksPts)} pts</span>
           </div>
           <div class="vs-tooltip-row">
@@ -2144,46 +1691,11 @@
           </div>
         `;
 
-        // Custom Training Action Cell
-        const customBtnLabel = isCustom ? '✏️ Custom Active' : '✏️ Custom Training';
-        const customBtnClass = isCustom ? 'btn-custom-week active' : 'btn-custom-week';
-
-        let customBadgeHtml = '';
-        if (isCustom) {
-          if (w.startLevel === w.endLevel && w.startSegment === w.endSegment) {
-            customBadgeHtml = `<div style="margin-top: 3px;"><span class="badge-custom-override">🛡️ Held (0 Upgrades)</span></div>`;
-          } else {
-            const override = weeklyDroneOverrides[w.week];
-            if (override) {
-              const totSegs = getTotalSegmentsForLevel(override.targetLevel);
-              const segStr = override.targetSegment < totSegs ? ` (${override.targetSegment}/${totSegs})` : ' (Full)';
-              customBadgeHtml = `<div style="margin-top: 3px;"><span class="badge-custom-override">✏️ Target Lvl ${override.targetLevel}${segStr}</span></div>`;
-            } else {
-              const targetLvl = w.endSegment > 0 ? w.endLevel + 1 : w.endLevel;
-              const totSegs = getTotalSegmentsForLevel(targetLvl);
-              const segStr = w.endSegment > 0 ? ` (${w.endSegment}/${totSegs})` : ' (Full)';
-              customBadgeHtml = `<div style="margin-top: 3px;"><span class="badge-custom-override">✏️ Target Lvl ${targetLvl}${segStr}</span></div>`;
-            }
-          }
-        }
-
-        const actionCellHtml = `
-          <div style="display: flex; flex-direction: column; align-items: flex-start;">
-            <button class="${customBtnClass}" onclick="openCustomTrainingModal(${w.week})" title="Customize drone level & segments for Week ${w.week}">
-              ${customBtnLabel}
-            </button>
-            ${customBadgeHtml}
-          </div>
-        `;
-
-        const startLvlDisplay = w.startSegment > 0 ? `${w.startLevel}.${w.startSegment}` : `${w.startLevel}`;
-        const endLvlDisplay = w.endSegment > 0 ? `${w.endLevel}.${w.endSegment}` : `${w.endLevel}`;
-
         tr.innerHTML = `
           <td><strong style="color: var(--gold);">W${w.week}</strong></td>
-          <td class="num-mono" style="font-weight:600;">${startLvlDisplay}</td>
-          <td class="cell-upgrades">${upgradeBadge}</td>
-          <td class="num-mono" style="font-weight:700;">${endLvlDisplay}</td>
+          <td class="num-mono" style="font-weight:600;">${w.startLevel}</td>
+          <td>${upgradeBadge}</td>
+          <td class="num-mono" style="font-weight:700;">${w.endLevel}</td>
           <td class="num-mono">${changeHtml}</td>
           <td class="num-mono" style="font-weight:700; color: ${w.partsEndingBalance >= 500 ? 'var(--cyan)' : 'var(--text-main)'};">
             ${formatNumber(w.partsEndingBalance)}
@@ -2203,510 +1715,12 @@
               ${statusHtml}
             </div>
           </td>
-          <td>${actionCellHtml}</td>
         `;
 
         tbody.appendChild(tr);
       });
 
       attachFloatingTooltips();
-    }
-
-    // Modal Interactive Logic: Custom Drone Training Inspector
-    function openCustomTrainingModal(weekNum) {
-      const weekData = simulationResults.find(w => w.week === weekNum);
-      if (!weekData) return;
-
-      activeModalWeek = weekNum;
-      modalStartSegIdx = weekData.startSegIdx;
-      modalStartLevel = weekData.startLevel;
-      modalStartSegment = weekData.startSegment || 0;
-      modalAvailBank = weekData.partsEndingBalance + weekData.partsSpent;
-
-      document.getElementById('customModalTitle').innerText = `✏️ Custom Drone Training — Week ${weekNum} Inspector`;
-
-      if (weeklyDroneOverrides[weekNum]) {
-        modalTargetLevel = weeklyDroneOverrides[weekNum].targetLevel;
-        modalTargetSegment = weeklyDroneOverrides[weekNum].targetSegment;
-      } else {
-        if (weekData.endSegment > 0) {
-          modalTargetLevel = weekData.endLevel + 1;
-          modalTargetSegment = weekData.endSegment;
-        } else if (weekData.endLevel === weekData.startLevel && (weekData.endSegment || 0) === (weekData.startSegment || 0)) {
-          modalTargetLevel = weekData.startLevel;
-          modalTargetSegment = weekData.startSegment || 0;
-        } else {
-          modalTargetLevel = weekData.endLevel;
-          modalTargetSegment = getTotalSegmentsForLevel(weekData.endLevel);
-        }
-      }
-
-      // Starting position banner
-      const startSegsTotal = getTotalSegmentsForLevel(modalStartLevel + 1);
-      const startSegStr = modalStartSegment > 0 ? `Seg ${modalStartSegment}/${startSegsTotal}` : `0/${startSegsTotal}`;
-      document.getElementById('modalWeekStartPos').innerText = `Lvl ${modalStartLevel} (${startSegStr})`;
-      document.getElementById('modalWeekAvailBank').innerText = `${formatNumber(modalAvailBank)} DP Available`;
-
-      populateModalTargetLevelSelect();
-      renderModalPickerAndPreview();
-
-      const modalBackdrop = document.getElementById('customTrainingModalBackdrop');
-      if (modalBackdrop) modalBackdrop.classList.add('active');
-    }
-
-    function closeCustomTrainingModal() {
-      const modalBackdrop = document.getElementById('customTrainingModalBackdrop');
-      if (modalBackdrop) modalBackdrop.classList.remove('active');
-      activeModalWeek = null;
-    }
-
-    function populateModalTargetLevelSelect() {
-      const select = document.getElementById('modalTargetLevelSelect');
-      if (!select) return;
-      select.innerHTML = '';
-
-      const minLvl = modalStartLevel;
-      const maxLvl = Math.min(300, modalStartLevel + 35);
-
-      for (let l = minLvl; l <= maxLvl; l++) {
-        const opt = document.createElement('option');
-        opt.value = l;
-        const totalSegs = getTotalSegmentsForLevel(l);
-        const lvlObj = DRONE_DATA.levels.find(x => x.level === l);
-        const isMilestone = lvlObj?.requiresDroneParts && lvlObj?.droneParts > 0;
-        const dpBadge = isMilestone ? ` • ${formatNumber(lvlObj.droneParts)} DP` : '';
-        
-        if (l === modalStartLevel) {
-          opt.textContent = `Lvl ${l} (Current Starting Level)`;
-        } else {
-          opt.textContent = `Lvl ${l} (${totalSegs} segs${dpBadge})`;
-        }
-        select.appendChild(opt);
-      }
-
-      select.value = modalTargetLevel;
-      select.onchange = (e) => {
-        modalTargetLevel = parseInt(e.target.value, 10);
-        if (modalTargetLevel === modalStartLevel) {
-          modalTargetSegment = modalStartSegment;
-        } else {
-          const totalSegs = getTotalSegmentsForLevel(modalTargetLevel);
-          modalTargetSegment = totalSegs;
-        }
-        renderModalPickerAndPreview();
-      };
-    }
-
-    function snapModalToLevel(lvl, seg) {
-      modalTargetLevel = Math.max(modalStartLevel, Math.min(300, lvl));
-      const totSegs = getTotalSegmentsForLevel(modalTargetLevel);
-      modalTargetSegment = Math.max(0, Math.min(totSegs, seg));
-      renderModalPickerAndPreview();
-    }
-
-    function renderModalPickerAndPreview() {
-      const select = document.getElementById('modalTargetLevelSelect');
-      if (select && select.value != modalTargetLevel) {
-        select.value = modalTargetLevel;
-      }
-
-      const btnLvlDec = document.getElementById('btnModalLevelDec');
-      const btnLvlInc = document.getElementById('btnModalLevelInc');
-      if (btnLvlDec) btnLvlDec.disabled = (modalTargetLevel <= modalStartLevel);
-      if (btnLvlInc) btnLvlInc.disabled = (modalTargetLevel >= 300);
-
-      // Render Visual Segment Rail
-      const pipsGrid = document.getElementById('modalSegmentPipsGrid');
-      const railLabel = document.getElementById('modalSegmentRailLabel');
-      
-      let railLvl = modalTargetLevel === modalStartLevel ? modalStartLevel + 1 : modalTargetLevel;
-      railLvl = Math.min(300, railLvl);
-      const totalSegsInRail = getTotalSegmentsForLevel(railLvl);
-      const railLvlObj = DRONE_DATA.levels.find(x => x.level === railLvl);
-      const isMilestoneRail = railLvlObj?.requiresDroneParts && railLvlObj?.droneParts > 0;
-
-      if (railLabel) {
-        if (modalTargetLevel === modalStartLevel) {
-          railLabel.innerText = `Segments for Level ${railLvl} (${modalStartSegment} / ${totalSegsInRail} Completed):`;
-        } else {
-          railLabel.innerText = `Segments for Level ${railLvl} (${modalTargetSegment} / ${totalSegsInRail} Completed):`;
-        }
-      }
-
-      if (pipsGrid) {
-        pipsGrid.innerHTML = '';
-        for (let i = 1; i <= totalSegsInRail; i++) {
-          const pip = document.createElement('div');
-          pip.className = 'segment-pip';
-          if (isMilestoneRail) pip.classList.add('milestone-pip');
-
-          let isFilled = false;
-          let isDisabled = false;
-
-          if (modalTargetLevel === modalStartLevel) {
-            isFilled = (i <= modalStartSegment);
-            if (i <= modalStartSegment) isDisabled = true;
-          } else {
-            isFilled = (i <= modalTargetSegment);
-          }
-
-          if (isFilled) pip.classList.add('filled');
-          if (isDisabled) pip.classList.add('disabled');
-
-          const segPartsCost = (isMilestoneRail && railLvlObj?.segmentParts) ? `${railLvlObj.segmentParts} DP` : 'XP';
-          pip.innerHTML = `<span>${i}</span><span class="pip-sub">${segPartsCost}</span>`;
-
-          pip.onclick = () => {
-            if (modalTargetLevel === modalStartLevel) {
-              if (i > modalStartSegment) {
-                modalTargetLevel = railLvl;
-                modalTargetSegment = i;
-              }
-            } else {
-              if (modalTargetSegment === i) {
-                modalTargetSegment = i - 1;
-                if (modalTargetSegment === 0 && modalTargetLevel > modalStartLevel + 1) {
-                  modalTargetLevel--;
-                  modalTargetSegment = getTotalSegmentsForLevel(modalTargetLevel);
-                } else if (modalTargetSegment === 0 && modalTargetLevel === modalStartLevel + 1) {
-                  modalTargetLevel = modalStartLevel;
-                  modalTargetSegment = modalStartSegment;
-                }
-              } else {
-                modalTargetSegment = i;
-              }
-            }
-            renderModalPickerAndPreview();
-          };
-
-          pipsGrid.appendChild(pip);
-        }
-      }
-
-      // Render Multi-Level Journey Breadcrumb Roadmap
-      const roadmapContainer = document.getElementById('modalJourneyRoadmap');
-      if (roadmapContainer) {
-        roadmapContainer.innerHTML = '';
-
-        // Start Chip
-        const startChip = document.createElement('div');
-        startChip.className = 'journey-chip start-chip interactive';
-        startChip.title = 'Click to reset target to week starting position (Hold Week)';
-        const startStr = modalStartSegment > 0 ? `Lvl ${modalStartLevel} (Seg ${modalStartSegment})` : `Lvl ${modalStartLevel}`;
-        startChip.innerHTML = `🚩 Start: ${startStr}`;
-        startChip.onclick = () => snapModalToLevel(modalStartLevel, modalStartSegment);
-        roadmapContainer.appendChild(startChip);
-
-        if (modalTargetLevel === modalStartLevel && modalTargetSegment === modalStartSegment) {
-          const arrow = document.createElement('span');
-          arrow.className = 'journey-arrow';
-          arrow.innerText = '➔';
-          roadmapContainer.appendChild(arrow);
-
-          const holdChip = document.createElement('div');
-          holdChip.className = 'journey-chip target-chip';
-          holdChip.innerHTML = `🛡️ Hold Week (0 Upgrades)`;
-          roadmapContainer.appendChild(holdChip);
-        } else {
-          // Traversed intermediate levels: from modalStartLevel + 1 up to modalTargetLevel - 1
-          for (let l = modalStartLevel + 1; l < modalTargetLevel; l++) {
-            const arrow = document.createElement('span');
-            arrow.className = 'journey-arrow';
-            arrow.innerText = '➔';
-            roadmapContainer.appendChild(arrow);
-
-            const totSegs = getTotalSegmentsForLevel(l);
-            const lvlObj = DRONE_DATA.levels.find(x => x.level === l);
-            const isMilestone = lvlObj?.requiresDroneParts && lvlObj?.droneParts > 0;
-            const dpTag = isMilestone ? `<span style="color: var(--gold); font-size: 9px; font-weight: 800;"> • ${formatNumber(lvlObj.droneParts)} DP</span>` : '';
-
-            const compChip = document.createElement('div');
-            compChip.className = 'journey-chip completed-chip interactive';
-            compChip.title = `Click to snap target to completed Level ${l}`;
-            compChip.innerHTML = `✓ Lvl ${l} Full (${totSegs}/${totSegs})${dpTag}`;
-            compChip.onclick = () => snapModalToLevel(l, totSegs);
-            roadmapContainer.appendChild(compChip);
-          }
-
-          // Active Target Ending Chip
-          const arrow = document.createElement('span');
-          arrow.className = 'journey-arrow';
-          arrow.innerText = '➔';
-          roadmapContainer.appendChild(arrow);
-
-          const targetTotalSegs = getTotalSegmentsForLevel(modalTargetLevel);
-          const isTargetFull = (modalTargetSegment === targetTotalSegs);
-          const targetLvlObj = DRONE_DATA.levels.find(x => x.level === modalTargetLevel);
-          const isTargetMilestone = targetLvlObj?.requiresDroneParts && targetLvlObj?.droneParts > 0;
-          const targetDpTag = isTargetMilestone && isTargetFull ? `<span style="color: var(--gold); font-size: 9px; font-weight: 800;"> • ${formatNumber(targetLvlObj.droneParts)} DP</span>` : '';
-
-          const targetChip = document.createElement('div');
-          targetChip.className = 'journey-chip target-chip';
-          if (!isTargetFull) {
-            targetChip.classList.add('interactive');
-            targetChip.title = `Click to complete Level ${modalTargetLevel} (${targetTotalSegs}/${targetTotalSegs} Full)`;
-            targetChip.onclick = () => snapModalToLevel(modalTargetLevel, targetTotalSegs);
-          }
-          const targetStr = isTargetFull 
-            ? `Lvl ${modalTargetLevel} Full (${targetTotalSegs}/${targetTotalSegs})` 
-            : `Lvl ${modalTargetLevel} (Seg ${modalTargetSegment}/${targetTotalSegs})`;
-          targetChip.innerHTML = `🎯 Target: ${targetStr}${targetDpTag}`;
-          roadmapContainer.appendChild(targetChip);
-        }
-      }
-
-      // Calculate outcome from modalStartSegIdx to target
-      let targetSegIdx = modalStartSegIdx;
-      if (modalTargetLevel === modalStartLevel && modalTargetSegment === modalStartSegment) {
-        targetSegIdx = modalStartSegIdx;
-      } else {
-        let foundIdx = ALL_SEGMENTS.findIndex(s => s.level === modalTargetLevel && s.segmentIndex === modalTargetSegment);
-        if (foundIdx !== -1) {
-          targetSegIdx = foundIdx + 1;
-        } else if (modalTargetLevel > ALL_SEGMENTS[ALL_SEGMENTS.length - 1].level) {
-          targetSegIdx = ALL_SEGMENTS.length;
-        }
-      }
-
-      let simPartsSpent = 0;
-      let simBDSpent = 0;
-      let simSegments = [];
-
-      for (let idx = modalStartSegIdx; idx < targetSegIdx && idx < ALL_SEGMENTS.length; idx++) {
-        const seg = ALL_SEGMENTS[idx];
-        if (seg.requiresDroneParts && seg.droneParts > 0) {
-          simPartsSpent += seg.droneParts;
-        }
-        simBDSpent += seg.battleData;
-        simSegments.push(seg);
-      }
-
-      const otherTasks = parseCleanInt(document.getElementById('otherTasksPts')?.value, 2000000);
-      const targetVs = parseCleanInt(document.getElementById('targetVsPts')?.value, 7200000);
-      const totalVs = otherTasks + (simBDSpent * 6) + (simPartsSpent * 5000);
-      const isSuccess = (totalVs >= targetVs) || (targetVs - totalVs <= 150000);
-
-      const partsDeficit = simPartsSpent - modalAvailBank;
-      const budgetAlert = document.getElementById('modalBudgetAlert');
-      const budgetText = document.getElementById('modalBudgetText');
-      const btnSnap = document.getElementById('btnSnapMaxAffordable');
-      const btnSave = document.getElementById('btnSaveModalOverride');
-
-      if (partsDeficit > 0) {
-        if (budgetAlert) {
-          budgetAlert.className = 'budget-alert-box deficit';
-        }
-        if (budgetText) {
-          budgetText.innerText = `⚠️ Insufficient Drone Parts: Need +${formatNumber(partsDeficit)} more DP (Required: ${formatNumber(simPartsSpent)} DP, Available: ${formatNumber(modalAvailBank)} DP)`;
-        }
-        if (btnSnap) btnSnap.style.display = 'inline-block';
-        if (btnSave) btnSave.disabled = true;
-      } else {
-        if (budgetAlert) {
-          budgetAlert.className = 'budget-alert-box ok';
-        }
-        if (budgetText) {
-          budgetText.innerText = `✓ Within available budget (Spent: ${formatNumber(simPartsSpent)} / ${formatNumber(modalAvailBank)} DP | Remaining: ${formatNumber(modalAvailBank - simPartsSpent)} DP)`;
-        }
-        if (btnSnap) btnSnap.style.display = 'none';
-        if (btnSave) btnSave.disabled = false;
-      }
-
-      // Update Preview Card Stats
-      const elPrevParts = document.getElementById('prevPartsSpent');
-      if (elPrevParts) elPrevParts.innerText = `${formatNumber(simPartsSpent)} DP`;
-
-      const elPrevBank = document.getElementById('prevEndingBank');
-      if (elPrevBank) elPrevBank.innerText = `Ending Bank: ${formatNumber(modalAvailBank - simPartsSpent)} DP`;
-
-      const elPrevBD = document.getElementById('prevBattleData');
-      if (elPrevBD) elPrevBD.innerText = simBDSpent > 0 ? formatShort(simBDSpent) : '0 XP';
-
-      const elPrevBDPts = document.getElementById('prevBdPoints');
-      if (elPrevBDPts) elPrevBDPts.innerText = `${formatShort(simBDSpent * 6)} VS Pts from BD`;
-
-      const elPrevVs = document.getElementById('prevTotalVs');
-      if (elPrevVs) elPrevVs.innerText = `${formatShort(totalVs)}`;
-
-      const elPrevChest = document.getElementById('prevChestBadge');
-      if (elPrevChest) {
-        elPrevChest.innerHTML = isSuccess 
-          ? `<span class="badge badge-green">✓ 9/9 Cleared (${formatNumber(totalVs)} pts)</span>`
-          : `<span class="badge badge-red">⚠ Short -${formatShort(targetVs - totalVs)}</span>`;
-      }
-
-      const elPrevDesc = document.getElementById('prevUpgradeDesc');
-      if (elPrevDesc) {
-        const descData = getUpgradeDescData(simSegments);
-        if (descData.items.length > 1) {
-          elPrevDesc.innerHTML = descData.items.map(it => `<div>• ${it}</div>`).join('');
-        } else {
-          elPrevDesc.innerText = descData.text;
-        }
-      }
-
-      const elBadgeAdv = document.getElementById('modalAdvancementBadge');
-      if (elBadgeAdv) {
-        if (simSegments.length === 0) {
-          elBadgeAdv.innerText = '🛡️ Hold Week (0 Upgrades)';
-          elBadgeAdv.className = 'badge badge-cyan';
-        } else {
-          let fullLevels = 0;
-          let leftoverSegs = 0;
-          if (modalTargetLevel === modalStartLevel) {
-            leftoverSegs = modalTargetSegment - modalStartSegment;
-          } else {
-            for (let l = modalStartLevel + 1; l < modalTargetLevel; l++) {
-              fullLevels++;
-            }
-            const targetTotal = getTotalSegmentsForLevel(modalTargetLevel);
-            if (modalTargetSegment === targetTotal) {
-              fullLevels++;
-              leftoverSegs = 0;
-            } else {
-              leftoverSegs = modalTargetSegment;
-            }
-          }
-
-          let advText = '';
-          if (fullLevels > 0 && leftoverSegs > 0) {
-            advText = `+${fullLevels} Level${fullLevels > 1 ? 's' : ''} & ${leftoverSegs} Segs (+${simSegments.length} Segs)`;
-          } else if (fullLevels > 0) {
-            advText = `+${fullLevels} Full Level${fullLevels > 1 ? 's' : ''} (+${simSegments.length} Segs)`;
-          } else {
-            advText = `+${leftoverSegs} Segment${leftoverSegs > 1 ? 's' : ''}`;
-          }
-
-          elBadgeAdv.innerText = advText;
-          elBadgeAdv.className = 'badge badge-gold';
-        }
-      }
-
-      // Check for unlock alerts
-      const unlockAlert = document.getElementById('prevUnlockAlert');
-      if (unlockAlert) {
-        const unlocks = [];
-        simSegments.forEach(s => {
-          if (s.isLevelComplete) {
-            const u = DRONE_DATA.unlocks.find(u => u.level === s.level || u.level === s.level + 1);
-            if (u && !unlocks.some(x => x.level === u.level)) unlocks.push(u);
-          }
-        });
-
-        if (unlockAlert) {
-          if (unlocks.length > 0) {
-            unlockAlert.style.display = 'block';
-            unlockAlert.innerHTML = `🏆 ${unlocks.map(u => u.description).join(" • ")}`;
-          } else {
-            unlockAlert.style.display = 'none';
-          }
-        }
-      }
-    }
-
-    function adjustModalTargetLevel(delta) {
-      if (delta > 0) {
-        if (modalTargetLevel === modalStartLevel && modalTargetSegment === modalStartSegment) {
-          modalTargetLevel = Math.min(300, modalStartLevel + 1);
-          modalTargetSegment = getTotalSegmentsForLevel(modalTargetLevel);
-        } else {
-          const curTotal = getTotalSegmentsForLevel(modalTargetLevel);
-          const isFull = (modalTargetSegment === curTotal);
-          
-          if (!isFull) {
-            // If current level is partially complete (e.g. 11/14), snap to 100% full (14/14)
-            modalTargetSegment = curTotal;
-          } else {
-            // If already full, advance to next level full
-            modalTargetLevel = Math.min(300, modalTargetLevel + 1);
-            modalTargetSegment = getTotalSegmentsForLevel(modalTargetLevel);
-          }
-        }
-      } else if (delta < 0) {
-        if (modalTargetLevel <= modalStartLevel + 1) {
-          modalTargetLevel = modalStartLevel;
-          modalTargetSegment = modalStartSegment;
-        } else {
-          modalTargetLevel = Math.max(modalStartLevel, modalTargetLevel - 1);
-          modalTargetSegment = getTotalSegmentsForLevel(modalTargetLevel);
-        }
-      }
-      renderModalPickerAndPreview();
-    }
-
-    function adjustModalTargetSegment(delta) {
-      let idx = -1;
-      if (modalTargetLevel === modalStartLevel && modalTargetSegment === modalStartSegment) {
-        idx = modalStartSegIdx - 1;
-      } else {
-        idx = ALL_SEGMENTS.findIndex(s => s.level === modalTargetLevel && s.segmentIndex === modalTargetSegment);
-      }
-
-      let newIdx = idx + delta;
-      if (newIdx < modalStartSegIdx) {
-        modalTargetLevel = modalStartLevel;
-        modalTargetSegment = modalStartSegment;
-      } else {
-        newIdx = Math.min(ALL_SEGMENTS.length - 1, newIdx);
-        const s = ALL_SEGMENTS[newIdx];
-        modalTargetLevel = s.level;
-        modalTargetSegment = s.segmentIndex;
-      }
-      renderModalPickerAndPreview();
-    }
-
-    function snapModalToMaxAffordable() {
-      let spent = 0;
-      let bestIdx = modalStartSegIdx - 1;
-
-      for (let i = modalStartSegIdx; i < ALL_SEGMENTS.length; i++) {
-        const seg = ALL_SEGMENTS[i];
-        if (seg.requiresDroneParts && seg.droneParts > 0) {
-          if (spent + seg.droneParts > modalAvailBank) break;
-          spent += seg.droneParts;
-        }
-        bestIdx = i;
-      }
-
-      if (bestIdx < modalStartSegIdx) {
-        modalTargetLevel = modalStartLevel;
-        modalTargetSegment = modalStartSegment;
-      } else {
-        const s = ALL_SEGMENTS[bestIdx];
-        modalTargetLevel = s.level;
-        modalTargetSegment = s.segmentIndex;
-      }
-      renderModalPickerAndPreview();
-    }
-
-    function saveCustomTrainingOverride() {
-      if (activeModalWeek === null) return;
-      weeklyDroneOverrides[activeModalWeek] = {
-        targetLevel: modalTargetLevel,
-        targetSegment: modalTargetSegment
-      };
-      const wk = activeModalWeek;
-      saveOverrides();
-      closeCustomTrainingModal();
-      runSimulation();
-      showToast(`💾 Week ${wk} custom drone training override saved!`);
-    }
-
-    function resetCurrentModalWeek() {
-      if (activeModalWeek === null) return;
-      const wk = activeModalWeek;
-      delete weeklyDroneOverrides[wk];
-      saveOverrides();
-      closeCustomTrainingModal();
-      runSimulation();
-      showToast(`🔄 Week ${wk} reset to auto minimal pacing.`);
-    }
-
-    function resetAllCustomOverrides() {
-      weeklyDroneOverrides = {};
-      saveOverrides();
-      runSimulation();
-      showToast('🔄 All custom weekly overrides cleared!');
     }
 
     // Attach fixed floating tooltips with viewport boundary collision handling
@@ -2961,14 +1975,13 @@
     // Export Utilities
     function copyMarkdown() {
       if (simulationResults.length === 0) return;
-      let md = '| Week | Start Lvl | Upgrades Completed | End Lvl | Drone Parts Change | Bank Balance | Battle Data XP | Total Monday VS | Status | Custom Overrides |\n';
-      md += '| :---: | :---: | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |\n';
+      let md = '| Week | Start Lvl | Upgrades Completed | End Lvl | Drone Parts Change | Bank Balance | Battle Data XP | Total Monday VS | Status |\n';
+      md += '| :---: | :---: | :--- | :---: | :---: | :---: | :---: | :---: | :---: |\n';
 
       simulationResults.forEach(w => {
         const statusStr = w.isSuccess ? '9/9 (Pass)' : `Short (-${formatShort(w.deficit)})`;
         const changeStr = `+${formatNumber(w.partsGain)} / -${formatNumber(w.partsSpent)}`;
-        const customNote = w.isCustom ? (w.startLevel === w.endLevel && w.startSegment === w.endSegment ? 'Held (0 Upgrades)' : `Target Lvl ${w.endLevel}.${w.endSegment}`) : 'Auto';
-        md += `| W${w.week} | ${w.startLevel} | ${w.upgradeDesc} | ${w.endLevel} | ${changeStr} | ${formatNumber(w.partsEndingBalance)} | ${formatShort(w.battleData)} | ${formatShort(w.totalVsPts)} | ${statusStr} | ${customNote} |\n`;
+        md += `| W${w.week} | ${w.startLevel} | ${w.upgradeDesc} | ${w.endLevel} | ${changeStr} | ${formatNumber(w.partsEndingBalance)} | ${formatShort(w.battleData)} | ${formatShort(w.totalVsPts)} | ${statusStr} |\n`;
       });
 
       navigator.clipboard.writeText(md).then(() => {
@@ -2978,11 +1991,10 @@
 
     function downloadCsv() {
       if (simulationResults.length === 0) return;
-      let csv = 'Week,Start Level,Upgrades,End Level,Parts Gained,Parts Spent,Ending Bank,Battle Data XP,Battle Data Points,Drone Parts Points,Other Tasks Points,Total VS Points,Success Status,Custom Training\n';
+      let csv = 'Week,Start Level,Upgrades,End Level,Parts Gained,Parts Spent,Ending Bank,Battle Data XP,Battle Data Points,Drone Parts Points,Other Tasks Points,Total VS Points,Success Status\n';
 
       simulationResults.forEach(w => {
-        const customNote = w.isCustom ? (w.startLevel === w.endLevel && w.startSegment === w.endSegment ? 'HELD' : `CUSTOM_LVL_${w.endLevel}_SEG_${w.endSegment}`) : 'AUTO';
-        csv += `W${w.week},"${w.startLevel}","${w.upgradeDesc}","${w.endLevel}",${w.partsGain},${w.partsSpent},${w.partsEndingBalance},${w.battleData},${w.battleDataPts},${w.dronePartsPts},${w.otherTasksPts},${w.totalVsPts},${w.isSuccess ? 'PASS' : 'FAIL'},"${customNote}"\n`;
+        csv += `W${w.week},"${w.startLevel}","${w.upgradeDesc}","${w.endLevel}",${w.partsGain},${w.partsSpent},${w.partsEndingBalance},${w.battleData},${w.battleDataPts},${w.dronePartsPts},${w.otherTasksPts},${w.totalVsPts},${w.isSuccess ? 'PASS' : 'FAIL'}\n`;
       });
 
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -3004,7 +2016,6 @@
     // Presets
     const PRESETS = {
       lvl70: { pacingMode: 'minimal', startLevel: 70, startBankParts: 0, weeklyIncome: 250, otherTasksPts: 2000000, targetVsPts: 7200000, targetGoalLevel: '100' },
-      lvl100: { pacingMode: 'minimal', startLevel: 100, startBankParts: 0, weeklyIncome: 250, otherTasksPts: 2000000, targetVsPts: 7200000, targetGoalLevel: '125' },
       lvl110: { pacingMode: 'minimal', startLevel: 110, startBankParts: 0, weeklyIncome: 250, otherTasksPts: 2000000, targetVsPts: 7200000, targetGoalLevel: '125' },
       lvl125: { pacingMode: 'minimal', startLevel: 125, startBankParts: 450, weeklyIncome: 280, otherTasksPts: 2000000, targetVsPts: 7200000, targetGoalLevel: '150' },
       lvl150: { pacingMode: 'minimal', startLevel: 151, startBankParts: 500, weeklyIncome: 300, otherTasksPts: 2000000, targetVsPts: 7200000, targetGoalLevel: '200' }
@@ -3056,8 +2067,7 @@
       populateUnlockList();
       applyTheme(userThemeMode);
 
-      // Load Saved Overrides and Settings
-      loadSavedOverrides();
+      // Load Saved Settings from localStorage
       const saved = loadSavedSettings();
       applySettingsToForm(saved);
 
@@ -3147,14 +2157,12 @@
       const btnReset = document.getElementById('btnResetDefaults');
       if (btnReset) {
         btnReset.addEventListener('click', () => {
-          weeklyDroneOverrides = {};
-          saveOverrides();
           applySettingsToForm(DEFAULT_SETTINGS);
-          showToast('↺ Reset settings and overrides to defaults');
+          showToast('↺ Reset settings to defaults');
         });
       }
 
-      // Modal Triggers: Unlock Guide Modal
+      // Modal Triggers
       const modalBackdrop = document.getElementById('unlockModalBackdrop');
       const btnModal = document.getElementById('btnUnlockModal');
       const btnClose = document.getElementById('btnCloseModal');
@@ -3174,22 +2182,6 @@
           if (e.target === modalBackdrop) modalBackdrop.classList.remove('active');
         });
       }
-
-      // Modal Triggers: Custom Training Modal Backdrop Click
-      const customModalBackdrop = document.getElementById('customTrainingModalBackdrop');
-      if (customModalBackdrop) {
-        customModalBackdrop.addEventListener('click', (e) => {
-          if (e.target === customModalBackdrop) closeCustomTrainingModal();
-        });
-      }
-
-      // Global Keyboard Shortcut: Escape to close modals
-      window.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-          closeCustomTrainingModal();
-          if (modalBackdrop) modalBackdrop.classList.remove('active');
-        }
-      });
 
       // Export Buttons
       const btnMd = document.getElementById('btnCopyMarkdown');
