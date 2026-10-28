@@ -129,14 +129,20 @@
 
     /* Header */
     header {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-rows: auto auto;
+      column-gap: 20px;
+      row-gap: 12px;
       align-items: center;
-      gap: 16px;
       padding-bottom: 20px;
       border-bottom: 1px solid var(--border-color);
       margin-bottom: 24px;
+    }
+
+    .title-group {
+      grid-column: 1;
+      grid-row: 1 / span 2;
     }
 
     .title-group h1 {
@@ -160,15 +166,11 @@
       margin-top: 4px;
     }
 
-    .header-right-controls {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 12px;
-    }
-
-    /* Theme Switcher */
+    /* Theme Switcher (Upper Right of Page) */
     .theme-switch {
+      grid-column: 2;
+      grid-row: 1;
+      justify-self: end;
       display: inline-flex;
       background: var(--bg-card);
       border: 1px solid var(--border-color);
@@ -201,6 +203,16 @@
       background: var(--bg-primary);
       color: var(--heading-color);
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .header-right-controls {
+      grid-column: 2;
+      grid-row: 2;
+      justify-self: end;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
     }
 
     .base-coords-card {
@@ -2054,10 +2066,21 @@
       }
 
       header {
+        display: flex;
         flex-direction: column;
         align-items: stretch;
-        gap: 12px;
+        gap: 10px;
         margin-bottom: 16px;
+      }
+
+      .theme-switch {
+        order: -1;
+        align-self: flex-end;
+      }
+
+      .theme-btn {
+        padding: 5px 8px;
+        font-size: 0.75rem;
       }
 
       .title-group h1 {
@@ -2069,18 +2092,6 @@
         flex-direction: column;
         width: 100%;
         gap: 8px;
-      }
-
-      .theme-switch {
-        width: 100%;
-        display: flex;
-        justify-content: space-between;
-      }
-
-      .theme-btn {
-        flex: 1;
-        justify-content: center;
-        padding: 6px 4px;
       }
 
       .base-coords-card,
@@ -2293,14 +2304,14 @@
         <p>Live Distance Calculator, Dynamic Countdown Timers & Target Prioritization</p>
       </div>
 
-      <div class="header-right-controls">
-        <!-- Theme Switcher: Light / Dark / System -->
-        <div class="theme-switch" role="group" aria-label="Color Theme">
-          <button type="button" class="theme-btn" data-theme-val="light" title="Light mode">☀️ Light</button>
-          <button type="button" class="theme-btn" data-theme-val="dark" title="Dark mode">🌙 Dark</button>
-          <button type="button" class="theme-btn active" data-theme-val="system" title="Follow system color preference">💻 System</button>
-        </div>
+      <!-- Color Scheme Switcher: Light / Dark / System (Upper Right of Page) -->
+      <div class="theme-switch" role="group" aria-label="Color Scheme">
+        <button type="button" class="theme-btn" data-theme-val="light" title="Light mode">☀️ Light</button>
+        <button type="button" class="theme-btn" data-theme-val="dark" title="Dark mode">🌙 Dark</button>
+        <button type="button" class="theme-btn active" data-theme-val="system" title="Follow system color preference">💻 System</button>
+      </div>
 
+      <div class="header-right-controls">
         <div class="base-coords-card">
           <label for="baseX">📍 Base Coords</label>
           <div class="coords-inputs">
