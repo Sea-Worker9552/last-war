@@ -1481,6 +1481,807 @@
       color: var(--text-muted);
       padding-bottom: 16px;
     }
+    /* Map Visualizer & Position Picker Modal */
+    .btn-map-picker {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(6, 182, 212, 0.15);
+      border: 1px solid var(--accent-cyan);
+      color: var(--accent-cyan);
+      padding: 5px 11px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+      margin-left: 2px;
+    }
+
+    .btn-map-picker:hover {
+      background: var(--accent-cyan);
+      color: #080c14;
+      box-shadow: 0 0 12px var(--accent-cyan-glow);
+      transform: translateY(-1px);
+    }
+
+    html[data-applied-theme="light"] .btn-map-picker {
+      background: #e0f2fe;
+      border-color: #0284c7;
+      color: #0369a1;
+    }
+
+    html[data-applied-theme="light"] .btn-map-picker:hover {
+      background: #0284c7;
+      color: #ffffff;
+      box-shadow: 0 0 10px rgba(2, 132, 199, 0.35);
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(4, 7, 13, 0.82);
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .modal-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .map-modal-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      width: 100%;
+      max-width: 1060px;
+      max-height: 94vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
+      overflow: hidden;
+      transform: scale(0.96);
+      transition: transform 0.2s ease;
+    }
+
+    .modal-backdrop.open .map-modal-card {
+      transform: scale(1);
+    }
+
+    .map-modal-header {
+      padding: 14px 20px;
+      background: var(--table-header-bg);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .map-modal-title-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .map-modal-title-group h3 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--heading-color);
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .map-coord-live {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 3px 9px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      color: var(--accent-cyan);
+    }
+
+    .btn-close-modal {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.35rem;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 6px;
+      line-height: 1;
+      transition: all 0.15s ease;
+    }
+
+    .btn-close-modal:hover {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--accent-red);
+    }
+
+    .map-modal-body {
+      display: grid;
+      grid-template-columns: minmax(340px, 580px) minmax(280px, 1fr);
+      gap: 18px;
+      padding: 18px 20px;
+      overflow-y: auto;
+      max-height: calc(94vh - 65px);
+    }
+
+    @media (max-width: 860px) {
+      .map-modal-body {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Map Canvas Container */
+    .map-canvas-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .map-canvas-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      background: #070c16;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.6);
+      cursor: crosshair;
+    }
+
+    html[data-applied-theme="light"] .map-canvas-wrapper {
+      background: #f8fafc;
+      box-shadow: inset 0 0 16px rgba(0, 0, 0, 0.05);
+    }
+
+    #battlefieldCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* Corner coordinate tags */
+    .corner-label {
+      position: absolute;
+      font-size: 0.68rem;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      padding: 2px 5px;
+      background: rgba(0, 0, 0, 0.65);
+      color: var(--text-muted);
+      border-radius: 4px;
+      pointer-events: none;
+      user-select: none;
+      z-index: 5;
+    }
+    html[data-applied-theme="light"] .corner-label {
+      background: rgba(255, 255, 255, 0.85);
+      color: var(--text-main);
+    }
+    .corner-tl { top: 6px; left: 6px; }
+    .corner-tr { top: 6px; right: 6px; color: var(--accent-gold); border: 1px solid rgba(245, 158, 11, 0.4); }
+    .corner-bl { bottom: 6px; left: 6px; }
+    .corner-br { bottom: 6px; right: 6px; }
+
+    .map-canvas-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 6px 10px;
+    }
+
+    .map-toggle-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .toolbar-label {
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .map-mini-btn {
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      font-size: 0.74rem;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.12s ease;
+    }
+
+    .map-mini-btn:hover {
+      border-color: var(--accent-cyan);
+      color: var(--text-main);
+    }
+
+    .map-mini-btn.active {
+      background: var(--accent-cyan);
+      border-color: var(--accent-cyan);
+      color: #080c14;
+      font-weight: 700;
+    }
+
+    .map-check-label {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .map-check-label input {
+      cursor: pointer;
+      accent-color: var(--accent-cyan);
+    }
+
+    /* Map Tooltip */
+    .map-tooltip {
+      position: absolute;
+      background: rgba(15, 23, 42, 0.94);
+      border: 1px solid var(--border-accent);
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 0.78rem;
+      color: var(--text-main);
+      pointer-events: none;
+      z-index: 20;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+      white-space: nowrap;
+      transition: opacity 0.1s ease;
+      line-height: 1.4;
+    }
+
+    html[data-applied-theme="light"] .map-tooltip {
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+      border-color: #cbd5e1;
+    }
+
+    /* Map Sidebar */
+    .map-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* Candidate Card */
+    .candidate-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .candidate-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .candidate-header h4 {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--heading-color);
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .candidate-status-badge {
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 12px;
+      background: rgba(6, 182, 212, 0.14);
+      color: var(--accent-cyan);
+      border: 1px solid rgba(6, 182, 212, 0.3);
+    }
+
+    .candidate-inputs-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .candidate-field {
+      display: flex;
+      align-items: center;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 4px 8px;
+      gap: 4px;
+      flex: 1;
+      min-width: 85px;
+    }
+
+    .candidate-field span {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--accent-gold);
+    }
+
+    .candidate-field input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 700;
+      width: 100%;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .btn-candidate-action {
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 6px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .btn-candidate-action:hover {
+      border-color: var(--accent-cyan);
+      color: var(--accent-cyan);
+    }
+
+    .btn-apply-base {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: linear-gradient(135deg, #06b6d4 0%, #0284c7 100%);
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      padding: 9px 14px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 14px rgba(6, 182, 212, 0.35);
+    }
+
+    .btn-apply-base:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(6, 182, 212, 0.45);
+    }
+
+    .base-applied-msg {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--accent-green);
+      text-align: center;
+      animation: fadeInOut 2.5s forwards;
+    }
+
+    /* Tactical Metrics Card */
+    .tactical-metrics-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .tactical-metrics-card h4 {
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: var(--heading-color);
+      margin: 0;
+    }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+
+    .metric-item {
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .metric-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .metric-val {
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: var(--heading-color);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .metric-val.hazard {
+      color: var(--accent-orange);
+    }
+
+    .metric-val.safe {
+      color: var(--accent-green);
+    }
+
+    /* Alliance Legend Card */
+    .map-legend-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1;
+      min-height: 140px;
+    }
+
+    .legend-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .legend-header h4 {
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: var(--heading-color);
+      margin: 0;
+    }
+
+    .legend-count-badge {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .legend-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      max-height: 160px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 5px;
+      padding: 3px 8px;
+      font-size: 0.74rem;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.12s ease;
+    }
+
+    .legend-item:hover {
+      border-color: var(--accent-cyan);
+      transform: translateY(-1px);
+    }
+
+    .legend-item.highlighted {
+      background: rgba(6, 182, 212, 0.2);
+      border-color: var(--accent-cyan);
+    }
+
+    .legend-color-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .legend-tag-name {
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .legend-tag-count {
+      color: var(--text-muted);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ==========================================
+       Comprehensive Mobile Responsive Styles
+       ========================================== */
+    @media (max-width: 768px) {
+      body {
+        padding: 12px 8px;
+      }
+
+      header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+
+      .title-group h1 {
+        font-size: 1.35rem;
+      }
+
+      .header-right-controls {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        gap: 8px;
+      }
+
+      .theme-switch {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .theme-btn {
+        flex: 1;
+        justify-content: center;
+        padding: 6px 4px;
+      }
+
+      .base-coords-card,
+      .my-alliance-card {
+        width: 100%;
+        justify-content: space-between;
+        padding: 8px 10px;
+        box-sizing: border-box;
+      }
+
+      .coords-inputs {
+        flex-wrap: wrap;
+        gap: 4px;
+      }
+
+      .coord-field input {
+        width: 48px;
+      }
+
+      .btn-map-picker {
+        padding: 5px 8px;
+        font-size: 0.75rem;
+      }
+
+      .alliance-input-field input {
+        width: 85px;
+      }
+
+      .input-section {
+        padding: 12px 14px;
+        margin-bottom: 16px;
+      }
+
+      .input-section-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+      }
+
+      .paste-actions {
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      .paste-actions button.btn-action {
+        flex: 1 1 calc(50% - 4px);
+        justify-content: center;
+        font-size: 0.76rem;
+        padding: 7px 8px;
+      }
+
+      .controls-bar {
+        padding: 12px 14px;
+        gap: 10px;
+        margin-bottom: 16px;
+      }
+
+      .filter-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+      }
+
+      .filter-group {
+        width: 100%;
+      }
+
+      .filter-pills {
+        flex-wrap: wrap;
+      }
+
+      .pill-btn {
+        padding: 5px 10px;
+        font-size: 0.78rem;
+      }
+
+      .multiselect-dropdown {
+        width: 100%;
+      }
+
+      .dropdown-trigger-btn {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .dropdown-menu-panel {
+        min-width: 0;
+        width: calc(100vw - 32px);
+        max-width: calc(100vw - 32px);
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+      }
+
+      .dropdown-range-bar {
+        flex-wrap: wrap;
+        gap: 4px;
+      }
+
+      .range-select-group {
+        flex-wrap: wrap;
+      }
+
+      .search-input-wrapper {
+        width: 100%;
+      }
+
+      .search-input {
+        width: 100% !important;
+      }
+
+      .view-toggles {
+        flex-wrap: wrap;
+        gap: 8px 14px;
+      }
+
+      .summary-strip {
+        gap: 8px 12px;
+        font-size: 0.8rem;
+      }
+
+      .table-container {
+        border-radius: 8px;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      table.boss-table tbody td {
+        padding: 10px 8px;
+        font-size: 0.8rem;
+      }
+
+      /* Modal Mobile Styles */
+      .modal-backdrop {
+        padding: 6px;
+      }
+
+      .map-modal-card {
+        max-height: 98vh;
+        border-radius: 10px;
+      }
+
+      .map-modal-header {
+        padding: 10px 12px;
+      }
+
+      .map-modal-title-group h3 {
+        font-size: 1rem;
+      }
+
+      .map-modal-body {
+        grid-template-columns: 1fr;
+        padding: 10px 10px;
+        gap: 10px;
+        max-height: calc(98vh - 52px);
+      }
+
+      .map-canvas-wrapper {
+        touch-action: none;
+        user-select: none;
+        -webkit-user-select: none;
+      }
+
+      .map-canvas-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+        padding: 8px;
+      }
+
+      .map-toggle-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .candidate-inputs-row {
+        gap: 6px;
+      }
+
+      .candidate-field input {
+        font-size: 0.85rem;
+      }
+
+      .btn-apply-base {
+        min-height: 42px;
+      }
+
+      .metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
+      }
+
+      .metric-item {
+        padding: 6px 8px;
+      }
+
+      .metric-val {
+        font-size: 0.86rem;
+      }
+    }
   </style>
 </head>
 <body>
@@ -1505,12 +2306,13 @@
           <div class="coords-inputs">
             <div class="coord-field">
               <span>X:</span>
-              <input type="number" id="baseX" placeholder="500" min="0" max="1200">
+              <input type="number" id="baseX" placeholder="500" min="0" max="999">
             </div>
             <div class="coord-field">
               <span>Y:</span>
-              <input type="number" id="baseY" placeholder="500" min="0" max="1200">
+              <input type="number" id="baseY" placeholder="500" min="0" max="999">
             </div>
+            <button type="button" class="btn-map-picker" id="btnOpenMapModal" title="Open Battlefield Map & Position Picker">🗺️ Map</button>
           </div>
         </div>
 
@@ -1700,6 +2502,128 @@
       </div>
     </div>
 
+    <!-- Battlefield Map Visualizer & Position Picker Modal -->
+    <div class="modal-backdrop" id="mapModalBackdrop" role="dialog" aria-modal="true" aria-labelledby="mapModalTitle">
+      <div class="map-modal-card">
+        <div class="map-modal-header">
+          <div class="map-modal-title-group">
+            <h3 id="mapModalTitle">🗺️ Battlefield Map & Position Picker</h3>
+            <span class="map-coord-live" id="mapCoordLive">Cursor: X: ---, Y: ---</span>
+          </div>
+          <button type="button" class="btn-close-modal" id="btnCloseMapModal" title="Close Map (Esc)">✕</button>
+        </div>
+
+        <div class="map-modal-body">
+          <!-- Left: Map Canvas & Controls -->
+          <div class="map-canvas-container">
+            <div class="map-canvas-wrapper" id="mapCanvasWrapper">
+              <span class="corner-label corner-tl">(0, 999)</span>
+              <span class="corner-label corner-tr" title="Coordinates 999,999 in Upper-Right">(999, 999)</span>
+              <span class="corner-label corner-bl">(0, 0)</span>
+              <span class="corner-label corner-br">(999, 0)</span>
+              <canvas id="battlefieldCanvas" width="600" height="600"></canvas>
+              <div id="mapTooltip" class="map-tooltip" style="display: none;"></div>
+            </div>
+
+            <div class="map-canvas-toolbar">
+              <div class="map-toggle-group">
+                <span class="toolbar-label">Color:</span>
+                <button type="button" class="map-mini-btn active" data-color-mode="alliance" title="Color markers by Alliance tag">Alliance</button>
+                <button type="button" class="map-mini-btn" data-color-mode="protection" title="Color markers by Protection status">Protection</button>
+                <button type="button" class="map-mini-btn" data-color-mode="level" title="Color markers by Boss Level tier">Level</button>
+              </div>
+
+              <div class="map-toggle-group">
+                <label class="map-check-label" title="Highlight Capitol [500,500] and Mud Zone [450-550]">
+                  <input type="checkbox" id="chkShowMud" checked> Mud [450-550]
+                </label>
+                <label class="map-check-label" title="Show 100km, 200km, 300km range circles from candidate position">
+                  <input type="checkbox" id="chkShowRings" checked> Rings
+                </label>
+                <label class="map-check-label" title="Show 100-unit coordinate grid lines">
+                  <input type="checkbox" id="chkShowGrid" checked> Grid
+                </label>
+                <label class="map-check-label" title="Show only bosses passing the main table filters">
+                  <input type="checkbox" id="chkFilteredOnly"> Filtered Only
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Candidate Position & Tactical Analysis Panel -->
+          <div class="map-sidebar">
+            <!-- Selected Candidate Position Card -->
+            <div class="candidate-card" id="candidateCard">
+              <div class="candidate-header">
+                <h4>🎯 Candidate Base Position</h4>
+                <span class="candidate-status-badge" id="candidateStatusBadge">Click map to pick</span>
+              </div>
+              <div class="candidate-inputs-row">
+                <div class="candidate-field">
+                  <span>X:</span>
+                  <input type="number" id="candidateX" min="0" max="999" placeholder="---">
+                </div>
+                <div class="candidate-field">
+                  <span>Y:</span>
+                  <input type="number" id="candidateY" min="0" max="999" placeholder="---">
+                </div>
+                <button type="button" class="btn-candidate-action" id="btnCopyCandidatePos" title="Copy coordinates as 'X, Y'">📋 Copy</button>
+                <button type="button" class="btn-candidate-action" id="btnResetCandidatePos" title="Reset Pin to Current Base">↺ Reset</button>
+              </div>
+
+              <!-- Set as Base Coords Action -->
+              <button type="button" class="btn-apply-base" id="btnApplyCandidateBase" title="Set these coordinates as your active Base Coords">
+                📍 Set as Base Coords
+              </button>
+              <div class="base-applied-msg" id="baseAppliedMsg" style="display: none;">✔ Active Base coordinates updated!</div>
+            </div>
+
+            <!-- Tactical Proximity Metrics -->
+            <div class="tactical-metrics-card">
+              <h4>📊 Proximity from Candidate Position</h4>
+              <div class="metrics-grid">
+                <div class="metric-item">
+                  <span class="metric-label">Nearest Target</span>
+                  <span class="metric-val" id="metricNearest">---</span>
+                </div>
+                <div class="metric-item">
+                  <span class="metric-label">Average Distance</span>
+                  <span class="metric-val" id="metricAvgDist">---</span>
+                </div>
+                <div class="metric-item">
+                  <span class="metric-label">Within 100 km</span>
+                  <span class="metric-val" id="metricIn100">0</span>
+                </div>
+                <div class="metric-item">
+                  <span class="metric-label">Within 200 km</span>
+                  <span class="metric-val" id="metricIn200">0</span>
+                </div>
+                <div class="metric-item">
+                  <span class="metric-label">Within 300 km</span>
+                  <span class="metric-val" id="metricIn300">0</span>
+                </div>
+                <div class="metric-item">
+                  <span class="metric-label">Mud Hazard</span>
+                  <span class="metric-val" id="metricMudHazard">---</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Dynamic Legend Card -->
+            <div class="map-legend-card">
+              <div class="legend-header">
+                <h4 id="mapLegendTitle">🛡️ Alliances on Map</h4>
+                <span id="legendCountBadge" class="legend-count-badge">0 Alliances</span>
+              </div>
+              <div class="legend-list" id="mapLegendList">
+                <!-- Dynamically populated via JS based on Color Mode (Alliance / Protection / Level) -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <footer>
       Last War: Survival • Gold Zombie Priority List • Real-time Tactical Tool
     </footer>
@@ -1761,6 +2685,11 @@
       document.querySelectorAll('.theme-btn').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.themeVal === mode);
       });
+
+      const mapModalEl = document.getElementById('mapModalBackdrop');
+      if (typeof drawBattlefieldMap === 'function' && mapModalEl && mapModalEl.classList.contains('open')) {
+        drawBattlefieldMap();
+      }
     }
 
     // Initialize Theme immediately
@@ -1905,6 +2834,10 @@
       localStorage.setItem(STORAGE_KEY_BASE_Y, y);
       recalcDistances();
       renderTable();
+      const mapModalEl = document.getElementById('mapModalBackdrop');
+      if (typeof drawBattlefieldMap === 'function' && mapModalEl && mapModalEl.classList.contains('open')) {
+        drawBattlefieldMap();
+      }
     }
 
     baseXInput.addEventListener('input', saveBaseCoords);
@@ -2398,6 +3331,13 @@
       recalcDistances();
       syncDropdownOptions();
       renderTable();
+
+      const mapModalEl = document.getElementById('mapModalBackdrop');
+      if (typeof drawBattlefieldMap === 'function' && mapModalEl && mapModalEl.classList.contains('open')) {
+        updateLegend();
+        updateCandidateMetrics();
+        drawBattlefieldMap();
+      }
     }
 
     // Initialize Min and Max Level Select Dropdowns (Any, 5..100)
@@ -2947,6 +3887,50 @@
       }
     }
 
+    // Helper: Determine if a boss passes current active filters
+    function isBossPassesFilters(boss, isAttackableByMe, isDone) {
+      if (typeof isAttackableByMe === 'undefined') {
+        const secsLeft = getCurrentSecondsLeft(boss);
+        const isMyAll = isMyAlliance(boss.alliance);
+        isAttackableByMe = (secsLeft === 0) || isMyAll;
+      }
+      if (typeof isDone === 'undefined') {
+        isDone = doneBossKeys.has(boss.id);
+      }
+
+      if (hideDone && isDone) return false;
+
+      // Level Filter (Min/Max Range + Inclusion/Exclusion)
+      if (!isLevelActive(boss.levelNum)) {
+        return false;
+      }
+
+      // Status Filter
+      if (selectedStatus === 'AVAIL' && !isAttackableByMe) return false;
+      if (selectedStatus === 'LOCKED' && isAttackableByMe) return false;
+
+      // Route Filter (when Capitol War is active)
+      if (capitolWarMode && selectedPathFilter !== 'ALL') {
+        if (selectedPathFilter === 'CLEAR' && boss.crossesMud) return false;
+        if (selectedPathFilter === 'MUD' && !boss.crossesMud) return false;
+      }
+
+      // Alliance Filter (Inclusion/Exclusion)
+      const bossAlliance = (boss.alliance || '-').toLowerCase();
+      if (!isAllianceActive(bossAlliance)) {
+        return false;
+      }
+
+      if (summonerFilterQuery) {
+        const summonerName = (boss.summoner || boss.owner || '').toLowerCase();
+        if (!summonerName.includes(summonerFilterQuery)) {
+          return false;
+        }
+      }
+
+      return true;
+    }
+
     // Render Table
     function renderTable() {
       updateSortHeaders();
@@ -2984,37 +3968,7 @@
         if (boss.crossesMud) totalMudPath++;
         else totalClearPath++;
 
-        if (hideDone && isDone) return false;
-
-        // Level Filter (Min/Max Range + Inclusion/Exclusion)
-        if (!isLevelActive(boss.levelNum)) {
-          return false;
-        }
-
-        // Status Filter
-        if (selectedStatus === 'AVAIL' && !isAttackableByMe) return false;
-        if (selectedStatus === 'LOCKED' && isAttackableByMe) return false;
-
-        // Route Filter (when Capitol War is active)
-        if (capitolWarMode && selectedPathFilter !== 'ALL') {
-          if (selectedPathFilter === 'CLEAR' && boss.crossesMud) return false;
-          if (selectedPathFilter === 'MUD' && !boss.crossesMud) return false;
-        }
-
-        // Alliance Filter (Inclusion/Exclusion)
-        const bossAlliance = (boss.alliance || '-').toLowerCase();
-        if (!isAllianceActive(bossAlliance)) {
-          return false;
-        }
-
-        if (summonerFilterQuery) {
-          const summonerName = (boss.summoner || boss.owner || '').toLowerCase();
-          if (!summonerName.includes(summonerFilterQuery)) {
-            return false;
-          }
-        }
-
-        return true;
+        return isBossPassesFilters(boss, isAttackableByMe, isDone);
       });
 
       updateStats(parsedBosses.length, totalAvail, totalLocked, totalCleared, totalClearPath, totalMudPath);
@@ -3536,6 +4490,894 @@
 
         renderTable();
       });
+    });
+
+    // ==========================================
+    // MAP VISUALIZER & POSITION PICKER LOGIC
+    // ==========================================
+    const btnOpenMapModal = document.getElementById('btnOpenMapModal');
+    const mapModalBackdrop = document.getElementById('mapModalBackdrop');
+    const btnCloseMapModal = document.getElementById('btnCloseMapModal');
+    const battlefieldCanvas = document.getElementById('battlefieldCanvas');
+    const mapCanvasWrapper = document.getElementById('mapCanvasWrapper');
+    const mapTooltip = document.getElementById('mapTooltip');
+    const mapCoordLive = document.getElementById('mapCoordLive');
+    const candidateXInput = document.getElementById('candidateX');
+    const candidateYInput = document.getElementById('candidateY');
+    const btnApplyCandidateBase = document.getElementById('btnApplyCandidateBase');
+    const btnCopyCandidatePos = document.getElementById('btnCopyCandidatePos');
+    const btnResetCandidatePos = document.getElementById('btnResetCandidatePos');
+    const baseAppliedMsg = document.getElementById('baseAppliedMsg');
+    const candidateStatusBadge = document.getElementById('candidateStatusBadge');
+    const metricNearest = document.getElementById('metricNearest');
+    const metricAvgDist = document.getElementById('metricAvgDist');
+    const metricIn100 = document.getElementById('metricIn100');
+    const metricIn200 = document.getElementById('metricIn200');
+    const metricIn300 = document.getElementById('metricIn300');
+    const metricMudHazard = document.getElementById('metricMudHazard');
+    const mapLegendList = document.getElementById('mapLegendList');
+    const legendCountBadge = document.getElementById('legendCountBadge');
+    const mapLegendTitle = document.getElementById('mapLegendTitle');
+    const chkShowMud = document.getElementById('chkShowMud');
+    const chkShowRings = document.getElementById('chkShowRings');
+    const chkShowGrid = document.getElementById('chkShowGrid');
+    const chkFilteredOnly = document.getElementById('chkFilteredOnly');
+
+    let mapColorMode = 'alliance'; // 'alliance' | 'protection' | 'level'
+    let candidatePos = null; // { x, y }
+    let hoveredBoss = null;
+    let hoveredCanvasPos = null; // { cx, cy, x, y }
+    let mapSpotlight = null; // { mode: 'alliance'|'protection'|'level', value: string|number }
+
+    const MAP_ALLIANCE_PALETTE = [
+      '#38bdf8', // Sky Blue
+      '#f43f5e', // Rose
+      '#a855f7', // Purple
+      '#22c55e', // Emerald
+      '#f59e0b', // Amber / Gold
+      '#ec4899', // Pink
+      '#06b6d4', // Cyan
+      '#f97316', // Orange
+      '#8b5cf6', // Violet
+      '#14b8a6', // Teal
+      '#84cc16', // Lime
+      '#6366f1', // Indigo
+      '#d946ef', // Fuchsia
+      '#e11d48', // Crimson
+      '#0284c7', // Deep Blue
+      '#10b981'  // Mint
+    ];
+
+    // 20-Tier Continuous Color Spectrum matching the table's level badges
+    const MAP_LEVEL_COLORS = {
+      100: '#eab308', // Gold
+      95:  '#f43f5e', // Rose
+      90:  '#06b6d4', // Cyan
+      85:  '#eab308', // Yellow
+      80:  '#f59e0b', // Amber
+      75:  '#fb923c', // Coral Orange
+      70:  '#ec4899', // Fuchsia Pink
+      65:  '#ef4444', // Crimson Red
+      60:  '#a855f7', // Violet Purple
+      55:  '#d946ef', // Magenta
+      50:  '#6366f1', // Indigo
+      45:  '#3b82f6', // Royal Blue
+      40:  '#0ea5e9', // Sky Blue
+      35:  '#14b8a6', // Teal
+      30:  '#84cc16', // Lime Green
+      25:  '#10b981', // Emerald
+      20:  '#16a34a', // Green
+      15:  '#d97706', // Warm Ochre
+      10:  '#94a3b8', // Cool Zinc
+      5:   '#64748b'  // Slate Gray
+    };
+
+    function getMapLevelColor(lvl) {
+      const norm = Math.max(5, Math.min(100, Math.floor(lvl / 5) * 5));
+      return MAP_LEVEL_COLORS[norm] || '#64748b';
+    }
+
+    // Protection status classification with consistent tactical colors
+    function getBossProtectionInfo(boss) {
+      const secs = getCurrentSecondsLeft(boss);
+      const isMine = isMyAlliance(boss.alliance);
+
+      if (isMine) {
+        if (secs > 0) {
+          if (secs <= 120) {
+            return {
+              key: 'urgent',
+              label: '⚠️ Ending Soon (≤ 2m)',
+              color: '#ef4444' // Urgent Red
+            };
+          }
+          return {
+            key: 'alliance_protected',
+            label: '🛡️ Alliance (Attackable)',
+            color: '#06b6d4' // Cyan
+          };
+        }
+        return {
+          key: 'available',
+          label: '✔ Available',
+          color: '#10b981' // Emerald Green
+        };
+      }
+
+      if (secs === 0) {
+        return {
+          key: 'available',
+          label: '✔ Available',
+          color: '#10b981' // Emerald Green
+        };
+      }
+
+      return {
+        key: 'protected',
+        label: '🔒 Protected (Enemy)',
+        color: '#f97316' // Orange
+      };
+    }
+
+    function getMapAllianceColor(alliance) {
+      if (!alliance || alliance === '-') return '#94a3b8';
+      const isMine = isMyAlliance(alliance);
+      if (isMine) return '#fbbf24'; // Radiant Gold for My Alliance
+
+      // Deterministic hash based on alliance string
+      let hash = 0;
+      for (let i = 0; i < alliance.length; i++) {
+        hash = (hash * 31 + alliance.charCodeAt(i)) & 0xffffffff;
+      }
+      const idx = Math.abs(hash) % MAP_ALLIANCE_PALETTE.length;
+      return MAP_ALLIANCE_PALETTE[idx];
+    }
+
+    function openMapModal() {
+      if (!mapModalBackdrop) return;
+      mapModalBackdrop.classList.add('open');
+      const curBx = parseFloat(baseXInput.value);
+      const curBy = parseFloat(baseYInput.value);
+      if (!candidatePos) {
+        candidatePos = {
+          x: !isNaN(curBx) ? curBx : 500,
+          y: !isNaN(curBy) ? curBy : 500
+        };
+      }
+      candidateXInput.value = candidatePos.x;
+      candidateYInput.value = candidatePos.y;
+
+      updateLegend();
+      updateCandidateMetrics();
+      requestAnimationFrame(() => {
+        resizeMapCanvas();
+      });
+    }
+
+    function closeMapModal() {
+      if (!mapModalBackdrop) return;
+      mapModalBackdrop.classList.remove('open');
+      if (mapTooltip) mapTooltip.style.display = 'none';
+      hoveredBoss = null;
+      hoveredCanvasPos = null;
+      mapSpotlight = null;
+    }
+
+    function resizeMapCanvas() {
+      if (!mapModalBackdrop || !mapModalBackdrop.classList.contains('open') || !mapCanvasWrapper) return;
+      const rect = mapCanvasWrapper.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      const size = Math.floor(Math.min(rect.width, rect.height || rect.width));
+      if (size <= 0) return;
+
+      battlefieldCanvas.width = size * dpr;
+      battlefieldCanvas.height = size * dpr;
+      battlefieldCanvas.style.width = size + 'px';
+      battlefieldCanvas.style.height = size + 'px';
+
+      drawBattlefieldMap();
+    }
+
+    function drawBattlefieldMap() {
+      if (!battlefieldCanvas) return;
+      const ctx = battlefieldCanvas.getContext('2d');
+      const dpr = window.devicePixelRatio || 1;
+      const w = battlefieldCanvas.width / dpr;
+      const h = battlefieldCanvas.height / dpr;
+
+      if (w <= 0 || h <= 0) return;
+
+      ctx.save();
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, w, h);
+
+      const appliedTheme = document.documentElement.getAttribute('data-applied-theme');
+      const isLight = appliedTheme === 'light' ||
+        (!appliedTheme && window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches);
+
+      // Coordinate transforms:
+      // (999, 999) is Upper-Right, (0, 0) is Lower-Left
+      function gToC(x, y) {
+        return {
+          cx: (x / 999) * w,
+          cy: (1 - (y / 999)) * h
+        };
+      }
+
+      // Background
+      ctx.fillStyle = isLight ? '#f8fafc' : '#070c16';
+      ctx.fillRect(0, 0, w, h);
+
+      // 1. Grid lines
+      if (chkShowGrid && chkShowGrid.checked) {
+        ctx.lineWidth = 1;
+        for (let g = 100; g < 999; g += 100) {
+          const isMajor = (g % 250 === 0 || g === 500);
+          ctx.strokeStyle = isMajor
+            ? (isLight ? 'rgba(8, 145, 178, 0.32)' : 'rgba(6, 182, 212, 0.32)')
+            : (isLight ? 'rgba(0, 0, 0, 0.07)' : 'rgba(255, 255, 255, 0.07)');
+
+          const pt = gToC(g, g);
+          // Vertical line
+          ctx.beginPath();
+          ctx.moveTo(pt.cx, 0);
+          ctx.lineTo(pt.cx, h);
+          ctx.stroke();
+
+          // Horizontal line
+          ctx.beginPath();
+          ctx.moveTo(0, pt.cy);
+          ctx.lineTo(w, pt.cy);
+          ctx.stroke();
+        }
+      }
+
+      // 2. Mud Zone [450, 550] x [450, 550] & Capitol
+      if (chkShowMud && chkShowMud.checked) {
+        const mTL = gToC(450, 550);
+        const mBR = gToC(550, 450);
+        const mW = mBR.cx - mTL.cx;
+        const mH = mBR.cy - mTL.cy;
+
+        // Fill mud area
+        ctx.fillStyle = isLight ? 'rgba(254, 215, 170, 0.45)' : 'rgba(249, 115, 22, 0.2)';
+        ctx.fillRect(mTL.cx, mTL.cy, mW, mH);
+
+        // Mud border
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([4, 4]);
+        ctx.strokeStyle = isLight ? '#ea580c' : '#f97316';
+        ctx.strokeRect(mTL.cx, mTL.cy, mW, mH);
+        ctx.setLineDash([]);
+
+        // Capitol icon & label at center (500, 500)
+        const capPt = gToC(500, 500);
+        ctx.fillStyle = isLight ? '#c2410c' : '#fdba74';
+        ctx.font = 'bold 9px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('🏛️ Capitol', capPt.cx, capPt.cy - 10);
+        ctx.font = '8px sans-serif';
+        ctx.fillText('[Mud Zone]', capPt.cx, capPt.cy + 9);
+      }
+
+      // 3. Candidate Range Rings (100km, 200km, 300km)
+      if (candidatePos && chkShowRings && chkShowRings.checked) {
+        const cPt = gToC(candidatePos.x, candidatePos.y);
+        const rings = [
+          { r: 100, color: 'rgba(16, 185, 129, 0.45)', dash: [4, 4], label: '100km' },
+          { r: 200, color: 'rgba(234, 179, 8, 0.45)', dash: [6, 4], label: '200km' },
+          { r: 300, color: 'rgba(249, 115, 22, 0.4)', dash: [8, 4], label: '300km' }
+        ];
+
+        rings.forEach(ring => {
+          const pxRadius = (ring.r / 999) * w;
+          ctx.beginPath();
+          ctx.arc(cPt.cx, cPt.cy, pxRadius, 0, Math.PI * 2);
+          ctx.lineWidth = 1.2;
+          ctx.strokeStyle = ring.color;
+          ctx.setLineDash(ring.dash);
+          ctx.stroke();
+          ctx.setLineDash([]);
+
+          // Ring label
+          ctx.fillStyle = ring.color;
+          ctx.font = '8px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(ring.label, cPt.cx, cPt.cy - pxRadius - 3);
+        });
+      }
+
+      // 4. Current Base Coordinates Marker
+      const curBx = parseFloat(baseXInput.value);
+      const curBy = parseFloat(baseYInput.value);
+      if (!isNaN(curBx) && !isNaN(curBy)) {
+        const basePt = gToC(curBx, curBy);
+        // Outer pulsing ring
+        ctx.beginPath();
+        ctx.arc(basePt.cx, basePt.cy, 11, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(6, 182, 212, 0.22)';
+        ctx.fill();
+        ctx.lineWidth = 1.5;
+        ctx.strokeStyle = '#06b6d4';
+        ctx.stroke();
+
+        // Inner solid core
+        ctx.beginPath();
+        ctx.arc(basePt.cx, basePt.cy, 4.5, 0, Math.PI * 2);
+        ctx.fillStyle = '#06b6d4';
+        ctx.fill();
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = '#ffffff';
+        ctx.stroke();
+
+        // Base label
+        ctx.fillStyle = isLight ? '#0284c7' : '#38bdf8';
+        ctx.font = 'bold 9px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(`Base (${curBx}, ${curBy})`, basePt.cx, basePt.cy + 17);
+      }
+
+      // 5. Boss Markers
+      const activeBosses = (chkFilteredOnly && chkFilteredOnly.checked)
+        ? parsedBosses.filter(b => isBossPassesFilters(b))
+        : parsedBosses;
+
+      activeBosses.forEach(boss => {
+        const pt = gToC(boss.x, boss.y);
+        const isDone = doneBossKeys.has(boss.id);
+        const isMine = isMyAlliance(boss.alliance);
+        const isHovered = (hoveredBoss && hoveredBoss.id === boss.id);
+
+        let color = '#38bdf8';
+        let isSpotlight = false;
+
+        if (mapColorMode === 'alliance') {
+          color = getMapAllianceColor(boss.alliance);
+          if (mapSpotlight && mapSpotlight.mode === 'alliance' && boss.alliance === mapSpotlight.value) {
+            isSpotlight = true;
+          }
+        } else if (mapColorMode === 'protection') {
+          const protInfo = getBossProtectionInfo(boss);
+          color = protInfo.color;
+          if (mapSpotlight && mapSpotlight.mode === 'protection' && protInfo.key === mapSpotlight.value) {
+            isSpotlight = true;
+          }
+        } else if (mapColorMode === 'level') {
+          color = getMapLevelColor(boss.levelNum);
+          if (mapSpotlight && mapSpotlight.mode === 'level' && boss.levelNum === mapSpotlight.value) {
+            isSpotlight = true;
+          }
+        }
+
+        ctx.save();
+        if (isDone) {
+          ctx.globalAlpha = 0.35;
+        } else if (mapSpotlight && !isSpotlight) {
+          ctx.globalAlpha = 0.20;
+        }
+
+        // Glow if hovered or spotlighted
+        if (isHovered || isSpotlight) {
+          ctx.beginPath();
+          ctx.arc(pt.cx, pt.cy, 12, 0, Math.PI * 2);
+          ctx.fillStyle = color;
+          ctx.globalAlpha = 0.35;
+          ctx.fill();
+          ctx.globalAlpha = 1.0;
+        }
+
+        // My Alliance extra halo
+        if (isMine && !isDone) {
+          ctx.beginPath();
+          ctx.arc(pt.cx, pt.cy, 8, 0, Math.PI * 2);
+          ctx.lineWidth = 1.6;
+          ctx.strokeStyle = '#fbbf24';
+          ctx.stroke();
+        }
+
+        // Marker dot
+        ctx.beginPath();
+        const r = isMine ? 5.5 : 4.5;
+        ctx.arc(pt.cx, pt.cy, r, 0, Math.PI * 2);
+        ctx.fillStyle = color;
+        ctx.fill();
+        ctx.lineWidth = 1.2;
+        ctx.strokeStyle = '#ffffff';
+        ctx.stroke();
+
+        ctx.restore();
+      });
+
+      // 6. Candidate Position Marker 🎯
+      if (candidatePos) {
+        const cPt = gToC(candidatePos.x, candidatePos.y);
+
+        // Connector line to nearest boss if available
+        if (activeBosses.length > 0) {
+          let nearest = null;
+          let minDist = Infinity;
+          activeBosses.forEach(b => {
+            const d = Math.hypot(b.x - candidatePos.x, b.y - candidatePos.y);
+            if (d < minDist) {
+              minDist = d;
+              nearest = b;
+            }
+          });
+          if (nearest) {
+            const nPt = gToC(nearest.x, nearest.y);
+            ctx.beginPath();
+            ctx.moveTo(cPt.cx, cPt.cy);
+            ctx.lineTo(nPt.cx, nPt.cy);
+            ctx.lineWidth = 1.2;
+            ctx.strokeStyle = 'rgba(234, 179, 8, 0.75)';
+            ctx.setLineDash([3, 3]);
+            ctx.stroke();
+            ctx.setLineDash([]);
+          }
+        }
+
+        // Crosshair outer ring
+        ctx.beginPath();
+        ctx.arc(cPt.cx, cPt.cy, 8, 0, Math.PI * 2);
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = '#f59e0b';
+        ctx.stroke();
+
+        // Crosshairs
+        ctx.beginPath();
+        ctx.moveTo(cPt.cx - 13, cPt.cy);
+        ctx.lineTo(cPt.cx + 13, cPt.cy);
+        ctx.moveTo(cPt.cx, cPt.cy - 13);
+        ctx.lineTo(cPt.cx, cPt.cy + 13);
+        ctx.lineWidth = 1.8;
+        ctx.strokeStyle = '#f59e0b';
+        ctx.stroke();
+
+        // Inner center dot
+        ctx.beginPath();
+        ctx.arc(cPt.cx, cPt.cy, 2.5, 0, Math.PI * 2);
+        ctx.fillStyle = '#f59e0b';
+        ctx.fill();
+
+        // Position text label
+        ctx.fillStyle = isLight ? '#b45309' : '#fbbf24';
+        ctx.font = 'bold 9px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(`Candidate (${candidatePos.x}, ${candidatePos.y})`, cPt.cx, cPt.cy - 14);
+      }
+
+      // 7. Hover Crosshair & Coordinate guide
+      if (hoveredCanvasPos) {
+        ctx.lineWidth = 0.8;
+        ctx.strokeStyle = isLight ? 'rgba(0, 0, 0, 0.25)' : 'rgba(255, 255, 255, 0.25)';
+        ctx.setLineDash([2, 2]);
+
+        ctx.beginPath();
+        ctx.moveTo(hoveredCanvasPos.cx, 0);
+        ctx.lineTo(hoveredCanvasPos.cx, h);
+        ctx.moveTo(0, hoveredCanvasPos.cy);
+        ctx.lineTo(w, hoveredCanvasPos.cy);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+
+      ctx.restore();
+    }
+
+    function updateCandidateMetrics() {
+      if (!metricNearest || !metricAvgDist) return;
+
+      if (!candidatePos) {
+        metricNearest.textContent = '---';
+        metricAvgDist.textContent = '---';
+        metricIn100.textContent = '0';
+        metricIn200.textContent = '0';
+        metricIn300.textContent = '0';
+        metricMudHazard.textContent = 'No Pin';
+        metricMudHazard.className = 'metric-val';
+        return;
+      }
+
+      const activeBosses = (chkFilteredOnly && chkFilteredOnly.checked)
+        ? parsedBosses.filter(b => isBossPassesFilters(b))
+        : parsedBosses;
+
+      // Check Mud Zone hazard for candidatePos
+      const inMud = (candidatePos.x >= 450 && candidatePos.x <= 550 && candidatePos.y >= 450 && candidatePos.y <= 550);
+      if (inMud) {
+        metricMudHazard.textContent = '⚠️ Inside Mud';
+        metricMudHazard.className = 'metric-val hazard';
+        candidateStatusBadge.textContent = 'Inside Mud Zone';
+        candidateStatusBadge.style.color = 'var(--accent-orange)';
+        candidateStatusBadge.style.borderColor = 'var(--accent-orange)';
+      } else {
+        metricMudHazard.textContent = '🟢 Clear';
+        metricMudHazard.className = 'metric-val safe';
+        candidateStatusBadge.textContent = 'Candidate Picked';
+        candidateStatusBadge.style.color = 'var(--accent-green)';
+        candidateStatusBadge.style.borderColor = 'var(--accent-green)';
+      }
+
+      if (activeBosses.length === 0) {
+        metricNearest.textContent = 'None';
+        metricAvgDist.textContent = '---';
+        metricIn100.textContent = '0';
+        metricIn200.textContent = '0';
+        metricIn300.textContent = '0';
+        return;
+      }
+
+      let nearest = null;
+      let minDist = Infinity;
+      let sumDist = 0;
+      let in100 = 0, in200 = 0, in300 = 0;
+
+      activeBosses.forEach(b => {
+        const d = Math.hypot(b.x - candidatePos.x, b.y - candidatePos.y);
+        sumDist += d;
+        if (d < minDist) {
+          minDist = d;
+          nearest = b;
+        }
+        if (d <= 100) in100++;
+        if (d <= 200) in200++;
+        if (d <= 300) in300++;
+      });
+
+      const avg = sumDist / activeBosses.length;
+      metricNearest.textContent = `${minDist.toFixed(1)} km [${nearest.alliance || '?'}]`;
+      metricAvgDist.textContent = `${avg.toFixed(1)} km`;
+      metricIn100.textContent = in100;
+      metricIn200.textContent = in200;
+      metricIn300.textContent = in300;
+    }
+
+    function updateLegend() {
+      if (!mapLegendList || !legendCountBadge) return;
+
+      if (mapColorMode === 'alliance') {
+        if (mapLegendTitle) mapLegendTitle.innerHTML = '🛡️ Alliances on Map';
+
+        const counts = {};
+        parsedBosses.forEach(b => {
+          const tag = b.alliance || '-';
+          counts[tag] = (counts[tag] || 0) + 1;
+        });
+
+        const tags = Object.keys(counts).sort((a, b) => {
+          const aMine = isMyAlliance(a);
+          const bMine = isMyAlliance(b);
+          if (aMine && !bMine) return -1;
+          if (!aMine && bMine) return 1;
+          return counts[b] - counts[a];
+        });
+
+        legendCountBadge.textContent = `${tags.length} Alliances (${parsedBosses.length} Bosses)`;
+
+        mapLegendList.innerHTML = tags.map(tag => {
+          const color = getMapAllianceColor(tag);
+          const isMine = isMyAlliance(tag);
+          const isHighlighted = (mapSpotlight && mapSpotlight.mode === 'alliance' && mapSpotlight.value === tag);
+          return `
+            <div class="legend-item ${isHighlighted ? 'highlighted' : ''}" data-type="alliance" data-val="${escapeHtml(tag)}" title="Click to spotlight [${escapeHtml(tag)}] targets">
+              <span class="legend-color-dot" style="background: ${color};"></span>
+              <span class="legend-tag-name">${isMine ? '⭐ ' : ''}${escapeHtml(tag)}</span>
+              <span class="legend-tag-count">(${counts[tag]})</span>
+            </div>
+          `;
+        }).join('');
+
+      } else if (mapColorMode === 'protection') {
+        if (mapLegendTitle) mapLegendTitle.innerHTML = '🔒 Protection Status';
+
+        const categories = [
+          { key: 'available', label: '✔ Available', color: '#10b981' },
+          { key: 'alliance_protected', label: '🛡️ Alliance (Attackable)', color: '#06b6d4' },
+          { key: 'urgent', label: '⚠️ Ending Soon (≤ 2m)', color: '#ef4444' },
+          { key: 'protected', label: '🔒 Protected (Enemy)', color: '#f97316' }
+        ];
+
+        const counts = { available: 0, alliance_protected: 0, urgent: 0, protected: 0 };
+        parsedBosses.forEach(b => {
+          const info = getBossProtectionInfo(b);
+          counts[info.key] = (counts[info.key] || 0) + 1;
+        });
+
+        const visibleCats = categories.filter(c => counts[c.key] > 0);
+        legendCountBadge.textContent = `${visibleCats.length} Statuses (${parsedBosses.length} Bosses)`;
+
+        mapLegendList.innerHTML = (visibleCats.length > 0 ? visibleCats : categories).map(cat => {
+          const isHighlighted = (mapSpotlight && mapSpotlight.mode === 'protection' && mapSpotlight.value === cat.key);
+          return `
+            <div class="legend-item ${isHighlighted ? 'highlighted' : ''}" data-type="protection" data-val="${cat.key}" title="Click to spotlight ${cat.label}">
+              <span class="legend-color-dot" style="background: ${cat.color};"></span>
+              <span class="legend-tag-name">${cat.label}</span>
+              <span class="legend-tag-count">(${counts[cat.key] || 0})</span>
+            </div>
+          `;
+        }).join('');
+
+      } else if (mapColorMode === 'level') {
+        if (mapLegendTitle) mapLegendTitle.innerHTML = '🎖️ Boss Levels';
+
+        const counts = {};
+        parsedBosses.forEach(b => {
+          counts[b.levelNum] = (counts[b.levelNum] || 0) + 1;
+        });
+
+        const presentLevels = Object.keys(counts).map(Number).sort((a, b) => b - a);
+        legendCountBadge.textContent = `${presentLevels.length} Levels (${parsedBosses.length} Bosses)`;
+
+        mapLegendList.innerHTML = presentLevels.map(lvl => {
+          const color = getMapLevelColor(lvl);
+          const isHighlighted = (mapSpotlight && mapSpotlight.mode === 'level' && mapSpotlight.value === lvl);
+          return `
+            <div class="legend-item ${isHighlighted ? 'highlighted' : ''}" data-type="level" data-val="${lvl}" title="Click to spotlight Lv ${lvl} targets">
+              <span class="legend-color-dot" style="background: ${color};"></span>
+              <span class="legend-tag-name">Lv ${lvl}</span>
+              <span class="legend-tag-count">(${counts[lvl]})</span>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // Attach click listeners to legend items
+      mapLegendList.querySelectorAll('.legend-item').forEach(el => {
+        el.addEventListener('click', () => {
+          const type = el.dataset.type;
+          let val = el.dataset.val;
+          if (type === 'level') val = parseInt(val, 10);
+
+          if (mapSpotlight && mapSpotlight.mode === type && mapSpotlight.value === val) {
+            mapSpotlight = null; // Toggle off
+          } else {
+            mapSpotlight = { mode: type, value: val };
+          }
+          updateLegend();
+          drawBattlefieldMap();
+        });
+      });
+    }
+
+    // Canvas Pointer & Touch Interaction
+    function handleCanvasPointerMove(clientX, clientY, isTouch = false) {
+      const rect = battlefieldCanvas.getBoundingClientRect();
+      const cx = clientX - rect.left;
+      const cy = clientY - rect.top;
+      const w = rect.width;
+      const h = rect.height;
+
+      const rawX = (cx / w) * 999;
+      const rawY = (1 - (cy / h)) * 999;
+      const x = Math.max(0, Math.min(999, Math.round(rawX)));
+      const y = Math.max(0, Math.min(999, Math.round(rawY)));
+
+      hoveredCanvasPos = { cx, cy, x, y };
+      if (mapCoordLive) mapCoordLive.textContent = `Cursor: X: ${x}, Y: ${y}`;
+
+      // Check if pointer is hovering near any boss (slightly wider threshold for touch)
+      const activeBosses = (chkFilteredOnly && chkFilteredOnly.checked)
+        ? parsedBosses.filter(b => isBossPassesFilters(b))
+        : parsedBosses;
+
+      let found = null;
+      let minPixelDist = isTouch ? 16 : 10;
+      activeBosses.forEach(b => {
+        const bcx = (b.x / 999) * w;
+        const bcy = (1 - (b.y / 999)) * h;
+        const pDist = Math.hypot(bcx - cx, bcy - cy);
+        if (pDist < minPixelDist) {
+          minPixelDist = pDist;
+          found = b;
+        }
+      });
+
+      hoveredBoss = found;
+
+      if (found && mapTooltip) {
+        const secs = getCurrentSecondsLeft(found);
+        const statusStr = (secs === 0) ? '✔ Available' : `🔒 ${formatTime(secs)}`;
+        const distFromBase = calcDistance(found.x, found.y, parseFloat(baseXInput.value) || 0, parseFloat(baseYInput.value) || 0);
+        const distFromTarget = candidatePos ? Math.hypot(found.x - candidatePos.x, found.y - candidatePos.y).toFixed(1) : null;
+
+        mapTooltip.innerHTML = `
+          <div style="font-weight: 800; color: var(--accent-cyan); margin-bottom: 2px;">
+            [${escapeHtml(found.alliance)}] ${found.levelStr}
+          </div>
+          <div style="font-size: 0.82rem; font-weight: 600; color: var(--heading-color);">
+            ${escapeHtml(found.summoner || found.owner)}
+          </div>
+          <div style="color: var(--text-muted); font-size: 0.74rem;">
+            Coords: <strong>${found.x}, ${found.y}</strong>
+          </div>
+          <div style="margin-top: 3px; font-size: 0.74rem;">
+            Status: <span style="font-weight: 700;">${statusStr}</span>
+          </div>
+          <div style="color: var(--accent-gold); font-size: 0.74rem; margin-top: 2px;">
+            From Base: <strong>${distFromBase.toFixed(1)} km</strong>
+            ${distFromTarget ? ` | Target: <strong>${distFromTarget} km</strong>` : ''}
+          </div>
+        `;
+
+        mapTooltip.style.display = 'block';
+        let tx = cx + 15;
+        let ty = cy + 15;
+        if (tx + 185 > w) tx = cx - 195;
+        if (ty + 115 > h) ty = cy - 120;
+        mapTooltip.style.left = `${Math.max(4, tx)}px`;
+        mapTooltip.style.top = `${Math.max(4, ty)}px`;
+      } else if (mapTooltip) {
+        mapTooltip.style.display = 'none';
+      }
+
+      drawBattlefieldMap();
+    }
+
+    function handleCanvasPointerSelect(clientX, clientY) {
+      const rect = battlefieldCanvas.getBoundingClientRect();
+      const cx = clientX - rect.left;
+      const cy = clientY - rect.top;
+      const w = rect.width;
+      const h = rect.height;
+
+      let x = Math.max(0, Math.min(999, Math.round((cx / w) * 999)));
+      let y = Math.max(0, Math.min(999, Math.round((1 - (cy / h)) * 999)));
+
+      // If clicked/tapped near a boss, snap to that boss's exact coordinates!
+      if (hoveredBoss) {
+        x = hoveredBoss.x;
+        y = hoveredBoss.y;
+      }
+
+      candidatePos = { x, y };
+      candidateXInput.value = x;
+      candidateYInput.value = y;
+
+      updateCandidateMetrics();
+      drawBattlefieldMap();
+    }
+
+    if (battlefieldCanvas) {
+      battlefieldCanvas.addEventListener('mousemove', (e) => {
+        handleCanvasPointerMove(e.clientX, e.clientY, false);
+      });
+
+      battlefieldCanvas.addEventListener('mouseleave', () => {
+        hoveredCanvasPos = null;
+        hoveredBoss = null;
+        if (mapCoordLive) mapCoordLive.textContent = 'Cursor: X: ---, Y: ---';
+        if (mapTooltip) mapTooltip.style.display = 'none';
+        drawBattlefieldMap();
+      });
+
+      battlefieldCanvas.addEventListener('click', (e) => {
+        handleCanvasPointerSelect(e.clientX, e.clientY);
+      });
+
+      // Touch Events for Mobile / Tablet touchscreens
+      battlefieldCanvas.addEventListener('touchstart', (e) => {
+        if (e.touches && e.touches.length === 1) {
+          e.preventDefault();
+          handleCanvasPointerMove(e.touches[0].clientX, e.touches[0].clientY, true);
+        }
+      }, { passive: false });
+
+      battlefieldCanvas.addEventListener('touchmove', (e) => {
+        if (e.touches && e.touches.length === 1) {
+          e.preventDefault();
+          handleCanvasPointerMove(e.touches[0].clientX, e.touches[0].clientY, true);
+        }
+      }, { passive: false });
+
+      battlefieldCanvas.addEventListener('touchend', (e) => {
+        if (e.changedTouches && e.changedTouches.length === 1) {
+          e.preventDefault();
+          handleCanvasPointerSelect(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+        }
+      }, { passive: false });
+    }
+
+    // Candidate Inputs manual change
+    function onCandidateInputChange() {
+      const x = Math.max(0, Math.min(999, parseInt(candidateXInput.value, 10) || 0));
+      const y = Math.max(0, Math.min(999, parseInt(candidateYInput.value, 10) || 0));
+      candidatePos = { x, y };
+      updateCandidateMetrics();
+      drawBattlefieldMap();
+    }
+    if (candidateXInput) candidateXInput.addEventListener('input', onCandidateInputChange);
+    if (candidateYInput) candidateYInput.addEventListener('input', onCandidateInputChange);
+
+    if (btnApplyCandidateBase) {
+      btnApplyCandidateBase.addEventListener('click', () => {
+        if (!candidatePos) return;
+        baseXInput.value = candidatePos.x;
+        baseYInput.value = candidatePos.y;
+        saveBaseCoords();
+        updateCandidateMetrics();
+        drawBattlefieldMap();
+
+        if (baseAppliedMsg) {
+          baseAppliedMsg.style.display = 'block';
+          setTimeout(() => {
+            baseAppliedMsg.style.display = 'none';
+          }, 2500);
+        }
+      });
+    }
+
+    if (btnCopyCandidatePos) {
+      btnCopyCandidatePos.addEventListener('click', () => {
+        if (!candidatePos) return;
+        const text = `${candidatePos.x}, ${candidatePos.y}`;
+        navigator.clipboard.writeText(text).then(() => {
+          const originalText = btnCopyCandidatePos.textContent;
+          btnCopyCandidatePos.textContent = '✔ Copied!';
+          setTimeout(() => {
+            btnCopyCandidatePos.textContent = originalText;
+          }, 1500);
+        }).catch(() => {
+          prompt('Copy coordinates:', text);
+        });
+      });
+    }
+
+    if (btnResetCandidatePos) {
+      btnResetCandidatePos.addEventListener('click', () => {
+        const curBx = parseFloat(baseXInput.value) || 500;
+        const curBy = parseFloat(baseYInput.value) || 500;
+        candidatePos = { x: curBx, y: curBy };
+        candidateXInput.value = curBx;
+        candidateYInput.value = curBy;
+        updateCandidateMetrics();
+        drawBattlefieldMap();
+      });
+    }
+
+    // Color Mode buttons (Alliance / Protection / Level)
+    document.querySelectorAll('[data-color-mode]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('[data-color-mode]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        mapColorMode = btn.dataset.colorMode;
+        mapSpotlight = null; // Clear active spotlight filter when changing mode
+        updateLegend();
+        drawBattlefieldMap();
+      });
+    });
+
+    if (chkShowMud) chkShowMud.addEventListener('change', drawBattlefieldMap);
+    if (chkShowRings) chkShowRings.addEventListener('change', drawBattlefieldMap);
+    if (chkShowGrid) chkShowGrid.addEventListener('change', drawBattlefieldMap);
+    if (chkFilteredOnly) {
+      chkFilteredOnly.addEventListener('change', () => {
+        updateCandidateMetrics();
+        drawBattlefieldMap();
+      });
+    }
+
+    if (btnOpenMapModal) btnOpenMapModal.addEventListener('click', openMapModal);
+    if (btnCloseMapModal) btnCloseMapModal.addEventListener('click', closeMapModal);
+
+    if (mapModalBackdrop) {
+      mapModalBackdrop.addEventListener('click', (e) => {
+        if (e.target === mapModalBackdrop) {
+          closeMapModal();
+        }
+      });
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && mapModalBackdrop && mapModalBackdrop.classList.contains('open')) {
+        closeMapModal();
+      }
+    });
+
+    window.addEventListener('resize', () => {
+      if (mapModalBackdrop && mapModalBackdrop.classList.contains('open')) {
+        resizeMapCanvas();
+      }
     });
 
     // Initial UI state & render
