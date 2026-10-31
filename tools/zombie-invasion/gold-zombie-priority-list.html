@@ -123,7 +123,7 @@
     }
 
     .container {
-      max-width: 1240px;
+      max-width: 1320px;
       margin: 0 auto;
     }
 
@@ -1518,63 +1518,52 @@
       transform: translateY(-1px);
     }
 
+    .btn-map-picker.active {
+      background: var(--accent-cyan);
+      color: #080c14;
+      box-shadow: 0 0 12px var(--accent-cyan-glow);
+      font-weight: 800;
+    }
+
     html[data-applied-theme="light"] .btn-map-picker {
       background: #e0f2fe;
       border-color: #0284c7;
       color: #0369a1;
     }
 
-    html[data-applied-theme="light"] .btn-map-picker:hover {
+    html[data-applied-theme="light"] .btn-map-picker:hover,
+    html[data-applied-theme="light"] .btn-map-picker.active {
       background: #0284c7;
       color: #ffffff;
       box-shadow: 0 0 10px rgba(2, 132, 199, 0.35);
     }
 
+    /* Expandable Inline Map Section (above table) */
+    .map-section,
     .modal-backdrop {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(4, 7, 13, 0.82);
-      backdrop-filter: blur(5px);
-      -webkit-backdrop-filter: blur(5px);
-      z-index: 10000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.2s ease;
+      width: 100%;
+      margin-bottom: 22px;
+      display: none;
     }
 
+    .map-section.open,
     .modal-backdrop.open {
-      opacity: 1;
-      pointer-events: auto;
+      display: block;
     }
 
     .map-modal-card {
       background: var(--bg-secondary);
       border: 1px solid var(--border-color);
-      border-radius: 14px;
+      border-radius: 12px;
       width: 100%;
-      max-width: 1060px;
-      max-height: 94vh;
       display: flex;
       flex-direction: column;
-      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
+      box-shadow: var(--shadow-card);
       overflow: hidden;
-      transform: scale(0.96);
-      transition: transform 0.2s ease;
-    }
-
-    .modal-backdrop.open .map-modal-card {
-      transform: scale(1);
     }
 
     .map-modal-header {
-      padding: 14px 20px;
+      padding: 12px 18px;
       background: var(--table-header-bg);
       border-bottom: 1px solid var(--border-color);
       display: flex;
@@ -1614,35 +1603,63 @@
       color: var(--accent-cyan);
     }
 
-    .btn-close-modal {
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      font-size: 1.35rem;
-      cursor: pointer;
-      padding: 4px 8px;
+    .map-filter-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(6, 182, 212, 0.12);
+      border: 1px solid rgba(6, 182, 212, 0.35);
       border-radius: 6px;
-      line-height: 1;
+      padding: 3px 9px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      color: var(--accent-cyan);
+      transition: all 0.2s ease;
+    }
+
+    .map-filter-badge.has-filtered {
+      background: rgba(245, 158, 11, 0.15);
+      border-color: rgba(245, 158, 11, 0.4);
+      color: var(--accent-gold);
+    }
+
+    .btn-collapse-map,
+    .btn-close-modal {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 5px 12px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-family: inherit;
       transition: all 0.15s ease;
     }
 
+    .btn-collapse-map:hover,
     .btn-close-modal:hover {
-      background: rgba(239, 68, 68, 0.15);
-      color: var(--accent-red);
+      background: var(--bg-card-hover);
+      color: var(--heading-color);
+      border-color: var(--border-accent);
     }
 
     .map-modal-body {
       display: grid;
-      grid-template-columns: minmax(340px, 580px) minmax(280px, 1fr);
-      gap: 18px;
+      grid-template-columns: minmax(0, 1fr) 320px;
+      gap: 20px;
       padding: 18px 20px;
-      overflow-y: auto;
-      max-height: calc(94vh - 65px);
+      align-items: start;
     }
 
-    @media (max-width: 860px) {
+    @media (max-width: 900px) {
       .map-modal-body {
         grid-template-columns: 1fr;
+        gap: 14px;
       }
     }
 
@@ -1793,6 +1810,14 @@
       display: flex;
       flex-direction: column;
       gap: 12px;
+      position: sticky;
+      top: 16px;
+    }
+
+    @media (max-width: 900px) {
+      .map-sidebar {
+        position: static;
+      }
     }
 
     /* Candidate Card */
@@ -1811,6 +1836,7 @@
       align-items: center;
       justify-content: space-between;
       gap: 8px;
+      flex-wrap: wrap;
     }
 
     .candidate-header h4 {
@@ -1848,8 +1874,8 @@
       border-radius: 6px;
       padding: 4px 8px;
       gap: 4px;
-      flex: 1;
-      min-width: 85px;
+      flex: 1 1 calc(50% - 4px);
+      min-width: 80px;
     }
 
     .candidate-field span {
@@ -1881,6 +1907,11 @@
       cursor: pointer;
       transition: all 0.15s ease;
       white-space: nowrap;
+      flex: 1 1 calc(50% - 4px);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
     }
 
     .btn-candidate-action:hover {
@@ -1954,11 +1985,12 @@
     }
 
     .metric-label {
-      font-size: 0.7rem;
+      font-size: 0.68rem;
       font-weight: 600;
       color: var(--text-muted);
       text-transform: uppercase;
-      letter-spacing: 0.03em;
+      letter-spacing: 0.02em;
+      line-height: 1.2;
     }
 
     .metric-val {
@@ -2222,13 +2254,13 @@
         font-size: 0.8rem;
       }
 
-      /* Modal Mobile Styles */
+      /* Inline Map Mobile Styles */
+      .map-section,
       .modal-backdrop {
-        padding: 6px;
+        margin-bottom: 16px;
       }
 
       .map-modal-card {
-        max-height: 98vh;
         border-radius: 10px;
       }
 
@@ -2244,7 +2276,6 @@
         grid-template-columns: 1fr;
         padding: 10px 10px;
         gap: 10px;
-        max-height: calc(98vh - 52px);
       }
 
       .map-canvas-wrapper {
@@ -2486,42 +2517,16 @@
       </div>
     </section>
 
-    <!-- Data Table -->
-    <div class="table-container">
-      <table class="boss-table" id="bossTable">
-        <thead>
-          <tr>
-            <th data-col="done" class="col-done" title="Toggle Visited/Cleared">Done</th>
-            <th data-col="dist" class="sorted" data-default-dir="asc" id="thDist">Distance <span class="sort-indicator">▲</span></th>
-            <th data-col="coords">Coords (X, Y) <span class="sort-indicator"></span></th>
-            <th data-col="level" data-default-dir="desc">Level <span class="sort-indicator"></span></th>
-            <th data-col="status">Protection / Timer <span class="sort-indicator"></span></th>
-            <th data-col="alliance">Alliance <span class="sort-indicator"></span></th>
-            <th data-col="summoner">Summoner <span class="sort-indicator"></span></th>
-            <th data-col="server">Server # <span class="sort-indicator"></span></th>
-          </tr>
-        </thead>
-        <tbody id="tableBody">
-          <!-- Populated dynamically via JS -->
-        </tbody>
-      </table>
-
-      <div class="empty-state" id="emptyState">
-        <div class="icon">🎯</div>
-        <h3>No Bosses Loaded</h3>
-        <p>Paste raw zombie boss data in the text box above to view distances and priorities.</p>
-      </div>
-    </div>
-
-    <!-- Battlefield Map Visualizer & Position Picker Modal -->
-    <div class="modal-backdrop" id="mapModalBackdrop" role="dialog" aria-modal="true" aria-labelledby="mapModalTitle">
+    <!-- Battlefield Map Visualizer & Position Picker Section (Expandable Inline above table) -->
+    <section class="map-section modal-backdrop" id="mapModalBackdrop" aria-labelledby="mapModalTitle">
       <div class="map-modal-card">
         <div class="map-modal-header">
           <div class="map-modal-title-group">
             <h3 id="mapModalTitle">🗺️ Battlefield Map & Position Picker</h3>
             <span class="map-coord-live" id="mapCoordLive">Cursor: X: ---, Y: ---</span>
+            <span class="map-filter-badge" id="mapFilterBadge">0 / 0 Active</span>
           </div>
-          <button type="button" class="btn-close-modal" id="btnCloseMapModal" title="Close Map (Esc)">✕</button>
+          <button type="button" class="btn-collapse-map btn-close-modal" id="btnCloseMapModal" title="Collapse Map View">▲ Collapse Map</button>
         </div>
 
         <div class="map-modal-body">
@@ -2554,8 +2559,11 @@
                 <label class="map-check-label" title="Show 100-unit coordinate grid lines">
                   <input type="checkbox" id="chkShowGrid" checked> Grid
                 </label>
-                <label class="map-check-label" title="Show only bosses passing the main table filters">
-                  <input type="checkbox" id="chkFilteredOnly"> Filtered Only
+                <label class="map-check-label" title="When unchecked, filtered targets are shown grayed out. When checked, filtered targets are hidden completely.">
+                  <input type="checkbox" id="chkFilteredOnly"> Hide Filtered
+                </label>
+                <label class="map-check-label" title="When checked, cleared / done targets are hidden from map completely.">
+                  <input type="checkbox" id="chkHideDone"> Hide Cleared
                 </label>
               </div>
             </div>
@@ -2632,6 +2640,33 @@
             </div>
           </div>
         </div>
+      </div>
+    </section>
+
+    <!-- Data Table -->
+    <div class="table-container">
+      <table class="boss-table" id="bossTable">
+        <thead>
+          <tr>
+            <th data-col="done" class="col-done" title="Toggle Visited/Cleared">Done</th>
+            <th data-col="dist" class="sorted" data-default-dir="asc" id="thDist">Distance <span class="sort-indicator">▲</span></th>
+            <th data-col="coords">Coords (X, Y) <span class="sort-indicator"></span></th>
+            <th data-col="level" data-default-dir="desc">Level <span class="sort-indicator"></span></th>
+            <th data-col="status">Protection / Timer <span class="sort-indicator"></span></th>
+            <th data-col="alliance">Alliance <span class="sort-indicator"></span></th>
+            <th data-col="summoner">Summoner <span class="sort-indicator"></span></th>
+            <th data-col="server">Server # <span class="sort-indicator"></span></th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          <!-- Populated dynamically via JS -->
+        </tbody>
+      </table>
+
+      <div class="empty-state" id="emptyState">
+        <div class="icon">🎯</div>
+        <h3>No Bosses Loaded</h3>
+        <p>Paste raw zombie boss data in the text box above to view distances and priorities.</p>
       </div>
     </div>
 
@@ -4122,6 +4157,14 @@
           renderTable();
         });
       });
+
+      // Synchronize map with live table filters if map is expanded
+      const mapModalEl = document.getElementById('mapModalBackdrop');
+      if (typeof drawBattlefieldMap === 'function' && mapModalEl && mapModalEl.classList.contains('open')) {
+        updateLegend();
+        updateCandidateMetrics();
+        drawBattlefieldMap();
+      }
     }
 
     function updateStats(total, avail, locked, cleared, clearCount = 0, mudCount = 0) {
@@ -4533,6 +4576,7 @@
     const chkShowRings = document.getElementById('chkShowRings');
     const chkShowGrid = document.getElementById('chkShowGrid');
     const chkFilteredOnly = document.getElementById('chkFilteredOnly');
+    const chkHideDone = document.getElementById('chkHideDone');
 
     let mapColorMode = 'alliance'; // 'alliance' | 'protection' | 'level'
     let candidatePos = null; // { x, y }
@@ -4644,9 +4688,17 @@
       return MAP_ALLIANCE_PALETTE[idx];
     }
 
-    function openMapModal() {
+    const STORAGE_KEY_MAP_EXPANDED = 'lastwar_map_expanded';
+
+    function openMapModal(scrollToView = false) {
       if (!mapModalBackdrop) return;
       mapModalBackdrop.classList.add('open');
+      if (btnOpenMapModal) {
+        btnOpenMapModal.classList.add('active');
+        btnOpenMapModal.innerHTML = '🗺️ Map ▲';
+      }
+      localStorage.setItem(STORAGE_KEY_MAP_EXPANDED, 'true');
+
       const curBx = parseFloat(baseXInput.value);
       const curBy = parseFloat(baseYInput.value);
       if (!candidatePos) {
@@ -4655,23 +4707,39 @@
           y: !isNaN(curBy) ? curBy : 500
         };
       }
-      candidateXInput.value = candidatePos.x;
-      candidateYInput.value = candidatePos.y;
+      if (candidateXInput) candidateXInput.value = candidatePos.x;
+      if (candidateYInput) candidateYInput.value = candidatePos.y;
 
       updateLegend();
       updateCandidateMetrics();
       requestAnimationFrame(() => {
         resizeMapCanvas();
+        if (scrollToView && typeof mapModalBackdrop.scrollIntoView === 'function') {
+          mapModalBackdrop.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
       });
     }
 
     function closeMapModal() {
       if (!mapModalBackdrop) return;
       mapModalBackdrop.classList.remove('open');
+      if (btnOpenMapModal) {
+        btnOpenMapModal.classList.remove('active');
+        btnOpenMapModal.innerHTML = '🗺️ Map ▼';
+      }
+      localStorage.setItem(STORAGE_KEY_MAP_EXPANDED, 'false');
       if (mapTooltip) mapTooltip.style.display = 'none';
       hoveredBoss = null;
       hoveredCanvasPos = null;
       mapSpotlight = null;
+    }
+
+    function toggleMapModal() {
+      if (mapModalBackdrop && mapModalBackdrop.classList.contains('open')) {
+        closeMapModal();
+      } else {
+        openMapModal(true);
+      }
     }
 
     function resizeMapCanvas() {
@@ -4829,14 +4897,47 @@
         ctx.fillText(`Base (${curBx}, ${curBy})`, basePt.cx, basePt.cy + 17);
       }
 
-      // 5. Boss Markers
-      const activeBosses = (chkFilteredOnly && chkFilteredOnly.checked)
-        ? parsedBosses.filter(b => isBossPassesFilters(b))
-        : parsedBosses;
+      // 5. Boss Markers (Unified live filtering with grayed-out non-passing targets)
+      const hideFiltered = (chkFilteredOnly && chkFilteredOnly.checked);
+      const passingBosses = parsedBosses.filter(b => isBossPassesFilters(b));
 
-      activeBosses.forEach(boss => {
-        const pt = gToC(boss.x, boss.y);
+      // First draw non-passing (grayed-out) bosses so active bosses render crisply on top
+      if (!hideFiltered) {
+        parsedBosses.forEach(boss => {
+          if (isBossPassesFilters(boss)) return; // will draw in active pass
+
+          const pt = gToC(boss.x, boss.y);
+          const isHovered = (hoveredBoss && hoveredBoss.id === boss.id);
+
+          ctx.save();
+          ctx.globalAlpha = isHovered ? 0.65 : 0.28;
+
+          if (isHovered) {
+            ctx.beginPath();
+            ctx.arc(pt.cx, pt.cy, 9, 0, Math.PI * 2);
+            ctx.fillStyle = isLight ? '#94a3b8' : '#64748b';
+            ctx.fill();
+          }
+
+          ctx.beginPath();
+          ctx.arc(pt.cx, pt.cy, 3.5, 0, Math.PI * 2);
+          ctx.fillStyle = isLight ? '#94a3b8' : '#475569';
+          ctx.fill();
+          ctx.lineWidth = 1;
+          ctx.strokeStyle = isLight ? 'rgba(0, 0, 0, 0.25)' : 'rgba(255, 255, 255, 0.25)';
+          ctx.stroke();
+
+          ctx.restore();
+        });
+      }
+
+      // Next draw active passing bosses with full vibrant coloring
+      const hideDone = (chkHideDone && chkHideDone.checked);
+      passingBosses.forEach(boss => {
         const isDone = doneBossKeys.has(boss.id);
+        if (isDone && hideDone) return;
+
+        const pt = gToC(boss.x, boss.y);
         const isMine = isMyAlliance(boss.alliance);
         const isHovered = (hoveredBoss && hoveredBoss.id === boss.id);
 
@@ -4863,7 +4964,7 @@
 
         ctx.save();
         if (isDone) {
-          ctx.globalAlpha = 0.35;
+          ctx.globalAlpha = isHovered ? 1.0 : 0.65;
         } else if (mapSpotlight && !isSpotlight) {
           ctx.globalAlpha = 0.20;
         }
@@ -4872,13 +4973,13 @@
         if (isHovered || isSpotlight) {
           ctx.beginPath();
           ctx.arc(pt.cx, pt.cy, 12, 0, Math.PI * 2);
-          ctx.fillStyle = color;
+          ctx.fillStyle = isDone ? '#10b981' : color;
           ctx.globalAlpha = 0.35;
           ctx.fill();
-          ctx.globalAlpha = 1.0;
+          ctx.globalAlpha = isDone ? (isHovered ? 1.0 : 0.65) : (mapSpotlight && !isSpotlight ? 0.20 : 1.0);
         }
 
-        // My Alliance extra halo
+        // My Alliance extra halo (only if not done)
         if (isMine && !isDone) {
           ctx.beginPath();
           ctx.arc(pt.cx, pt.cy, 8, 0, Math.PI * 2);
@@ -4887,15 +4988,40 @@
           ctx.stroke();
         }
 
-        // Marker dot
-        ctx.beginPath();
-        const r = isMine ? 5.5 : 4.5;
-        ctx.arc(pt.cx, pt.cy, r, 0, Math.PI * 2);
-        ctx.fillStyle = color;
-        ctx.fill();
-        ctx.lineWidth = 1.2;
-        ctx.strokeStyle = '#ffffff';
-        ctx.stroke();
+        if (isDone) {
+          // Option A: Distinct Hollow Ring with Emerald Checkmark '✓'
+          const r = isMine ? 6.5 : 5.5;
+          ctx.fillStyle = isLight ? 'rgba(255, 255, 255, 0.92)' : 'rgba(15, 23, 42, 0.92)';
+          ctx.strokeStyle = color;
+          ctx.lineWidth = 1.6;
+
+          // Hollow background circle
+          ctx.beginPath();
+          ctx.arc(pt.cx, pt.cy, r, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+
+          // Green checkmark glyph '✓'
+          ctx.beginPath();
+          ctx.strokeStyle = isLight ? '#059669' : '#34d399';
+          ctx.lineWidth = 1.8;
+          ctx.lineCap = 'round';
+          ctx.lineJoin = 'round';
+          ctx.moveTo(pt.cx - 2.8, pt.cy + 0.2);
+          ctx.lineTo(pt.cx - 0.7, pt.cy + 2.4);
+          ctx.lineTo(pt.cx + 2.8, pt.cy - 2.1);
+          ctx.stroke();
+        } else {
+          // Marker dot for active non-done target
+          ctx.beginPath();
+          const r = isMine ? 5.5 : 4.5;
+          ctx.arc(pt.cx, pt.cy, r, 0, Math.PI * 2);
+          ctx.fillStyle = color;
+          ctx.fill();
+          ctx.lineWidth = 1.2;
+          ctx.strokeStyle = '#ffffff';
+          ctx.stroke();
+        }
 
         ctx.restore();
       });
@@ -4904,11 +5030,15 @@
       if (candidatePos) {
         const cPt = gToC(candidatePos.x, candidatePos.y);
 
-        // Connector line to nearest boss if available
-        if (activeBosses.length > 0) {
+        // Connector line to nearest un-cleared active boss (or nearest active, or nearest parsed)
+        const unClearedPassing = passingBosses.filter(b => !doneBossKeys.has(b.id));
+        const targetPool = unClearedPassing.length > 0
+          ? unClearedPassing
+          : (passingBosses.length > 0 ? passingBosses : parsedBosses);
+        if (targetPool.length > 0) {
           let nearest = null;
           let minDist = Infinity;
-          activeBosses.forEach(b => {
+          targetPool.forEach(b => {
             const d = Math.hypot(b.x - candidatePos.x, b.y - candidatePos.y);
             if (d < minDist) {
               minDist = d;
@@ -4979,6 +5109,28 @@
     function updateCandidateMetrics() {
       if (!metricNearest || !metricAvgDist) return;
 
+      const activeBosses = parsedBosses.filter(b => isBossPassesFilters(b));
+      const activeUnchecked = activeBosses.filter(b => !doneBossKeys.has(b.id));
+      const doneCountInActive = activeBosses.length - activeUnchecked.length;
+      const grayedCount = parsedBosses.length - activeBosses.length;
+
+      const mapFilterBadge = document.getElementById('mapFilterBadge');
+      if (mapFilterBadge) {
+        if (doneCountInActive > 0 && grayedCount > 0) {
+          mapFilterBadge.textContent = `${activeUnchecked.length} Active • ${doneCountInActive} Done (${grayedCount} Grayed)`;
+          mapFilterBadge.classList.add('has-filtered');
+        } else if (doneCountInActive > 0) {
+          mapFilterBadge.textContent = `${activeUnchecked.length} Active • ${doneCountInActive} Done`;
+          mapFilterBadge.classList.remove('has-filtered');
+        } else if (grayedCount > 0) {
+          mapFilterBadge.textContent = `${activeBosses.length} / ${parsedBosses.length} Active (${grayedCount} Grayed)`;
+          mapFilterBadge.classList.add('has-filtered');
+        } else {
+          mapFilterBadge.textContent = `${parsedBosses.length} / ${parsedBosses.length} Active`;
+          mapFilterBadge.classList.remove('has-filtered');
+        }
+      }
+
       if (!candidatePos) {
         metricNearest.textContent = '---';
         metricAvgDist.textContent = '---';
@@ -4989,10 +5141,6 @@
         metricMudHazard.className = 'metric-val';
         return;
       }
-
-      const activeBosses = (chkFilteredOnly && chkFilteredOnly.checked)
-        ? parsedBosses.filter(b => isBossPassesFilters(b))
-        : parsedBosses;
 
       // Check Mud Zone hazard for candidatePos
       const inMud = (candidatePos.x >= 450 && candidatePos.x <= 550 && candidatePos.y >= 450 && candidatePos.y <= 550);
@@ -5010,7 +5158,12 @@
         candidateStatusBadge.style.borderColor = 'var(--accent-green)';
       }
 
-      if (activeBosses.length === 0) {
+      // Proximity metrics prioritize un-cleared active targets
+      const targetPool = activeUnchecked.length > 0
+        ? activeUnchecked
+        : (activeBosses.length > 0 ? activeBosses : parsedBosses);
+
+      if (targetPool.length === 0) {
         metricNearest.textContent = 'None';
         metricAvgDist.textContent = '---';
         metricIn100.textContent = '0';
@@ -5024,7 +5177,7 @@
       let sumDist = 0;
       let in100 = 0, in200 = 0, in300 = 0;
 
-      activeBosses.forEach(b => {
+      targetPool.forEach(b => {
         const d = Math.hypot(b.x - candidatePos.x, b.y - candidatePos.y);
         sumDist += d;
         if (d < minDist) {
@@ -5036,8 +5189,11 @@
         if (d <= 300) in300++;
       });
 
-      const avg = sumDist / activeBosses.length;
-      metricNearest.textContent = `${minDist.toFixed(1)} km [${nearest.alliance || '?'}]`;
+      const avg = sumDist / targetPool.length;
+      const isAllDone = (activeUnchecked.length === 0 && activeBosses.length > 0);
+      metricNearest.textContent = isAllDone
+        ? `All Done (${minDist.toFixed(1)} km)`
+        : `${minDist.toFixed(1)} km [${nearest.alliance || '?'}]`;
       metricAvgDist.textContent = `${avg.toFixed(1)} km`;
       metricIn100.textContent = in100;
       metricIn200.textContent = in200;
@@ -5167,13 +5323,14 @@
       hoveredCanvasPos = { cx, cy, x, y };
       if (mapCoordLive) mapCoordLive.textContent = `Cursor: X: ${x}, Y: ${y}`;
 
-      // Check if pointer is hovering near any boss (slightly wider threshold for touch)
-      const activeBosses = (chkFilteredOnly && chkFilteredOnly.checked)
-        ? parsedBosses.filter(b => isBossPassesFilters(b))
-        : parsedBosses;
-
+      // Check if pointer is hovering near any boss (preferring active bosses)
+      const hideFiltered = (chkFilteredOnly && chkFilteredOnly.checked);
+      const hideDone = (chkHideDone && chkHideDone.checked);
       let found = null;
       let minPixelDist = isTouch ? 16 : 10;
+
+      // 1. Check active passing bosses first
+      const activeBosses = parsedBosses.filter(b => isBossPassesFilters(b) && (!hideDone || !doneBossKeys.has(b.id)));
       activeBosses.forEach(b => {
         const bcx = (b.x / 999) * w;
         const bcy = (1 - (b.y / 999)) * h;
@@ -5184,17 +5341,53 @@
         }
       });
 
+      // 2. If no active boss found and not hiding filtered, check grayed-out bosses
+      if (!found && !hideFiltered) {
+        const filteredBosses = parsedBosses.filter(b => !isBossPassesFilters(b));
+        filteredBosses.forEach(b => {
+          const bcx = (b.x / 999) * w;
+          const bcy = (1 - (b.y / 999)) * h;
+          const pDist = Math.hypot(bcx - cx, bcy - cy);
+          if (pDist < minPixelDist) {
+            minPixelDist = pDist;
+            found = b;
+          }
+        });
+      }
+
       hoveredBoss = found;
 
       if (found && mapTooltip) {
+        const isPasses = isBossPassesFilters(found);
+        const isDone = doneBossKeys.has(found.id);
         const secs = getCurrentSecondsLeft(found);
         const statusStr = (secs === 0) ? '✔ Available' : `🔒 ${formatTime(secs)}`;
         const distFromBase = calcDistance(found.x, found.y, parseFloat(baseXInput.value) || 0, parseFloat(baseYInput.value) || 0);
         const distFromTarget = candidatePos ? Math.hypot(found.x - candidatePos.x, found.y - candidatePos.y).toFixed(1) : null;
+        
+        let stateTagHtml = '';
+        if (isDone) {
+          stateTagHtml = `
+            <div style="font-size: 0.74rem; color: #10b981; margin-top: 3px; font-weight: 700; display: flex; align-items: center; gap: 4px;">
+              <span>✔</span> <span>Cleared / Done</span>
+            </div>
+          `;
+        } else if (!isPasses) {
+          stateTagHtml = `
+            <div style="font-size: 0.72rem; color: #f59e0b; margin-top: 3px; font-weight: 600;">
+              ⚠️ Filtered from table (Grayed Out)
+            </div>
+          `;
+        }
+
+        const titleColor = isDone ? '#10b981' : (isPasses ? 'var(--accent-cyan)' : 'var(--text-muted)');
+        const subTag = isDone
+          ? '<span style="font-size: 0.72rem; font-weight: 600; color: #10b981;">(Cleared)</span>'
+          : (!isPasses ? '<span style="font-size: 0.7rem; font-weight: 500;">(Muted)</span>' : '');
 
         mapTooltip.innerHTML = `
-          <div style="font-weight: 800; color: var(--accent-cyan); margin-bottom: 2px;">
-            [${escapeHtml(found.alliance)}] ${found.levelStr}
+          <div style="font-weight: 800; color: ${titleColor}; margin-bottom: 2px;">
+            [${escapeHtml(found.alliance)}] ${found.levelStr} ${subTag}
           </div>
           <div style="font-size: 0.82rem; font-weight: 600; color: var(--heading-color);">
             ${escapeHtml(found.summoner || found.owner)}
@@ -5209,6 +5402,7 @@
             From Base: <strong>${distFromBase.toFixed(1)} km</strong>
             ${distFromTarget ? ` | Target: <strong>${distFromTarget} km</strong>` : ''}
           </div>
+          ${stateTagHtml}
         `;
 
         mapTooltip.style.display = 'block';
@@ -5367,17 +5561,15 @@
         drawBattlefieldMap();
       });
     }
-
-    if (btnOpenMapModal) btnOpenMapModal.addEventListener('click', openMapModal);
-    if (btnCloseMapModal) btnCloseMapModal.addEventListener('click', closeMapModal);
-
-    if (mapModalBackdrop) {
-      mapModalBackdrop.addEventListener('click', (e) => {
-        if (e.target === mapModalBackdrop) {
-          closeMapModal();
-        }
+    if (chkHideDone) {
+      chkHideDone.addEventListener('change', () => {
+        updateCandidateMetrics();
+        drawBattlefieldMap();
       });
     }
+
+    if (btnOpenMapModal) btnOpenMapModal.addEventListener('click', toggleMapModal);
+    if (btnCloseMapModal) btnCloseMapModal.addEventListener('click', closeMapModal);
 
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && mapModalBackdrop && mapModalBackdrop.classList.contains('open')) {
@@ -5394,6 +5586,13 @@
     // Initial UI state & render
     updateCapitolWarUI();
     parseRawText(rawInput.value);
+
+    // Initialize Map Expansion State from localStorage
+    if (localStorage.getItem(STORAGE_KEY_MAP_EXPANDED) === 'true') {
+      openMapModal(false);
+    } else {
+      if (btnOpenMapModal) btnOpenMapModal.innerHTML = '🗺️ Map ▼';
+    }
   </script>
 </body>
 </html>
