@@ -548,13 +548,13 @@
         }
 
         .optimizer-hero-card {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--border-color);
-            border-radius: 14px;
-            padding: 1.25rem;
+            background: transparent;
+            border: none;
+            border-radius: 0;
+            padding: 0.25rem 0;
             display: flex;
             flex-direction: column;
-            gap: 1rem;
+            gap: 0.85rem;
         }
 
         .roster-header {
@@ -1069,6 +1069,93 @@
         [data-theme="light"] .section-divider {
             background: #f1f5f9;
             border-color: #cbd5e1;
+        }
+
+        /* Visual Section Group Containers */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        [id^="sec-"] {
+            scroll-margin-top: 1rem;
+        }
+
+        .section-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            padding: 1.15rem;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--color-cfgA);
+        }
+
+        .section-group.global-group {
+            border-left-color: var(--color-optimal);
+        }
+
+        .section-group.build-group {
+            border-left-color: var(--color-cfgA);
+        }
+
+        [data-theme="light"] .section-group {
+            background: rgba(241, 245, 249, 0.7);
+            border-color: #cbd5e1;
+        }
+
+        .section-group-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.65rem;
+            padding-bottom: 0.65rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .section-group-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+        }
+
+        .section-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.74rem;
+            font-weight: 700;
+            padding: 0.24rem 0.6rem;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: all 0.15s ease;
+        }
+
+        .section-pill:hover {
+            color: var(--text-main);
+            border-color: var(--border-hover);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        [data-theme="light"] .section-pill {
+            background: #ffffff;
+            border-color: #cbd5e1;
+        }
+
+        [data-theme="light"] .section-pill:hover {
+            background: #e2e8f0;
+        }
+
+        @media (max-width: 640px) {
+            .section-group {
+                padding: 0.65rem;
+                gap: 0.9rem;
+                border-radius: 12px;
+            }
         }
 
         .comp-sub {
@@ -1727,16 +1814,22 @@
         </div>
     </header>
 
-    <!-- Global Account Setup & Strategy Divider -->
-    <div class="section-divider global-divider">
-        <div class="section-divider-title" style="display: flex; align-items: center; flex-wrap: wrap;">
-            <span>🌐 Global Account Setup &amp; Overall Strategy</span>
-            <span class="info-tip" tabindex="0" role="button" aria-label="Global Account Setup info" data-tooltip="Set your alliance levels and survivor roster once to see the best lineups across all build durations.">ⓘ</span>
+    <!-- GROUP 1: Global Account Setup & Overall Strategy -->
+    <section class="section-group global-group" aria-label="Global Account Setup and Overall Strategy">
+        <div class="section-group-header">
+            <div class="section-divider-title" style="display: flex; align-items: center; flex-wrap: wrap;">
+                <span>🌐 Global Account Setup &amp; Overall Strategy</span>
+                <span class="info-tip" tabindex="0" role="button" aria-label="Global Account Setup info" data-tooltip="Set your alliance levels and survivor roster once to see the best lineups across all build durations.">ⓘ</span>
+            </div>
+            <div class="section-group-pills">
+                <a class="section-pill" href="#sec-alliance">⚙️ Alliance Settings</a>
+                <a class="section-pill" href="#sec-pool">👥 Survivors Pool</a>
+                <a class="section-pill" href="#sec-schedule">📅 Progression Schedule</a>
+            </div>
         </div>
-    </div>
 
     <!-- 1. Universal Settings -->
-    <div class="card">
+    <div class="card" id="sec-alliance">
         <div class="card-title">⚙️ Universal Alliance Settings</div>
         <div class="univ-controls-grid">
             <!-- Alliance Tech: Great Helper -->
@@ -1778,15 +1871,15 @@
     </div>
 
     <!-- 2. Survivor Roster / Hero Pool Input (Top 4 UR & Top 4 SSR) -->
-    <div class="card">
+    <div class="card" id="sec-pool">
         <div class="card-title">
             <span>👥 My Top Survivors Pool</span>
             <span class="info-tip" tabindex="0" role="button" aria-label="Survivors Pool info" data-tooltip="Input up to 8 candidate survivors (your top 4 UR and 4 SSR heroes) to evaluate every 4-hero combination.">ⓘ</span>
         </div>
         
         <div class="roster-grid">
-            <!-- 4 UR Survivors Card -->
-            <div class="optimizer-hero-card" style="border-left: 4px solid var(--color-ur);">
+            <!-- 4 UR Survivors -->
+            <div class="optimizer-hero-card">
                 <div class="roster-header">
                     <span style="font-weight: 800; color: var(--color-ur); font-size: 1rem; display: flex; align-items: center; gap: 0.4rem;">
                         👑 Top 4 UR Survivors (Gold)
@@ -1810,8 +1903,8 @@
                 </div>
             </div>
 
-            <!-- 4 SSR Survivors Card -->
-            <div class="optimizer-hero-card" style="border-left: 4px solid var(--color-ssr);">
+            <!-- 4 SSR Survivors -->
+            <div class="optimizer-hero-card">
                 <div class="roster-header">
                     <span style="font-weight: 800; color: var(--color-ssr); font-size: 1rem; display: flex; align-items: center; gap: 0.4rem;">
                         🔮 Top 4 SSR Survivors (Purple)
@@ -1838,7 +1931,7 @@
     </div>
 
     <!-- 3. Optimal Timeline / Range Schedule Table -->
-    <div class="card">
+    <div class="card" id="sec-schedule">
         <div class="card-title">
             <span>📅 Optimal Lineup Progression Schedule Across All Build Times</span>
             <span class="info-tip" tabindex="0" role="button" aria-label="Progression schedule help" data-tooltip="As build time increases, each survivor trade-off has a unique breakeven threshold. Click any row below to test that range in the simulator.">ⓘ</span>
@@ -1861,15 +1954,24 @@
         </div>
     </div>
 
-    <!-- Build-Specific Simulator & Sandbox Divider -->
-    <div class="section-divider">
-        <div>
-            <div class="section-divider-title">🎯 Build-Specific Simulator &amp; Sandbox <span class="info-tip" tabindex="0" role="button" aria-label="Build-specific simulator info" data-tooltip="Enter a specific construction timer below to simulate exact help reductions, test Config C, and compare results.">ⓘ</span></div>
+    </section>
+
+    <!-- GROUP 2: Build-Specific Simulator & Sandbox -->
+    <section class="section-group build-group" aria-label="Build-Specific Simulator and Sandbox">
+        <div class="section-group-header">
+            <div class="section-divider-title" style="display: flex; align-items: center; flex-wrap: wrap;">
+                <span>🎯 Build-Specific Simulator &amp; Sandbox</span>
+                <span class="info-tip" tabindex="0" role="button" aria-label="Build-specific simulator info" data-tooltip="Enter a specific construction timer below to simulate exact help reductions, test Config C, and compare results.">ⓘ</span>
+            </div>
+            <div class="section-group-pills">
+                <a class="section-pill" href="#sec-timer">⏱️ Timer &amp; Optimal</a>
+                <a class="section-pill" href="#sec-benchmark">⚔️ Config A/B/C</a>
+                <a class="section-pill" href="#sec-chart">📈 Breakeven Curve</a>
+            </div>
         </div>
-    </div>
 
     <!-- 4. Set Initial Construction Time & Dynamic Optimal Lineup (Side-by-Side on Desktop, Stacked on Mobile) -->
-    <div class="half-grid-container" style="align-items: stretch;">
+    <div class="half-grid-container" id="sec-timer" style="align-items: stretch;">
         <!-- Left Half: Set Initial Construction Time -->
         <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
             <div>
@@ -1981,7 +2083,7 @@
     </div>
 
     <!-- 6. Three Configuration Cards: Config A, Config B, and Config C (Custom Sandbox) -->
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.25rem; margin-bottom: 0.25rem; flex-wrap: wrap; gap: 0.5rem;">
+    <div id="sec-benchmark" style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.25rem; margin-bottom: 0.25rem; flex-wrap: wrap; gap: 0.5rem;">
         <h2 style="font-size: 1.15rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 0.5rem; margin: 0;">
             ⚔️ Configuration Benchmark & Custom Sandbox (Config A vs Config B vs Config C)
             <span class="info-tip" tabindex="0" role="button" aria-label="Configuration benchmark info" data-tooltip="Scroll horizontally on smaller screens to compare all 3 configurations side-by-side.">ⓘ</span>
@@ -2177,7 +2279,7 @@
     </div>
 
     <!-- 7. Full-Width Breakeven Curve & Dynamic Pointer -->
-    <div class="card">
+    <div class="card" id="sec-chart">
         <div class="card-title">📈 Breakeven Curve & Dynamic Pointer</div>
         <p id="chart-subtitle" style="color: var(--text-muted); font-size: 0.85rem; margin-top: -0.5rem;">
             Green dashed line marks the breakeven crossover point. Cyan dashed line marks your selected build time.
@@ -2186,6 +2288,7 @@
             <canvas id="breakevenChart"></canvas>
         </div>
     </div>
+    </section>
 </div>
 
 <!-- Modal Overlay for Help-by-Help Breakdown -->
