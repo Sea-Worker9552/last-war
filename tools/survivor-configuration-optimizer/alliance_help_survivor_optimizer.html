@@ -711,18 +711,19 @@
         }
 
         .dynamic-heroes-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 0.75rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
         }
 
         .hero-slot-badge-box {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--border-color);
             border-radius: 10px;
-            padding: 0.6rem 0.85rem;
+            padding: 0.55rem 0.85rem;
             display: flex;
             align-items: center;
+            justify-content: space-between;
             gap: 0.65rem;
         }
 
@@ -1019,6 +1020,10 @@
             letter-spacing: 0.5px;
         }
 
+        .comp-card.winner .comp-name {
+            padding-right: 3.8rem;
+        }
+
         .comp-header {
             display: flex;
             flex-direction: column;
@@ -1027,6 +1032,43 @@
         .comp-name {
             font-size: 0.9rem;
             font-weight: 700;
+            line-height: 1.25;
+        }
+
+        /* Section Delineation Banners */
+        .section-divider {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 0.5rem;
+            padding: 0.75rem 1.1rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--color-cfgA);
+            border-radius: 12px;
+        }
+
+        .section-divider.global-divider {
+            border-left-color: var(--color-optimal);
+            margin-top: 0;
+        }
+
+        .section-divider-title {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: var(--text-main);
+            letter-spacing: -0.2px;
+        }
+
+        .section-divider-sub {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.1rem;
+        }
+
+        [data-theme="light"] .section-divider {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
         }
 
         .comp-sub {
@@ -1373,6 +1415,290 @@
                 font-size: 0.75rem;
             }
         }
+
+        /* Mobile-Friendly Info Tooltips */
+        .info-tip {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            font-size: 0.72rem;
+            font-weight: 700;
+            font-style: normal;
+            line-height: 1;
+            color: var(--text-muted);
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            vertical-align: middle;
+            flex-shrink: 0;
+            margin-left: 0.35rem;
+            transition: all 0.15s ease;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        .info-tip:hover,
+        .info-tip:focus-visible,
+        .info-tip.active-tip {
+            color: var(--color-cfgA);
+            border-color: var(--color-cfgA);
+            background: rgba(6, 182, 212, 0.15);
+            outline: none;
+        }
+
+        [data-theme="light"] .info-tip {
+            background: #e2e8f0;
+            border-color: #cbd5e1;
+            color: #475569;
+        }
+
+        [data-theme="light"] .info-tip:hover,
+        [data-theme="light"] .info-tip:focus-visible,
+        [data-theme="light"] .info-tip.active-tip {
+            color: #0284c7;
+            border-color: #0284c7;
+            background: #e0f2fe;
+        }
+
+        #global-tooltip {
+            position: fixed;
+            z-index: 2000;
+            max-width: min(300px, calc(100vw - 24px));
+            padding: 0.6rem 0.8rem;
+            border-radius: 10px;
+            font-size: 0.78rem;
+            font-weight: 500;
+            line-height: 1.45;
+            color: #f8fafc;
+            background: rgba(15, 23, 42, 0.96);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(10px);
+            pointer-events: none;
+            opacity: 0;
+            transform: translateY(4px);
+            transition: opacity 0.15s ease, transform 0.15s ease;
+        }
+
+        #global-tooltip.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        [data-theme="light"] #global-tooltip {
+            color: #0f172a;
+            background: #ffffff;
+            border-color: #cbd5e1;
+            box-shadow: 0 10px 28px rgba(15, 23, 42, 0.18);
+        }
+
+        /* Help-by-Help Breakdown Button & Modal */
+        .btn-breakdown {
+            width: 100%;
+            margin-top: 0.45rem;
+            padding: 0.48rem 0.75rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-main);
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            transition: all 0.15s ease;
+        }
+
+        .btn-breakdown:hover {
+            background: rgba(56, 189, 248, 0.12);
+            border-color: var(--color-cfgA);
+            color: var(--color-cfgA);
+        }
+
+        [data-theme="light"] .btn-breakdown {
+            background: #f8fafc;
+        }
+
+        [data-theme="light"] .btn-breakdown:hover {
+            background: rgba(2, 132, 199, 0.08);
+        }
+
+        .modal-tab-btn.active-cfgA {
+            background: rgba(56, 189, 248, 0.18);
+            border-color: var(--color-cfgA);
+            color: var(--color-cfgA);
+        }
+
+        .modal-tab-btn.active-cfgB {
+            background: rgba(244, 63, 94, 0.18);
+            border-color: var(--color-cfgB);
+            color: var(--color-cfgB);
+        }
+
+        .modal-tab-btn.active-cfgC {
+            background: rgba(168, 85, 247, 0.18);
+            border-color: var(--color-cfgC);
+            color: var(--color-cfgC);
+        }
+
+        .breakdown-summary-strip {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .breakdown-pill {
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 0.35rem 0.65rem;
+            border-radius: 999px;
+            border: 1px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-main);
+        }
+
+        [data-theme="light"] .breakdown-pill {
+            background: #f1f5f9;
+        }
+
+        .mode-pill-pct {
+            display: inline-block;
+            padding: 0.15rem 0.5rem;
+            border-radius: 999px;
+            font-size: 0.72rem;
+            font-weight: 800;
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--color-cfgA);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+        }
+
+        .mode-pill-fixed {
+            display: inline-block;
+            padding: 0.15rem 0.5rem;
+            border-radius: 999px;
+            font-size: 0.72rem;
+            font-weight: 800;
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--color-ur);
+            border: 1px solid rgba(245, 158, 11, 0.35);
+        }
+
+        .breakdown-crossover-row td {
+            border-top: 2px dashed var(--color-optimal) !important;
+        }
+
+        /* Unified Timer + Winner Banner Layout */
+        .timer-grid-unified {
+            display: grid;
+            grid-template-columns: 1.25fr 1fr;
+            gap: 1.5rem;
+            align-items: start;
+        }
+
+        @media (max-width: 900px) {
+            .timer-grid-unified {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Unified Config Card Winner & Performance Block */
+        .config-lineup-card.winner {
+            border-color: var(--color-success) !important;
+            box-shadow: 0 0 16px rgba(16, 185, 129, 0.16);
+        }
+
+        .winner-pill {
+            display: none;
+            align-items: center;
+            gap: 0.25rem;
+            background: var(--color-success);
+            color: #022c22;
+            font-size: 0.68rem;
+            font-weight: 800;
+            padding: 0.18rem 0.5rem;
+            border-radius: 999px;
+            letter-spacing: 0.04em;
+            white-space: nowrap;
+        }
+
+        .config-lineup-card.winner .winner-pill {
+            display: inline-flex;
+        }
+
+        .perf-hero-block {
+            background: rgba(255, 255, 255, 0.025);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 0.75rem 0.9rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.55rem;
+        }
+
+        [data-theme="light"] .perf-hero-block {
+            background: #f8fafc;
+        }
+
+        .perf-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+            padding-top: 0.35rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        [data-theme="light"] .perf-stats-grid {
+            border-top-color: #e2e8f0;
+        }
+
+        .perf-stat-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.15rem;
+        }
+
+        .perf-stat-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .perf-stat-val {
+            font-size: 0.88rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .config-total-box.ref-footer {
+            padding: 0.65rem 0.85rem;
+            gap: 0.3rem;
+        }
+
+        .config-total-box.ref-footer .total-row {
+            font-size: 0.75rem;
+        }
+
+        .config-total-box.ref-footer .total-row.grand-total-row {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            padding-top: 0.35rem;
+            margin-top: 0.1rem;
+            align-items: flex-start;
+        }
+
+        .config-total-box.ref-footer .grand-val {
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-align: right;
+            line-height: 1.45;
+        }
     </style>
 </head>
 <body>
@@ -1381,10 +1707,10 @@
     <!-- Header -->
     <header>
         <div class="header-title">
-            <h1>⚔️ Last War: Alliance Help Survivor Optimizer</h1>
-            <p>
-                Provide your top 4 UR and 4 SSR survivors. The optimizer automatically computes all 4-hero combinations across your exact build time to find the <strong>#1 Mathematically Best Lineup</strong> in real time.
-            </p>
+            <h1 style="display: flex; align-items: center; flex-wrap: wrap; gap: 0.35rem;">
+                <span>⚔️ Last War: Alliance Help Survivor Optimizer</span>
+                <span class="info-tip" tabindex="0" role="button" aria-label="About this optimizer" data-tooltip="Provide your top 4 UR and 4 SSR survivors. The optimizer automatically computes all 4-hero combinations across your exact build time to find the #1 Mathematically Best Lineup in real time.">ⓘ</span>
+            </h1>
         </div>
         <div class="header-actions">
             <button class="btn-ref-modal" onclick="toggleModal(true)">
@@ -1401,6 +1727,14 @@
         </div>
     </header>
 
+    <!-- Global Account Setup & Strategy Divider -->
+    <div class="section-divider global-divider">
+        <div class="section-divider-title" style="display: flex; align-items: center; flex-wrap: wrap;">
+            <span>🌐 Global Account Setup &amp; Overall Strategy</span>
+            <span class="info-tip" tabindex="0" role="button" aria-label="Global Account Setup info" data-tooltip="Set your alliance levels and survivor roster once to see the best lineups across all build durations.">ⓘ</span>
+        </div>
+    </div>
+
     <!-- 1. Universal Settings -->
     <div class="card">
         <div class="card-title">⚙️ Universal Alliance Settings</div>
@@ -1408,9 +1742,9 @@
             <!-- Alliance Tech: Great Helper -->
             <div class="univ-control-box">
                 <div class="univ-header">
-                    <div>
-                        <div class="univ-title">Alliance Tech: Great Helper Level</div>
-                        <div class="univ-subtitle">Level 0 to 10 (+30s fixed reduction per level)</div>
+                    <div class="univ-title" style="display: flex; align-items: center;">
+                        <span>Alliance Tech: Great Helper Level</span>
+                        <span class="info-tip" tabindex="0" role="button" aria-label="Great Helper info" data-tooltip="Level 0 to 10 (+30s fixed reduction per level).">ⓘ</span>
                     </div>
                     <div class="stepper-container">
                         <button class="stepper-btn" onclick="stepVal('great-helper-level', -1)">-</button>
@@ -1423,16 +1757,16 @@
                 </div>
             </div>
 
-            <!-- Alliance Support (Alliance Center) -->
+            <!-- Alliance Support Hub (Alliance Center) -->
             <div class="univ-control-box">
                 <div class="univ-header">
-                    <div>
-                        <div class="univ-title">Alliance Support (Alliance Center) Level</div>
-                        <div class="univ-subtitle">Level 1 to 40 (Determines base help limit)</div>
+                    <div class="univ-title" style="display: flex; align-items: center;">
+                        <span>Alliance Support Hub (Alliance Center) Level</span>
+                        <span class="info-tip" tabindex="0" role="button" aria-label="Alliance Center info" data-tooltip="Level 1 to 35 (Determines base alliance help capacity).">ⓘ</span>
                     </div>
                     <div class="stepper-container">
                         <button class="stepper-btn" onclick="stepVal('alliance-center-level', -1)">-</button>
-                        <input type="number" id="alliance-center-level" value="1" min="1" max="40" class="stepper-input-field">
+                        <input type="number" id="alliance-center-level" value="1" min="1" max="35" class="stepper-input-field">
                         <button class="stepper-btn" onclick="stepVal('alliance-center-level', 1)">+</button>
                     </div>
                 </div>
@@ -1445,11 +1779,9 @@
 
     <!-- 2. Survivor Roster / Hero Pool Input (Top 4 UR & Top 4 SSR) -->
     <div class="card">
-        <div class="card-title" style="display: flex; justify-content: space-between; align-items: center;">
-            <span>👥 My Top Survivors Pool (Input Your 4 Best UR & 4 Best SSR Heroes)</span>
-            <span style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted);">
-                Up to 8 candidate survivors
-            </span>
+        <div class="card-title">
+            <span>👥 My Top Survivors Pool</span>
+            <span class="info-tip" tabindex="0" role="button" aria-label="Survivors Pool info" data-tooltip="Input up to 8 candidate survivors (your top 4 UR and 4 SSR heroes) to evaluate every 4-hero combination.">ⓘ</span>
         </div>
         
         <div class="roster-grid">
@@ -1505,8 +1837,39 @@
         </div>
     </div>
 
-    <!-- 3. Construction Controls & Performance Results (Half Grids Side-by-Side) -->
-    <div class="half-grid-container">
+    <!-- 3. Optimal Timeline / Range Schedule Table -->
+    <div class="card">
+        <div class="card-title">
+            <span>📅 Optimal Lineup Progression Schedule Across All Build Times</span>
+            <span class="info-tip" tabindex="0" role="button" aria-label="Progression schedule help" data-tooltip="As build time increases, each survivor trade-off has a unique breakeven threshold. Click any row below to test that range in the simulator.">ⓘ</span>
+        </div>
+        <div class="table-responsive">
+            <table class="schedule-table">
+                <thead>
+                    <tr>
+                        <th style="width: 22%;">Build Time Range</th>
+                        <th style="width: 14%;">Composition</th>
+                        <th style="width: 32%;">Optimal Equipped Survivors</th>
+                        <th style="width: 18%; text-align: right;">Total Stats</th>
+                        <th style="width: 14%; text-align: center;">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="schedule-tbody">
+                    <!-- Populated dynamically -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Build-Specific Simulator & Sandbox Divider -->
+    <div class="section-divider">
+        <div>
+            <div class="section-divider-title">🎯 Build-Specific Simulator &amp; Sandbox <span class="info-tip" tabindex="0" role="button" aria-label="Build-specific simulator info" data-tooltip="Enter a specific construction timer below to simulate exact help reductions, test Config C, and compare results.">ⓘ</span></div>
+        </div>
+    </div>
+
+    <!-- 4. Set Initial Construction Time & Dynamic Optimal Lineup (Side-by-Side on Desktop, Stacked on Mobile) -->
+    <div class="half-grid-container" style="align-items: stretch;">
         <!-- Left Half: Set Initial Construction Time -->
         <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
             <div>
@@ -1514,8 +1877,9 @@
 
                 <!-- Smart Time Input Box -->
                 <div class="smart-input-box" style="margin-top: 0.75rem; margin-bottom: 1rem;">
-                    <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.4rem;">
-                        ⚡ Smart Time Input (e.g. <span style="color: var(--color-cfgA); font-family: monospace;">1d 23h 48m 2s</span> <span style="margin: 0 0.4rem; color: var(--text-dim); font-weight: 400;">or</span> <span style="color: var(--color-cfgA); font-family: monospace;">5d 20:10:00</span>):
+                    <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); display: flex; align-items: center; gap: 0.35rem; margin-bottom: 0.4rem;">
+                        ⚡ Smart Time Input
+                        <span class="info-tip" tabindex="0" role="button" aria-label="Smart time input formats" data-tooltip="Supports formats like 1d 23h 48m 2s or 5d 20:10:00">ⓘ</span>
                     </label>
                     <div style="position: relative; display: flex; align-items: center;">
                         <input type="text" id="smart-time-input" placeholder="Type: 1d 23h 48m 2s, 5d 20:10:00, 36h..." class="select-input" style="width: 100%; font-size: 0.88rem; padding: 0.55rem 0.75rem; font-family: monospace; font-weight: 600;">
@@ -1569,111 +1933,42 @@
                 </div>
             </div>
 
-            <div class="quick-presets" style="margin-top: 1rem;">
-                <button class="preset-btn" data-time="12">12h</button>
-                <button class="preset-btn" data-time="24">1 Day</button>
-                <span id="dynamic-crossover-container" style="display: contents;"></span>
-                <button class="preset-btn" data-time="48">2 Days</button>
-                <button class="preset-btn" data-time="72">3 Days</button>
-                <button class="preset-btn" data-time="120">5 Days</button>
-                <button class="preset-btn" data-time="240">10 Days</button>
+            <div style="margin-top: 1rem;">
+                <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); margin-bottom: 0.45rem;">Quick Presets &amp; Crossover Thresholds</div>
+                <div class="quick-presets">
+                    <button class="preset-btn" data-time="12">12h</button>
+                    <button class="preset-btn" data-time="24">1 Day</button>
+                    <span id="dynamic-crossover-container" style="display: contents;"></span>
+                    <button class="preset-btn" data-time="48">2 Days</button>
+                    <button class="preset-btn" data-time="72">3 Days</button>
+                    <button class="preset-btn" data-time="120">5 Days</button>
+                    <button class="preset-btn" data-time="240">10 Days</button>
+                </div>
             </div>
         </div>
 
-        <!-- Right Half: Performance Results (3 Cards Comparison) -->
-        <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
-            <div>
-                <div class="card-title">⚖️ Performance Results (3-Way Comparison)</div>
-                
-                <div class="comparison-container">
-                    <!-- Config A Card -->
-                    <div class="comp-card" id="card-a">
-                        <div class="comp-header">
-                            <span class="comp-name" style="color: var(--color-cfgA);">Config A (#1 Optimal)</span>
-                            <span class="comp-sub" id="sub-a">0 Helps | 0s Fixed</span>
-                        </div>
-                        <div class="comp-time-value" id="reduction-a">
-                            0.00 <span class="comp-time-unit">hrs reduced</span>
-                        </div>
-                        <div class="comp-bar">
-                            <div class="comp-bar-fill comp-bar-a" id="bar-a"></div>
-                        </div>
-                        <div class="comp-details">
-                            <div class="comp-detail-row">
-                                <span>Helps using 0.5%:</span>
-                                <span class="comp-detail-val" id="pct-a">0</span>
-                            </div>
-                            <div class="comp-detail-row">
-                                <span>Helps using Fixed:</span>
-                                <span class="comp-detail-val" id="fix-a">0</span>
-                            </div>
-                            <div class="comp-detail-row">
-                                <span>Remaining Time:</span>
-                                <span class="comp-detail-val" id="rem-a">0s</span>
-                            </div>
+        <!-- Right Half: Dynamic Optimal Lineup & Winner Banner -->
+        <div style="display: flex; flex-direction: column; justify-content: space-between; gap: 1rem;">
+            <div class="dynamic-optimal-card" id="dynamic-optimal-container" style="flex: 1; display: flex; flex-direction: column; justify-content: flex-start; gap: 0.85rem;">
+                <div class="dynamic-optimal-header" style="flex-wrap: wrap; gap: 0.5rem;">
+                    <div>
+                        <div class="dynamic-optimal-title">
+                            🏆 Dynamically Calculated Optimal Lineup <span style="font-size: 0.85rem; color: var(--text-main); font-weight: 600;" id="dynamic-time-badge">(For 0s build time)</span> <span class="info-tip" tabindex="0" role="button" aria-label="Optimal lineup calculation info" data-tooltip="Evaluated across all 70 possible 4-survivor combinations to find the exact #1 highest time reduction.">ⓘ</span>
                         </div>
                     </div>
+                    <div style="text-align: right; margin-left: auto;">
+                        <div style="font-size: 1.25rem; font-weight: 800; color: var(--color-optimal);" id="dynamic-reduction-val">0.00 hrs reduced</div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;" id="dynamic-reduction-sub">0 Helps | 0s Fixed per Help</div>
+                    </div>
+                </div>
 
-                    <!-- Config B Card -->
-                    <div class="comp-card" id="card-b">
-                        <div class="comp-header">
-                            <span class="comp-name" style="color: var(--color-cfgB);">Config B (#2 Runner-Up)</span>
-                            <span class="comp-sub" id="sub-b">0 Helps | 0s Fixed</span>
-                        </div>
-                        <div class="comp-time-value" id="reduction-b">
-                            0.00 <span class="comp-time-unit">hrs reduced</span>
-                        </div>
-                        <div class="comp-bar">
-                            <div class="comp-bar-fill comp-bar-b" id="bar-b"></div>
-                        </div>
-                        <div class="comp-details">
-                            <div class="comp-detail-row">
-                                <span>Helps using 0.5%:</span>
-                                <span class="comp-detail-val" id="pct-b">0</span>
-                            </div>
-                            <div class="comp-detail-row">
-                                <span>Helps using Fixed:</span>
-                                <span class="comp-detail-val" id="fix-b">0</span>
-                            </div>
-                            <div class="comp-detail-row">
-                                <span>Remaining Time:</span>
-                                <span class="comp-detail-val" id="rem-b">0s</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Config C Card (Custom Setup) -->
-                    <div class="comp-card" id="card-c">
-                        <div class="comp-header">
-                            <span class="comp-name" style="color: var(--color-cfgC);">Config C (Custom Setup)</span>
-                            <span class="comp-sub" id="sub-c">0 Helps | 0s Fixed</span>
-                        </div>
-                        <div class="comp-time-value" id="reduction-c">
-                            0.00 <span class="comp-time-unit">hrs reduced</span>
-                        </div>
-                        <div class="comp-bar">
-                            <div class="comp-bar-fill comp-bar-c" id="bar-c"></div>
-                        </div>
-                        <div class="comp-details">
-                            <div class="comp-detail-row">
-                                <span>Helps using 0.5%:</span>
-                                <span class="comp-detail-val" id="pct-c">0</span>
-                            </div>
-                            <div class="comp-detail-row">
-                                <span>Helps using Fixed:</span>
-                                <span class="comp-detail-val" id="fix-c">0</span>
-                            </div>
-                            <div class="comp-detail-row">
-                                <span>Remaining Time:</span>
-                                <span class="comp-detail-val" id="rem-c">0s</span>
-                            </div>
-                        </div>
-                    </div>
+                <div class="dynamic-heroes-row" id="dynamic-heroes-container">
+                    <!-- Populated dynamically in real time -->
                 </div>
             </div>
 
             <!-- Summary Banner -->
-            <div class="summary-banner" style="margin-top: 0.65rem;">
+            <div class="summary-banner">
                 <div class="summary-text">
                     <h3 id="winner-banner-title">Config A (#1 Optimal) is the Winner!</h3>
                     <p id="winner-banner-desc">Comparing Config A against Config B and your Custom Config C.</p>
@@ -1685,90 +1980,60 @@
         </div>
     </div>
 
-    <!-- 4. DYNAMIC REAL-TIME BEST LINEUP CARD -->
-    <div class="dynamic-optimal-card" id="dynamic-optimal-container">
-        <div class="dynamic-optimal-header">
-            <div>
-                <div class="dynamic-optimal-title">
-                    🏆 Dynamically Calculated Optimal Lineup <span style="font-size: 0.85rem; color: var(--text-main); font-weight: 600;" id="dynamic-time-badge">(For 0s build time)</span>
-                </div>
-                <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.15rem;" id="dynamic-optimal-desc">
-                    Evaluated across all 70 possible 4-survivor combinations to find the exact #1 highest time reduction.
-                </p>
-            </div>
-            <div style="text-align: right;">
-                <div style="font-size: 1.25rem; font-weight: 800; color: var(--color-optimal);" id="dynamic-reduction-val">0.00 hrs reduced</div>
-                <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;" id="dynamic-reduction-sub">0 Helps | 0s Fixed per Help</div>
-            </div>
-        </div>
-
-        <div class="dynamic-heroes-row" id="dynamic-heroes-container">
-            <!-- Populated dynamically in real time -->
-        </div>
-    </div>
-
-    <!-- 5. Optimal Timeline / Range Schedule Table -->
-    <div class="card">
-        <div class="card-title" style="display: flex; justify-content: space-between; align-items: center;">
-            <span>📅 Optimal Lineup Progression Schedule Across All Build Times</span>
-            <span style="font-size: 0.78rem; font-weight: 600; color: var(--text-muted);">
-                Click any row to test that range
-            </span>
-        </div>
-        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: -0.75rem; margin-bottom: 1rem;">
-            As build time increases, each survivor trade-off has a unique breakeven threshold. Here are all distinct optimal lineups across time:
-        </p>
-        <div class="table-responsive">
-            <table class="schedule-table">
-                <thead>
-                    <tr>
-                        <th style="width: 22%;">Build Time Range</th>
-                        <th style="width: 14%;">Composition</th>
-                        <th style="width: 32%;">Optimal Equipped Survivors</th>
-                        <th style="width: 18%; text-align: right;">Total Stats</th>
-                        <th style="width: 14%; text-align: center;">Action</th>
-                    </tr>
-                </thead>
-                <tbody id="schedule-tbody">
-                    <!-- Populated dynamically -->
-                </tbody>
-            </table>
-        </div>
-    </div>
-
     <!-- 6. Three Configuration Cards: Config A, Config B, and Config C (Custom Sandbox) -->
     <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.25rem; margin-bottom: 0.25rem; flex-wrap: wrap; gap: 0.5rem;">
         <h2 style="font-size: 1.15rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 0.5rem; margin: 0;">
             ⚔️ Configuration Benchmark & Custom Sandbox (Config A vs Config B vs Config C)
+            <span class="info-tip" tabindex="0" role="button" aria-label="Configuration benchmark info" data-tooltip="Scroll horizontally on smaller screens to compare all 3 configurations side-by-side.">ⓘ</span>
         </h2>
-        <span style="font-size: 0.78rem; font-weight: 600; color: var(--text-muted); display: flex; align-items: center; gap: 0.35rem;">
-            ↔️ Scroll horizontally to compare all 3 configurations
-        </span>
     </div>
 
     <div class="lineups-scroll-wrapper">
         <div class="lineups-grid">
         <!-- Config A Lineup (#1 Optimal) -->
-        <div class="config-lineup-card" style="border-top: 3px solid var(--color-cfgA);">
+        <div class="config-lineup-card" id="card-a" style="border-top: 3px solid var(--color-cfgA);">
             <div class="config-lineup-header">
                 <span class="config-title-tag" style="color: var(--color-cfgA);">
-                    🥇 Config A: #1 Optimal Lineup (Winner)
+                    🥇 Config A: #1 Optimal Lineup
+                    <span class="info-tip" tabindex="0" role="button" aria-label="Config A info" data-tooltip="#1 Best Lineup: The mathematically optimal 4-survivor configuration that achieves the highest reduction for this build time.">ⓘ</span>
                 </span>
-                <span class="univ-subtitle" id="equipped-count-cfgA">4 Equipped Slots</span>
+                <div style="display: flex; align-items: center; gap: 0.45rem;">
+                    <span class="winner-pill">🏆 WINNER</span>
+                    <span class="univ-subtitle" id="equipped-count-cfgA">4 Equipped Slots</span>
+                </div>
             </div>
-            
-            <div class="strategy-note">
-                🏆 <strong>#1 Best Lineup:</strong> The mathematically optimal 4-survivor configuration that achieves the highest reduction for this build time.
+
+            <div class="perf-hero-block">
+                <div class="comp-time-value" id="reduction-a">
+                    0.00 <span class="comp-time-unit">hrs reduced</span>
+                </div>
+                <div class="comp-bar">
+                    <div class="comp-bar-fill comp-bar-a" id="bar-a"></div>
+                </div>
+                <div class="perf-stats-grid">
+                    <div class="perf-stat-item">
+                        <span class="perf-stat-label">Helps using 0.5%</span>
+                        <span class="perf-stat-val" id="pct-a">0</span>
+                    </div>
+                    <div class="perf-stat-item">
+                        <span class="perf-stat-label">Helps using Fixed</span>
+                        <span class="perf-stat-val" id="fix-a">0</span>
+                    </div>
+                    <div class="perf-stat-item">
+                        <span class="perf-stat-label">Remaining Time</span>
+                        <span class="perf-stat-val" id="rem-a">0s</span>
+                    </div>
+                </div>
             </div>
 
             <div class="table-responsive" id="container-cfgA">
                 <!-- Slots 1-4 populated dynamically -->
             </div>
 
-            <!-- Config A Summary Box (3 Rows) -->
-            <div class="config-total-box">
+            <!-- Config A Reference Footer -->
+            <div class="config-total-box ref-footer">
                 <div class="total-row">
-                    <span class="row-label">Baseline (Center & Tech)</span>
+                    <span class="row-label">Baseline (Center &amp; Tech)</span>
                     <span class="row-val" id="cfgA-row1">0 Helps | 0 sec / 0:00</span>
                 </div>
                 <div class="total-row">
@@ -1776,33 +2041,60 @@
                     <span class="row-val" id="cfgA-row2">+0 Helps | 0 sec / 0:00</span>
                 </div>
                 <div class="total-row grand-total-row">
-                    <span class="row-label">Config A Grand Total</span>
-                    <span class="row-val grand-val" style="color: var(--color-cfgA);" id="cfgA-row3">0 Helps | 0 sec / 0:00</span>
+                    <span class="row-label">
+                        Per-Help Reference
+                        <span class="info-tip" tabindex="0" role="button" aria-label="Config A per-help reference info" data-tooltip="Each help uses whichever is larger: 0.5% of remaining time or your Fixed/help floor.">ⓘ</span>
+                    </span>
+                    <span class="row-val grand-val" id="cfgA-row3">0 Helps | Fixed: 0s</span>
                 </div>
+                <button class="btn-breakdown" onclick="openBreakdownModal('A')">🔍 View Help-by-Help Breakdown</button>
             </div>
         </div>
 
         <!-- Config B Lineup (#2 Runner-Up) -->
-        <div class="config-lineup-card" style="border-top: 3px solid var(--color-cfgB);">
+        <div class="config-lineup-card" id="card-b" style="border-top: 3px solid var(--color-cfgB);">
             <div class="config-lineup-header">
                 <span class="config-title-tag" style="color: var(--color-cfgB);">
                     🥈 Config B: #2 Runner-Up Alternative
+                    <span class="info-tip" tabindex="0" role="button" aria-label="Config B info" data-tooltip="#2 Best Alternative: The second-best distinct configuration for this build time, showing the closest competing strategy.">ⓘ</span>
                 </span>
-                <span class="univ-subtitle" id="equipped-count-cfgB">4 Equipped Slots</span>
+                <div style="display: flex; align-items: center; gap: 0.45rem;">
+                    <span class="winner-pill">🏆 WINNER</span>
+                    <span class="univ-subtitle" id="equipped-count-cfgB">4 Equipped Slots</span>
+                </div>
             </div>
 
-            <div class="strategy-note">
-                🥈 <strong>#2 Best Alternative:</strong> The second-best distinct configuration for this build time, showing the closest competing strategy.
+            <div class="perf-hero-block">
+                <div class="comp-time-value" id="reduction-b">
+                    0.00 <span class="comp-time-unit">hrs reduced</span>
+                </div>
+                <div class="comp-bar">
+                    <div class="comp-bar-fill comp-bar-b" id="bar-b"></div>
+                </div>
+                <div class="perf-stats-grid">
+                    <div class="perf-stat-item">
+                        <span class="perf-stat-label">Helps using 0.5%</span>
+                        <span class="perf-stat-val" id="pct-b">0</span>
+                    </div>
+                    <div class="perf-stat-item">
+                        <span class="perf-stat-label">Helps using Fixed</span>
+                        <span class="perf-stat-val" id="fix-b">0</span>
+                    </div>
+                    <div class="perf-stat-item">
+                        <span class="perf-stat-label">Remaining Time</span>
+                        <span class="perf-stat-val" id="rem-b">0s</span>
+                    </div>
+                </div>
             </div>
 
             <div class="table-responsive" id="container-cfgB">
                 <!-- Slots 1-4 populated dynamically -->
             </div>
 
-            <!-- Config B Summary Box (3 Rows) -->
-            <div class="config-total-box">
+            <!-- Config B Reference Footer -->
+            <div class="config-total-box ref-footer">
                 <div class="total-row">
-                    <span class="row-label">Baseline (Center & Tech)</span>
+                    <span class="row-label">Baseline (Center &amp; Tech)</span>
                     <span class="row-val" id="cfgB-row1">0 Helps | 0 sec / 0:00</span>
                 </div>
                 <div class="total-row">
@@ -1810,36 +2102,61 @@
                     <span class="row-val" id="cfgB-row2">+0 Helps | 0 sec / 0:00</span>
                 </div>
                 <div class="total-row grand-total-row">
-                    <span class="row-label">Config B Grand Total</span>
-                    <span class="row-val grand-val" style="color: var(--color-cfgB);" id="cfgB-row3">0 Helps | 0 sec / 0:00</span>
+                    <span class="row-label">
+                        Per-Help Reference
+                        <span class="info-tip" tabindex="0" role="button" aria-label="Config B per-help reference info" data-tooltip="Each help uses whichever is larger: 0.5% of remaining time or your Fixed/help floor.">ⓘ</span>
+                    </span>
+                    <span class="row-val grand-val" id="cfgB-row3">0 Helps | Fixed: 0s</span>
                 </div>
+                <button class="btn-breakdown" onclick="openBreakdownModal('B')">🔍 View Help-by-Help Breakdown</button>
             </div>
         </div>
 
         <!-- Config C Lineup (Custom Configuration Sandbox) -->
-        <div class="config-lineup-card" style="border-top: 3px solid var(--color-cfgC);">
+        <div class="config-lineup-card" id="card-c" style="border-top: 3px solid var(--color-cfgC);">
             <div class="config-lineup-header">
                 <span class="config-title-tag" style="color: var(--color-cfgC);">
                     🛠️ Config C: Custom Setup
+                    <span class="info-tip" tabindex="0" role="button" aria-label="Config C info" data-tooltip="Custom Sandbox: Choose any survivors from your pool below to test how your current in-game or experimental lineup performs.">ⓘ</span>
                 </span>
                 <div style="display: flex; gap: 0.35rem; align-items: center;">
+                    <span class="winner-pill">🏆 WINNER</span>
                     <button class="btn-copy-cfg" onclick="copyToConfigC('A')" title="Copy Config A into Config C">📋 Copy A</button>
                     <button class="btn-copy-cfg" onclick="copyToConfigC('B')" title="Copy Config B into Config C">📋 Copy B</button>
                 </div>
             </div>
 
-            <div class="strategy-note">
-                🛠️ <strong>Custom Sandbox:</strong> Choose any survivors from your pool below to test how your current in-game or experimental lineup performs.
+            <div class="perf-hero-block">
+                <div class="comp-time-value" id="reduction-c">
+                    0.00 <span class="comp-time-unit">hrs reduced</span>
+                </div>
+                <div class="comp-bar">
+                    <div class="comp-bar-fill comp-bar-c" id="bar-c"></div>
+                </div>
+                <div class="perf-stats-grid">
+                    <div class="perf-stat-item">
+                        <span class="perf-stat-label">Helps using 0.5%</span>
+                        <span class="perf-stat-val" id="pct-c">0</span>
+                    </div>
+                    <div class="perf-stat-item">
+                        <span class="perf-stat-label">Helps using Fixed</span>
+                        <span class="perf-stat-val" id="fix-c">0</span>
+                    </div>
+                    <div class="perf-stat-item">
+                        <span class="perf-stat-label">Remaining Time</span>
+                        <span class="perf-stat-val" id="rem-c">0s</span>
+                    </div>
+                </div>
             </div>
 
             <div class="table-responsive" id="container-cfgC">
                 <!-- Slots 1-4 with interactive dropdowns populated dynamically -->
             </div>
 
-            <!-- Config C Summary Box (3 Rows) -->
-            <div class="config-total-box">
+            <!-- Config C Reference Footer -->
+            <div class="config-total-box ref-footer">
                 <div class="total-row">
-                    <span class="row-label">Baseline (Center & Tech)</span>
+                    <span class="row-label">Baseline (Center &amp; Tech)</span>
                     <span class="row-val" id="cfgC-row1">0 Helps | 0 sec / 0:00</span>
                 </div>
                 <div class="total-row">
@@ -1847,9 +2164,13 @@
                     <span class="row-val" id="cfgC-row2">+0 Helps | 0 sec / 0:00</span>
                 </div>
                 <div class="total-row grand-total-row">
-                    <span class="row-label">Config C Grand Total</span>
-                    <span class="row-val grand-val" style="color: var(--color-cfgC);" id="cfgC-row3">0 Helps | 0 sec / 0:00</span>
+                    <span class="row-label">
+                        Per-Help Reference
+                        <span class="info-tip" tabindex="0" role="button" aria-label="Config C per-help reference info" data-tooltip="Each help uses whichever is larger: 0.5% of remaining time or your Fixed/help floor.">ⓘ</span>
+                    </span>
+                    <span class="row-val grand-val" id="cfgC-row3">0 Helps | Fixed: 0s</span>
                 </div>
+                <button class="btn-breakdown" onclick="openBreakdownModal('C')">🔍 View Help-by-Help Breakdown</button>
             </div>
         </div>
     </div>
@@ -1863,6 +2184,25 @@
         </p>
         <div class="chart-container">
             <canvas id="breakevenChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Overlay for Help-by-Help Breakdown -->
+<div class="modal-overlay" id="breakdown-modal" onclick="if(event.target === this) closeBreakdownModal()">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title">🔍 Help-by-Help Breakdown <span id="breakdown-initial-badge" style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;"></span></div>
+            <button class="modal-close-btn" onclick="closeBreakdownModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="modal-tabs">
+                <button class="modal-tab-btn" id="breakdown-tab-A" onclick="openBreakdownModal('A')">🥇 Config A (#1 Optimal)</button>
+                <button class="modal-tab-btn" id="breakdown-tab-B" onclick="openBreakdownModal('B')">🥈 Config B (#2 Runner-Up)</button>
+                <button class="modal-tab-btn" id="breakdown-tab-C" onclick="openBreakdownModal('C')">🛠️ Config C (Custom)</button>
+            </div>
+            <div class="breakdown-summary-strip" id="breakdown-summary-strip"></div>
+            <div class="table-responsive" id="breakdown-table-container"></div>
         </div>
     </div>
 </div>
@@ -2014,7 +2354,7 @@
         5, 5, 6, 6, 7, 7, 8, 8, 9, 9,
         10, 10, 11, 11, 12, 12, 13, 13, 14, 14,
         15, 15, 16, 16, 17, 17, 18, 18, 19, 20,
-        21, 21, 22, 22, 23, 23, 24, 24, 25, 25
+        21, 21, 22, 22, 23
     ];
 
     const GREAT_HELPER_SECONDS = [
@@ -2513,7 +2853,7 @@
 
     document.getElementById('alliance-center-level').addEventListener('input', function() {
         let val = parseInt(this.value) || 1;
-        state.allianceCenterLevel = Math.max(1, Math.min(40, val));
+        state.allianceCenterLevel = Math.max(1, Math.min(35, val));
         saveState();
         updateOptimizedLineups();
         updateUI();
@@ -2785,20 +3125,33 @@
     }
 
     // Simulation Engine
-    function runSimulation(t0, totalHelps, totalFixedSeconds) {
+    function runSimulation(t0, totalHelps, totalFixedSeconds, includeSteps = false) {
         let t = t0;
         let helpsUsedPct = 0;
         let helpsUsedFixed = 0;
+        const steps = includeSteps ? [] : null;
 
         for (let i = 0; i < totalHelps; i++) {
             if (t <= 0) break;
             const pctRed = t * 0.005;
-            if (pctRed >= totalFixedSeconds) {
-                t -= pctRed;
+            const usePct = pctRed >= totalFixedSeconds;
+            const rawRed = usePct ? pctRed : totalFixedSeconds;
+            const actualRed = Math.min(t, rawRed);
+            t = Math.max(0, t - rawRed);
+
+            if (usePct) {
                 helpsUsedPct++;
             } else {
-                t -= totalFixedSeconds;
                 helpsUsedFixed++;
+            }
+
+            if (includeSteps) {
+                steps.push({
+                    helpNum: i + 1,
+                    mode: usePct ? '0.5%' : 'Fixed',
+                    reductionSec: actualRed,
+                    remainingSec: t
+                });
             }
         }
 
@@ -2810,7 +3163,8 @@
             remainingTime: t,
             totalReduction,
             helpsPct: helpsUsedPct,
-            helpsFixed: helpsUsedFixed
+            helpsFixed: helpsUsedFixed,
+            steps
         };
     }
 
@@ -2945,25 +3299,23 @@
         document.getElementById('badge-tech-reduction').textContent = `Fixed Bonus: ${formatSecAndClock(tot.baseFixed)}`;
         document.getElementById('badge-ac-helps').textContent = `Base Capacity: ${tot.baseHelps} Helps`;
 
-        // Update Config A Summary Box (3 Rows)
+        const firstPctLine = state.initialTimeSec > 0 ? `<br>1st 0.5%: ${formatTimeFriendly(state.initialTimeSec * 0.005)}` : '';
+        const renderPerHelpRef = (helps, fixedSec) => `${helps} Helps<br>Fixed: ${formatTimeFriendly(fixedSec)}${firstPctLine}`;
+
+        // Update Config A Summary Box (Reference Footer)
         document.getElementById('cfgA-row1').textContent = `${tot.baseHelps} Helps | ${formatSecAndClock(tot.baseFixed).replace('seconds', 'sec')}`;
         document.getElementById('cfgA-row2').textContent = `+${tot.bonusHelpsA} Helps | ${formatSecAndClock(tot.bonusFixedA).replace('seconds', 'sec')}`;
-        document.getElementById('cfgA-row3').textContent = `${tot.totalHelpsA} Helps | ${formatSecAndClock(tot.totalFixedA).replace('seconds', 'sec')}`;
+        document.getElementById('cfgA-row3').innerHTML = renderPerHelpRef(tot.totalHelpsA, tot.totalFixedA);
 
-        // Update Config B Summary Box (3 Rows)
+        // Update Config B Summary Box (Reference Footer)
         document.getElementById('cfgB-row1').textContent = `${tot.baseHelps} Helps | ${formatSecAndClock(tot.baseFixed).replace('seconds', 'sec')}`;
         document.getElementById('cfgB-row2').textContent = `+${tot.bonusHelpsB} Helps | ${formatSecAndClock(tot.bonusFixedB).replace('seconds', 'sec')}`;
-        document.getElementById('cfgB-row3').textContent = `${tot.totalHelpsB} Helps | ${formatSecAndClock(tot.totalFixedB).replace('seconds', 'sec')}`;
+        document.getElementById('cfgB-row3').innerHTML = renderPerHelpRef(tot.totalHelpsB, tot.totalFixedB);
 
-        // Update Config C Summary Box (3 Rows)
+        // Update Config C Summary Box (Reference Footer)
         document.getElementById('cfgC-row1').textContent = `${tot.baseHelps} Helps | ${formatSecAndClock(tot.baseFixed).replace('seconds', 'sec')}`;
         document.getElementById('cfgC-row2').textContent = `+${tot.bonusHelpsC} Helps | ${formatSecAndClock(tot.bonusFixedC).replace('seconds', 'sec')}`;
-        document.getElementById('cfgC-row3').textContent = `${tot.totalHelpsC} Helps | ${formatSecAndClock(tot.totalFixedC).replace('seconds', 'sec')}`;
-
-        // Subtitles in comparison cards
-        document.getElementById('sub-a').textContent = `${tot.totalHelpsA} Helps | ${formatClock(tot.totalFixedA)} Fixed`;
-        document.getElementById('sub-b').textContent = `${tot.totalHelpsB} Helps | ${formatClock(tot.totalFixedB)} Fixed`;
-        document.getElementById('sub-c').textContent = `${tot.totalHelpsC} Helps | ${formatClock(tot.totalFixedC)} Fixed`;
+        document.getElementById('cfgC-row3').innerHTML = renderPerHelpRef(tot.totalHelpsC, tot.totalFixedC);
 
         // Run simulations for Config A, B, and C
         const resA = runSimulation(state.initialTimeSec, tot.totalHelpsA, tot.totalFixedA);
@@ -3029,23 +3381,24 @@
         const dynBest = findBestLineupForTime(state.initialTimeSec);
         document.getElementById('dynamic-time-badge').textContent = `(For ${formatTimeFriendly(state.initialTimeSec)} build time)`;
         document.getElementById('dynamic-reduction-val').textContent = `${(dynBest.totalReduction / 3600.0).toFixed(2)} hrs reduced`;
-        document.getElementById('dynamic-reduction-sub').textContent = `${dynBest.totalHelps} Total Helps | ${formatClock(dynBest.totalFixed)} Fixed / Help`;
+        document.getElementById('dynamic-reduction-sub').textContent = `${dynBest.totalHelps} Total Helps | ${formatTimeFriendly(dynBest.totalFixed)} Fixed / Help`;
 
         const heroesBox = document.getElementById('dynamic-heroes-container');
         let heroBadgesHtml = '';
-        dynBest.combo.forEach(h => {
+        dynBest.combo.forEach((h, idx) => {
             const isUR = h.rarity === 'UR';
             const bColor = isUR ? 'var(--color-ur)' : 'var(--color-ssr)';
             const bGlow = isUR ? 'var(--color-ur-glow)' : 'var(--color-ssr-glow)';
             heroBadgesHtml += `
                 <div class="hero-slot-badge-box">
-                    <span style="background: ${bGlow}; color: ${bColor}; font-weight: 800; font-size: 0.75rem; padding: 0.15rem 0.4rem; border-radius: 4px; border: 1px solid ${bColor};">
-                        ${h.rarity}
-                    </span>
-                    <div>
-                        <div style="font-weight: 700; font-size: 0.85rem; color: var(--text-main);">${h.label} (${h.star}★ T${h.tier})</div>
-                        <div style="font-size: 0.72rem; color: var(--text-muted);">+${h.helps} Helps | ${formatClock(h.timeSec)} Fixed</div>
+                    <div style="display: flex; align-items: center; gap: 0.55rem;">
+                        <span style="font-size: 0.78rem; font-weight: 800; color: var(--text-dim); min-width: 1.1rem;">${idx + 1}.</span>
+                        <span style="background: ${bGlow}; color: ${bColor}; font-weight: 800; font-size: 0.75rem; padding: 0.15rem 0.4rem; border-radius: 4px; border: 1px solid ${bColor};">
+                            ${h.rarity}
+                        </span>
+                        <span style="font-weight: 700; font-size: 0.85rem; color: var(--text-main);">${h.label} (${h.star}★ T${h.tier})</span>
                     </div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; white-space: nowrap;">+${h.helps} Helps | ${formatTimeFriendly(h.timeSec)} Fixed</div>
                 </div>
             `;
         });
@@ -3638,13 +3991,116 @@
         }
     }
 
+    function closeBreakdownModal() {
+        const modal = document.getElementById('breakdown-modal');
+        if (modal) modal.classList.remove('active');
+        if (!document.getElementById('ref-modal').classList.contains('active')) {
+            document.body.style.overflow = '';
+        }
+    }
+
+    function openBreakdownModal(cfgKey) {
+        const modal = document.getElementById('breakdown-modal');
+        if (!modal) return;
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+
+        ['A', 'B', 'C'].forEach(k => {
+            const btn = document.getElementById(`breakdown-tab-${k}`);
+            if (!btn) return;
+            btn.classList.remove('active-cfgA', 'active-cfgB', 'active-cfgC');
+            if (k === cfgKey) btn.classList.add(`active-cfg${k}`);
+        });
+
+        const tot = getTotals();
+        const cfgMap = {
+            A: { helps: tot.totalHelpsA, fixed: tot.totalFixedA },
+            B: { helps: tot.totalHelpsB, fixed: tot.totalFixedB },
+            C: { helps: tot.totalHelpsC, fixed: tot.totalFixedC }
+        };
+        const cfg = cfgMap[cfgKey] || cfgMap.A;
+        const t0 = state.initialTimeSec || 0;
+        const sim = runSimulation(t0, cfg.helps, cfg.fixed, true);
+
+        const initialBadge = document.getElementById('breakdown-initial-badge');
+        if (initialBadge) {
+            initialBadge.textContent = `(Initial: ${formatTimeFriendly(t0)})`;
+        }
+
+        const strip = document.getElementById('breakdown-summary-strip');
+        const container = document.getElementById('breakdown-table-container');
+
+        let modeSummary = '';
+        if (t0 <= 0) {
+            modeSummary = 'Set a build time > 0s to simulate helps';
+        } else if (sim.helpsPct > 0 && sim.helpsFixed > 0) {
+            modeSummary = `Helps 1–${sim.helpsPct}: 0.5% → Helps ${sim.helpsPct + 1}–${sim.steps.length}: Fixed`;
+        } else if (sim.helpsPct > 0) {
+            modeSummary = `All ${sim.helpsPct} helps use 0.5%`;
+        } else {
+            modeSummary = `All ${sim.helpsFixed} helps use Fixed`;
+        }
+
+        strip.innerHTML = `
+            <span class="breakdown-pill">Capacity: ${cfg.helps} Helps</span>
+            <span class="breakdown-pill">Fixed Floor: ${formatTimeFriendly(cfg.fixed)}/help</span>
+            <span class="breakdown-pill">${modeSummary}</span>
+            <span class="breakdown-pill">Total Reduced: ${formatTimeFriendly(sim.totalReduction)}</span>
+        `;
+
+        if (t0 <= 0 || !sim.steps.length) {
+            container.innerHTML = `<p style="color: var(--text-muted); font-size: 0.85rem; padding: 0.75rem 0;">Enter an initial construction time above 0s to see the per-help reduction breakdown.</p>`;
+            return;
+        }
+
+        let rowsHtml = '';
+        let prevMode = null;
+        sim.steps.forEach(step => {
+            const isTransition = prevMode === '0.5%' && step.mode === 'Fixed';
+            prevMode = step.mode;
+            const modePill = step.mode === '0.5%'
+                ? `<span class="mode-pill-pct">0.5%</span>`
+                : `<span class="mode-pill-fixed">Fixed</span>`;
+            const transitionTag = isTransition
+                ? ` <span style="font-size: 0.7rem; color: var(--color-optimal); font-weight: 700;">(→ Fixed floor)</span>`
+                : '';
+
+            rowsHtml += `
+                <tr class="${isTransition ? 'breakdown-crossover-row' : ''}">
+                    <td><b>#${step.helpNum}</b></td>
+                    <td>${modePill}${transitionTag}</td>
+                    <td><b>-${formatTimeFriendly(step.reductionSec)}</b> <span style="color: var(--text-dim); font-size: 0.75rem;">(${Math.round(step.reductionSec)}s)</span></td>
+                    <td>${formatTimeFriendly(step.remainingSec)}</td>
+                </tr>
+            `;
+        });
+
+        container.innerHTML = `
+            <table class="ref-table">
+                <thead>
+                    <tr>
+                        <th>Help</th>
+                        <th>Mode Used</th>
+                        <th>Time Reduced</th>
+                        <th>Remaining Time</th>
+                    </tr>
+                </thead>
+                <tbody>${rowsHtml}</tbody>
+            </table>
+        `;
+    }
+
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') toggleModal(false);
+        if (e.key === 'Escape') {
+            toggleModal(false);
+            closeBreakdownModal();
+        }
     });
 
     // App Initialization
     window.addEventListener('DOMContentLoaded', () => {
         loadState();
+        state.allianceCenterLevel = Math.max(1, Math.min(35, parseInt(state.allianceCenterLevel) || 1));
 
         document.getElementById('great-helper-level').value = state.greatHelperLevel;
         document.getElementById('alliance-center-level').value = state.allianceCenterLevel;
@@ -3667,7 +4123,122 @@
         updateOptimizedLineups();
         setupChart();
         updateUI();
+        initTooltips();
     });
+
+    // Global Mobile-Friendly Tooltip Controller
+    function initTooltips() {
+        const tooltipEl = document.getElementById('global-tooltip');
+        if (!tooltipEl) return;
+
+        let activeTip = null;
+        let pinnedByClick = false;
+
+        function positionTooltip(trigger) {
+            const rect = trigger.getBoundingClientRect();
+            const pad = 12;
+            const gap = 8;
+
+            tooltipEl.style.left = '0px';
+            tooltipEl.style.top = '0px';
+            tooltipEl.classList.add('visible');
+
+            const ttRect = tooltipEl.getBoundingClientRect();
+            let left = rect.left + rect.width / 2 - ttRect.width / 2;
+            left = Math.max(pad, Math.min(left, window.innerWidth - ttRect.width - pad));
+
+            let top = rect.top - ttRect.height - gap;
+            if (top < pad) {
+                top = rect.bottom + gap;
+            }
+            if (top + ttRect.height > window.innerHeight - pad) {
+                top = Math.max(pad, window.innerHeight - ttRect.height - pad);
+            }
+
+            tooltipEl.style.left = `${Math.round(left)}px`;
+            tooltipEl.style.top = `${Math.round(top)}px`;
+        }
+
+        function showTooltip(trigger, pinned = false) {
+            const text = trigger.getAttribute('data-tooltip');
+            if (!text) return;
+            activeTip = trigger;
+            pinnedByClick = pinned;
+            tooltipEl.textContent = text;
+            positionTooltip(trigger);
+        }
+
+        function hideTooltip() {
+            activeTip = null;
+            pinnedByClick = false;
+            tooltipEl.classList.remove('visible');
+        }
+
+        document.addEventListener('mouseover', (e) => {
+            const tip = e.target.closest('.info-tip');
+            if (tip && !pinnedByClick) {
+                showTooltip(tip, false);
+            }
+        });
+
+        document.addEventListener('mouseout', (e) => {
+            const tip = e.target.closest('.info-tip');
+            if (tip && activeTip === tip && !pinnedByClick) {
+                hideTooltip();
+            }
+        });
+
+        document.addEventListener('focusin', (e) => {
+            const tip = e.target.closest('.info-tip');
+            if (tip) {
+                showTooltip(tip, false);
+            }
+        });
+
+        document.addEventListener('focusout', (e) => {
+            const tip = e.target.closest('.info-tip');
+            if (tip && activeTip === tip && !pinnedByClick) {
+                hideTooltip();
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const tip = e.target.closest('.info-tip');
+            if (tip) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (activeTip === tip && pinnedByClick) {
+                    hideTooltip();
+                } else {
+                    showTooltip(tip, true);
+                }
+            } else if (activeTip) {
+                hideTooltip();
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && activeTip) {
+                hideTooltip();
+            } else if ((e.key === 'Enter' || e.key === ' ') && e.target.classList?.contains('info-tip')) {
+                e.preventDefault();
+                if (activeTip === e.target && pinnedByClick) {
+                    hideTooltip();
+                } else {
+                    showTooltip(e.target, true);
+                }
+            }
+        });
+
+        window.addEventListener('scroll', () => {
+            if (activeTip) hideTooltip();
+        }, { passive: true, capture: true });
+
+        window.addEventListener('resize', () => {
+            if (activeTip) positionTooltip(activeTip);
+        });
+    }
 </script>
+<div id="global-tooltip" role="tooltip"></div>
 </body>
 </html>
