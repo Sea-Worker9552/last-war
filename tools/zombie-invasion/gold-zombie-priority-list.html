@@ -1221,6 +1221,28 @@
       color: var(--text-muted);
     }
 
+    .age-cell {
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .age-badge {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .age-badge.age-fresh {
+      color: var(--accent-cyan);
+    }
+
+    .age-badge.age-unknown {
+      color: var(--text-muted);
+      opacity: 0.65;
+      font-style: italic;
+      font-weight: 500;
+    }
+
     .level-badge {
       font-weight: 700;
       font-size: 0.82rem;
@@ -2683,6 +2705,7 @@
             <th data-col="coords">Coords (X, Y) <span class="sort-indicator"></span></th>
             <th data-col="level" data-default-dir="desc">Level <span class="sort-indicator"></span></th>
             <th data-col="status">Protection / Timer <span class="sort-indicator"></span></th>
+            <th data-col="age" data-default-dir="asc" title="Estimated time since zombie spawned">Age <span class="sort-indicator"></span></th>
             <th data-col="alliance">Alliance <span class="sort-indicator"></span></th>
             <th data-col="summoner">Summoner <span class="sort-indicator"></span></th>
             <th data-col="server">Server # <span class="sort-indicator"></span></th>
@@ -3281,24 +3304,25 @@
           const isAtServerReset = (utcMin === 120);
           const timeUntilDisappearSec = (d.getTime() - refDate.getTime()) / 1000;
 
+          const disappearsTimestamp = d.getTime();
           if (isAtServerReset && timeUntilDisappearSec < 230 * 60) {
             // Clamped at end-of-event server reset (< 3h50m left):
             // Even if clamped at reset, 10m protection must have expired if >= 10m has passed since Observed
             if (observedDate && (refDate.getTime() - observedDate.getTime()) >= 600 * 1000) {
-              return { state: 'expired', approxSecondsLeft: 0, isAtServerReset: true };
+              return { state: 'expired', approxSecondsLeft: 0, isAtServerReset: true, disappearsTimestamp };
             }
-            return { state: 'unknown', approxSecondsLeft: 600, isAtServerReset: true };
+            return { state: 'unknown', approxSecondsLeft: 600, isAtServerReset: true, disappearsTimestamp };
           }
 
           // Bosses live 4h (240m) with 10m initial protection:
           // Remaining protection = timeUntilDisappear - 3h50m (230m)
           if (timeUntilDisappearSec >= 230 * 60) {
             const est = Math.min(600, Math.max(1, Math.round(timeUntilDisappearSec - 230 * 60)));
-            return { state: 'approx', approxSecondsLeft: est, isAtServerReset: false };
+            return { state: 'approx', approxSecondsLeft: est, isAtServerReset: false, disappearsTimestamp };
           }
 
           // timeUntilDisappear < 3h50m and NOT at server reset -> 10m protection has already expired
-          return { state: 'expired', approxSecondsLeft: 0, isAtServerReset: false };
+          return { state: 'expired', approxSecondsLeft: 0, isAtServerReset: false, disappearsTimestamp };
         }
 
         for (let i = 0; i < lines.length; i++) {
@@ -3345,6 +3369,8 @@
           let isProtectedUnknownTimer = false;
           let isApproxTimer = false;
           let disappearsAt = '';
+          let disappearsTimestamp = null;
+          let isAtServerReset = false;
 
           cardLines.forEach(cl => {
             // Check for coordinates "(X, Y)"
@@ -3373,6 +3399,12 @@
               const disM = cl.match(/Disappears at\s+(.+)$/i);
               if (disM) disappearsAt = disM[1].trim();
 
+              const est = disappearsAt ? estimateProtectionFromDisappears(disappearsAt, nowDate) : null;
+              if (est && est.disappearsTimestamp) {
+                disappearsTimestamp = est.disappearsTimestamp;
+                isAtServerReset = !!est.isAtServerReset;
+              }
+
               if (/\bProtected\b/i.test(cl)) {
                 const tm = cl.match(/(\d{1,2}):(\d{2}):(\d{2})/);
                 if (tm) {
@@ -3381,8 +3413,7 @@
                   const s = parseInt(tm[3], 10);
                   protectionStr = '🔒 ' + tm[0];
                   initialSecondsLeft = h * 3600 + m * 60 + s;
-                } else if (disappearsAt) {
-                  const est = estimateProtectionFromDisappears(disappearsAt, nowDate);
+                } else if (est) {
                   if (est.state === 'approx') {
                     initialSecondsLeft = est.approxSecondsLeft;
                     isApproxTimer = true;
@@ -3433,6 +3464,8 @@
             isProtectedUnknownTimer,
             isApproxTimer,
             disappearsAt,
+            disappearsTimestamp,
+            isAtServerReset,
             server,
             distance: 0,
             justUnlocked: false
@@ -4133,6 +4166,79 @@
       return `<span class="status-badge status-locked status-protected" title="Protected: ${approxPrefix}${formatTime(secsLeft)} remaining${approxNote}${disappearsHint}">🔒 ${approxPrefix}${formatTime(secsLeft)}</span>`;
     }
 
+    // Calculate zombie age (time since spawn) when deducible from expiry or 10m protection timer
+    function getZombieAgeInfo(boss) {
+      const nowMs = Date.now();
+      const formatAgeDuration = (sec, isApprox) => {
+        const prefix = isApprox ? '~' : '';
+        if (sec < 60) return isApprox ? '~<1m' : `${sec}s`;
+        const totalMin = Math.floor(sec / 60);
+        const hrs = Math.floor(totalMin / 60);
+        const mins = totalMin % 60;
+        if (hrs > 0) return `${prefix}${hrs}h ${mins}m`;
+        if (!isApprox && sec < 600) {
+          const remSec = sec % 60;
+          return `${mins}m ${remSec}s`;
+        }
+        return `${prefix}${mins}m`;
+      };
+
+      // Case 1: LW-SPY expiry timestamp (4h lifespan), unless clamped at server reset (< 3h50m left)
+      if (boss.disappearsTimestamp) {
+        const timeUntilDisappearSec = Math.max(0, (boss.disappearsTimestamp - nowMs) / 1000);
+        const clampedAtReset = boss.isAtServerReset && timeUntilDisappearSec < 230 * 60;
+        if (!clampedAtReset) {
+          const ageSec = Math.max(0, Math.round(4 * 3600 - timeUntilDisappearSec));
+          return {
+            ageSeconds: ageSec,
+            label: formatAgeDuration(ageSec, true),
+            isApprox: true,
+            isFresh: ageSec <= 600,
+            title: `Estimated age from 4h lifespan (Disappears at ${boss.disappearsAt})`
+          };
+        }
+      }
+
+      // Case 2: MapScout / explicit 10m protection timer (age = 10m - remaining protection + elapsed since unlock)
+      if (boss.initialSecondsLeft > 0 && !boss.isProtectedUnknownTimer) {
+        const secsLeft = getCurrentSecondsLeft(boss);
+        let ageSec = 0;
+        if (secsLeft > 0) {
+          ageSec = Math.max(0, 600 - secsLeft);
+        } else {
+          const elapsedSincePaste = Math.floor((nowMs - pasteTimestamp) / 1000);
+          ageSec = 600 + Math.max(0, elapsedSincePaste - boss.initialSecondsLeft);
+        }
+        return {
+          ageSeconds: ageSec,
+          label: formatAgeDuration(ageSec, false),
+          isApprox: false,
+          isFresh: ageSec <= 600,
+          title: 'Calculated from 10m protection countdown'
+        };
+      }
+
+      // Case 3: Unknown (MapScout "Available" has no expiry timestamp, or LW-SPY clamped at server reset)
+      return {
+        ageSeconds: null,
+        label: 'Unknown',
+        isApprox: false,
+        isFresh: false,
+        title: boss.isAtServerReset
+          ? 'Age unknown (expiry clamped at server reset)'
+          : 'Age unknown (no expiry timestamp in source data)'
+      };
+    }
+
+    function getAgeBadgeHtml(boss) {
+      const info = getZombieAgeInfo(boss);
+      if (info.ageSeconds === null) {
+        return `<span class="age-badge age-unknown" title="${escapeHtml(info.title)}">Unknown</span>`;
+      }
+      const cls = info.isFresh ? 'age-badge age-fresh' : 'age-badge';
+      return `<span class="${cls}" title="${escapeHtml(info.title)}">${escapeHtml(info.label)}</span>`;
+    }
+
     // Level CSS Class (Unique styling for all tiers Lv 5 to Lv 150)
     function getLevelClass(lvl) {
       if (lvl < 5 || isNaN(lvl)) return 'lvl-other';
@@ -4293,6 +4399,16 @@
             valA = getCurrentSecondsLeft(a);
             valB = getCurrentSecondsLeft(b);
             break;
+          case 'age': {
+            const ageA = getZombieAgeInfo(a).ageSeconds;
+            const ageB = getZombieAgeInfo(b).ageSeconds;
+            // Always push Unknown ages (null) to the bottom regardless of sort direction
+            if (ageA === null && ageB === null) { valA = 0; valB = 0; }
+            else if (ageA === null) return 1;
+            else if (ageB === null) return -1;
+            else { valA = ageA; valB = ageB; }
+            break;
+          }
           case 'alliance':
             valA = a.alliance.toLowerCase();
             valB = b.alliance.toLowerCase();
@@ -4375,6 +4491,7 @@
             <td class="coords-cell">${boss.x}, ${boss.y}</td>
             <td><span class="level-badge ${getLevelClass(boss.levelNum)}">${boss.levelStr.replace(/^Lv(?!\s)/i, 'Lv ')}</span></td>
             <td class="status-cell">${statusBadgeHtml}</td>
+            <td class="age-cell">${getAgeBadgeHtml(boss)}</td>
             <td>${allianceTagHtml}</td>
             <td class="summoner-cell name-cell">${escapeHtml(boss.summoner || boss.owner)}</td>
             <td class="server-cell">${escapeHtml(boss.server)}</td>
@@ -4458,10 +4575,15 @@
           if (!boss) return;
 
           const cell = tr.querySelector('.status-cell');
-          if (!cell) return;
+          if (cell) {
+            const secsLeft = getCurrentSecondsLeft(boss);
+            cell.innerHTML = getStatusBadgeHtml(boss, secsLeft);
+          }
 
-          const secsLeft = getCurrentSecondsLeft(boss);
-          cell.innerHTML = getStatusBadgeHtml(boss, secsLeft);
+          const ageCell = tr.querySelector('.age-cell');
+          if (ageCell) {
+            ageCell.innerHTML = getAgeBadgeHtml(boss);
+          }
         });
       }
 
@@ -5611,6 +5733,7 @@
         const isPasses = isBossPassesFilters(found);
         const isDone = doneBossKeys.has(found.id);
         const secs = getCurrentSecondsLeft(found);
+        const ageInfo = getZombieAgeInfo(found);
         const statusStr = (secs === 0)
           ? '✔ Available'
           : (found.isProtectedUnknownTimer ? '🔒 Protected' : `🔒 ${found.isApproxTimer ? '~' : ''}${formatTime(secs)}`);
@@ -5648,7 +5771,7 @@
             Coords: <strong>${found.x}, ${found.y}</strong>
           </div>
           <div style="margin-top: 3px; font-size: 0.74rem;">
-            Status: <span style="font-weight: 700;">${statusStr}</span>
+            Status: <span style="font-weight: 700;">${statusStr}</span> | Age: <strong>${escapeHtml(ageInfo.label)}</strong>
           </div>
           <div style="color: var(--accent-gold); font-size: 0.74rem; margin-top: 2px;">
             From Base: <strong>${distFromBase.toFixed(1)} km</strong>
