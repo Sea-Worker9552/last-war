@@ -3276,19 +3276,19 @@
             d.setDate(d.getDate() + 1);
           }
 
-          // Server reset is 00:00 Server Time (UTC-2) == 02:00 UTC universally across all time zones
+          // Server reset is exact 00:00 Server Time (UTC-2) == 02:00 UTC universally across all time zones
           const utcMin = d.getUTCHours() * 60 + d.getUTCMinutes();
-          const isAtServerReset = (utcMin >= 118 && utcMin <= 122);
+          const isAtServerReset = (utcMin === 120);
+          const timeUntilDisappearSec = (d.getTime() - refDate.getTime()) / 1000;
 
-          if (isAtServerReset) {
+          if (isAtServerReset && timeUntilDisappearSec < 230 * 60) {
+            // Clamped at end-of-event server reset (< 3h50m left):
             // Even if clamped at reset, 10m protection must have expired if >= 10m has passed since Observed
             if (observedDate && (refDate.getTime() - observedDate.getTime()) >= 600 * 1000) {
               return { state: 'expired', approxSecondsLeft: 0, isAtServerReset: true };
             }
             return { state: 'unknown', approxSecondsLeft: 600, isAtServerReset: true };
           }
-
-          const timeUntilDisappearSec = (d.getTime() - refDate.getTime()) / 1000;
 
           // Bosses live 4h (240m) with 10m initial protection:
           // Remaining protection = timeUntilDisappear - 3h50m (230m)
