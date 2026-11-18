@@ -3180,6 +3180,15 @@
         return { protectionStr: '✔ Available', initialSecondsLeft: 0 };
       }
 
+      // Auto-detect LW-SPY Monster Search Format:
+      // e.g. "● 🧟 Gold zombie boss · Level 65 · S2258Lv 65"
+      const isLwSpyHeader = (l) =>
+        /(?:Gold zombie(?:\s+boss)?|Invasion boss|Alliance boss|Doom Walker|Zombie)\b/i.test(l) &&
+        /\b(?:Level|Lv)\s*\d+/i.test(l) &&
+        (/^[●🧟]/.test(l) || /\bS\d+/i.test(l) || /·/.test(l));
+
+      const isLwSpyFormat = lines.some(isLwSpyHeader);
+
       // Auto-detect Mobile vs Desktop:
       // If first Lv line appears before first standalone coordinate line -> Mobile Mode
       let isMobileFormat = false;
@@ -3193,7 +3202,215 @@
         isMobileFormat = true;
       }
 
-      if (isMobileFormat) {
+      let lwSpySnapshotNote = '';
+      if (isLwSpyFormat) {
+        // --- Branch LW-SPY: Monster Search Card Format ---
+        // LW-SPY results are a static snapshot, so "Protected" text can be stale,
+        // while "Disappears at" is an absolute wall-clock timestamp.
+        // Always calculate remaining protection relative to current wall-clock time (Date.now()).
+        const nowDate = new Date();
+        let observedDate = null;
+        const obsMatch = text.match(/Observed\s+(\d{1,2}\/\d{1,2}\/\d{4},\s*\d{1,2}:\d{2}(?::\d{2})?\s*(?:AM|PM)?)/i);
+        if (obsMatch) {
+          const parsedObs = new Date(obsMatch[1]);
+          if (!isNaN(parsedObs.getTime())) {
+            observedDate = parsedObs;
+            const ageMin = Math.floor((nowDate.getTime() - observedDate.getTime()) / 60000);
+            if (ageMin >= 1 && ageMin < 24 * 60) {
+              lwSpySnapshotNote = ` <span style="opacity: 0.78; font-weight: 500;">(Snapshot ${ageMin}m ago)</span>`;
+            } else if (ageMin >= 24 * 60) {
+              lwSpySnapshotNote = ` <span style="color: var(--accent-orange); font-weight: 600;">(Old snapshot)</span>`;
+            }
+          }
+        }
+
+        function estimateProtectionFromDisappears(disappearsStr, refDate) {
+          const tm = disappearsStr.match(/(\d{1,2}):(\d{2})(?::(\d{2}))?\s*(AM|PM)?/i);
+          if (!tm) return { state: 'unknown', approxSecondsLeft: 600, isAtServerReset: false };
+
+          let hours = parseInt(tm[1], 10);
+          const mins = parseInt(tm[2], 10);
+          const secs = tm[3] ? parseInt(tm[3], 10) : 0;
+          const ampm = tm[4] ? tm[4].toUpperCase() : '';
+
+          if (ampm === 'PM' && hours < 12) hours += 12;
+          if (ampm === 'AM' && hours === 12) hours = 0;
+
+          // Resolve Disappears at against observedDate's calendar day if available (prevents old snapshots wrapping to tomorrow)
+          const anchorDate = observedDate || refDate;
+          const d = new Date(anchorDate.getTime());
+          d.setHours(hours, mins, secs, 0);
+
+          // If target time is > 2 hours before anchorDate, it refers to the next calendar day
+          if (d.getTime() - anchorDate.getTime() < -2 * 3600 * 1000) {
+            d.setDate(d.getDate() + 1);
+          }
+
+          // Server reset is 00:00 Server Time (UTC-2) == 02:00 UTC universally across all time zones
+          const utcMin = d.getUTCHours() * 60 + d.getUTCMinutes();
+          const isAtServerReset = (utcMin >= 118 && utcMin <= 122);
+
+          if (isAtServerReset) {
+            // Even if clamped at reset, 10m protection must have expired if >= 10m has passed since Observed
+            if (observedDate && (refDate.getTime() - observedDate.getTime()) >= 600 * 1000) {
+              return { state: 'expired', approxSecondsLeft: 0, isAtServerReset: true };
+            }
+            return { state: 'unknown', approxSecondsLeft: 600, isAtServerReset: true };
+          }
+
+          const timeUntilDisappearSec = (d.getTime() - refDate.getTime()) / 1000;
+
+          // Bosses live 4h (240m) with 10m initial protection:
+          // Remaining protection = timeUntilDisappear - 3h50m (230m)
+          if (timeUntilDisappearSec >= 230 * 60) {
+            const est = Math.min(600, Math.max(1, Math.round(timeUntilDisappearSec - 230 * 60)));
+            return { state: 'approx', approxSecondsLeft: est, isAtServerReset: false };
+          }
+
+          // timeUntilDisappear < 3h50m and NOT at server reset -> 10m protection has already expired
+          return { state: 'expired', approxSecondsLeft: 0, isAtServerReset: false };
+        }
+
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i];
+          if (!isLwSpyHeader(line)) continue;
+
+          // Parse header: "● 🧟 Gold zombie boss · [Variant ·] Level 65 · S2258Lv 65"
+          const cleanHeader = line.replace(/^[●🧟\s]+/, '').trim();
+          const headerParts = cleanHeader.split('·').map(p => p.trim()).filter(Boolean);
+
+          const lvlMatch = line.match(/\b(?:Level|Lv)\s*(\d+)/i);
+          if (!lvlMatch) continue;
+          const levelNum = parseInt(lvlMatch[1], 10);
+          const levelStr = 'Lv ' + levelNum;
+
+          const srvMatch = line.match(/\bS(\d+)/i);
+          const server = srvMatch ? '#' + srvMatch[1] : (serverPrefix ? '#' + serverPrefix : '#2258');
+
+          // Optional variant name (e.g. "Zombie Hound", "Zombie Girl")
+          let variantName = '';
+          if (headerParts.length >= 3) {
+            const candidateVar = headerParts[1];
+            if (candidateVar && !/^(?:Level|Lv)\s*\d+/i.test(candidateVar) && !/^S\d+/i.test(candidateVar)) {
+              variantName = candidateVar;
+            }
+          }
+
+          let j = i + 1;
+          const cardLines = [];
+          while (j < lines.length) {
+            if (isLwSpyHeader(lines[j])) break;
+            if (/^(Copy all filtered|Export all filtered|Send selected|Select results to send)/i.test(lines[j])) break;
+            if (!/^(View details\s*Show on map|View details|Show on map)$/i.test(lines[j])) {
+              cardLines.push(lines[j]);
+            }
+            j++;
+          }
+
+          let coords = null;
+          let summoner = '';
+          let alliance = '-';
+          let protectionStr = '✔ Available';
+          let initialSecondsLeft = 0;
+          let isProtectedUnknownTimer = false;
+          let isApproxTimer = false;
+          let disappearsAt = '';
+
+          cardLines.forEach(cl => {
+            // Check for coordinates "(X, Y)"
+            const coordM = cl.match(/\((\d{1,4})\s*,\s*(\d{1,4})\)\s*$/);
+            if (coordM && !coords) {
+              coords = { x: parseInt(coordM[1], 10), y: parseInt(coordM[2], 10) };
+              const prefix = cl.slice(0, coordM.index).replace(/·\s*$/, '').trim();
+              if (prefix) {
+                const allM = prefix.match(/(?:^|·)\s*\[([^\]]+)\]\s*$/);
+                if (allM) {
+                  alliance = allM[1].trim() || '-';
+                  summoner = prefix.slice(0, allM.index).replace(/·\s*$/, '').trim();
+                } else {
+                  const parts = prefix.split('·').map(p => p.trim()).filter(Boolean);
+                  summoner = parts[0] || '';
+                  if (parts.length > 1) {
+                    alliance = parts[parts.length - 1].replace(/^\[|\]$/g, '').trim() || '-';
+                  }
+                }
+              }
+              return;
+            }
+
+            // Check for status / disappears line
+            if (/\bProtected\b/i.test(cl) || /Disappears at/i.test(cl) || /✔|available/i.test(cl) || /\d{1,2}:\d{2}:\d{2}/.test(cl)) {
+              const disM = cl.match(/Disappears at\s+(.+)$/i);
+              if (disM) disappearsAt = disM[1].trim();
+
+              if (/\bProtected\b/i.test(cl)) {
+                const tm = cl.match(/(\d{1,2}):(\d{2}):(\d{2})/);
+                if (tm) {
+                  const h = parseInt(tm[1], 10);
+                  const m = parseInt(tm[2], 10);
+                  const s = parseInt(tm[3], 10);
+                  protectionStr = '🔒 ' + tm[0];
+                  initialSecondsLeft = h * 3600 + m * 60 + s;
+                } else if (disappearsAt) {
+                  const est = estimateProtectionFromDisappears(disappearsAt, nowDate);
+                  if (est.state === 'approx') {
+                    initialSecondsLeft = est.approxSecondsLeft;
+                    isApproxTimer = true;
+                    protectionStr = '🔒 ~' + formatTime(est.approxSecondsLeft);
+                  } else if (est.state === 'expired') {
+                    // Time calculation overrides stale "Protected" text
+                    initialSecondsLeft = 0;
+                    protectionStr = '✔ Available';
+                  } else {
+                    protectionStr = '🔒 Protected';
+                    initialSecondsLeft = 600;
+                    isProtectedUnknownTimer = true;
+                  }
+                } else {
+                  protectionStr = '🔒 Protected';
+                  initialSecondsLeft = 600;
+                  isProtectedUnknownTimer = true;
+                }
+              } else {
+                const st = extractStatus(cl);
+                protectionStr = st.protectionStr;
+                initialSecondsLeft = st.initialSecondsLeft;
+              }
+            }
+          });
+
+          if (!coords) {
+            i = j - 1;
+            continue;
+          }
+
+          if (!summoner) {
+            summoner = variantName || 'Wild';
+          }
+
+          const uniqueKey = `${coords.x}_${coords.y}_${levelNum}_${summoner}`;
+          results.push({
+            id: uniqueKey,
+            x: coords.x,
+            y: coords.y,
+            levelStr,
+            levelNum,
+            summoner,
+            owner: summoner,
+            alliance,
+            protectionStr,
+            initialSecondsLeft,
+            isProtectedUnknownTimer,
+            isApproxTimer,
+            disappearsAt,
+            server,
+            distance: 0,
+            justUnlocked: false
+          });
+
+          i = j - 1;
+        }
+      } else if (isMobileFormat) {
         // --- Branch A: Mobile Format (handles both compact glued cards AND expanded multi-line cards) ---
         for (let i = 0; i < lines.length; i++) {
           const line = lines[i];
@@ -3366,7 +3583,7 @@
         if (results.length > 0) {
           parseFeedback.style.display = 'inline-flex';
           parseFeedback.className = 'parse-feedback';
-          parseFeedback.innerHTML = `🎯 <strong>${results.length} Bosses</strong> Detected & Prioritized`;
+          parseFeedback.innerHTML = `🎯 <strong>${results.length} Bosses</strong> Detected & Prioritized${lwSpySnapshotNote}`;
         } else {
           parseFeedback.style.display = 'inline-flex';
           parseFeedback.className = 'parse-feedback empty';
@@ -3618,7 +3835,9 @@
         levelCounts[b.levelNum] = (levelCounts[b.levelNum] || 0) + 1;
       });
 
-      const levels = ALL_GAME_LEVELS;
+      const levelSet = new Set(ALL_GAME_LEVELS);
+      parsedBosses.forEach(b => { if (b.levelNum > 0) levelSet.add(b.levelNum); });
+      const levels = Array.from(levelSet).sort((a, b) => b - a);
 
       updateLevelModeUI();
       updateLevelSummaryText(levels.length);
@@ -3852,27 +4071,36 @@
     function getStatusBadgeHtml(boss, secsLeft) {
       const isAvail = secsLeft === 0;
       const isMyAll = isMyAlliance(boss.alliance);
+      const disappearsHint = boss.disappearsAt ? ` · Disappears at ${boss.disappearsAt}` : '';
+      const approxPrefix = boss.isApproxTimer ? '~' : '';
+      const approxNote = boss.isApproxTimer ? ' (estimated from 4h lifespan)' : '';
 
       if (isMyAll) {
         if (secsLeft > 0) {
-          if (secsLeft <= 120) {
-            return `<span class="status-badge status-alliance-urgent" title="Attack now! Protection from enemies expires in ${formatTime(secsLeft)}">⚠️ ${formatTime(secsLeft)} (Ending Soon)</span>`;
+          if (boss.isProtectedUnknownTimer) {
+            return `<span class="status-badge status-alliance-protected" title="Attackable now by your alliance! Protected from enemies${disappearsHint}">🛡️ Protected (Alliance)</span>`;
           }
-          return `<span class="status-badge status-alliance-protected" title="Attackable now by your alliance! Protected from enemies for ${formatTime(secsLeft)}">🛡️ ${formatTime(secsLeft)} (Alliance)</span>`;
+          if (secsLeft <= 120) {
+            return `<span class="status-badge status-alliance-urgent" title="Attack now! Protection from enemies expires in ${approxPrefix}${formatTime(secsLeft)}${approxNote}${disappearsHint}">⚠️ ${approxPrefix}${formatTime(secsLeft)} (Ending Soon)</span>`;
+          }
+          return `<span class="status-badge status-alliance-protected" title="Attackable now by your alliance! Protected from enemies for ${approxPrefix}${formatTime(secsLeft)}${approxNote}${disappearsHint}">🛡️ ${approxPrefix}${formatTime(secsLeft)} (Alliance)</span>`;
         }
         if (boss.justUnlocked) {
           return `<span class="status-badge status-unlocked-now">⚡ UNLOCKED!</span>`;
         }
-        return `<span class="status-badge status-available">✔ Available</span>`;
+        return `<span class="status-badge status-available" title="Available${disappearsHint}">✔ Available</span>`;
       }
 
       if (isAvail) {
         if (boss.justUnlocked) {
           return `<span class="status-badge status-unlocked-now">⚡ UNLOCKED!</span>`;
         }
-        return `<span class="status-badge status-available">✔ Available</span>`;
+        return `<span class="status-badge status-available" title="Available${disappearsHint}">✔ Available</span>`;
       }
-      return `<span class="status-badge status-locked status-protected" title="Protected: ${formatTime(secsLeft)} remaining">🔒 ${formatTime(secsLeft)}</span>`;
+      if (boss.isProtectedUnknownTimer) {
+        return `<span class="status-badge status-locked status-protected" title="Protected (clamped at reset or timer unavailable)${disappearsHint}">🔒 Protected</span>`;
+      }
+      return `<span class="status-badge status-locked status-protected" title="Protected: ${approxPrefix}${formatTime(secsLeft)} remaining${approxNote}${disappearsHint}">🔒 ${approxPrefix}${formatTime(secsLeft)}</span>`;
     }
 
     // Level CSS Class (Unique styling for all tiers Lv 5 to Lv 100)
@@ -5361,7 +5589,9 @@
         const isPasses = isBossPassesFilters(found);
         const isDone = doneBossKeys.has(found.id);
         const secs = getCurrentSecondsLeft(found);
-        const statusStr = (secs === 0) ? '✔ Available' : `🔒 ${formatTime(secs)}`;
+        const statusStr = (secs === 0)
+          ? '✔ Available'
+          : (found.isProtectedUnknownTimer ? '🔒 Protected' : `🔒 ${found.isApproxTimer ? '~' : ''}${formatTime(secs)}`);
         const distFromBase = calcDistance(found.x, found.y, parseFloat(baseXInput.value) || 0, parseFloat(baseYInput.value) || 0);
         const distFromTarget = candidatePos ? Math.hypot(found.x - candidatePos.x, found.y - candidatePos.y).toFixed(1) : null;
         
