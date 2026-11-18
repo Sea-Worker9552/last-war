@@ -136,9 +136,9 @@
         }
 
         [data-theme="light"] .univ-stat-badge {
-            background: #f1f5f9;
-            border-color: #cbd5e1;
-            color: #334155;
+            background: rgba(2, 132, 199, 0.08);
+            border-color: rgba(2, 132, 199, 0.28);
+            color: #0369a1;
         }
 
         [data-theme="light"] .lineup-table th,
@@ -452,19 +452,23 @@
             padding: 1.25rem;
             display: flex;
             flex-direction: column;
+            justify-content: space-between;
             gap: 0.75rem;
         }
 
         .univ-header {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 0.65rem;
         }
 
         .univ-title {
             font-weight: 700;
             font-size: 0.95rem;
             color: var(--text-main);
+            gap: 0.35rem;
+            min-width: 0;
         }
 
         .univ-subtitle {
@@ -475,11 +479,12 @@
         .stepper-container {
             display: flex;
             align-items: center;
+            flex-shrink: 0;
             background: rgba(0, 0, 0, 0.25);
             border: 1px solid var(--border-color);
             border-radius: 8px;
             overflow: hidden;
-            width: 140px;
+            width: 100%;
             height: 38px;
         }
 
@@ -528,13 +533,13 @@
         }
 
         .univ-stat-badge {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border-color);
+            background: rgba(56, 189, 248, 0.08);
+            border: 1px solid rgba(56, 189, 248, 0.25);
             border-radius: 8px;
             padding: 0.6rem 0.85rem;
             font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--text-muted);
+            font-weight: 700;
+            color: var(--color-cfgA);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -1822,7 +1827,7 @@
                 <span class="info-tip" tabindex="0" role="button" aria-label="Global Account Setup info" data-tooltip="Set your alliance levels and survivor roster once to see the best lineups across all build durations.">ⓘ</span>
             </div>
             <div class="section-group-pills">
-                <a class="section-pill" href="#sec-alliance">⚙️ Alliance Settings</a>
+                <a class="section-pill" href="#sec-alliance">⚙️ Help Settings</a>
                 <a class="section-pill" href="#sec-pool">👥 Survivors Pool</a>
                 <a class="section-pill" href="#sec-schedule">📅 Progression Schedule</a>
             </div>
@@ -1830,7 +1835,7 @@
 
     <!-- 1. Universal Settings -->
     <div class="card" id="sec-alliance">
-        <div class="card-title">⚙️ Universal Alliance Settings</div>
+        <div class="card-title">⚙️ Universal Help Settings</div>
         <div class="univ-controls-grid">
             <!-- Alliance Tech: Great Helper -->
             <div class="univ-control-box">
@@ -1865,6 +1870,43 @@
                 </div>
                 <div class="univ-stat-badge" id="badge-ac-helps">
                     Base Capacity: 5 Helps
+                </div>
+            </div>
+
+            <!-- Engineer: Support Boost -->
+            <div class="univ-control-box">
+                <div class="univ-header">
+                    <div class="univ-title" style="display: flex; align-items: center;">
+                        <span>Engineer: Support Boost Level</span>
+                        <span class="info-tip" tabindex="0" role="button" aria-label="Support Boost info" data-tooltip="Engineer profession skill (Lv 0 to 5, unlocked at Prof. Lv 55). Adds +30s fixed reduction per help per level (up to +150s).">ⓘ</span>
+                    </div>
+                    <div class="stepper-container">
+                        <button class="stepper-btn" onclick="stepVal('support-boost-level', -1)">-</button>
+                        <input type="number" id="support-boost-level" value="0" min="0" max="5" class="stepper-input-field">
+                        <button class="stepper-btn" onclick="stepVal('support-boost-level', 1)">+</button>
+                    </div>
+                </div>
+                <div class="univ-stat-badge" id="badge-support-boost">
+                    Fixed Bonus: 0 sec / 0:00
+                </div>
+            </div>
+
+            <!-- Warzone Bonus (Per Help) -->
+            <div class="univ-control-box">
+                <div class="univ-header">
+                    <div class="univ-title" style="display: flex; align-items: center;">
+                        <span>Warzone Bonus (Per Help)</span>
+                        <span class="info-tip" tabindex="0" role="button" aria-label="Warzone bonus info" data-tooltip="Extra fixed time reduction per help from warzone buffs (e.g. Season 1 offseason corruptor bonus: 12m 0s = 720s).">ⓘ</span>
+                    </div>
+                    <div class="stepper-container" style="gap: 0.35rem; padding: 0 0.75rem;">
+                        <input type="number" id="warzone-bonus-min" value="0" min="0" max="120" class="stepper-input-field" style="flex: 1;" aria-label="Warzone bonus minutes">
+                        <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted);">m</span>
+                        <input type="number" id="warzone-bonus-sec" value="0" min="0" max="59" class="stepper-input-field" style="flex: 1;" aria-label="Warzone bonus seconds">
+                        <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted);">s</span>
+                    </div>
+                </div>
+                <div class="univ-stat-badge" id="badge-warzone-bonus">
+                    Warzone Bonus: 0 sec / 0s
                 </div>
             </div>
         </div>
@@ -2135,7 +2177,7 @@
             <!-- Config A Reference Footer -->
             <div class="config-total-box ref-footer">
                 <div class="total-row">
-                    <span class="row-label">Baseline (Center &amp; Tech)</span>
+                    <span class="row-label">Baseline (Universal)</span>
                     <span class="row-val" id="cfgA-row1">0 Helps | 0 sec / 0:00</span>
                 </div>
                 <div class="total-row">
@@ -2196,7 +2238,7 @@
             <!-- Config B Reference Footer -->
             <div class="config-total-box ref-footer">
                 <div class="total-row">
-                    <span class="row-label">Baseline (Center &amp; Tech)</span>
+                    <span class="row-label">Baseline (Universal)</span>
                     <span class="row-val" id="cfgB-row1">0 Helps | 0 sec / 0:00</span>
                 </div>
                 <div class="total-row">
@@ -2258,7 +2300,7 @@
             <!-- Config C Reference Footer -->
             <div class="config-total-box ref-footer">
                 <div class="total-row">
-                    <span class="row-label">Baseline (Center &amp; Tech)</span>
+                    <span class="row-label">Baseline (Universal)</span>
                     <span class="row-val" id="cfgC-row1">0 Helps | 0 sec / 0:00</span>
                 </div>
                 <div class="total-row">
@@ -2464,10 +2506,17 @@
         0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300
     ];
 
+    const SUPPORT_BOOST_SECONDS = [
+        0, 30, 60, 90, 120, 150
+    ];
+
     // Initial Default State
     const DEFAULT_STATE = {
         greatHelperLevel: 0,
         allianceCenterLevel: 1,
+        supportBoostLevel: 0,
+        warzoneBonusMin: 0,
+        warzoneBonusSec: 0,
         days: 0,
         hours: 0,
         minutes: 0,
@@ -2577,6 +2626,9 @@
 
         document.getElementById('great-helper-level').value = 0;
         document.getElementById('alliance-center-level').value = 1;
+        document.getElementById('support-boost-level').value = 0;
+        document.getElementById('warzone-bonus-min').value = 0;
+        document.getElementById('warzone-bonus-sec').value = 0;
         document.getElementById('days-input').value = 0;
         document.getElementById('days-slider').value = 0;
         document.getElementById('hours-input').value = 0;
@@ -2590,6 +2642,18 @@
         renderRosterInputs();
         updateOptimizedLineups();
         updateUI();
+    }
+
+    function getWarzoneBonusSeconds() {
+        const m = Math.max(0, parseInt(state.warzoneBonusMin) || 0);
+        const s = Math.max(0, Math.min(59, parseInt(state.warzoneBonusSec) || 0));
+        return (m * 60) + s;
+    }
+
+    function getBaseFixedSeconds() {
+        return (GREAT_HELPER_SECONDS[state.greatHelperLevel] || 0)
+            + (SUPPORT_BOOST_SECONDS[state.supportBoostLevel] || 0)
+            + getWarzoneBonusSeconds();
     }
 
     // Survivor calculation helper
@@ -2669,7 +2733,7 @@
     function findBestLineupForTime(t0) {
         const candidates = getAllCandidates();
         const baseHelps = ALLIANCE_CENTER_CAPACITY[state.allianceCenterLevel] || 5;
-        const baseFixed = GREAT_HELPER_SECONDS[state.greatHelperLevel] || 0;
+        const baseFixed = getBaseFixedSeconds();
 
         if (candidates.length === 0) {
             return {
@@ -2732,7 +2796,7 @@
 
         const allCombos = getCombinations(candidates, 4);
         const baseHelps = ALLIANCE_CENTER_CAPACITY[state.allianceCenterLevel] || 5;
-        const baseFixed = GREAT_HELPER_SECONDS[state.greatHelperLevel] || 0;
+        const baseFixed = getBaseFixedSeconds();
 
         // Evaluate all combinations at time t0
         const evaluated = [];
@@ -2839,7 +2903,7 @@
     function calculateOptimalSchedule() {
         const candidates = getAllCandidates();
         const baseHelps = ALLIANCE_CENTER_CAPACITY[state.allianceCenterLevel] || 5;
-        const baseFixed = GREAT_HELPER_SECONDS[state.greatHelperLevel] || 0;
+        const baseFixed = getBaseFixedSeconds();
 
         if (candidates.length <= 4) {
             return [{
@@ -2940,6 +3004,7 @@
 
         if (id === 'great-helper-level') state.greatHelperLevel = val;
         if (id === 'alliance-center-level') state.allianceCenterLevel = val;
+        if (id === 'support-boost-level') state.supportBoostLevel = val;
 
         saveState();
         updateOptimizedLineups();
@@ -2957,6 +3022,30 @@
     document.getElementById('alliance-center-level').addEventListener('input', function() {
         let val = parseInt(this.value) || 1;
         state.allianceCenterLevel = Math.max(1, Math.min(35, val));
+        saveState();
+        updateOptimizedLineups();
+        updateUI();
+    });
+
+    document.getElementById('support-boost-level').addEventListener('input', function() {
+        let val = parseInt(this.value) || 0;
+        state.supportBoostLevel = Math.max(0, Math.min(5, val));
+        saveState();
+        updateOptimizedLineups();
+        updateUI();
+    });
+
+    document.getElementById('warzone-bonus-min').addEventListener('input', function() {
+        let val = parseInt(this.value) || 0;
+        state.warzoneBonusMin = Math.max(0, Math.min(120, val));
+        saveState();
+        updateOptimizedLineups();
+        updateUI();
+    });
+
+    document.getElementById('warzone-bonus-sec').addEventListener('input', function() {
+        let val = parseInt(this.value) || 0;
+        state.warzoneBonusSec = Math.max(0, Math.min(59, val));
         saveState();
         updateOptimizedLineups();
         updateUI();
@@ -3185,7 +3274,7 @@
 
     function getTotals() {
         const baseHelps = ALLIANCE_CENTER_CAPACITY[state.allianceCenterLevel] || 5;
-        const baseFixed = GREAT_HELPER_SECONDS[state.greatHelperLevel] || 0;
+        const baseFixed = getBaseFixedSeconds();
 
         let bonusHelpsA = 0;
         let bonusFixedA = 0;
@@ -3399,8 +3488,13 @@
         state.initialTimeSec = (state.days * 86400) + (state.hours * 3600) + (state.minutes * 60) + (state.seconds || 0);
 
         // Update Universal Stat Badges
-        document.getElementById('badge-tech-reduction').textContent = `Fixed Bonus: ${formatSecAndClock(tot.baseFixed)}`;
+        const techFixed = GREAT_HELPER_SECONDS[state.greatHelperLevel] || 0;
+        const supportBoostFixed = SUPPORT_BOOST_SECONDS[state.supportBoostLevel] || 0;
+        const wzBonus = getWarzoneBonusSeconds();
+        document.getElementById('badge-tech-reduction').textContent = `Fixed Bonus: ${formatSecAndClock(techFixed)}`;
         document.getElementById('badge-ac-helps').textContent = `Base Capacity: ${tot.baseHelps} Helps`;
+        document.getElementById('badge-support-boost').textContent = `Fixed Bonus: ${formatSecAndClock(supportBoostFixed)}`;
+        document.getElementById('badge-warzone-bonus').textContent = `Warzone Bonus: ${wzBonus} sec / ${formatTimeFriendly(wzBonus)}`;
 
         const firstPctLine = state.initialTimeSec > 0 ? `<br>1st 0.5%: ${formatTimeFriendly(state.initialTimeSec * 0.005)}` : '';
         const renderPerHelpRef = (helps, fixedSec) => `${helps} Helps<br>Fixed: ${formatTimeFriendly(fixedSec)}${firstPctLine}`;
@@ -4204,9 +4298,15 @@
     window.addEventListener('DOMContentLoaded', () => {
         loadState();
         state.allianceCenterLevel = Math.max(1, Math.min(35, parseInt(state.allianceCenterLevel) || 1));
+        state.supportBoostLevel = Math.max(0, Math.min(5, parseInt(state.supportBoostLevel) || 0));
+        state.warzoneBonusMin = Math.max(0, Math.min(120, parseInt(state.warzoneBonusMin) || 0));
+        state.warzoneBonusSec = Math.max(0, Math.min(59, parseInt(state.warzoneBonusSec) || 0));
 
         document.getElementById('great-helper-level').value = state.greatHelperLevel;
         document.getElementById('alliance-center-level').value = state.allianceCenterLevel;
+        document.getElementById('support-boost-level').value = state.supportBoostLevel;
+        document.getElementById('warzone-bonus-min').value = state.warzoneBonusMin;
+        document.getElementById('warzone-bonus-sec').value = state.warzoneBonusSec;
         
         daysInput.value = state.days;
         daysSlider.value = Math.min(state.days, parseInt(daysSlider.max));
