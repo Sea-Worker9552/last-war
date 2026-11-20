@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="color-scheme" content="light dark">
-  <title>Last War — Crystal &amp; Event Rotation Planner</title>
+  <title>Crystal Economy &amp; Event Rotation Optimizer</title>
   <style>
     :root {
       --bg-light: #f4f6f9;
@@ -206,6 +206,10 @@
       align-items: end;
     }
 
+    .income-grid .field {
+      gap: 0.45rem;
+    }
+
     .section-head {
       display: flex;
       flex-wrap: wrap;
@@ -350,7 +354,7 @@
 
     .gauge-breakdown {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: 1fr;
       gap: 0.25rem 0.65rem;
       font-size: 0.78rem;
       color: var(--muted);
@@ -553,13 +557,82 @@
       font-size: 0.85rem;
       color: var(--muted);
     }
+
+    .label-row {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .info-btn {
+      display: inline-grid;
+      place-items: center;
+      inline-size: 1.15rem;
+      block-size: 1.15rem;
+      padding: 0;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      line-height: 1;
+      color: var(--muted);
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .info-btn:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+
+    button[interestfor="info-vs"] { anchor-name: --info-vs; }
+    #info-vs { position-anchor: --info-vs; }
+    button[interestfor="info-atk"] { anchor-name: --info-atk; }
+    #info-atk { position-anchor: --info-atk; }
+    button[interestfor="info-boss"] { anchor-name: --info-boss; }
+    #info-boss { position-anchor: --info-boss; }
+    button[interestfor="info-factory"] { anchor-name: --info-factory; }
+    #info-factory { position-anchor: --info-factory; }
+
+    .info-popover[popover] {
+      position: fixed;
+      inset: auto;
+      top: calc(anchor(bottom) + 6px);
+      left: anchor(center);
+      transform: translateX(-50%);
+      position-try: flip-block;
+      margin: unset;
+      padding: 0.5rem 0.75rem;
+      max-inline-size: 300px;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      background: var(--surface);
+      color: var(--text);
+      font-size: 0.82rem;
+      line-height: 1.35;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+    }
+
+    .tip-title {
+      font-weight: 700;
+      color: var(--text);
+      margin-block-end: 0.2rem;
+    }
+
+    .tip-body {
+      color: var(--muted);
+    }
+
+    .info-popover[popover]:is(:popover-open, .\:popover-open) {
+      display: block;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <header>
       <div>
-        <h1>Last War — Crystal &amp; Event Rotation Planner</h1>
+        <h1>Crystal Economy &amp; Event Rotation Optimizer</h1>
         <p class="subtitle">4-week loop: Bounty Hunter &rarr; Glittering Market &rarr; Ammo Bonanza &rarr; Total Mobilization</p>
       </div>
       <div class="header-actions">
@@ -574,27 +647,55 @@
       <p class="hint" style="margin: -0.45rem 0 0.75rem;">All income inputs below are <strong>per week</strong> (multiplied by 4 for each 4-week cycle).</p>
       <div class="income-grid">
         <div class="field">
-          <label for="inc-vs">VS Daily (max 38,400)</label>
-          <input type="text" inputmode="numeric" id="inc-vs" value="38,400">
+          <div class="label-row">
+            <label for="inc-vs">VS Chests (max 39,000)</label>
+            <button type="button" class="info-btn" interestfor="info-vs" commandfor="info-vs" command="toggle-popover" aria-label="VS Chests details">i</button>
+          </div>
+          <input type="text" inputmode="numeric" id="inc-vs" value="39,000">
+          <div id="info-vs" class="info-popover" popover="hint">
+            <div class="tip-title">6,500 / day &times; 6 VS days = 39,000 / wk</div>
+            <div class="tip-body">Earned from the first 6 daily VS Duel chests (2.3M pts). Lower if you don&rsquo;t reach chest 6 each day.</div>
+          </div>
         </div>
         <div class="field">
-          <label for="inc-atk">Boss Attacks (max 15,000)</label>
+          <div class="label-row">
+            <label for="inc-atk">Boss Attacks (max 15,000)</label>
+            <button type="button" class="info-btn" interestfor="info-atk" commandfor="info-atk" command="toggle-popover" aria-label="Boss Attacks details">i</button>
+          </div>
           <input type="text" inputmode="numeric" id="inc-atk" value="15,000">
+          <div id="info-atk" class="info-popover" popover="hint">
+            <div class="tip-title">2,500 / day &times; 6 days (Mon&ndash;Sat) = 15,000 / wk</div>
+            <div class="tip-body">Complete all 3 daily Crystal Boss attacks to claim &mdash; independent of damage.</div>
+          </div>
         </div>
         <div class="field">
-          <label for="inc-boss">Boss Damage (max 30,000)</label>
+          <div class="label-row">
+            <label for="inc-boss">Boss Damage (max 30,000)</label>
+            <button type="button" class="info-btn" interestfor="info-boss" commandfor="info-boss" command="toggle-popover" aria-label="Boss Damage details">i</button>
+          </div>
           <input type="text" inputmode="numeric" id="inc-boss" value="6,000">
+          <div id="info-boss" class="info-popover" popover="hint">
+            <div class="tip-title">5 phases &times; 6,000 = 30,000 / wk max</div>
+            <div class="tip-body">Based on your best single hit (not cumulative) across Weapon, Armor, Radar, Chip, and Core (60 crystals &times; 100 steps per phase).</div>
+          </div>
         </div>
         <div class="field">
-          <label for="inc-factory">Crystal Factory (max 8,232)</label>
+          <div class="label-row">
+            <label for="inc-factory">Crystal Factory (max 8,232)</label>
+            <button type="button" class="info-btn" interestfor="info-factory" commandfor="info-factory" command="toggle-popover" aria-label="Crystal Factory details">i</button>
+          </div>
           <input type="text" inputmode="numeric" id="inc-factory" value="8,232">
+          <div id="info-factory" class="info-popover" popover="hint">
+            <div class="tip-title">Lv.25 max: 147 / 3h (1,176 / day) = 8,232 / wk</div>
+            <div class="tip-body">Passive production. Lower if below Lv.25 (e.g., Lv.20 = 5,040 / wk).</div>
+          </div>
         </div>
         <div class="field">
           <label for="starting-crystal">Starting Crystal Stash</label>
           <input type="text" inputmode="numeric" id="starting-crystal" value="0">
         </div>
       </div>
-      <div class="income-summary" id="rotation-income-hint" style="margin-top: 0.75rem;">67,632 / wk &rarr; 270,528 / 4-wk rotation</div>
+      <div class="income-summary" id="rotation-income-hint" style="margin-top: 0.75rem;">68,232 / wk &rarr; 272,928 / 4-wk rotation</div>
     </section>
 
     <section class="card" aria-label="Event Goals">
@@ -646,10 +747,10 @@
             <label for="ab-mode">Pack Strategy</label>
             <select id="ab-mode">
               <option value="" selected>-- Choose an option --</option>
-              <option value="max">Max 5 packs (25k &rarr; M1 + M2 every 5th)</option>
-              <option value="safe-m1">Safe M1 (3 packs = 15k &rarr; 140 bullets, ~99.5%)</option>
-              <option value="m1">Steady M1 (2 packs = 10k &rarr; 130 bullets, risky w/o buffer)</option>
-              <option value="free">Free only (0k &rarr; M1 6/7 events)</option>
+              <option value="max">Max 5 packs (25k &rarr; Round 1 + Round 2 every 5th)</option>
+              <option value="safe-m1">Safe Round 1 (3 packs = 15k &rarr; 140 bullets, ~99.5%)</option>
+              <option value="m1">Steady Round 1 (2 packs = 10k &rarr; 130 bullets, risky without buffer)</option>
+              <option value="free">Free only (0k &rarr; Round 1 on 6 of 7 events)</option>
             </select>
             <span class="hint" id="ab-summary-hint">Avg milestone bullets: 127 / 262 / 398 / 533 / 668</span>
           </div>
@@ -731,7 +832,7 @@
               <th scope="col">Event</th>
               <th scope="col">What To Do</th>
               <th scope="col" class="num">Crystal</th>
-              <th scope="col" class="num">SB Packs</th>
+              <th scope="col" class="num">Silver Brick Packs</th>
               <th scope="col" class="num">Vouchers</th>
               <th scope="col" class="num">Gold Bricks</th>
               <th scope="col" class="num">End Crystal</th>
@@ -745,7 +846,7 @@
 
   <dialog id="options-dialog" closedby="any" aria-labelledby="options-dialog-title">
     <div class="dialog-head">
-      <h2 id="options-dialog-title">Optimal Build Candidates (vs. 270,528 Crystal Income / 4-Wk Cycle)</h2>
+      <h2 id="options-dialog-title">Optimal Build Candidates (vs. 272,928 Crystal Income / 4-Wk Cycle)</h2>
       <form method="dialog">
         <button type="submit">Close</button>
       </form>
@@ -955,7 +1056,7 @@
     }
 
     function computeSchedule() {
-      const vsVal = parseNumInput(els.incVs, 38400);
+      const vsVal = parseNumInput(els.incVs, 39000);
       const atkVal = parseNumInput(els.incAtk, 15000);
       const bossVal = parseNumInput(els.incBoss, 30000);
       const factoryVal = parseNumInput(els.incFactory, 8232);
@@ -973,24 +1074,24 @@
         ? buildBhPlan(bhTarget, bhCycle)
         : { t1Total: 0, t2Total: 0, totalCost: 0, avgCost: 0, avgSbPacks: 0, t1PerEv: [0], t2PerEv: [0] };
       els.bhSummaryHint.textContent = bhActive
-        ? `${bhPlan.t1Total} T1 + ${bhPlan.t2Total} T2 packs/cycle (${fmt(bhPlan.totalCost)} total)`
+        ? `${bhPlan.t1Total} × 5k${bhPlan.t2Total > 0 ? ` + ${bhPlan.t2Total} × 10k` : ''} packs/cycle (${fmt(bhPlan.totalCost)} total)`
         : 'Choose a milestone & cycle length';
 
       const gmMode = els.gmMode.value;
       const gmHints = {
-        '1000-every': '50,000 crystal/event (10 SB packs) → 1,040 coins',
-        't1-only': '30,000 crystal/event (6 SB packs) → 840 coins',
-        '400-min': '5,000 crystal/event (1 SB pack) → 440 coins',
-        'free': '0 crystal/event (0 SB packs) → 360 coins'
+        '1000-every': '50,000 crystal/event (10 Silver Brick packs) → 1,040 coins',
+        't1-only': '30,000 crystal/event (6 Silver Brick packs) → 840 coins',
+        '400-min': '5,000 crystal/event (1 Silver Brick pack) → 440 coins',
+        'free': '0 crystal/event (0 Silver Brick packs) → 360 coins'
       };
       els.gmSummaryHint.textContent = gmHints[gmMode] || 'Milestones: 100 / 400 / 1,000 / 4,000 / 6,000';
 
       const abMode = els.abMode.value;
       const abHints = {
-        'max': '25,000 crystal/event (5 SB packs) → 160 bullets',
-        'safe-m1': '15,000 crystal/event (3 SB packs) → 140 bullets',
-        'm1': '10,000 crystal/event (2 SB packs) → 130 bullets',
-        'free': '0 crystal/event (0 SB packs) → 110 bullets'
+        'max': '25,000 crystal/event (5 Silver Brick packs) → 160 bullets',
+        'safe-m1': '15,000 crystal/event (3 Silver Brick packs) → 140 bullets',
+        'm1': '10,000 crystal/event (2 Silver Brick packs) → 130 bullets',
+        'free': '0 crystal/event (0 Silver Brick packs) → 110 bullets'
       };
       els.abSummaryHint.textContent = abHints[abMode] || 'Avg milestone bullets: 127 / 262 / 398 / 533 / 668';
       const tmTargetVal = els.tmTarget.value;
@@ -1004,7 +1105,7 @@
       } else if (!tmActive) {
         els.tmCapHint.textContent = 'Choose a milestone & pace';
       } else {
-        els.tmCapHint.textContent = `${tmPlan.avgVouchers.toFixed(1).replace(/\.0$/, '')} Vouchers + ${tmPlan.avgGb.toFixed(1).replace(/\.0$/, '')} GB packs/event`;
+        els.tmCapHint.textContent = `${tmPlan.avgVouchers.toFixed(1).replace(/\.0$/, '')} Vouchers + ${tmPlan.avgGb.toFixed(1).replace(/\.0$/, '')} Gold Brick packs/event`;
       }
 
       const rotations = Number(els.horizonRotations.value);
@@ -1050,7 +1151,7 @@
             totalCrystalSpent += cost;
             totalSbPacks += sbPacks;
 
-            const packTxt = t1 + t2 === 0 ? '0 packs' : (t2 > 0 ? `${t1} T1 + ${t2} T2 packs (+${boughtBullets})` : `${t1} T1 packs (+${boughtBullets})`);
+            const packTxt = t1 + t2 === 0 ? '0 packs' : (t2 > 0 ? `${t1} × 5k + ${t2} × 10k packs (+${boughtBullets})` : `${t1} × 5k packs (+${boughtBullets})`);
             rows.push({
               week: (r - 1) * 4 + 1,
               rot: r,
@@ -1137,12 +1238,12 @@
             let mainTxt = '';
             if (abBullets >= 262 && abMode === 'max' && r % 5 === 0) {
               abBullets -= 262;
-              mainTxt = 'Push M2 (~262 avg bullets)';
+              mainTxt = 'Push Round 2 Level 20 (~262 avg bullets)';
             } else if (abBullets >= 127) {
               abBullets -= 127;
-              mainTxt = 'Hit M1 (~127 avg bullets)';
+              mainTxt = 'Reach Round 1 Level 20 (~127 avg bullets)';
             } else {
-              mainTxt = 'Save bullets (short of 127 M1)';
+              mainTxt = 'Save bullets (short of 127 for Round 1)';
             }
             const cost = packs * 5000;
             crystal -= cost;
@@ -1200,12 +1301,11 @@
             let subTxt = '';
             if (isSpend) {
               tmCoupons -= tmPlan.target;
-              mainTxt = `SPEND: Redeem all ${tmPlan.totalUnits} banked units → ${tmPlan.target}-coupon tier!`;
-              subTxt = `Buy ${vouchers} Vouchers + ${gbPacks} GB packs, then redeem all ${tmPlan.totalUnits} units at once (bank reset: 0/${tmPlan.totalUnits})`;
+              mainTxt = `SPEND: Redeem all banked resources → ${tmPlan.target}-coupon tier!`;
+              subTxt = `Buy ${vouchers} Vouchers${gbPacks > 0 ? ` + ${gbPacks} Gold Brick packs` : ''}, then redeem all banked resources for ${tmPlan.target} coupons`;
             } else {
-              const bankedUnits = tmCoupons / 10;
-              mainTxt = `HOLD (do not redeem): Bank ${vouchers}V + ${gbPacks}GB (${bankedUnits}/${tmPlan.totalUnits} units)`;
-              subTxt = `Buy ${vouchers} Vouchers + ${gbPacks} GB packs & keep in inventory — do NOT convert to coupons yet (${tmCoupons}/${tmPlan.target} worth)`;
+              mainTxt = `HOLD (do not redeem): Bank ${vouchers} Vouchers${gbPacks > 0 ? ` + ${gbPacks} Gold Brick packs` : ''} (${tmCoupons}/${tmPlan.target} coupons worth)`;
+              subTxt = `Buy ${vouchers} Vouchers${gbPacks > 0 ? ` + ${gbPacks} Gold Brick packs` : ''} & keep in inventory — do NOT convert to coupons yet`;
             }
             const cost = unitsAdded * 5000;
             crystal -= cost;
@@ -1428,6 +1528,16 @@
       `).join('');
     }
 
+    function ordinal(n) {
+      const mod100 = n % 100;
+      if (mod100 >= 11 && mod100 <= 13) return `${n}th`;
+      const mod10 = n % 10;
+      if (mod10 === 1) return `${n}st`;
+      if (mod10 === 2) return `${n}nd`;
+      if (mod10 === 3) return `${n}rd`;
+      return `${n}th`;
+    }
+
     function renderCheatSheet({ bhActive, bhTarget, bhCycle, bhPlan, gmMode, gbForGm, abMode, tmSkip, tmActive, tmPlan, gbForTm }) {
       const cards = [];
 
@@ -1456,7 +1566,7 @@
           ev: 'Bounty Hunter',
           cls: 'ev-bh',
           what: whatList,
-          when: bhCycle === 1 ? `Every event: spend ${fmt(bhTarget)} bullets.` : `Every ${bhCycle}th event: spend ${fmt(bhTarget)} bullets.`,
+          when: bhCycle === 1 ? `Every event: spend ${fmt(bhTarget)} bullets.` : `Every ${ordinal(bhCycle)} event: spend ${fmt(bhTarget)} bullets.`,
           rewards: rewardsList
         });
       }
@@ -1507,7 +1617,7 @@
         const gmWhat = [...g.what];
         const gmRewards = [...g.rewards];
         if (gmMode === '1000-every' && gbForGm >= 2000) {
-          gmWhat[1] = 'Buy 6 × 5k SB packs (30k) + 1 × 2,000 Gold Brick pack (200 coins)';
+          gmWhat[1] = 'Buy 6 × 5k Silver Brick packs (30k) + 1 × 2,000 Gold Brick pack (200 coins)';
           gmRewards.push('Energy Loot Quest (100 pt milestone): 10× UR Shards, 500 Skill Pts, 500 Ore, 2× Gold SSR Chests');
         }
         cards.push({ ev: 'Glittering Market', cls: 'ev-gm', what: gmWhat, when: g.when, rewards: gmRewards });
@@ -1578,7 +1688,7 @@
           ]
         };
         const vTxt = `${tmPlan.vPerEv.join('/')} Vouchers`;
-        const gTxt = tmPlan.avgGb > 0 ? ` + ${tmPlan.gbPerEv.join('/')} GB packs` : '';
+        const gTxt = tmPlan.avgGb > 0 ? ` + ${tmPlan.gbPerEv.join('/')} Gold Brick packs` : '';
         const tmWhat = [`Buy ${vTxt}${gTxt}`];
         if (tmPlan.n > 1) tmWhat.push('Hold in inventory (do not redeem early)');
         cards.push({
@@ -1586,8 +1696,8 @@
           cls: 'ev-tm',
           what: tmWhat,
           when: tmPlan.n === 1
-            ? `Every event: redeem resources for ${tmPlan.target} coupons in the TM Market.`
-            : `Every ${tmPlan.n}${tmPlan.n === 2 ? 'nd' : (tmPlan.n === 3 ? 'rd' : 'th')} event: redeem banked resources for ${tmPlan.target} coupons in the TM Market.`,
+            ? `Every event: redeem resources for ${tmPlan.target} coupons in the Total Mobilization Market.`
+            : `Every ${ordinal(tmPlan.n)} event: redeem banked resources for ${tmPlan.target} coupons in the Total Mobilization Market.`,
           rewards: tmRewardsMap[tmPlan.target]
         });
       }
@@ -1639,18 +1749,18 @@
 
       const spendBreakdown = `
         <div class="gauge-breakdown">
-          <span>BH: <strong>${fmt(bhAvgCost)}</strong></span>
-          <span>GM: <strong>${fmt(gmAvgCost)}</strong></span>
-          <span>AB: <strong>${fmt(abAvgCost)}</strong></span>
-          <span>TM: <strong>${fmt(tmAvgCost)}</strong></span>
+          <span>Bounty Hunter: <strong>${fmt(bhAvgCost)}</strong></span>
+          <span>Glittering Market: <strong>${fmt(gmAvgCost)}</strong></span>
+          <span>Ammo Bonanza: <strong>${fmt(abAvgCost)}</strong></span>
+          <span>Total Mobilization: <strong>${fmt(tmAvgCost)}</strong></span>
         </div>
       `;
 
       const sbBreakdown = `
         <div class="gauge-breakdown">
-          <span>BH: <strong>${bhAvgSb.toFixed(1)} (${bhSbRange})</strong></span>
-          <span>GM: <strong>${gmSb}</strong></span>
-          <span>AB: <strong>${abSb}</strong></span>
+          <span>Bounty Hunter: <strong>${bhAvgSb.toFixed(1)} (${bhSbRange})</strong></span>
+          <span>Glittering Market: <strong>${gmSb}</strong></span>
+          <span>Ammo Bonanza: <strong>${abSb}</strong></span>
         </div>
       `;
 
@@ -1672,7 +1782,7 @@
           sbBreakdown
         ),
         gaugeCard(
-          'TM Vouchers / 4-Wk Cycle',
+          'Mobilization Vouchers / 4-Wk Cycle',
           `${avgVouchers.toFixed(0)} / 20 max`,
           avgVouchers / 20,
           vStatus[0],
@@ -1783,7 +1893,7 @@
 
     function resetAllSettings() {
       try { localStorage.removeItem(STORAGE_KEY); } catch (_) {}
-      els.incVs.value = '38,400';
+      els.incVs.value = '39,000';
       els.incAtk.value = '15,000';
       els.incBoss.value = '6,000';
       els.incFactory.value = '8,232';
@@ -1875,7 +1985,7 @@
     });
 
     [
-      [els.incVs, 38400],
+      [els.incVs, 39000],
       [els.incAtk, 15000],
       [els.incBoss, 30000],
       [els.incFactory, 8232],
@@ -1893,6 +2003,122 @@
         computeSchedule();
       });
     });
+
+    const supportsPopover = 'popover' in HTMLElement.prototype;
+    const supportsAnchor = 'anchorName' in document.documentElement.style;
+    const tipHideTimers = new WeakMap();
+
+    function cancelTipHide(tip) {
+      const timer = tipHideTimers.get(tip);
+      if (timer) {
+        clearTimeout(timer);
+        tipHideTimers.delete(tip);
+      }
+    }
+
+    function positionTooltip(btn, tip) {
+      if (supportsAnchor || !btn || !tip) return;
+      tip.style.transform = 'none';
+      const btnRect = btn.getBoundingClientRect();
+      const tipRect = tip.getBoundingClientRect();
+      let top = btnRect.bottom + 6;
+      if (top + tipRect.height > window.innerHeight - 8) {
+        top = Math.max(8, btnRect.top - tipRect.height - 6);
+      }
+      const centeredLeft = btnRect.left + btnRect.width / 2 - tipRect.width / 2;
+      const maxLeft = Math.max(8, window.innerWidth - tipRect.width - 8);
+      const left = Math.min(maxLeft, Math.max(8, centeredLeft));
+      tip.style.top = `${top}px`;
+      tip.style.left = `${left}px`;
+    }
+
+    function isTipOpen(tip) {
+      return supportsPopover ? tip.matches(':popover-open') : tip.classList.contains(':popover-open');
+    }
+
+    function showTip(btn, tip) {
+      cancelTipHide(tip);
+      if (supportsPopover) {
+        try { tip.showPopover(); } catch (_) {}
+      } else {
+        tip.classList.add(':popover-open');
+      }
+      positionTooltip(btn, tip);
+    }
+
+    function hideTip(tip) {
+      cancelTipHide(tip);
+      if (supportsPopover) {
+        try { tip.hidePopover(); } catch (_) {}
+      } else {
+        tip.classList.remove(':popover-open');
+      }
+    }
+
+    document.querySelectorAll('.info-popover').forEach(tip => {
+      tip.addEventListener('toggle', event => {
+        if (event.newState === 'open') {
+          const btn = document.querySelector(`button.info-btn[interestfor="${tip.id}"]`);
+          positionTooltip(btn, tip);
+        }
+      });
+    });
+
+    if (!HTMLButtonElement.prototype.hasOwnProperty('interestForElement')) {
+      const infoButtons = document.querySelectorAll('button.info-btn[interestfor]');
+      infoButtons.forEach(btn => {
+        const tip = document.getElementById(btn.getAttribute('interestfor'));
+        if (!tip) return;
+
+        const scheduleHide = () => {
+          cancelTipHide(tip);
+          tipHideTimers.set(tip, setTimeout(() => hideTip(tip), 150));
+        };
+
+        const openTip = () => {
+          document.querySelectorAll('.info-popover').forEach(other => {
+            if (other !== tip) hideTip(other);
+          });
+          showTip(btn, tip);
+        };
+
+        btn.addEventListener('mouseenter', openTip);
+        btn.addEventListener('focus', openTip);
+        btn.addEventListener('mouseleave', scheduleHide);
+        btn.addEventListener('blur', scheduleHide);
+        tip.addEventListener('mouseenter', () => cancelTipHide(tip));
+        tip.addEventListener('mouseleave', scheduleHide);
+      });
+
+      document.addEventListener('keydown', event => {
+        if (event.key === 'Escape') {
+          document.querySelectorAll('.info-popover').forEach(hideTip);
+        }
+      });
+    }
+
+    if (!('commandForElement' in HTMLButtonElement.prototype)) {
+      document.addEventListener('click', event => {
+        const btn = event.target.closest('button.info-btn[commandfor][command="toggle-popover"]');
+        if (!btn) {
+          if (!supportsPopover && !event.target.closest('.info-popover')) {
+            document.querySelectorAll('.info-popover').forEach(hideTip);
+          }
+          return;
+        }
+        const tip = document.getElementById(btn.getAttribute('commandfor'));
+        if (!tip) return;
+        cancelTipHide(tip);
+        if (isTipOpen(tip)) {
+          hideTip(tip);
+        } else {
+          document.querySelectorAll('.info-popover').forEach(other => {
+            if (other !== tip) hideTip(other);
+          });
+          showTip(btn, tip);
+        }
+      });
+    }
 
     loadState();
     computeSchedule();
