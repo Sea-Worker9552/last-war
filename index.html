@@ -640,16 +640,24 @@
 
           <div class="system-status">
             <span class="status-dot"></span>
-            <span>12 Offline Tools Active</span>
+            <span>16 Offline Tools Active</span>
           </div>
         </div>
       </div>
       <h1>LAST WAR: SURVIVAL TOOLS & CALCULATORS</h1>
-      <p class="subtitle">Your central portal for Last War: Survival tools & calculators — featuring Marshal's Guard & Zombie Siege Calendar, Drone VS Pacing & Upgrade Dashboard, Duel League Scenario & Path Analyzer, Radar Tasks Banking & VS Optimizer, Squad Targeting & 5v5 Combat Simulator, Secretary Buff & Arms Race Optimizer, Special Forces T10 Research, Season 1 Start Date Projection, Alliance Help & Survivor Optimizer, VS Friday Troop Training, Gold Zombie Spawner, and Taylor Hero Yield Simulator.</p>
+      <p class="subtitle">Your central portal for Last War: Survival tools & calculators — featuring Crystal Economy & Event Rotation Planner, Marshal's Guard & Zombie Siege Calendar, Drone VS Pacing & Upgrade Dashboard, Duel League Scenario & Path Analyzer, Radar Tasks Banking & VS Optimizer, Squad Targeting & 5v5 Combat Simulator, Secretary Buff & Arms Race Optimizer, Special Forces T10 Research, Season 1 Start Date Projection, Alliance Help & Survivor Optimizer, VS Friday Troop Training, Gold Zombie Spawner, and Taylor Hero Yield Simulator.</p>
     </header>
 
     <!-- Metrics Summary -->
     <div class="metrics-row">
+      <div class="metric-card" onclick="scrollToTool('card-crystal')" title="Jump to Crystal Economy & Event Rotation Planner">
+        <div class="metric-icon">🔮</div>
+        <div class="metric-info">
+          <div class="val">Crystal Economy</div>
+          <div class="lbl">4-Week Event Loop</div>
+        </div>
+      </div>
+
       <div class="metric-card" onclick="scrollToTool('card-mgsiege')" title="Jump to Marshal's Guard & Zombie Siege Calendar">
         <div class="metric-icon">🏰</div>
         <div class="metric-info">
@@ -772,6 +780,29 @@
 
     <!-- Tools Grid -->
     <div class="tools-grid" id="toolsGrid">
+
+      <!-- Crystal Economy & Event Rotation Planner -->
+      <div class="tool-card card-purple" id="card-crystal" data-category="events" data-title="crystal economy event rotation planner 4 week loop bounty hunter glittering market ammo bonanza total mobilization factory vs income stash milestone build presets">
+        <div>
+          <div class="tool-header">
+            <div class="tool-icon-wrapper">🔮</div>
+            <span class="tool-category-badge badge-events">Events & Strategy</span>
+          </div>
+          <h2>Crystal Economy & Event Rotation Planner</h2>
+          <p class="description">Master the 4-week Crystal event rotation: <strong>Bounty Hunter</strong>, <strong>Glittering Market</strong>, <strong>Ammo Bonanza</strong>, and <strong>Total Mobilization</strong>. Model weekly crystal income, optimize milestone builds, and project stash growth across multi-rotation cycles.</p>
+          <div class="features-list">
+            <span class="feature-tag">4-Week Rotation Loop</span>
+            <span class="feature-tag">Weekly Crystal Income Model</span>
+            <span class="feature-tag">Milestone Strategy & Cycles</span>
+            <span class="feature-tag">Optimal Build Comparisons</span>
+            <span class="feature-tag">Multi-Rotation Stash Forecast</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <span class="status-text">✅ Live Interactive Planner</span>
+          <a href="tools/crystal-rotation-planner/index.html" class="btn-launch purple">Launch Planner ➔</a>
+        </div>
+      </div>
 
       <!-- Marshal's Guard & Zombie Siege Calendar -->
       <div class="tool-card" id="card-mgsiege" data-category="events" data-title="marshals guard zombie siege calendar schedule event rotation dual clocks svt utc local time alliance alerts joint days cooldown">
