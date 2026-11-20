@@ -3299,9 +3299,9 @@
             d.setDate(d.getDate() + 1);
           }
 
-          // Server reset is exact 00:00 Server Time (UTC-2) == 02:00 UTC universally across all time zones
+          // Server reset / event end is 23:59–00:00 Server Time (UTC-2) == 01:59–02:00 UTC
           const utcMin = d.getUTCHours() * 60 + d.getUTCMinutes();
-          const isAtServerReset = (utcMin === 120);
+          const isAtServerReset = (utcMin >= 119 && utcMin <= 120);
           const timeUntilDisappearSec = (d.getTime() - refDate.getTime()) / 1000;
 
           const disappearsTimestamp = d.getTime();
