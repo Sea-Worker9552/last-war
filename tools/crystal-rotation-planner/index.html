@@ -1,1 +1,1901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <title>Last War — Crystal &amp; Event Rotation Planner</title>
+  <style>
+    :root {
+      --bg-light: #f4f6f9;
+      --surface-light: #ffffff;
+      --surface-alt-light: #f0f3f7;
+      --text-light: #151b26;
+      --muted-light: #526075;
+      --border-light: #d7dee8;
+      --accent-light: #1d4ed8;
+      --accent-text-light: #ffffff;
+      --ok-light: #15803d;
+      --ok-bg-light: #dcfce7;
+      --warn-light: #b45309;
+      --warn-bg-light: #fef3c7;
+      --bad-light: #b91c1c;
+      --bad-bg-light: #fee2e2;
 
+      --bg-dark: #0e131b;
+      --surface-dark: #161e2b;
+      --surface-alt-dark: #1d2738;
+      --text-dark: #edf2f7;
+      --muted-dark: #9aa8bd;
+      --border-dark: #2a364b;
+      --accent-dark: #60a5fa;
+      --accent-text-dark: #0b1220;
+      --ok-dark: #4ade80;
+      --ok-bg-dark: #123322;
+      --warn-dark: #fbbf24;
+      --warn-bg-dark: #382810;
+      --bad-dark: #f87171;
+      --bad-bg-dark: #3b181c;
+
+      --bg: var(--bg-light);
+      --surface: var(--surface-light);
+      --surface-alt: var(--surface-alt-light);
+      --text: var(--text-light);
+      --muted: var(--muted-light);
+      --border: var(--border-light);
+      --accent: var(--accent-light);
+      --accent-text: var(--accent-text-light);
+      --ok: var(--ok-light);
+      --ok-bg: var(--ok-bg-light);
+      --warn: var(--warn-light);
+      --warn-bg: var(--warn-bg-light);
+      --bad: var(--bad-light);
+      --bad-bg: var(--bad-bg-light);
+
+      color-scheme: light dark;
+      accent-color: var(--accent);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: var(--bg-dark);
+        --surface: var(--surface-dark);
+        --surface-alt: var(--surface-alt-dark);
+        --text: var(--text-dark);
+        --muted: var(--muted-dark);
+        --border: var(--border-dark);
+        --accent: var(--accent-dark);
+        --accent-text: var(--accent-text-dark);
+        --ok: var(--ok-dark);
+        --ok-bg: var(--ok-bg-dark);
+        --warn: var(--warn-dark);
+        --warn-bg: var(--warn-bg-dark);
+        --bad: var(--bad-dark);
+        --bad-bg: var(--bad-bg-dark);
+      }
+    }
+
+    @supports (color: light-dark(white, black)) {
+      :root {
+        --bg: light-dark(var(--bg-light), var(--bg-dark));
+        --surface: light-dark(var(--surface-light), var(--surface-dark));
+        --surface-alt: light-dark(var(--surface-alt-light), var(--surface-alt-dark));
+        --text: light-dark(var(--text-light), var(--text-dark));
+        --muted: light-dark(var(--muted-light), var(--muted-dark));
+        --border: light-dark(var(--border-light), var(--border-dark));
+        --accent: light-dark(var(--accent-light), var(--accent-dark));
+        --accent-text: light-dark(var(--accent-text-light), var(--accent-text-dark));
+        --ok: light-dark(var(--ok-light), var(--ok-dark));
+        --ok-bg: light-dark(var(--ok-bg-light), var(--ok-bg-dark));
+        --warn: light-dark(var(--warn-light), var(--warn-dark));
+        --warn-bg: light-dark(var(--warn-bg-light), var(--warn-bg-dark));
+        --bad: light-dark(var(--bad-light), var(--bad-dark));
+        --bad-bg: light-dark(var(--bad-bg-light), var(--bad-bg-dark));
+      }
+    }
+
+    :root[data-theme="light"] { color-scheme: light; }
+    :root[data-theme="dark"] { color-scheme: dark; }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .container {
+      max-inline-size: 1280px;
+      margin-inline: auto;
+      padding-block: 1.5rem 3rem;
+      padding-inline: 1rem;
+      display: grid;
+      gap: 1.25rem;
+    }
+
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.35rem, 2.5vw, 1.85rem);
+      line-height: 1.2;
+    }
+
+    .subtitle {
+      margin: 0.25rem 0 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .header-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    button {
+      font: inherit;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 0.45rem 0.85rem;
+      background: var(--surface);
+      color: var(--text);
+      transition: border-color 0.15s, background-color 0.15s;
+    }
+
+    button:hover { border-color: var(--accent); }
+
+    button.primary {
+      background: var(--accent);
+      color: var(--accent-text);
+      border-color: var(--accent);
+      font-weight: 600;
+    }
+
+    button.preset-btn.active {
+      border-color: var(--accent);
+      background: var(--surface-alt);
+      font-weight: 600;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1rem 1.25rem;
+    }
+
+    .card h2 {
+      margin: 0 0 0.75rem;
+      font-size: 1.05rem;
+    }
+
+    .presets-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .presets-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--muted);
+      margin-inline-end: 0.25rem;
+    }
+
+    .income-fieldset {
+      margin-block-end: 1rem;
+    }
+
+    .income-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+      gap: 0.75rem;
+      align-items: end;
+    }
+
+    .section-head {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+      margin-block-end: 0.75rem;
+    }
+
+    .section-head h2 {
+      margin: 0;
+    }
+
+    .inline-field {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .inline-field select {
+      inline-size: auto;
+    }
+
+    .income-summary {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .controls-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 1rem;
+    }
+
+    @media (min-width: 1050px) {
+      .controls-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .extra-gb-fieldset {
+        grid-column: span 2;
+      }
+    }
+
+    fieldset {
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 0.75rem 0.9rem;
+      margin: 0;
+      display: grid;
+      gap: 0.65rem;
+      align-content: start;
+    }
+
+    legend {
+      font-weight: 700;
+      font-size: 0.9rem;
+      padding-inline: 0.35rem;
+    }
+
+    .field {
+      display: grid;
+      gap: 0.25rem;
+    }
+
+    label {
+      font-size: 0.82rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    input[type="number"],
+    input[type="text"],
+    select {
+      font: inherit;
+      font-size: 0.92rem;
+      padding: 0.4rem 0.55rem;
+      border: 1px solid var(--border);
+      border-radius: 0.4rem;
+      background: var(--surface-alt);
+      color: var(--text);
+      inline-size: 100%;
+    }
+
+    .hint {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .gauges-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0.9rem;
+    }
+
+    .gauge {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 0.6rem;
+      padding: 0.8rem 0.95rem;
+      display: grid;
+      gap: 0.45rem;
+    }
+
+    .gauge-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 0.5rem;
+    }
+
+    .gauge-title {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .gauge-val {
+      font-size: 1.15rem;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+    }
+
+    .badge.ok { background: var(--ok-bg); color: var(--ok); }
+    .badge.warn { background: var(--warn-bg); color: var(--warn); }
+    .badge.bad { background: var(--bad-bg); color: var(--bad); }
+
+    progress {
+      inline-size: 100%;
+      block-size: 0.55rem;
+      border-radius: 999px;
+    }
+
+    .gauge-breakdown {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.25rem 0.65rem;
+      font-size: 0.78rem;
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+      margin-top: 0.2rem;
+    }
+
+    .gauge-breakdown span {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.25rem;
+    }
+
+    .gauge-breakdown strong {
+      color: var(--text);
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+    }
+
+    table {
+      inline-size: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      font-variant-numeric: tabular-nums;
+    }
+
+    caption {
+      text-align: start;
+      font-size: 0.82rem;
+      color: var(--muted);
+      padding: 0.65rem 0.85rem;
+      background: var(--surface-alt);
+      border-bottom: 1px solid var(--border);
+    }
+
+    th, td {
+      padding: 0.55rem 0.75rem;
+      text-align: start;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    th {
+      background: var(--surface-alt);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    tr.rot-start td {
+      border-top: 3px solid var(--border);
+    }
+
+    tr.cycle-even td {
+      background: color-mix(in srgb, var(--surface-alt) 55%, transparent);
+    }
+
+    td.cycle-cell {
+      font-weight: 700;
+      color: var(--muted);
+      vertical-align: middle;
+      text-align: center;
+      border-inline-end: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    .num {
+      text-align: end;
+      white-space: nowrap;
+    }
+
+    .ev-tag {
+      display: inline-block;
+      font-size: 0.76rem;
+      font-weight: 700;
+      padding: 0.15rem 0.5rem;
+      border-radius: 0.35rem;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    .ev-bh {
+      color: light-dark(#1d4ed8, #93c5fd);
+      background: light-dark(#dbeafe, #172554);
+      border-color: light-dark(#93c5fd, #1e40af);
+    }
+
+    .ev-gm {
+      color: light-dark(#b45309, #fcd34d);
+      background: light-dark(#fef3c7, #422006);
+      border-color: light-dark(#fcd34d, #92400e);
+    }
+
+    .ev-ab {
+      color: light-dark(#15803d, #86efac);
+      background: light-dark(#dcfce7, #143322);
+      border-color: light-dark(#86efac, #166534);
+    }
+
+    .ev-tm {
+      color: light-dark(#6d28d9, #d8b4fe);
+      background: light-dark(#ede9fe, #2e1065);
+      border-color: light-dark(#c4b5fd, #6b21a8);
+    }
+
+    .action-main { font-weight: 600; }
+    .action-sub { font-size: 0.8rem; color: var(--muted); margin-top: 0.1rem; }
+
+    .neg { color: var(--bad); font-weight: 700; }
+    .pos { color: var(--ok); font-weight: 600; }
+
+    .cheat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 0.9rem;
+    }
+
+    @media (min-width: 1050px) {
+      .cheat-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        grid-template-rows: auto auto auto auto;
+      }
+
+      .cheat-card {
+        grid-row: span 4;
+        grid-template-rows: subgrid;
+      }
+    }
+
+    .cheat-card {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 0.6rem;
+      padding: 0.85rem 0.95rem;
+      display: grid;
+      gap: 0.75rem;
+      align-content: start;
+    }
+
+    .cheat-row {
+      display: grid;
+      gap: 0.2rem;
+      font-size: 0.84rem;
+      align-content: start;
+    }
+
+    .cheat-label {
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--accent);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.18rem;
+      margin-bottom: 0.08rem;
+    }
+
+    .cheat-list {
+      margin: 0.15rem 0 0;
+      padding-inline-start: 1.15rem;
+      display: grid;
+      gap: 0.2rem;
+    }
+
+    dialog {
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      background: var(--surface);
+      color: var(--text);
+      padding: 1.25rem;
+      max-inline-size: min(96vw, 1080px);
+      inline-size: 100%;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+    }
+
+    dialog::backdrop {
+      background-color: rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(2px);
+    }
+
+    .dialog-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      margin-block-end: 0.75rem;
+    }
+
+    .dialog-head h2 {
+      margin: 0;
+      font-size: 1.15rem;
+    }
+
+    .dialog-note {
+      margin: 0.75rem 0 0;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <h1>Last War — Crystal &amp; Event Rotation Planner</h1>
+        <p class="subtitle">4-week loop: Bounty Hunter &rarr; Glittering Market &rarr; Ammo Bonanza &rarr; Total Mobilization</p>
+      </div>
+      <div class="header-actions">
+        <button type="button" id="theme-toggle" aria-label="Toggle color theme">Theme: Auto</button>
+        <button type="button" id="reset-settings">Reset Settings</button>
+        <button type="button" id="export-csv" class="primary">Download Schedule (CSV)</button>
+      </div>
+    </header>
+
+    <section class="card" aria-label="Weekly Crystal Income">
+      <h2>Weekly Crystal Income</h2>
+      <p class="hint" style="margin: -0.45rem 0 0.75rem;">All income inputs below are <strong>per week</strong> (multiplied by 4 for each 4-week cycle).</p>
+      <div class="income-grid">
+        <div class="field">
+          <label for="inc-vs">VS Daily (max 38,400)</label>
+          <input type="text" inputmode="numeric" id="inc-vs" value="38,400">
+        </div>
+        <div class="field">
+          <label for="inc-atk">Boss Attacks (max 15,000)</label>
+          <input type="text" inputmode="numeric" id="inc-atk" value="15,000">
+        </div>
+        <div class="field">
+          <label for="inc-boss">Boss Damage (max 30,000)</label>
+          <input type="text" inputmode="numeric" id="inc-boss" value="6,000">
+        </div>
+        <div class="field">
+          <label for="inc-factory">Crystal Factory (max 8,232)</label>
+          <input type="text" inputmode="numeric" id="inc-factory" value="8,232">
+        </div>
+        <div class="field">
+          <label for="starting-crystal">Starting Crystal Stash</label>
+          <input type="text" inputmode="numeric" id="starting-crystal" value="0">
+        </div>
+      </div>
+      <div class="income-summary" id="rotation-income-hint" style="margin-top: 0.75rem;">67,632 / wk &rarr; 270,528 / 4-wk rotation</div>
+    </section>
+
+    <section class="card" aria-label="Event Goals">
+      <div class="section-head">
+        <h2>Event Goals</h2>
+        <button type="button" id="open-options-guide">Compare Optimal Builds</button>
+      </div>
+      <div class="controls-grid">
+
+        <fieldset>
+          <legend>Week 1: Bounty Hunter</legend>
+          <div class="field">
+            <label for="bh-target">Target Milestone</label>
+            <select id="bh-target">
+              <option value="" selected>-- Choose an option --</option>
+              <option value="5000">5,000 Milestone</option>
+              <option value="3000">3,000 Milestone</option>
+              <option value="1800">1,800 Milestone</option>
+              <option value="1000">1,000 Milestone</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="bh-cycle">Cycle Length (events)</label>
+            <select id="bh-cycle" disabled>
+              <option value="">-- Choose an option --</option>
+            </select>
+            <span class="hint" id="bh-summary-hint">Choose a milestone &amp; cycle length</span>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Week 2: Glittering Market</legend>
+          <div class="field">
+            <label for="gm-mode">Pack Strategy</label>
+            <select id="gm-mode">
+              <option value="" selected>-- Choose an option --</option>
+              <option value="1000-every">Hit 1,000 milestone (6 &times; 5k + 2 &times; 10k = 50k)</option>
+              <option value="t1-only">All 5k packs (6 &times; 5k = 30k &rarr; hits 400 + 840 coins)</option>
+              <option value="400-min">Hit 400 milestone only (1 &times; 5k = 5k &rarr; 440 coins)</option>
+              <option value="free">Free only (0k &rarr; 360 coins, hits 100)</option>
+            </select>
+            <span class="hint" id="gm-summary-hint">Milestones: 100 / 400 / 1,000 / 4,000 / 6,000</span>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Week 3: Ammo Bonanza</legend>
+          <div class="field">
+            <label for="ab-mode">Pack Strategy</label>
+            <select id="ab-mode">
+              <option value="" selected>-- Choose an option --</option>
+              <option value="max">Max 5 packs (25k &rarr; M1 + M2 every 5th)</option>
+              <option value="safe-m1">Safe M1 (3 packs = 15k &rarr; 140 bullets, ~99.5%)</option>
+              <option value="m1">Steady M1 (2 packs = 10k &rarr; 130 bullets, risky w/o buffer)</option>
+              <option value="free">Free only (0k &rarr; M1 6/7 events)</option>
+            </select>
+            <span class="hint" id="ab-summary-hint">Avg milestone bullets: 127 / 262 / 398 / 533 / 668</span>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Week 4: Total Mobilization</legend>
+          <div class="field">
+            <label for="tm-target">Target Milestone</label>
+            <select id="tm-target">
+              <option value="" selected>-- Choose an option --</option>
+              <option value="600">600 Coupons</option>
+              <option value="400">400 Coupons</option>
+              <option value="200">200 Coupons</option>
+              <option value="0">Skip</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="tm-pace">Pace (events)</label>
+            <select id="tm-pace" disabled>
+              <option value="">-- Choose an option --</option>
+            </select>
+            <span class="hint" id="tm-cap-hint">Choose a milestone &amp; pace</span>
+          </div>
+        </fieldset>
+
+        <fieldset class="extra-gb-fieldset">
+          <legend>Extra Gold Bricks (Optional)</legend>
+          <div class="inline-field">
+            <label for="extra-gb">Gold Bricks / 4-Wk Cycle</label>
+            <select id="extra-gb">
+              <option value="0" selected>0</option>
+              <option value="500">500</option>
+              <option value="1000">1,000</option>
+              <option value="1500">1,500</option>
+              <option value="2000">2,000</option>
+              <option value="2500">2,500</option>
+              <option value="3000">3,000</option>
+              <option value="3500">3,500</option>
+              <option value="4000">4,000</option>
+              <option value="4500">4,500</option>
+              <option value="5000">5,000</option>
+            </select>
+          </div>
+          <span class="hint" id="extra-gb-hint">= +0 crystal equivalent</span>
+        </fieldset>
+      </div>
+    </section>
+
+    <section class="card" aria-label="Budget and store limit gauges" aria-live="polite">
+      <h2>Per-Rotation Averages &amp; Monthly Store Caps</h2>
+      <div class="gauges-grid" id="gauges-grid"></div>
+    </section>
+
+    <section class="card" aria-label="4-Event Cheat Sheet" aria-live="polite">
+      <h2>4-Event Cheat Sheet</h2>
+      <div class="cheat-grid" id="cheat-grid"></div>
+    </section>
+
+    <section class="card" aria-label="Week-by-week action schedule">
+      <div class="section-head">
+        <h2>Week-by-Week Action Schedule</h2>
+        <div class="inline-field">
+          <label for="horizon-rotations">Schedule Length</label>
+          <select id="horizon-rotations">
+            <option value="3">12 weeks (3 rotations)</option>
+            <option value="4" selected>16 weeks (4 rotations)</option>
+            <option value="6">24 weeks (6 rotations)</option>
+          </select>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <caption>All crystal income inputs are weekly; your weekly total accrues each week across the 4-week rotation.</caption>
+          <thead>
+            <tr>
+              <th scope="col">Week</th>
+              <th scope="col">Cycle</th>
+              <th scope="col">Event</th>
+              <th scope="col">What To Do</th>
+              <th scope="col" class="num">Crystal</th>
+              <th scope="col" class="num">SB Packs</th>
+              <th scope="col" class="num">Vouchers</th>
+              <th scope="col" class="num">Gold Bricks</th>
+              <th scope="col" class="num">End Crystal</th>
+            </tr>
+          </thead>
+          <tbody id="schedule-body"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <dialog id="options-dialog" closedby="any" aria-labelledby="options-dialog-title">
+    <div class="dialog-head">
+      <h2 id="options-dialog-title">Optimal Build Candidates (vs. 270,528 Crystal Income / 4-Wk Cycle)</h2>
+      <form method="dialog">
+        <button type="submit">Close</button>
+      </form>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Option</th>
+            <th scope="col">Bounty Hunter</th>
+            <th scope="col">Glittering Market</th>
+            <th scope="col">Ammo Bonanza</th>
+            <th scope="col">Total Mobilization</th>
+            <th scope="col" class="num">Spend / Cycle</th>
+            <th scope="col" class="num">Buffer</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody id="options-dialog-body"></tbody>
+      </table>
+    </div>
+    <p class="dialog-note"><strong>Ammo Bonanza — 160 bullets (5 packs):</strong> 110 free (22/day &times; 5) + 50 bought (5 &times; 10 for 25k). Guarantees Round 1 Level 20 and banks +33/event on average toward Round 2 Level 20.</p>
+  </dialog>
+
+  <script>
+    const EVENTS = [
+      'Bounty Hunter',
+      'Glittering Market',
+      'Ammo Bonanza',
+      'Total Mobilization'
+    ];
+
+    const els = {
+      incVs: document.getElementById('inc-vs'),
+      incAtk: document.getElementById('inc-atk'),
+      incBoss: document.getElementById('inc-boss'),
+      incFactory: document.getElementById('inc-factory'),
+      startingCrystal: document.getElementById('starting-crystal'),
+      extraGb: document.getElementById('extra-gb'),
+      extraGbHint: document.getElementById('extra-gb-hint'),
+      horizonRotations: document.getElementById('horizon-rotations'),
+      bhTarget: document.getElementById('bh-target'),
+      bhCycle: document.getElementById('bh-cycle'),
+      bhSummaryHint: document.getElementById('bh-summary-hint'),
+      gmMode: document.getElementById('gm-mode'),
+      gmSummaryHint: document.getElementById('gm-summary-hint'),
+      abMode: document.getElementById('ab-mode'),
+      abSummaryHint: document.getElementById('ab-summary-hint'),
+      tmTarget: document.getElementById('tm-target'),
+      tmPace: document.getElementById('tm-pace'),
+      tmCapHint: document.getElementById('tm-cap-hint'),
+      rotIncomeHint: document.getElementById('rotation-income-hint'),
+      gaugesGrid: document.getElementById('gauges-grid'),
+      cheatGrid: document.getElementById('cheat-grid'),
+      scheduleBody: document.getElementById('schedule-body'),
+      themeToggle: document.getElementById('theme-toggle'),
+      resetSettings: document.getElementById('reset-settings'),
+      exportCsv: document.getElementById('export-csv')
+    };
+
+    const STORAGE_KEY = 'last_war_crystal_planner_v1';
+    let themeMode = 'auto';
+    let currentRows = [];
+
+    function fmt(n) {
+      return Math.round(n).toLocaleString('en-US');
+    }
+
+    function parseNumInput(el, maxVal = Infinity) {
+      const raw = String(el.value).replace(/[^\d]/g, '');
+      const val = raw === '' ? 0 : Number(raw);
+      return Math.min(maxVal, Math.max(0, val));
+    }
+
+    function populateBhCycles(preferredCycle) {
+      const targetVal = els.bhTarget.value;
+      els.bhCycle.innerHTML = '';
+      const placeholder = document.createElement('option');
+      placeholder.value = '';
+      placeholder.textContent = '-- Choose an option --';
+      els.bhCycle.appendChild(placeholder);
+
+      if (!targetVal) {
+        els.bhCycle.disabled = true;
+        els.bhCycle.value = '';
+        return;
+      }
+
+      els.bhCycle.disabled = false;
+      const target = Number(targetVal);
+      const minC = target === 1000 ? 1 : (target === 5000 ? 4 : 2);
+      const maxC = target === 1000 ? 3 : (target === 1800 ? 5 : (target === 5000 ? 11 : 9));
+      for (let n = minC; n <= maxC; n++) {
+        const free = (n - 1) * 300 + 600;
+        const needed = Math.max(0, target - free);
+        const maxT1 = 6 * n;
+        let t1 = 0, t2 = 0;
+        if (needed <= maxT1 * 80) {
+          t1 = Math.ceil(needed / 80);
+        } else {
+          t1 = maxT1;
+          t2 = Math.ceil((needed - maxT1 * 80) / 100);
+        }
+        const cost = t1 * 5000 + t2 * 10000;
+        const opt = document.createElement('option');
+        opt.value = String(n);
+        opt.textContent = n === 1
+          ? `Every event (4 wks) — ${fmt(cost)}/event`
+          : `${n} events (${n * 4} wks) — ${fmt(cost / n)}/event`;
+        els.bhCycle.appendChild(opt);
+      }
+      if (preferredCycle !== undefined && preferredCycle !== '' && preferredCycle !== null) {
+        const clamped = Math.min(Math.max(Number(preferredCycle), minC), maxC);
+        els.bhCycle.value = String(clamped);
+      } else {
+        els.bhCycle.value = '';
+      }
+    }
+
+    function buildBhPlan(target, n) {
+      const free = (n - 1) * 300 + 600;
+      const needed = Math.max(0, target - free);
+      const maxT1 = 6 * n;
+      let t1Total = 0, t2Total = 0;
+      if (needed <= maxT1 * 80) {
+        t1Total = Math.ceil(needed / 80);
+      } else {
+        t1Total = maxT1;
+        t2Total = Math.ceil((needed - maxT1 * 80) / 100);
+      }
+      // Distribute T1 packs evenly across n events (slightly back-loaded on spend event)
+      const baseT1 = Math.floor(t1Total / n);
+      const remT1 = t1Total % n;
+      const t1PerEv = Array.from({ length: n }, (_, i) => baseT1 + (i >= n - remT1 ? 1 : 0));
+
+      const baseT2 = Math.floor(t2Total / n);
+      const remT2 = t2Total % n;
+      const t2PerEv = Array.from({ length: n }, (_, i) => baseT2 + (i >= n - remT2 ? 1 : 0));
+
+      return {
+        t1Total,
+        t2Total,
+        totalCost: t1Total * 5000 + t2Total * 10000,
+        avgCost: (t1Total * 5000 + t2Total * 10000) / n,
+        avgSbPacks: (t1Total + t2Total * 2) / n,
+        t1PerEv,
+        t2PerEv
+      };
+    }
+
+    const TM_PACES = {
+      600: [2, 3, 4],
+      400: [1, 2, 3],
+      200: [1, 2]
+    };
+
+    function populateTmPaces(preferredPace) {
+      const targetVal = els.tmTarget.value;
+      els.tmPace.innerHTML = '';
+      const placeholder = document.createElement('option');
+      placeholder.value = '';
+      placeholder.textContent = '-- Choose an option --';
+      els.tmPace.appendChild(placeholder);
+
+      if (!targetVal || targetVal === '0') {
+        els.tmPace.disabled = true;
+        els.tmPace.value = '';
+        return;
+      }
+
+      const target = Number(targetVal);
+      const paces = TM_PACES[target] || [];
+      els.tmPace.disabled = false;
+      for (const n of paces) {
+        const avgCost = (target * 500) / n;
+        const opt = document.createElement('option');
+        opt.value = String(n);
+        opt.textContent = n === 1
+          ? `Every event (4 wks) — ${fmt(avgCost)}/event`
+          : `Every ${n} events (${n * 4} wks) — ${fmt(avgCost)}/event`;
+        els.tmPace.appendChild(opt);
+      }
+      if (preferredPace && paces.includes(Number(preferredPace))) {
+        els.tmPace.value = String(preferredPace);
+      } else {
+        els.tmPace.value = '';
+      }
+    }
+
+    function buildTmPlan(target, n) {
+      const totalUnits = target / 10;
+      const base = Math.floor(totalUnits / n);
+      const rem = totalUnits % n;
+      const unitsPerEv = Array.from({ length: n }, (_, i) => base + (i >= n - rem ? 1 : 0));
+      const vPerEv = unitsPerEv.map(u => Math.min(20, u));
+      const gbPerEv = unitsPerEv.map((u, i) => u - vPerEv[i]);
+      return {
+        target,
+        n,
+        totalUnits,
+        avgCost: (totalUnits * 5000) / n,
+        avgVouchers: vPerEv.reduce((a, b) => a + b, 0) / n,
+        avgGb: gbPerEv.reduce((a, b) => a + b, 0) / n,
+        vPerEv,
+        gbPerEv
+      };
+    }
+
+    function computeSchedule() {
+      const vsVal = parseNumInput(els.incVs, 38400);
+      const atkVal = parseNumInput(els.incAtk, 15000);
+      const bossVal = parseNumInput(els.incBoss, 30000);
+      const factoryVal = parseNumInput(els.incFactory, 8232);
+      const weeklyIncome = vsVal + atkVal + bossVal + factoryVal;
+      const rotIncome = weeklyIncome * 4;
+      const extraGb = Number(els.extraGb.value) || 0;
+      const extraCrystalEquiv = extraGb * 10;
+      els.rotIncomeHint.textContent = `${fmt(weeklyIncome)} / wk → ${fmt(rotIncome)} / 4-wk rotation`;
+      els.extraGbHint.textContent = `= +${fmt(extraCrystalEquiv)} crystal equivalent`;
+
+      const bhTarget = Number(els.bhTarget.value) || 0;
+      const bhCycle = Number(els.bhCycle.value) || 0;
+      const bhActive = bhTarget > 0 && bhCycle > 0;
+      const bhPlan = bhActive
+        ? buildBhPlan(bhTarget, bhCycle)
+        : { t1Total: 0, t2Total: 0, totalCost: 0, avgCost: 0, avgSbPacks: 0, t1PerEv: [0], t2PerEv: [0] };
+      els.bhSummaryHint.textContent = bhActive
+        ? `${bhPlan.t1Total} T1 + ${bhPlan.t2Total} T2 packs/cycle (${fmt(bhPlan.totalCost)} total)`
+        : 'Choose a milestone & cycle length';
+
+      const gmMode = els.gmMode.value;
+      const gmHints = {
+        '1000-every': '50,000 crystal/event (10 SB packs) → 1,040 coins',
+        't1-only': '30,000 crystal/event (6 SB packs) → 840 coins',
+        '400-min': '5,000 crystal/event (1 SB pack) → 440 coins',
+        'free': '0 crystal/event (0 SB packs) → 360 coins'
+      };
+      els.gmSummaryHint.textContent = gmHints[gmMode] || 'Milestones: 100 / 400 / 1,000 / 4,000 / 6,000';
+
+      const abMode = els.abMode.value;
+      const abHints = {
+        'max': '25,000 crystal/event (5 SB packs) → 160 bullets',
+        'safe-m1': '15,000 crystal/event (3 SB packs) → 140 bullets',
+        'm1': '10,000 crystal/event (2 SB packs) → 130 bullets',
+        'free': '0 crystal/event (0 SB packs) → 110 bullets'
+      };
+      els.abSummaryHint.textContent = abHints[abMode] || 'Avg milestone bullets: 127 / 262 / 398 / 533 / 668';
+      const tmTargetVal = els.tmTarget.value;
+      const tmPaceVal = els.tmPace.value;
+      const tmSkip = tmTargetVal === '0';
+      const tmActive = tmTargetVal !== '' && !tmSkip && tmPaceVal !== '';
+      const tmPlan = tmActive ? buildTmPlan(Number(tmTargetVal), Number(tmPaceVal)) : null;
+
+      if (tmSkip) {
+        els.tmCapHint.textContent = '0 Vouchers, 0 Gold Brick packs';
+      } else if (!tmActive) {
+        els.tmCapHint.textContent = 'Choose a milestone & pace';
+      } else {
+        els.tmCapHint.textContent = `${tmPlan.avgVouchers.toFixed(1).replace(/\.0$/, '')} Vouchers + ${tmPlan.avgGb.toFixed(1).replace(/\.0$/, '')} GB packs/event`;
+      }
+
+      const rotations = Number(els.horizonRotations.value);
+      let crystal = parseNumInput(els.startingCrystal);
+      let bhBullets = 0;
+      let abBullets = 0;
+      let gmCoins = 0;
+      let tmCoupons = 0;
+
+      const rows = [];
+      let totalCrystalSpent = 0;
+      let totalSbPacks = 0;
+      let totalVouchers = 0;
+      let totalGbPacks = 0;
+
+      for (let r = 1; r <= rotations; r++) {
+        // 1. Bounty Hunter
+        {
+          crystal += weeklyIncome;
+          if (!bhActive) {
+            rows.push({
+              week: (r - 1) * 4 + 1,
+              rot: r,
+              event: 'Bounty Hunter',
+              main: 'Select a Bounty Hunter option above',
+              sub: 'No strategy selected yet',
+              crystalCost: 0,
+              sbPacks: 0,
+              endCrystal: crystal
+            });
+          } else {
+            const idx = (r - 1) % bhCycle;
+            const isSpend = idx === bhCycle - 1;
+            const t1 = bhPlan.t1PerEv[idx];
+            const t2 = bhPlan.t2PerEv[idx];
+            const cost = t1 * 5000 + t2 * 10000;
+            const sbPacks = t1 + t2 * 2;
+            const boughtBullets = t1 * 80 + t2 * 100;
+            bhBullets += 600 + boughtBullets;
+            const spentBullets = isSpend ? bhTarget : 300;
+            bhBullets -= spentBullets;
+            crystal -= cost;
+            totalCrystalSpent += cost;
+            totalSbPacks += sbPacks;
+
+            const packTxt = t1 + t2 === 0 ? '0 packs' : (t2 > 0 ? `${t1} T1 + ${t2} T2 packs (+${boughtBullets})` : `${t1} T1 packs (+${boughtBullets})`);
+            rows.push({
+              week: (r - 1) * 4 + 1,
+              rot: r,
+              event: 'Bounty Hunter',
+              main: isSpend ? `SPEND: Hit ${fmt(bhTarget)} milestone` : `SAVE: Hit 300 milestone, bank rest`,
+              sub: `Claim 600 free, buy ${packTxt} → End bank: ${fmt(bhBullets)} bullets`,
+              crystalCost: cost,
+              sbPacks,
+              endCrystal: crystal
+            });
+          }
+        }
+
+        // 2. Glittering Market
+        {
+          crystal += weeklyIncome;
+          if (!gmMode) {
+            rows.push({
+              week: (r - 1) * 4 + 2,
+              rot: r,
+              event: 'Glittering Market',
+              main: 'Select a Glittering Market option above',
+              sub: 'No strategy selected yet',
+              crystalCost: 0,
+              sbPacks: 0,
+              endCrystal: crystal
+            });
+          } else {
+            let t1 = 0, t2 = 0, earned = 360, milestoneTxt = 'Hit 100 milestone (360 coins)';
+            if (gmMode === '1000-every') {
+              t1 = 6; t2 = 2;
+              earned = 360 + 6 * 80 + 2 * 100;
+              milestoneTxt = 'Hit 1,000 milestone (1,040 coins)';
+            } else if (gmMode === 't1-only') {
+              t1 = 6; t2 = 0;
+              earned = 360 + 6 * 80;
+              milestoneTxt = 'Hit 400 milestone (840 shop coins)';
+            } else if (gmMode === '400-min') {
+              t1 = 1; t2 = 0;
+              earned = 360 + 80;
+              milestoneTxt = 'Hit 400 milestone (440 coins)';
+            }
+            gmCoins += earned;
+            const cost = t1 * 5000 + t2 * 10000;
+            const sbPacks = t1 + t2 * 2;
+            crystal -= cost;
+            totalCrystalSpent += cost;
+            totalSbPacks += sbPacks;
+
+            rows.push({
+              week: (r - 1) * 4 + 2,
+              rot: r,
+              event: 'Glittering Market',
+              main: milestoneTxt,
+              sub: `Claim 360 free, buy ${t1} × 5k + ${t2} × 10k packs (+${earned - 360}) → Shop wallet: ${fmt(gmCoins)} coins`,
+              crystalCost: cost,
+              sbPacks,
+              endCrystal: crystal
+            });
+          }
+        }
+
+        // 3. Ammo Bonanza
+        {
+          crystal += weeklyIncome;
+          if (!abMode) {
+            rows.push({
+              week: (r - 1) * 4 + 3,
+              rot: r,
+              event: 'Ammo Bonanza',
+              main: 'Select an Ammo Bonanza option above',
+              sub: 'No strategy selected yet',
+              crystalCost: 0,
+              sbPacks: 0,
+              endCrystal: crystal
+            });
+          } else {
+            let packs = 0;
+            if (abMode === 'max') packs = 5;
+            else if (abMode === 'safe-m1') packs = 3;
+            else if (abMode === 'm1') packs = 2;
+            const bought = packs * 10;
+            abBullets += 110 + bought;
+            let mainTxt = '';
+            if (abBullets >= 262 && abMode === 'max' && r % 5 === 0) {
+              abBullets -= 262;
+              mainTxt = 'Push M2 (~262 avg bullets)';
+            } else if (abBullets >= 127) {
+              abBullets -= 127;
+              mainTxt = 'Hit M1 (~127 avg bullets)';
+            } else {
+              mainTxt = 'Save bullets (short of 127 M1)';
+            }
+            const cost = packs * 5000;
+            crystal -= cost;
+            totalCrystalSpent += cost;
+            totalSbPacks += packs;
+
+            rows.push({
+              week: (r - 1) * 4 + 3,
+              rot: r,
+              event: 'Ammo Bonanza',
+              main: mainTxt,
+              sub: `Claim 110 free, buy ${packs} packs (+${bought}) → Est. bank: ${fmt(abBullets)} bullets`,
+              crystalCost: cost,
+              sbPacks: packs,
+              endCrystal: crystal
+            });
+          }
+        }
+
+        // 4. Total Mobilization
+        {
+          crystal += weeklyIncome;
+          if (!tmSkip && !tmActive) {
+            rows.push({
+              week: (r - 1) * 4 + 4,
+              rot: r,
+              event: 'Total Mobilization',
+              main: 'Select a Total Mobilization option above',
+              sub: 'No strategy selected yet',
+              crystalCost: 0,
+              sbPacks: 0,
+              endCrystal: crystal
+            });
+          } else if (tmSkip) {
+            rows.push({
+              week: (r - 1) * 4 + 4,
+              rot: r,
+              event: 'Total Mobilization',
+              main: 'Skip crystal spend',
+              sub: 'No Vouchers or Gold Bricks bought',
+              crystalCost: 0,
+              sbPacks: 0,
+              vouchers: 0,
+              gbPacks: 0,
+              endCrystal: crystal
+            });
+          } else {
+            const idx = (r - 1) % tmPlan.n;
+            const vouchers = tmPlan.vPerEv[idx];
+            const gbPacks = tmPlan.gbPerEv[idx];
+            const unitsAdded = vouchers + gbPacks;
+            tmCoupons += unitsAdded * 10;
+            const isSpend = idx === tmPlan.n - 1;
+            let mainTxt = '';
+            let subTxt = '';
+            if (isSpend) {
+              tmCoupons -= tmPlan.target;
+              mainTxt = `SPEND: Redeem all ${tmPlan.totalUnits} banked units → ${tmPlan.target}-coupon tier!`;
+              subTxt = `Buy ${vouchers} Vouchers + ${gbPacks} GB packs, then redeem all ${tmPlan.totalUnits} units at once (bank reset: 0/${tmPlan.totalUnits})`;
+            } else {
+              const bankedUnits = tmCoupons / 10;
+              mainTxt = `HOLD (do not redeem): Bank ${vouchers}V + ${gbPacks}GB (${bankedUnits}/${tmPlan.totalUnits} units)`;
+              subTxt = `Buy ${vouchers} Vouchers + ${gbPacks} GB packs & keep in inventory — do NOT convert to coupons yet (${tmCoupons}/${tmPlan.target} worth)`;
+            }
+            const cost = unitsAdded * 5000;
+            crystal -= cost;
+            totalCrystalSpent += cost;
+            totalVouchers += vouchers;
+            totalGbPacks += gbPacks;
+
+            rows.push({
+              week: (r - 1) * 4 + 4,
+              rot: r,
+              event: 'Total Mobilization',
+              main: mainTxt,
+              sub: subTxt,
+              crystalCost: cost,
+              sbPacks: 0,
+              vouchers,
+              gbPacks,
+              endCrystal: crystal
+            });
+          }
+        }
+      }
+
+      const gmAvgCost = gmMode === '1000-every' ? 50000 : (gmMode === 't1-only' ? 30000 : (gmMode === '400-min' ? 5000 : 0));
+      const abAvgCost = abMode === 'max' ? 25000 : (abMode === 'safe-m1' ? 15000 : (abMode === 'm1' ? 10000 : 0));
+      const tmAvgCost = tmPlan ? tmPlan.avgCost : 0;
+
+      // Allocate optional Extra Gold Bricks: 1) GM 2,000 GB pack (unlocks GM ELQ!), 2) TM cost, 3) BH 10k packs
+      let remExtraGb = extraGb;
+      const gbForGm = (gmMode === '1000-every' && remExtraGb >= 2000) ? 2000 : 0;
+      remExtraGb -= gbForGm;
+      const gbForTm = Math.min(remExtraGb, Math.floor(tmAvgCost / 10));
+      remExtraGb -= gbForTm;
+      const bhT2AvgGb = bhActive ? Math.floor(((bhPlan.t2Total * 10000) / bhCycle) / 10) : 0;
+      const gbForBh = Math.min(remExtraGb, bhT2AvgGb);
+      const totalExtraGbUsed = gbForGm + gbForTm + gbForBh;
+
+      const netBhCost = Math.max(0, bhPlan.avgCost - gbForBh * 10);
+      const netGmCost = Math.max(0, gmAvgCost - gbForGm * 10);
+      const netTmCost = Math.max(0, tmAvgCost - gbForTm * 10);
+      const avgSpend = netBhCost + netGmCost + abAvgCost + netTmCost;
+
+      const bhSbList = bhPlan.t1PerEv.map((t1, i) => t1 + bhPlan.t2PerEv[i] * 2);
+      const bhSbMin = Math.min(...bhSbList);
+      const bhSbMax = Math.max(...bhSbList);
+      const gmSb = netGmCost / 5000;
+      const abSb = abAvgCost / 5000;
+      const bhAvgSb = Math.max(0, bhPlan.avgSbPacks - (gbForBh * 10) / 5000);
+
+      // Net crystal-bought TM units after Extra Gold Bricks offset GB packs first, then Vouchers
+      const tmExtraUnits = gbForTm / 500;
+      const rawGbUnits = tmPlan ? tmPlan.avgGb : 0;
+      const rawVUnits = tmPlan ? tmPlan.avgVouchers : 0;
+      const netGbUnits = Math.max(0, rawGbUnits - tmExtraUnits);
+      const leftoverUnits = Math.max(0, tmExtraUnits - rawGbUnits);
+      const netVUnits = Math.max(0, rawVUnits - leftoverUnits);
+
+      currentRows = rows;
+      renderGauges({
+        rotIncome,
+        avgSpend,
+        bhAvgCost: netBhCost,
+        gmAvgCost: netGmCost,
+        abAvgCost,
+        tmAvgCost: netTmCost,
+        extraGbUsed: totalExtraGbUsed,
+        avgSb: bhAvgSb + gmSb + abSb,
+        bhAvgSb,
+        bhSbRange: bhSbMin === bhSbMax ? `${bhSbMin}` : `${bhSbMin}–${bhSbMax}`,
+        gmSb,
+        abSb,
+        avgVouchers: netVUnits,
+        avgGb: netGbUnits
+      });
+      renderCheatSheet({ bhActive, bhTarget, bhCycle, bhPlan, gmMode, gbForGm, abMode, tmSkip, tmActive, tmPlan, gbForTm });
+      renderOptionsDialog(rotIncome, extraGb);
+      renderTable(rows);
+    }
+
+    function generateTopCandidates(rotIncome, extraGb = 0) {
+      const effBudget = rotIncome + extraGb * 10;
+      const extraTmUnits = extraGb / 500;
+      const bhChoices = [];
+      // Only recommend the two mathematically optimal BH tiers (3,000 & 1,800 = 300 bullets/chest; 1,000 & 5,000 are 333.3 bullets/chest)
+      for (const [target, lo, hi] of [[3000, 2, 9], [1800, 2, 5]]) {
+        for (let n = lo; n <= hi; n++) {
+          const plan = buildBhPlan(target, n);
+          const lux = ((n - 1) + (target >= 300 ? 1 : 0) + (target >= 1800 ? 3 : 0) + (target >= 5000 ? 5 : 0)) / n;
+          const deco = ((target >= 1000 ? 2 : 0) + (target >= 3000 ? 4 : 0)) / n;
+          const t2Pen = ((plan.t2Total * 10000) / n) * 0.00025;
+          const score = lux * 22 + deco * 20 - t2Pen;
+          bhChoices.push({
+            target, n,
+            spend: plan.avgCost,
+            sb: plan.avgSbPacks,
+            score,
+            label: `${fmt(target)} / ${n === 1 ? '1 event' : `${n} events`}<br><span class="hint">(${fmt(plan.avgCost)})</span>`
+          });
+        }
+      }
+
+      const gmChoices = [
+        { mode: '1000-every', spend: 50000, sb: 10, score: 100, label: '1,000 coin milestone<br><span class="hint">(6×5k + 2×10k, 50k)</span>' },
+        { mode: 't1-only',    spend: 30000, sb: 6,  score: 62,  label: 'All 5k packs<br><span class="hint">(6×5k, 30k)</span>' },
+        { mode: '400-min',    spend: 5000,  sb: 1,  score: 50,  label: '400 coin milestone<br><span class="hint">(1×5k, 5k)</span>' },
+        { mode: 'free',       spend: 0,     sb: 0,  score: 15,  label: 'Free only<br><span class="hint">(0k)</span>' }
+      ];
+
+      const abChoices = [
+        { mode: 'max',     spend: 25000, sb: 5, score: 90, label: '160 bullets<br><span class="hint">(5 packs, 25k)</span>' },
+        { mode: 'safe-m1', spend: 15000, sb: 3, score: 78, label: '140 bullets<br><span class="hint">(3 packs, 15k)</span>' },
+        { mode: 'm1',      spend: 10000, sb: 2, score: 65, label: '130 bullets<br><span class="hint">(2 packs, 10k)</span>' },
+        { mode: 'free',    spend: 0,     sb: 0, score: 40, label: '110 bullets<br><span class="hint">(Free, 0k)</span>' }
+      ];
+
+      const tmChoices = [
+        [400, 1, 195],
+        [600, 2, 180],
+        [600, 3, 125],
+        [400, 2, 105],
+        [200, 1, 95],
+        [600, 4, 92],
+        [400, 3, 75],
+        [200, 2, 55]
+      ].map(([target, n, score]) => {
+        const plan = buildTmPlan(target, n);
+        return {
+          target, n,
+          spend: plan.avgCost,
+          v: plan.avgVouchers,
+          gb: plan.avgGb,
+          score,
+          label: `${target} coupons / ${n === 1 ? '1 event' : `${n} events`}<br><span class="hint">(${fmt(plan.avgCost)})</span>`
+        };
+      });
+      tmChoices.push({
+        target: 0, n: '',
+        spend: 0, v: 0, gb: 0, score: 0,
+        label: 'Skip<br><span class="hint">(0k)</span>'
+      });
+
+      const valid = [];
+      for (const bh of bhChoices) {
+        for (const gm of gmChoices) {
+          for (const ab of abChoices) {
+            for (const tm of tmChoices) {
+              const spend = bh.spend + gm.spend + ab.spend + tm.spend;
+              const sb = bh.sb + gm.sb + ab.sb;
+              const tmCapOk = (tm.v + tm.gb) <= (44 + extraTmUnits);
+              if (spend <= effBudget && sb <= 50 && tmCapOk) {
+                valid.push({
+                  bh, gm, ab, tm, spend,
+                  buf: effBudget - spend,
+                  score: bh.score + gm.score + ab.score + tm.score
+                });
+              }
+            }
+          }
+        }
+      }
+
+      // Pick best-value build inside each stepped buffer band so cost descends cleanly with growing buffer
+      const bands = [
+        [0, 10000],
+        [10000, 25000],
+        [25000, 45000],
+        [45000, 70000],
+        [70000, Infinity]
+      ];
+      const picked = [];
+      const seen = new Set();
+
+      for (const [lo, hi] of bands) {
+        let best = null;
+        for (const item of valid) {
+          if (item.buf >= lo && item.buf < hi) {
+            if (!best || item.score > best.score || (item.score === best.score && item.spend > best.spend)) {
+              best = item;
+            }
+          }
+        }
+        if (best) {
+          const key = `${best.bh.target}-${best.bh.n}-${best.gm.mode}-${best.ab.mode}-${best.tm.target}-${best.tm.n}`;
+          if (!seen.has(key)) {
+            seen.add(key);
+            picked.push(best);
+          }
+        }
+      }
+
+      picked.sort((a, b) => b.spend - a.spend);
+      return picked;
+    }
+
+    let currentTopCandidates = [];
+
+    function renderOptionsDialog(rotIncome, extraGb = 0) {
+      const titleEl = document.getElementById('options-dialog-title');
+      const bodyEl = document.getElementById('options-dialog-body');
+      const extraNote = extraGb > 0 ? ` + ${fmt(extraGb)} Gold Bricks` : '';
+      titleEl.textContent = `Top 5 Affordable Builds (vs. ${fmt(rotIncome)} Crystal${extraNote} / 4-Wk Cycle)`;
+      currentTopCandidates = generateTopCandidates(rotIncome, extraGb);
+
+      if (currentTopCandidates.length === 0) {
+        bodyEl.innerHTML = '<tr><td colspan="8">No preset combinations fit within this crystal income. Try lowering event targets manually.</td></tr>';
+        return;
+      }
+
+      bodyEl.innerHTML = currentTopCandidates.map((c, idx) => `
+        <tr>
+          <td><strong>${idx + 1}</strong></td>
+          <td>${c.bh.label}</td>
+          <td>${c.gm.label}</td>
+          <td>${c.ab.label}</td>
+          <td>${c.tm.label}</td>
+          <td class="num">${fmt(c.spend)}</td>
+          <td class="num pos">+${fmt(c.buf)}</td>
+          <td><button type="button" class="use-candidate-btn" data-idx="${idx}">Use</button></td>
+        </tr>
+      `).join('');
+    }
+
+    function renderCheatSheet({ bhActive, bhTarget, bhCycle, bhPlan, gmMode, gbForGm, abMode, tmSkip, tmActive, tmPlan, gbForTm }) {
+      const cards = [];
+
+      // 1. Bounty Hunter
+      if (!bhActive) {
+        cards.push({ ev: 'Bounty Hunter', cls: 'ev-bh', empty: true });
+      } else {
+        const luxSpend = (bhTarget >= 300 ? 1 : 0) + (bhTarget >= 1800 ? 3 : 0) + (bhTarget >= 5000 ? 5 : 0);
+        const decoSpend = (bhTarget >= 1000 ? 2 : 0) + (bhTarget >= 3000 ? 4 : 0);
+        const t1List = bhPlan.t1PerEv.join(' / ');
+        const t2Note = bhPlan.t2Total > 0 ? ` + ${bhPlan.t2PerEv.join('/')} × 10k` : '';
+        const whatList = ['Claim 600 free bullets'];
+        if (bhCycle > 1) whatList.push('Spend 300 bullets (on save events)');
+        if (bhPlan.totalCost > 0) {
+          whatList.push(`Buy ${t1List} × 5k${t2Note} silver brick packs`);
+        } else {
+          whatList.push('Buy 0 silver brick packs');
+        }
+        const rewardsList = bhCycle > 1
+          ? [
+              'Save events: 1× Luxury Choice Chest (300 milestone)',
+              `Spend event: ${luxSpend}× Luxury + ${decoSpend}× UR Deco`
+            ]
+          : [`Each event: ${luxSpend}× Luxury + ${decoSpend}× UR Deco`];
+        cards.push({
+          ev: 'Bounty Hunter',
+          cls: 'ev-bh',
+          what: whatList,
+          when: bhCycle === 1 ? `Every event: spend ${fmt(bhTarget)} bullets.` : `Every ${bhCycle}th event: spend ${fmt(bhTarget)} bullets.`,
+          rewards: rewardsList
+        });
+      }
+
+      // 2. Glittering Market
+      if (!gmMode) {
+        cards.push({ ev: 'Glittering Market', cls: 'ev-gm', empty: true });
+      } else {
+        const gmMap = {
+          '1000-every': {
+            what: ['Claim 360 free coins', 'Buy 6 × 5k + 2 × 10k silver brick packs (50k)'],
+            when: 'Every event: hit 1,000 bar; spend or bank shop coins.',
+            rewards: [
+              '10× UR Hero Shards',
+              '1× UR Decoration Chest',
+              'Lvl 5 Drone Component Chest',
+              '1,040 shop coins to spend in Glittering Market'
+            ]
+          },
+          't1-only': {
+            what: ['Claim 360 free coins', 'Buy 6 × 5k silver brick packs (30k)'],
+            when: 'Every event: hit 400 bar; bank extra shop coins.',
+            rewards: [
+              '10× UR Hero Shards',
+              '1× UR Decoration Chest',
+              '840 shop coins to spend in Glittering Market'
+            ]
+          },
+          '400-min': {
+            what: ['Claim 360 free coins', 'Buy 1 × 5k silver brick pack (5k)'],
+            when: 'Every event: hit 400 bar.',
+            rewards: [
+              '10× UR Hero Shards',
+              '1× UR Decoration Chest',
+              '440 shop coins to spend in Glittering Market'
+            ]
+          },
+          'free': {
+            what: ['Claim 360 free coins', 'Buy 0 silver brick packs'],
+            when: 'Every event: hit 100 bar.',
+            rewards: [
+              '10× UR Hero Shards',
+              '360 shop coins to spend in Glittering Market (misses 400)'
+            ]
+          }
+        };
+        const g = gmMap[gmMode];
+        const gmWhat = [...g.what];
+        const gmRewards = [...g.rewards];
+        if (gmMode === '1000-every' && gbForGm >= 2000) {
+          gmWhat[1] = 'Buy 6 × 5k SB packs (30k) + 1 × 2,000 Gold Brick pack (200 coins)';
+          gmRewards.push('Energy Loot Quest (100 pt milestone): 10× UR Shards, 500 Skill Pts, 500 Ore, 2× Gold SSR Chests');
+        }
+        cards.push({ ev: 'Glittering Market', cls: 'ev-gm', what: gmWhat, when: g.when, rewards: gmRewards });
+      }
+
+      // 3. Ammo Bonanza
+      if (!abMode) {
+        cards.push({ ev: 'Ammo Bonanza', cls: 'ev-ab', empty: true });
+      } else {
+        const abBaseRewards = [
+          '1,000 Ore',
+          '2× Ore Lucky Chest',
+          '6× Gear Boost Choice Chest',
+          '2× Mythic Blueprints'
+        ];
+        const abMap = {
+          'max': {
+            what: ['Claim 110 free bullets', 'Buy 5 × 5k silver brick packs (25k = 160 bullets)'],
+            when: 'Every event: reach Round 1 Level 20 (~127 avg). If ~145+ bullets remain after reaching Round 1 Level 20, clear Level 20 & push to Round 2 Level 20.',
+            rewards: [...abBaseRewards, '~Every 5th event: Double all 4 (Round 2 Level 20)']
+          },
+          'safe-m1': {
+            what: ['Claim 110 free bullets', 'Buy 3 × 5k silver brick packs (15k = 140 bullets)'],
+            when: 'Every event: reach Round 1 Lvl 20 (~127 avg, ~99.5% safe).',
+            rewards: abBaseRewards
+          },
+          'm1': {
+            what: ['Claim 110 free bullets', 'Buy 2 × 5k silver brick packs (10k = 130 bullets)'],
+            when: 'Every event once you have a ~15-bullet buffer; reach Round 1 Lvl 20.',
+            rewards: abBaseRewards
+          },
+          'free': {
+            what: ['Claim 110 free bullets', 'Buy 0 silver brick packs'],
+            when: 'Skip 1 event to bank, then reach Round 1 Lvl 20 on 6 of 7 events.',
+            rewards: abBaseRewards.map((r, i) => i === 0 ? `${r} (6 of 7 events)` : r)
+          }
+        };
+        const a = abMap[abMode];
+        cards.push({ ev: 'Ammo Bonanza', cls: 'ev-ab', ...a });
+      }
+
+      // 4. Total Mobilization
+      if (!tmSkip && !tmActive) {
+        cards.push({ ev: 'Total Mobilization', cls: 'ev-tm', empty: true });
+      } else if (tmSkip) {
+        cards.push({
+          ev: 'Total Mobilization',
+          cls: 'ev-tm',
+          what: ['Buy 0 Vouchers & 0 Gold Brick packs'],
+          when: 'Skipped.',
+          rewards: ['0 coupons', '0 Mythic Blueprints']
+        });
+      } else {
+        const tmRewardsMap = {
+          600: [
+            '1,060 total coupons to spend in Total Mobilization Market',
+            '5× Mythic Gear Blueprints',
+            'Energy Loot Quest (3,000 pts): 15× Legendary Blueprints, 6,000 Diamonds, 80× UR Shards, 15,000 Skill Pts, 15,000 Ore, 22× Gold SSR Chests'
+          ],
+          400: [
+            '560 total coupons to spend in Total Mobilization Market',
+            '5× Mythic Gear Blueprints',
+            'Energy Loot Quest (2,000 pts): 5× Legendary Blueprints, 2,000 Diamonds, 80× UR Shards, 9,000 Skill Pts, 9,000 Ore, 22× Gold SSR Chests'
+          ],
+          200: [
+            '360 total coupons to spend in Total Mobilization Market',
+            'Energy Loot Quest (1,000 pts): 5× Legendary Blueprints, 2,000 Diamonds, 40× UR Shards, 5,000 Skill Pts, 5,000 Ore, 12× Gold SSR Chests'
+          ]
+        };
+        const vTxt = `${tmPlan.vPerEv.join('/')} Vouchers`;
+        const gTxt = tmPlan.avgGb > 0 ? ` + ${tmPlan.gbPerEv.join('/')} GB packs` : '';
+        const tmWhat = [`Buy ${vTxt}${gTxt}`];
+        if (tmPlan.n > 1) tmWhat.push('Hold in inventory (do not redeem early)');
+        cards.push({
+          ev: 'Total Mobilization',
+          cls: 'ev-tm',
+          what: tmWhat,
+          when: tmPlan.n === 1
+            ? `Every event: redeem resources for ${tmPlan.target} coupons in the TM Market.`
+            : `Every ${tmPlan.n}${tmPlan.n === 2 ? 'nd' : (tmPlan.n === 3 ? 'rd' : 'th')} event: redeem banked resources for ${tmPlan.target} coupons in the TM Market.`,
+          rewards: tmRewardsMap[tmPlan.target]
+        });
+      }
+
+      els.cheatGrid.innerHTML = cards.map(c => c.empty ? `
+        <div class="cheat-card">
+          <div><span class="ev-tag ${c.cls}">${c.ev}</span></div>
+          <div class="cheat-row"><span class="hint">Select an option above to see your action plan and milestone rewards.</span></div>
+          <div class="cheat-row"></div>
+          <div class="cheat-row"></div>
+        </div>
+      ` : `
+        <div class="cheat-card">
+          <div><span class="ev-tag ${c.cls}">${c.ev}</span></div>
+          <div class="cheat-row">
+            <span class="cheat-label">What To Do (Each Event)</span>
+            <ul class="cheat-list">${c.what.map(item => `<li>${item}</li>`).join('')}</ul>
+          </div>
+          <div class="cheat-row"><span class="cheat-label">When To Action</span><span>${c.when}</span></div>
+          <div class="cheat-row">
+            <span class="cheat-label">What You Get</span>
+            ${Array.isArray(c.rewards) ? `<ul class="cheat-list">${c.rewards.map(item => `<li>${item}</li>`).join('')}</ul>` : `<span>${c.rewards}</span>`}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function gaugeCard(title, valText, ratio, statusText, statusClass, footerHtml = '') {
+      const pct = Math.min(100, Math.round(ratio * 100));
+      return `
+        <div class="gauge">
+          <div class="gauge-top">
+            <span class="gauge-title">${title}</span>
+            <span class="badge ${statusClass}">${statusText}</span>
+          </div>
+          <div class="gauge-val">${valText}</div>
+          <progress max="100" value="${pct}"></progress>
+          ${footerHtml}
+        </div>
+      `;
+    }
+
+    function renderGauges({ rotIncome, avgSpend, bhAvgCost, gmAvgCost, abAvgCost, tmAvgCost, avgSb, bhAvgSb, bhSbRange, gmSb, abSb, avgVouchers, avgGb }) {
+      const diff = rotIncome - avgSpend;
+      const crystalStatus = diff >= 20000 ? ['Healthy Buffer', 'ok'] : (diff >= 0 ? ['Tight', 'warn'] : ['Over Budget', 'bad']);
+      const sbStatus = avgSb <= 40 ? ['Safe', 'ok'] : (avgSb <= 50 ? ['Near Cap', 'warn'] : ['Over Cap', 'bad']);
+      const vStatus = avgVouchers <= 20 ? ['Within Cap', 'ok'] : ['Over Cap', 'bad'];
+      const gbStatus = avgGb <= 24 ? ['Within Cap', 'ok'] : ['Over Cap', 'bad'];
+
+      const spendBreakdown = `
+        <div class="gauge-breakdown">
+          <span>BH: <strong>${fmt(bhAvgCost)}</strong></span>
+          <span>GM: <strong>${fmt(gmAvgCost)}</strong></span>
+          <span>AB: <strong>${fmt(abAvgCost)}</strong></span>
+          <span>TM: <strong>${fmt(tmAvgCost)}</strong></span>
+        </div>
+      `;
+
+      const sbBreakdown = `
+        <div class="gauge-breakdown">
+          <span>BH: <strong>${bhAvgSb.toFixed(1)} (${bhSbRange})</strong></span>
+          <span>GM: <strong>${gmSb}</strong></span>
+          <span>AB: <strong>${abSb}</strong></span>
+        </div>
+      `;
+
+      els.gaugesGrid.innerHTML = [
+        gaugeCard(
+          'Crystal Spend / 4-Wk Cycle',
+          `${fmt(avgSpend)} / ${fmt(rotIncome)}`,
+          rotIncome > 0 ? avgSpend / rotIncome : 1,
+          `${diff >= 0 ? '+' : ''}${fmt(diff)} (${crystalStatus[0]})`,
+          crystalStatus[1],
+          spendBreakdown
+        ),
+        gaugeCard(
+          'Silver Brick Packs / 4-Wk Cycle',
+          `${avgSb.toFixed(1)} avg / 50 packs`,
+          avgSb / 50,
+          sbStatus[0],
+          sbStatus[1],
+          sbBreakdown
+        ),
+        gaugeCard(
+          'TM Vouchers / 4-Wk Cycle',
+          `${avgVouchers.toFixed(0)} / 20 max`,
+          avgVouchers / 20,
+          vStatus[0],
+          vStatus[1]
+        ),
+        gaugeCard(
+          'Gold Brick Packs / 4-Wk Cycle',
+          `${avgGb.toFixed(0)} / 24 max`,
+          avgGb / 24,
+          gbStatus[0],
+          gbStatus[1]
+        )
+      ].join('');
+    }
+
+    const EVENT_CLASS = {
+      'Bounty Hunter': 'ev-bh',
+      'Glittering Market': 'ev-gm',
+      'Ammo Bonanza': 'ev-ab',
+      'Total Mobilization': 'ev-tm'
+    };
+
+    function renderTable(rows) {
+      els.scheduleBody.innerHTML = rows.map(r => {
+        const isStart = r.week % 4 === 1;
+        const cycleClass = r.rot % 2 === 0 ? 'cycle-even' : 'cycle-odd';
+        const evClass = EVENT_CLASS[r.event] || '';
+        const cycleCell = isStart ? `<td class="cycle-cell" rowspan="4">#${r.rot}</td>` : '';
+        return `
+        <tr class="${isStart ? 'rot-start ' : ''}${cycleClass}">
+          <td>Wk ${r.week}</td>
+          ${cycleCell}
+          <td><span class="ev-tag ${evClass}">${r.event}</span></td>
+          <td>
+            <div class="action-main">${r.main}</div>
+            <div class="action-sub">${r.sub}</div>
+          </td>
+          <td class="num">${fmt(r.crystalCost)}</td>
+          <td class="num">${r.sbPacks || '-'}</td>
+          <td class="num">${r.vouchers ?? '-'}</td>
+          <td class="num">${r.gbPacks ?? '-'}</td>
+          <td class="num ${r.endCrystal < 0 ? 'neg' : 'pos'}">${fmt(r.endCrystal)}</td>
+        </tr>
+      `;
+      }).join('');
+    }
+
+    function applyTheme(mode) {
+      themeMode = mode || 'auto';
+      if (themeMode === 'auto') {
+        document.documentElement.removeAttribute('data-theme');
+        els.themeToggle.textContent = 'Theme: Auto';
+      } else {
+        document.documentElement.setAttribute('data-theme', themeMode);
+        els.themeToggle.textContent = `Theme: ${themeMode[0].toUpperCase()}${themeMode.slice(1)}`;
+      }
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          incVs: els.incVs.value,
+          incAtk: els.incAtk.value,
+          incBoss: els.incBoss.value,
+          incFactory: els.incFactory.value,
+          startingCrystal: els.startingCrystal.value,
+          extraGb: els.extraGb.value,
+          horizonRotations: els.horizonRotations.value,
+          bhTarget: els.bhTarget.value,
+          bhCycle: els.bhCycle.value,
+          gmMode: els.gmMode.value,
+          abMode: els.abMode.value,
+          tmTarget: els.tmTarget.value,
+          tmPace: els.tmPace.value,
+          themeMode
+        }));
+      } catch (_) {}
+    }
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) {
+          populateBhCycles('');
+          populateTmPaces('');
+          return;
+        }
+        const s = JSON.parse(raw);
+        if (s.incVs !== undefined) els.incVs.value = s.incVs;
+        if (s.incAtk !== undefined) els.incAtk.value = s.incAtk;
+        if (s.incBoss !== undefined) els.incBoss.value = s.incBoss;
+        if (s.incFactory !== undefined) els.incFactory.value = s.incFactory;
+        if (s.startingCrystal !== undefined) els.startingCrystal.value = s.startingCrystal;
+        if (s.extraGb !== undefined) els.extraGb.value = s.extraGb;
+        if (s.horizonRotations !== undefined) els.horizonRotations.value = s.horizonRotations;
+        els.bhTarget.value = s.bhTarget ?? '';
+        populateBhCycles(s.bhCycle ?? '');
+        els.gmMode.value = s.gmMode ?? '';
+        els.abMode.value = s.abMode ?? '';
+        els.tmTarget.value = s.tmTarget ?? '';
+        populateTmPaces(s.tmPace ?? '');
+        applyTheme(s.themeMode || 'auto');
+      } catch (_) {
+        populateBhCycles('');
+        populateTmPaces('');
+      }
+    }
+
+    function resetAllSettings() {
+      try { localStorage.removeItem(STORAGE_KEY); } catch (_) {}
+      els.incVs.value = '38,400';
+      els.incAtk.value = '15,000';
+      els.incBoss.value = '6,000';
+      els.incFactory.value = '8,232';
+      els.startingCrystal.value = '0';
+      els.extraGb.value = '0';
+      els.horizonRotations.value = '4';
+      els.bhTarget.value = '';
+      populateBhCycles('');
+      els.gmMode.value = '';
+      els.abMode.value = '';
+      els.tmTarget.value = '';
+      populateTmPaces('');
+      computeSchedule();
+    }
+
+    function exportCsv() {
+      const headers = ['Week', 'Cycle', 'Event', 'Action', 'Details', 'CrystalCost', 'SilverBrickPacks', 'Vouchers', 'GoldBrickPacks', 'EndCrystal'];
+      const lines = [headers.join(',')];
+      for (const r of currentRows) {
+        const esc = v => `"${String(v).replace(/"/g, '""')}"`;
+        lines.push([r.week, r.rot, esc(r.event), esc(r.main), esc(r.sub), r.crystalCost, r.sbPacks, r.vouchers ?? 0, r.gbPacks ?? 0, Math.round(r.endCrystal)].join(','));
+      }
+      const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'last-war-rotation-schedule.csv';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    els.themeToggle.addEventListener('click', () => {
+      const next = themeMode === 'auto' ? 'dark' : (themeMode === 'dark' ? 'light' : 'auto');
+      applyTheme(next);
+      saveState();
+    });
+
+    els.resetSettings.addEventListener('click', resetAllSettings);
+    els.exportCsv.addEventListener('click', exportCsv);
+
+    const optionsDialog = document.getElementById('options-dialog');
+    document.getElementById('open-options-guide').addEventListener('click', () => {
+      optionsDialog.showModal();
+    });
+
+    document.getElementById('options-dialog-body').addEventListener('click', e => {
+      const btn = e.target.closest('.use-candidate-btn');
+      if (!btn) return;
+      const c = currentTopCandidates[Number(btn.dataset.idx)];
+      if (!c) return;
+      els.bhTarget.value = String(c.bh.target);
+      populateBhCycles(c.bh.n);
+      els.gmMode.value = c.gm.mode;
+      els.abMode.value = c.ab.mode;
+      els.tmTarget.value = String(c.tm.target);
+      populateTmPaces(c.tm.n);
+      saveState();
+      computeSchedule();
+      optionsDialog.close();
+    });
+
+    if (!('closedBy' in HTMLDialogElement.prototype)) {
+      optionsDialog.addEventListener('click', event => {
+        if (event.target !== optionsDialog) return;
+        const rect = optionsDialog.getBoundingClientRect();
+        const isDialogContent = (
+          rect.top <= event.clientY &&
+          event.clientY <= rect.top + rect.height &&
+          rect.left <= event.clientX &&
+          event.clientX <= rect.left + rect.width
+        );
+        if (isDialogContent) return;
+        optionsDialog.close();
+      });
+    }
+
+    els.bhTarget.addEventListener('change', () => {
+      populateBhCycles(els.bhCycle.value);
+      saveState();
+      computeSchedule();
+    });
+
+    els.tmTarget.addEventListener('change', () => {
+      populateTmPaces(els.tmPace.value);
+      saveState();
+      computeSchedule();
+    });
+
+    [
+      [els.incVs, 38400],
+      [els.incAtk, 15000],
+      [els.incBoss, 30000],
+      [els.incFactory, 8232],
+      [els.startingCrystal, Infinity]
+    ].forEach(([el, maxVal]) => {
+      el.addEventListener('blur', () => {
+        el.value = fmt(parseNumInput(el, maxVal));
+        saveState();
+      });
+    });
+
+    [els.incVs, els.incAtk, els.incBoss, els.incFactory, els.startingCrystal, els.extraGb, els.horizonRotations, els.bhCycle, els.gmMode, els.abMode, els.tmPace].forEach(el => {
+      el.addEventListener('input', () => {
+        saveState();
+        computeSchedule();
+      });
+    });
+
+    loadState();
+    computeSchedule();
+  </script>
+</body>
+</html>
