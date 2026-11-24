@@ -529,6 +529,18 @@
       gap: 0.2rem;
     }
 
+    .cheat-subgroups {
+      display: grid;
+      gap: 0.55rem;
+      margin-top: 0.1rem;
+    }
+
+    .cheat-subhead {
+      font-weight: 700;
+      font-size: 0.82rem;
+      color: var(--text);
+    }
+
     dialog {
       border: 1px solid var(--border);
       border-radius: 0.75rem;
@@ -704,9 +716,9 @@
       <div class="income-summary" id="rotation-income-hint" style="margin-top: 0.75rem;">68,232 / wk &rarr; 272,928 / 4-wk rotation</div>
     </section>
 
-    <section class="card" aria-label="Event Goals">
+    <section class="card" aria-label="Event Milestone Strategies">
       <div class="section-head">
-        <h2>Event Goals</h2>
+        <h2>Event Milestone Strategies</h2>
         <button type="button" id="open-options-guide">Compare Optimal Builds</button>
       </div>
       <div class="controls-grid">
@@ -867,8 +879,8 @@
             <th scope="col">Glittering Market</th>
             <th scope="col">Ammo Bonanza</th>
             <th scope="col">Total Mobilization</th>
-            <th scope="col" class="num">Spend / Cycle</th>
-            <th scope="col" class="num">Buffer</th>
+            <th scope="col" class="num">Crystal Spend / Cycle</th>
+            <th scope="col" class="num">Crystal Buffer</th>
             <th scope="col"></th>
           </tr>
         </thead>
@@ -928,44 +940,70 @@
       return Math.min(maxVal, Math.max(0, val));
     }
 
+    const BH_SAVE_300_DROPS = { v: 364, lux: 0.08, dlx: 6.6, ssr: 53, spd1h: 11.8, spd5m: 0.0, medals: 2235, dataK: 224 };
+
     const BH_JAMMER_RISK = {
-      '1000-1': { tier: 'warn', pct: 54.0, drift: -1.0, note: '~1.5 zones / ~8 Normals cleared when out' },
-      '1000-2': { tier: 'ok', pct: 0.03, drift: 15.8 },
-      '1000-3': { tier: 'ok', pct: 0.0, drift: 32.5 },
-      '1800-2': { tier: 'warn', pct: 74.3, drift: -4.4, note: '~2.7 zones / ~13 Normals cleared when out' },
-      '1800-3': { tier: 'ok', pct: 2.3, drift: 12.3 },
-      '1800-4': { tier: 'ok', pct: 0.0, drift: 29.0 },
-      '1800-5': { tier: 'ok', pct: 0.0, drift: 45.7 },
-      '3000-2': { tier: 'bad', pct: 100.0, drift: -34.7, note: '~13 zones / ~65 Normals cleared' },
-      '3000-3': { tier: 'bad', pct: 98.8, drift: -18.0, note: '~7 zones / ~35 Normals cleared' },
-      '3000-4': { tier: 'warn', pct: 53.7, drift: -1.3, note: '~2.8 zones / ~14 Normals cleared when out' },
-      '3000-5': { tier: 'ok', pct: 3.0, drift: 15.4 },
-      '3000-6': { tier: 'ok', pct: 0.01, drift: 32.1 },
-      '3000-7': { tier: 'ok', pct: 0.0, drift: 48.8 },
-      '3000-8': { tier: 'ok', pct: 0.0, drift: 65.6 },
-      '3000-9': { tier: 'ok', pct: 0.0, drift: 82.3 },
-      '5000-4': { tier: 'bad', pct: 100.0, drift: -51.8, note: '~19 zones / ~97 Normals cleared' },
-      '5000-5': { tier: 'bad', pct: 100.0, drift: -35.1, note: '~13 zones / ~66 Normals cleared' },
-      '5000-6': { tier: 'bad', pct: 95.6, drift: -18.4, note: '~7 zones / ~36 Normals cleared' },
-      '5000-7': { tier: 'warn', pct: 54.1, drift: -1.6, note: '~3.6 zones / ~18 Normals cleared when out' },
-      '5000-8': { tier: 'ok', pct: 7.8, drift: 15.1 },
-      '5000-9': { tier: 'ok', pct: 0.21, drift: 31.8 },
-      '5000-10': { tier: 'ok', pct: 0.0, drift: 48.5 },
-      '5000-11': { tier: 'ok', pct: 0.0, drift: 65.2 }
+      '1000-1': { tier: 'warn', used: 25.0, earned: 24, pct: 54.0, v: 1178, lux: 0.24, dlx: 19.5, ssr: 158, spd1h: 36.2, spd5m: 8.3, medals: 7195, dataK: 719 },
+      '1000-2': { tier: 'ok', used: 32.2, earned: 48, pct: 0.03, v: 1191, lux: 0.26, dlx: 20.8, ssr: 166, spd1h: 38.3, spd5m: 0.0, medals: 7200, dataK: 720 },
+      '1000-3': { tier: 'ok', used: 39.5, earned: 72, pct: 0.0, v: 1191, lux: 0.26, dlx: 20.8, ssr: 166, spd1h: 38.3, spd5m: 0.0, medals: 7200, dataK: 720 },
+      '1800-2': { tier: 'warn', used: 52.4, earned: 48, pct: 74.3, v: 2102, lux: 0.43, dlx: 34.1, ssr: 277, spd1h: 63.7, spd5m: 19.7, medals: 12137, dataK: 1214 },
+      '1800-3': { tier: 'ok', used: 59.7, earned: 72, pct: 2.3, v: 2135, lux: 0.46, dlx: 36.9, ssr: 296, spd1h: 68.5, spd5m: 0.2, medals: 12138, dataK: 1214 },
+      '1800-4': { tier: 'ok', used: 67.0, earned: 96, pct: 0.0, v: 2135, lux: 0.46, dlx: 36.9, ssr: 297, spd1h: 68.5, spd5m: 0.0, medals: 12150, dataK: 1215 },
+      '1800-5': { tier: 'ok', used: 74.3, earned: 120, pct: 0.0, v: 2135, lux: 0.46, dlx: 36.9, ssr: 297, spd1h: 68.5, spd5m: 0.0, medals: 12150, dataK: 1215 },
+      '3000-2': { tier: 'bad', used: 82.7, earned: 48, pct: 100.0, v: 3326, lux: 0.54, dlx: 43.5, ssr: 369, spd1h: 81.5, spd5m: 130.9, medals: 16304, dataK: 1630 },
+      '3000-3': { tier: 'bad', used: 90.0, earned: 72, pct: 98.8, v: 3433, lux: 0.65, dlx: 51.9, ssr: 427, spd1h: 97.0, spd5m: 68.0, medals: 16307, dataK: 1631 },
+      '3000-4': { tier: 'warn', used: 97.3, earned: 96, pct: 53.7, v: 3524, lux: 0.74, dlx: 59.1, ssr: 477, spd1h: 110.5, spd5m: 15.0, medals: 16312, dataK: 1631 },
+      '3000-5': { tier: 'ok', used: 104.6, earned: 120, pct: 3.0, v: 3551, lux: 0.76, dlx: 61.1, ssr: 492, spd1h: 114.0, spd5m: 0.4, medals: 16300, dataK: 1630 },
+      '3000-6': { tier: 'ok', used: 111.9, earned: 144, pct: 0.01, v: 3552, lux: 0.76, dlx: 61.2, ssr: 492, spd1h: 114.1, spd5m: 0.0, medals: 16300, dataK: 1630 },
+      '3000-7': { tier: 'ok', used: 119.2, earned: 168, pct: 0.0, v: 3552, lux: 0.76, dlx: 61.2, ssr: 492, spd1h: 114.1, spd5m: 0.0, medals: 16300, dataK: 1630 },
+      '3000-8': { tier: 'ok', used: 126.4, earned: 192, pct: 0.0, v: 3552, lux: 0.76, dlx: 61.2, ssr: 492, spd1h: 114.1, spd5m: 0.0, medals: 16300, dataK: 1630 },
+      '3000-9': { tier: 'ok', used: 133.7, earned: 216, pct: 0.0, v: 3552, lux: 0.76, dlx: 61.2, ssr: 492, spd1h: 114.1, spd5m: 0.0, medals: 16300, dataK: 1630 },
+      '5000-4': { tier: 'bad', used: 147.8, earned: 96, pct: 100.0, v: 5575, lux: 0.96, dlx: 75.4, ssr: 635, spd1h: 141.2, spd5m: 194.2, medals: 17885, dataK: 1789 },
+      '5000-5': { tier: 'bad', used: 155.1, earned: 120, pct: 100.0, v: 5682, lux: 1.06, dlx: 83.6, ssr: 694, spd1h: 156.9, spd5m: 132.4, medals: 17887, dataK: 1789 },
+      '5000-6': { tier: 'bad', used: 162.4, earned: 144, pct: 95.6, v: 5790, lux: 1.15, dlx: 91.9, ssr: 751, spd1h: 172.4, spd5m: 69.8, medals: 17883, dataK: 1788 },
+      '5000-7': { tier: 'warn', used: 169.6, earned: 168, pct: 54.1, v: 5882, lux: 1.22, dlx: 98.8, ssr: 799, spd1h: 185.1, spd5m: 19.7, medals: 17885, dataK: 1788 },
+      '5000-8': { tier: 'ok', used: 176.9, earned: 192, pct: 7.8, v: 5916, lux: 1.26, dlx: 101.3, ssr: 815, spd1h: 189.4, spd5m: 1.7, medals: 17885, dataK: 1788 },
+      '5000-9': { tier: 'ok', used: 184.2, earned: 216, pct: 0.21, v: 5919, lux: 1.27, dlx: 101.5, ssr: 817, spd1h: 189.8, spd5m: 0.0, medals: 17890, dataK: 1789 },
+      '5000-10': { tier: 'ok', used: 191.5, earned: 240, pct: 0.0, v: 5919, lux: 1.27, dlx: 101.5, ssr: 817, spd1h: 189.8, spd5m: 0.0, medals: 17890, dataK: 1789 },
+      '5000-11': { tier: 'ok', used: 198.8, earned: 264, pct: 0.0, v: 5919, lux: 1.27, dlx: 101.5, ssr: 817, spd1h: 189.8, spd5m: 0.0, medals: 17890, dataK: 1789 }
     };
 
+    function formatBhDropsRows(d) {
+      const rows = [
+        `${fmt(d.v)} Bounty Vouchers`,
+        `${d.lux.toFixed(2)} Luxury Choice Chests`,
+        `${d.dlx.toFixed(1)} Deluxe Choice Chests`,
+        `${fmt(d.ssr)} SSR Resource Choice Chests`,
+        `${d.spd1h.toFixed(1)}× 1h Speedups`
+      ];
+      if (d.spd5m > 0.5) {
+        rows.push(`${Math.round(d.spd5m)}× 5m Speedups`);
+      }
+      return rows;
+    }
+
+    function renderCheatSubgroup(title, items) {
+      return `<div><div class="cheat-subhead">${title}</div><ul class="cheat-list">${items.map(item => `<li>${item}</li>`).join('')}</ul></div>`;
+    }
+
+    function formatBhMerchantFree(d) {
+      const dataTxt = d.dataK >= 1000 ? `${(d.dataK / 1000).toFixed(2)}M` : `${fmt(d.dataK)}K`;
+      return `${fmt(d.medals)} Skill Medals + ${dataTxt} Battle Data`;
+    }
+
     function getBhJammerRisk(target, n) {
-      return BH_JAMMER_RISK[`${target}-${n}`] || { tier: 'ok', pct: 0, drift: 0, note: '' };
+      return BH_JAMMER_RISK[`${target}-${n}`] || { tier: 'ok', used: 0, earned: 0, pct: 0 };
     }
 
     function formatBhJammerBadge(risk) {
+      const comparison = `~${Math.round(risk.used)} needed vs. ${risk.earned} on hand`;
       if (risk.tier === 'bad') {
-        return `<span class="badge bad bh-jammer-badge">🔴 Jammer Deficit: ${Math.round(risk.pct)}% run-out (${risk.note})</span>`;
+        return `<span class="badge bad bh-jammer-badge">🔴 Jammer Deficit: ${comparison} (${Math.round(risk.pct)}% run-out)</span>`;
       }
       if (risk.tier === 'warn') {
-        return `<span class="badge warn bh-jammer-badge">🟡 Tight Jammers: ${Math.round(risk.pct)}% run-out (${risk.note})</span>`;
+        return `<span class="badge warn bh-jammer-badge">🟡 Tight Jammers: ${comparison} (${Math.round(risk.pct)}% run-out)</span>`;
       }
-      return `<span class="badge ok bh-jammer-badge">🟢 Jammers Safe: +${risk.drift.toFixed(1)}/cycle (${risk.pct}% risk)</span>`;
+      return `<span class="badge ok bh-jammer-badge">🟢 Jammers Safe: ${comparison} (${risk.pct}% run-out)</span>`;
     }
 
     function populateBhCycles(preferredCycle) {
@@ -1451,11 +1489,12 @@
           const risk = getBhJammerRisk(target, n);
           const jammerPen = risk.tier === 'bad' ? 55 : (risk.tier === 'warn' ? 6 : 0);
           const score = lux * 22 + deco * 20 - t2Pen - jammerPen;
+          const riskSummary = `~${Math.round(risk.used)} needed vs. ${risk.earned} on hand`;
           const riskBadge = risk.tier === 'bad'
-            ? `<span class="badge bad bh-jammer-badge">🔴 Deficit (${Math.round(risk.pct)}%)</span>`
+            ? `<span class="badge bad bh-jammer-badge">🔴 Deficit: ${riskSummary} (${Math.round(risk.pct)}% run-out)</span>`
             : (risk.tier === 'warn'
-              ? `<span class="badge warn bh-jammer-badge">🟡 Tight (${Math.round(risk.pct)}%)</span>`
-              : `<span class="badge ok bh-jammer-badge">🟢 Safe (${risk.pct}%)</span>`);
+              ? `<span class="badge warn bh-jammer-badge">🟡 Tight: ${riskSummary} (${Math.round(risk.pct)}% run-out)</span>`
+              : `<span class="badge ok bh-jammer-badge">🟢 Safe: ${riskSummary} (${risk.pct}% run-out)</span>`);
           bhChoices.push({
             target, n,
             spend: plan.avgCost,
@@ -1615,24 +1654,40 @@
         } else {
           whatList.push('Buy 0 silver brick packs');
         }
+        whatList.push('Buy daily Lv.5 Drone Component Chest (80 Bounty Vouchers/day)');
         const bhRisk = getBhJammerRisk(bhTarget, bhCycle);
+        const bhJammerTxt = `~${Math.round(bhRisk.used)} needed vs. ${bhRisk.earned} on hand (${Math.round(bhRisk.pct)}% run-out)`;
         if (bhRisk.tier === 'bad') {
-          whatList.push(`<span class="badge bad">🔴 Jammer Deficit (${bhRisk.pct}% risk)</span> Expect to clear ${bhRisk.note} after running out of Jammers`);
+          whatList.push(`<span class="badge bad">🔴 Jammer Deficit</span> ${bhJammerTxt} — finish Normal zombies once at 0 Jammers`);
         } else if (bhRisk.tier === 'warn') {
-          whatList.push(`<span class="badge warn">🟡 Tight Jammers (${bhRisk.pct}% risk)</span> If out of Jammers, full-clear ${bhRisk.note}`);
+          whatList.push(`<span class="badge warn">🟡 Tight Jammers</span> ${bhJammerTxt} — finish Normal zombies if out`);
         }
-        const rewardsList = bhCycle > 1
+        const spendLabel = `${fmt(bhTarget)} spend`;
+        const milestoneItems = bhCycle > 1
           ? [
-              'Save events: 1× Luxury Choice Chest (300 milestone)',
-              `Spend event: ${luxSpend}× Luxury + ${decoSpend}× UR Deco`
+              '300 spend: 1× Luxury Choice Chest',
+              `${spendLabel}: ${luxSpend}× Luxury Choice Chests + ${decoSpend}× UR Decoration Chests`
             ]
-          : [`Each event: ${luxSpend}× Luxury + ${decoSpend}× UR Deco`];
+          : [`${spendLabel}: ${luxSpend}× Luxury Choice Chests + ${decoSpend}× UR Decoration Chests`];
+        const merchantItems = bhCycle > 1
+          ? [
+              `300 spend: ${formatBhMerchantFree(BH_SAVE_300_DROPS)}`,
+              `${spendLabel}: ${formatBhMerchantFree(bhRisk)}`
+            ]
+          : [`${spendLabel}: ${formatBhMerchantFree(bhRisk)}`];
+        const rewardBlocks = [renderCheatSubgroup('Milestones:', milestoneItems)];
+        if (bhCycle > 1) {
+          rewardBlocks.push(renderCheatSubgroup('Expected Game Rewards (300 spend):', formatBhDropsRows(BH_SAVE_300_DROPS)));
+        }
+        rewardBlocks.push(renderCheatSubgroup(`Expected Game Rewards (${spendLabel}):`, formatBhDropsRows(bhRisk)));
+        rewardBlocks.push(renderCheatSubgroup('Expected Wandering Merchant:', merchantItems));
+        const rewardsHtml = `<div class="cheat-subgroups">${rewardBlocks.join('')}</div>`;
         cards.push({
           ev: 'Bounty Hunter',
           cls: 'ev-bh',
           what: whatList,
           when: bhCycle === 1 ? `Every event: spend ${fmt(bhTarget)} bullets.` : `Every ${ordinal(bhCycle)} event: spend ${fmt(bhTarget)} bullets.`,
-          rewards: rewardsList
+          rewards: rewardsHtml
         });
       }
 
@@ -1644,48 +1699,60 @@
           '1000-every': {
             what: ['Claim 360 free coins', 'Buy 6 × 5k + 2 × 10k silver brick packs (50k)'],
             when: 'Every event: hit 1,000 bar; spend or bank shop coins.',
-            rewards: [
-              '10× UR Hero Shards',
-              '1× UR Decoration Chest',
-              'Lvl 5 Drone Component Chest',
-              '1,040 shop coins to spend in Glittering Market'
-            ]
+            milestones: [
+              '10× UR Hero Shards (100)',
+              '1× UR Decoration Chest (400)',
+              '1× Lv.5 Drone Component Chest (1,000)'
+            ],
+            currency: ['1,040 Glittering Coins to spend in Glittering Market']
           },
           't1-only': {
             what: ['Claim 360 free coins', 'Buy 6 × 5k silver brick packs (30k)'],
             when: 'Every event: hit 400 bar; bank extra shop coins.',
-            rewards: [
-              '10× UR Hero Shards',
-              '1× UR Decoration Chest',
-              '840 shop coins to spend in Glittering Market'
-            ]
+            milestones: [
+              '10× UR Hero Shards (100)',
+              '1× UR Decoration Chest (400)'
+            ],
+            currency: ['840 Glittering Coins to spend in Glittering Market']
           },
           '400-min': {
             what: ['Claim 360 free coins', 'Buy 1 × 5k silver brick pack (5k)'],
             when: 'Every event: hit 400 bar.',
-            rewards: [
-              '10× UR Hero Shards',
-              '1× UR Decoration Chest',
-              '440 shop coins to spend in Glittering Market'
-            ]
+            milestones: [
+              '10× UR Hero Shards (100)',
+              '1× UR Decoration Chest (400)'
+            ],
+            currency: ['440 Glittering Coins to spend in Glittering Market']
           },
           'free': {
             what: ['Claim 360 free coins', 'Buy 0 silver brick packs'],
             when: 'Every event: hit 100 bar.',
-            rewards: [
-              '10× UR Hero Shards',
-              '360 shop coins to spend in Glittering Market (misses 400)'
-            ]
+            milestones: ['10× UR Hero Shards (100 — misses 400)'],
+            currency: ['360 Glittering Coins to spend in Glittering Market']
           }
         };
         const g = gmMap[gmMode];
         const gmWhat = [...g.what];
-        const gmRewards = [...g.rewards];
+        const gmBlocks = [
+          renderCheatSubgroup('Milestones:', g.milestones),
+          renderCheatSubgroup('Event Currency:', g.currency)
+        ];
         if (gmMode === '1000-every' && gbForGm >= 2000) {
           gmWhat[1] = 'Buy 6 × 5k Silver Brick packs (30k) + 1 × 2,000 Gold Brick pack (200 coins)';
-          gmRewards.push('Energy Loot Quest (100 pt milestone): 10× UR Shards, 500 Skill Pts, 500 Ore, 2× Gold SSR Chests');
+          gmBlocks.push(renderCheatSubgroup('Energy Loot Quest (100 pts):', [
+            '10× UR Hero Shards',
+            '500 Skill Medals',
+            '500 Ore',
+            '2× Gold SSR Chests'
+          ]));
         }
-        cards.push({ ev: 'Glittering Market', cls: 'ev-gm', what: gmWhat, when: g.when, rewards: gmRewards });
+        cards.push({
+          ev: 'Glittering Market',
+          cls: 'ev-gm',
+          what: gmWhat,
+          when: g.when,
+          rewards: `<div class="cheat-subgroups">${gmBlocks.join('')}</div>`
+        });
       }
 
       // 3. Ammo Bonanza
@@ -1702,26 +1769,51 @@
           'max': {
             what: ['Claim 110 free bullets', 'Buy 5 × 5k silver brick packs (25k = 160 bullets)'],
             when: 'Every event: reach Round 1 Level 20 (~127 avg). If ~145+ bullets remain after reaching Round 1 Level 20, clear Level 20 & push to Round 2 Level 20.',
-            rewards: [...abBaseRewards, '~Every 5th event: Double all 4 (Round 2 Level 20)']
+            milestones: [...abBaseRewards, '~Every 5th event: Double all 4 (Round 2 Level 20)']
           },
           'safe-m1': {
             what: ['Claim 110 free bullets', 'Buy 3 × 5k silver brick packs (15k = 140 bullets)'],
             when: 'Every event: reach Round 1 Lvl 20 (~127 avg, ~99.5% safe).',
-            rewards: abBaseRewards
+            milestones: abBaseRewards
           },
           'm1': {
             what: ['Claim 110 free bullets', 'Buy 2 × 5k silver brick packs (10k = 130 bullets)'],
             when: 'Every event once you have a ~15-bullet buffer; reach Round 1 Lvl 20.',
-            rewards: abBaseRewards
+            milestones: abBaseRewards
           },
           'free': {
             what: ['Claim 110 free bullets', 'Buy 0 silver brick packs'],
             when: 'Skip 1 event to bank, then reach Round 1 Lvl 20 on 6 of 7 events.',
-            rewards: abBaseRewards.map((r, i) => i === 0 ? `${r} (6 of 7 events)` : r)
+            milestones: abBaseRewards.map((r, i) => i === 0 ? `${r} (6 of 7 events)` : r)
           }
         };
         const a = abMap[abMode];
-        cards.push({ ev: 'Ammo Bonanza', cls: 'ev-ab', ...a });
+        const abBlocks = [
+          renderCheatSubgroup('Milestones (Round 1 Lvl 5–20):', a.milestones),
+          renderCheatSubgroup('Expected Game Rewards (Round 1 Lvl 20):', [
+            '48,286 Upgrade Ore (47,500 Major Prize + 786 board tiles)',
+            '78.6 Coin Chests (SR)',
+            '29.5 Synthetic Resin',
+            '9.8 Dielectric Ceramic',
+            '29.5× 5m Speedups'
+          ])
+        ];
+        if (abMode === 'max') {
+          abBlocks.push(renderCheatSubgroup('Expected Game Rewards (Round 2 Lvl 20 — ~Every 5th Event):', [
+            '99,124 Upgrade Ore (97,500 Major Prize + 1,624 board tiles)',
+            '162.4 Coin Chests (SR)',
+            '60.9 Synthetic Resin',
+            '20.3 Dielectric Ceramic',
+            '60.9× 5m Speedups'
+          ]));
+        }
+        cards.push({
+          ev: 'Ammo Bonanza',
+          cls: 'ev-ab',
+          what: a.what,
+          when: a.when,
+          rewards: `<div class="cheat-subgroups">${abBlocks.join('')}</div>`
+        });
       }
 
       // 4. Total Mobilization
@@ -1733,25 +1825,35 @@
           cls: 'ev-tm',
           what: ['Buy 0 Vouchers & 0 Gold Brick packs'],
           when: 'Skipped.',
-          rewards: ['0 coupons', '0 Mythic Blueprints']
+          rewards: ['0 Mobilization Coupons', '0 Mythic Blueprints']
         });
       } else {
         const tmRewardsMap = {
-          600: [
-            '1,060 total coupons to spend in Total Mobilization Market',
-            '5× Mythic Gear Blueprints',
-            'Energy Loot Quest (3,000 pts): 15× Legendary Blueprints, 6,000 Diamonds, 80× UR Shards, 15,000 Skill Pts, 15,000 Ore, 22× Gold SSR Chests'
-          ],
-          400: [
-            '560 total coupons to spend in Total Mobilization Market',
-            '5× Mythic Gear Blueprints',
-            'Energy Loot Quest (2,000 pts): 5× Legendary Blueprints, 2,000 Diamonds, 80× UR Shards, 9,000 Skill Pts, 9,000 Ore, 22× Gold SSR Chests'
-          ],
-          200: [
-            '360 total coupons to spend in Total Mobilization Market',
-            'Energy Loot Quest (1,000 pts): 5× Legendary Blueprints, 2,000 Diamonds, 40× UR Shards, 5,000 Skill Pts, 5,000 Ore, 12× Gold SSR Chests'
-          ]
+          600: {
+            milestones: ['5× Mythic Gear Blueprints', '+460 bonus Mobilization Coupons'],
+            currency: ['1,060 total coupons to spend in Total Mobilization Market (600 base + 460 milestone)'],
+            elqTitle: 'Energy Loot Quest (3,000 pts):',
+            elq: ['15× Legendary Blueprints', '6,000 Diamonds', '80× UR Hero Shards', '15,000 Skill Medals', '15,000 Ore', '22× Gold SSR Chests']
+          },
+          400: {
+            milestones: ['5× Mythic Gear Blueprints', '+160 bonus Mobilization Coupons'],
+            currency: ['560 total coupons to spend in Total Mobilization Market (400 base + 160 milestone)'],
+            elqTitle: 'Energy Loot Quest (2,000 pts):',
+            elq: ['5× Legendary Blueprints', '2,000 Diamonds', '80× UR Hero Shards', '9,000 Skill Medals', '9,000 Ore', '22× Gold SSR Chests']
+          },
+          200: {
+            milestones: ['+160 bonus Mobilization Coupons'],
+            currency: ['360 total coupons to spend in Total Mobilization Market (200 base + 160 milestone)'],
+            elqTitle: 'Energy Loot Quest (1,000 pts):',
+            elq: ['5× Legendary Blueprints', '2,000 Diamonds', '40× UR Hero Shards', '5,000 Skill Medals', '5,000 Ore', '12× Gold SSR Chests']
+          }
         };
+        const t = tmRewardsMap[tmPlan.target];
+        const tmBlocks = [
+          renderCheatSubgroup('Milestones:', t.milestones),
+          renderCheatSubgroup('Event Currency:', t.currency),
+          renderCheatSubgroup(t.elqTitle, t.elq)
+        ];
         const vTxt = `${tmPlan.vPerEv.join('/')} Vouchers`;
         const gTxt = tmPlan.avgGb > 0 ? ` + ${tmPlan.gbPerEv.join('/')} Gold Brick packs` : '';
         const tmWhat = [`Buy ${vTxt}${gTxt}`];
@@ -1763,7 +1865,7 @@
           when: tmPlan.n === 1
             ? `Every event: redeem resources for ${tmPlan.target} coupons in the Total Mobilization Market.`
             : `Every ${ordinal(tmPlan.n)} event: redeem banked resources for ${tmPlan.target} coupons in the Total Mobilization Market.`,
-          rewards: tmRewardsMap[tmPlan.target]
+          rewards: `<div class="cheat-subgroups">${tmBlocks.join('')}</div>`
         });
       }
 
