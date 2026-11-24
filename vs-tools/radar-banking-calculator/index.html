@@ -228,11 +228,8 @@
     }
     .controls-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-    }
-    @media (max-width: 720px) {
-      .controls-grid { grid-template-columns: 1fr; }
+      grid-template-columns: 1fr;
+      gap: 16px;
     }
     .control-group {
       display: flex;
@@ -670,6 +667,422 @@
       gap: 8px;
     }
 
+    /* Restore & Overflow Timeline Visualizer */
+    .vis-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .live-clocks-bar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .clock-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      border-radius: var(--radius-sm);
+      background: var(--bg-card-inner);
+      border: 1px solid var(--border-color);
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+    .clock-pill .cp-lbl {
+      font-family: var(--font-family);
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+      font-weight: 700;
+    }
+
+    .vis-controls-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+    @media (max-width: 860px) {
+      .vis-controls-grid { grid-template-columns: 1fr; }
+    }
+    .vis-input-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .vis-input-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .vis-input-row input[type="number"],
+    .vis-input-row input[type="time"] {
+      width: 100%;
+      background: var(--input-bg);
+      color: var(--input-text);
+      border: 1px solid var(--input-border);
+      padding: 8px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 0.95rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      outline: none;
+    }
+    .vis-input-row input:focus {
+      border-color: var(--cyan-color);
+    }
+    .vis-unit-lbl {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+    .vis-quick-chips {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .vis-chip-btn {
+      background: var(--bg-card-inner);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .vis-chip-btn:hover {
+      color: var(--cyan-color);
+      border-color: var(--cyan-color);
+    }
+    .vis-sub-note {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    .vis-verdict-banner {
+      padding: 12px 16px;
+      border-radius: var(--radius-md);
+      font-size: 0.88rem;
+      font-weight: 600;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      border: 1px solid var(--border-color);
+    }
+    .vis-verdict-banner.safe {
+      background: var(--green-bg);
+      border-color: var(--green-border);
+      color: var(--green-color);
+    }
+    .vis-verdict-banner.warn {
+      background: var(--gold-bg);
+      border-color: var(--gold-border);
+      color: var(--gold-color);
+    }
+    .vis-verdict-banner.danger {
+      background: var(--red-bg);
+      border-color: var(--red-border);
+      color: var(--red-color);
+    }
+
+    .vis-targets-strip {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    @media (max-width: 720px) {
+      .vis-targets-strip { grid-template-columns: 1fr; }
+    }
+    .vis-target-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .vis-target-box.safe { border-left: 3px solid var(--green-color); }
+    .vis-target-box.warn { border-left: 3px solid var(--gold-color); }
+    .vis-target-box.danger { border-left: 3px solid var(--red-color); }
+    .vis-target-title {
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+    .vis-target-main {
+      font-family: var(--font-mono);
+      font-size: 0.86rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+    .vis-target-sub {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+    }
+
+    /* Horizontal 24h Timeline Bar */
+    .timeline-wrapper {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 18px 20px 16px;
+      margin-bottom: 16px;
+      overflow-x: auto;
+    }
+    .timeline-inner {
+      min-width: 640px;
+      position: relative;
+    }
+    .timeline-axis-row {
+      position: relative;
+      height: 22px;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+    .timeline-axis-tick {
+      position: absolute;
+      transform: translateX(-50%);
+      white-space: nowrap;
+    }
+    .timeline-axis-tick.start { transform: translateX(0); }
+    .timeline-axis-tick.end { transform: translateX(-100%); }
+
+    .timeline-track-area {
+      position: relative;
+      padding: 26px 0 22px;
+    }
+    .timeline-bar {
+      position: relative;
+      height: 38px;
+      background: var(--bg-card-inner);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      display: flex;
+      overflow: hidden;
+    }
+    .timeline-seg {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      font-weight: 700;
+      border-right: 1px dashed rgba(255, 255, 255, 0.14);
+      overflow: hidden;
+      white-space: nowrap;
+      padding: 0 4px;
+      transition: width 0.25s ease;
+    }
+    .timeline-seg:last-child { border-right: none; }
+    .timeline-seg.seg-safe {
+      background: var(--cyan-bg);
+      color: var(--cyan-color);
+    }
+    .timeline-seg.seg-optimal {
+      background: var(--gold-bg);
+      color: var(--gold-color);
+    }
+    .timeline-seg.seg-full {
+      background: var(--red-bg);
+      color: var(--red-color);
+    }
+
+    .timeline-days-band {
+      position: relative;
+      display: flex;
+      height: 24px;
+      border-radius: var(--radius-sm);
+      overflow: visible;
+      margin-top: 6px;
+      margin-bottom: 10px;
+      border: 1px solid var(--border-subtle);
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+    }
+    .timeline-day-half {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      padding: 0 10px;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .timeline-day-half.today {
+      background: var(--cyan-bg);
+      color: var(--cyan-color);
+      border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+    }
+    .timeline-day-half.tomorrow {
+      background: var(--gold-bg);
+      color: var(--gold-color);
+      justify-content: flex-end;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    }
+    .timeline-day-half.full-width {
+      border-radius: var(--radius-sm);
+    }
+
+    .timeline-svt-reset-line {
+      position: absolute;
+      top: -10px;
+      bottom: -22px;
+      width: 2px;
+      border-left: 2px dashed var(--gold-color);
+      box-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
+      z-index: 6;
+      pointer-events: none;
+    }
+    .timeline-reset-row {
+      position: relative;
+      height: 26px;
+      margin-top: 6px;
+    }
+    .timeline-svt-reset-tag {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--bg-panel);
+      border: 1.5px solid var(--gold-color);
+      color: var(--gold-color);
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 4px;
+      white-space: nowrap;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+    }
+
+    .timeline-node {
+      position: absolute;
+      top: 20px;
+      bottom: 16px;
+      transform: translateX(-50%);
+      z-index: 5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      pointer-events: none;
+    }
+    .timeline-node-badge {
+      position: absolute;
+      top: -22px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      font-weight: 800;
+      white-space: nowrap;
+      border: 1px solid var(--border-color);
+      background: var(--bg-panel);
+      color: var(--text-main);
+    }
+    .timeline-node-badge.safe { border-color: var(--green-border); color: var(--green-color); }
+    .timeline-node-badge.warn { border-color: var(--gold-border); color: var(--gold-color); }
+    .timeline-node-badge.danger { border-color: var(--red-border); color: var(--red-color); background: var(--red-bg); }
+    .timeline-node-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      border: 2px solid var(--bg-panel);
+      margin-top: 19px;
+      box-shadow: 0 0 0 2px var(--cyan-color);
+      background: var(--cyan-color);
+    }
+    .timeline-node-dot.warn { box-shadow: 0 0 0 2px var(--gold-color); background: var(--gold-color); }
+    .timeline-node-dot.danger { box-shadow: 0 0 0 2px var(--red-color); background: var(--red-color); }
+    .timeline-node-time {
+      position: absolute;
+      bottom: -18px;
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      font-weight: 700;
+      color: var(--text-main);
+      white-space: nowrap;
+    }
+
+    .restore-schedule-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    @media (max-width: 900px) {
+      .restore-schedule-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 520px) {
+      .restore-schedule-grid { grid-template-columns: 1fr; }
+    }
+    .restore-step-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .restore-step-card.danger { border-color: var(--red-border); }
+    .restore-step-card.warn { border-color: var(--gold-border); }
+    .restore-step-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+    .restore-step-times {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+    .restore-step-svt {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .restore-step-count {
+      font-family: var(--font-mono);
+      font-size: 0.92rem;
+      font-weight: 800;
+    }
+
     /* Footer */
     footer {
       margin-top: 40px;
@@ -714,9 +1127,10 @@
       <div class="control-group">
         <label class="control-label" for="radarLevelSelect">
           <span>1. Radar Facility Level</span>
-          <span id="levelBonusBadge" style="color:var(--gold-color);">+15% RSS</span>
+          <span id="levelBonusBadge" style="color:var(--gold-color);">Select level</span>
         </label>
         <select id="radarLevelSelect">
+          <option value="" selected>-- Select Radar Level --</option>
           <option value="1">Radar 1: 5 tasks displayed, 25 stored, Total 30</option>
           <option value="2">Radar 2: 6 tasks displayed, 25 stored, Total 31</option>
           <option value="3">Radar 3: 6 tasks displayed, 25 stored, Total 31</option>
@@ -726,7 +1140,7 @@
           <option value="7">Radar 7: 8 tasks displayed, 30 stored, Total 38</option>
           <option value="8">Radar 8: 8 tasks displayed, 35 stored, Total 43</option>
           <option value="9">Radar 9: 9 tasks displayed, 35 stored, Total 44</option>
-          <option value="10" selected>Radar 10: 9 tasks displayed, 40 stored, Total 49</option>
+          <option value="10">Radar 10: 9 tasks displayed, 40 stored, Total 49</option>
           <option value="11">Radar 11: 10 tasks displayed, 40 stored, Total 50</option>
           <option value="12">Radar 12: 10 tasks displayed, 40 stored, Total 50</option>
           <option value="13">Radar 13: 11 tasks displayed, 40 stored, Total 51</option>
@@ -754,27 +1168,176 @@
         </div>
       </div>
 
-      <!-- Col 2: Tasks to consume on Bank Day (Pulldown max 10) -->
-      <div class="control-group">
-        <label class="control-label" for="bankSpendSelect">
-          <span>2. Tasks To Consume on Bank Day</span>
-          <span style="color:var(--cyan-color);" id="bankSpendBadge">7 tasks</span>
-        </label>
-        <select id="bankSpendSelect">
-          <option value="0">0 Tasks (Pure Maximum Banking)</option>
-          <option value="1">1 Task</option>
-          <option value="2">2 Tasks</option>
-          <option value="3">3 Tasks</option>
-          <option value="4">4 Tasks</option>
-          <option value="5">5 Tasks (Battle Pass / Sky Predator / Dailies)</option>
-          <option value="6">6 Tasks</option>
-          <option value="7" selected>7 Tasks (Taylor 4★ Chest)</option>
-          <option value="8">8 Tasks (Taylor 5★ Chest)</option>
-          <option value="9">9 Tasks</option>
-          <option value="10">10 Tasks</option>
+    </div>
+  </div>
+
+  <!-- Fresh Start Prompt (Shown until a Radar Facility Level is selected) -->
+  <div class="card" id="selectLevelPrompt" style="text-align:center; padding: 36px 24px; border-style: dashed;">
+    <div style="font-size: 2rem; margin-bottom: 8px;">📡</div>
+    <div style="font-size: 1.1rem; font-weight: 800; margin-bottom: 6px;">Select Your Radar Facility Level Above</div>
+    <p style="font-size: 0.88rem; color: var(--text-muted); max-width: 520px; margin: 0 auto;">
+      Choose your Radar Level (1–17 or Custom) in <strong>1. Radar Facility Level</strong> to load your <strong>24h Restore &amp; Overflow Timeline</strong> and <strong>Pre-Bank Carryover Plan</strong>.
+    </p>
+  </div>
+
+  <div id="radarResultsContainer" style="display:none;">
+
+  <!-- Radar Restore & Overflow Timeline Visualizer -->
+  <div class="card" id="restoreVisualizerCard">
+    <div class="vis-header-row">
+      <div style="display:flex; flex-direction:column; gap:2px;">
+        <span style="font-size:1.1rem; font-weight:800;">⏱️ Radar Restore &amp; Overflow Timeline Visualizer (Next 24h)</span>
+        <span style="font-size:0.78rem; color:var(--text-muted); font-weight:normal;">Plug in your current radar tasks and next restore countdown (or exact clock time) to see every 6h restore point and spot full/overflow risk.</span>
+      </div>
+      <div class="live-clocks-bar">
+        <select id="visTimezoneSelect" aria-label="Select local timezone" style="width:auto; min-width:210px; max-width:290px; padding:5px 10px; font-size:0.76rem; font-weight:600; border-radius:var(--radius-sm);">
+          <!-- Populated dynamically via IANA tzdb (Intl.supportedValuesOf('timeZone')) -->
         </select>
+        <div class="clock-pill" title="Current time in selected timezone">
+          <span class="cp-lbl" id="visLocalNowLbl">Local Now</span>
+          <span id="visLocalNowClock" style="color:var(--cyan-color);">--:--</span>
+        </div>
+        <div class="clock-pill" title="Last War Server Time (00:00 SVT = 02:00 UTC)">
+          <span class="cp-lbl">Server (SVT)</span>
+          <span id="visServerNowClock" style="color:var(--gold-color);">--:--</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Inputs Row -->
+    <div class="vis-controls-grid">
+      <!-- 1. Current Radar Tasks (Visible on Map + Stored in Radar) -->
+      <div class="vis-input-box">
+        <label class="control-label" for="visMapTasks">
+          <span>1. Current Radar Tasks</span>
+          <span id="visCapBadge" style="color:var(--cyan-color);">20 / 49 Total</span>
+        </label>
+        <div class="vis-input-row">
+          <input type="number" id="visMapTasks" value="9" min="0" max="30" step="1" aria-label="Tasks visible on map">
+          <span class="vis-unit-lbl" id="visMapCapLbl">/ 9 Visible</span>
+          <input type="number" id="visStoredTasks" value="11" min="0" max="100" step="1" aria-label="Tasks stored in radar">
+          <span class="vis-unit-lbl" id="visStoredCapLbl">/ 40 Stored</span>
+        </div>
+        <div class="vis-quick-chips">
+          <span style="font-size:0.68rem; color:var(--text-dim); font-weight:700;">QUICK:</span>
+          <button type="button" class="vis-chip-btn" onclick="setVisTasks(0)">0 (Empty)</button>
+          <button type="button" class="vis-chip-btn" id="visBtnPreBank" onclick="setVisTasks('prebank')">Pre-Bank</button>
+          <button type="button" class="vis-chip-btn" id="visBtnSafeFull" onclick="setVisTasks('safefull')">Safe Max</button>
+        </div>
       </div>
 
+      <!-- 2. Countdown Until Next Restore -->
+      <div class="vis-input-box">
+        <label class="control-label" for="visCountdownHrs">
+          <span>2a. Time Until Next Restore</span>
+          <span id="visRegenPerCycleBadge" style="color:var(--green-color);">+11 / 6h</span>
+        </label>
+        <div class="vis-input-row">
+          <input type="number" id="visCountdownHrs" value="3" min="0" max="23" step="1" aria-label="Hours until next restore">
+          <span class="vis-unit-lbl">hrs</span>
+          <input type="number" id="visCountdownMins" value="0" min="0" max="59" step="1" aria-label="Minutes until next restore">
+          <span class="vis-unit-lbl">min</span>
+        </div>
+        <div class="vis-quick-chips">
+          <span style="font-size:0.68rem; color:var(--text-dim); font-weight:700;">QUICK:</span>
+          <button type="button" class="vis-chip-btn" onclick="setVisCountdown(0, 30)">30m</button>
+          <button type="button" class="vis-chip-btn" onclick="setVisCountdown(1, 0)">1h</button>
+          <button type="button" class="vis-chip-btn" onclick="setVisCountdown(3, 0)">3h</button>
+          <button type="button" class="vis-chip-btn" onclick="setVisCountdown(5, 0)">5h</button>
+        </div>
+      </div>
+
+      <!-- 3. Next Restore Clock Time (Two-way synced) -->
+      <div class="vis-input-box">
+        <label class="control-label" for="visNextRestoreTime">
+          <span>2b. Next Restore Time (Local)</span>
+          <span id="visNextRestoreDayBadge" style="color:var(--gold-color);">Today</span>
+        </label>
+        <div class="vis-input-row">
+          <input type="time" id="visNextRestoreTime">
+        </div>
+        <div class="vis-sub-note" id="visNextRestoreSvtNote">
+          Server Time: --:-- SVT (updates countdown ↔ clock)
+        </div>
+      </div>
+    </div>
+
+    <!-- Verdict Banner (Concise Status Alert) -->
+    <div class="vis-verdict-banner safe" id="visVerdictBanner">
+      <span id="visVerdictText">Loading timeline...</span>
+    </div>
+
+    <!-- Through Reset vs Full 24h Safe Bank (n-1) Strip -->
+    <div class="vis-targets-strip">
+      <div class="vis-target-box safe" id="visResetTargetBox">
+        <div class="vis-target-title">
+          <span>🔄 Through Server Reset (00:00 SVT)</span>
+          <span id="visResetTargetTime" style="font-family:var(--font-mono); color:var(--gold-color);">--:--</span>
+        </div>
+        <div class="vis-target-main" id="visResetTargetMain">—</div>
+        <div class="vis-target-sub" id="visResetTargetSub">—</div>
+      </div>
+
+      <div class="vis-target-box safe" id="vis24hTargetBox">
+        <div class="vis-target-title">
+          <span>⏱️ Full 24h Window (4 Restores)</span>
+          <span id="vis24hTargetRegen" style="font-family:var(--font-mono); color:var(--cyan-color);">+44 tasks</span>
+        </div>
+        <div class="vis-target-main" id="vis24hTargetMain">—</div>
+        <div class="vis-target-sub" id="vis24hTargetSub">—</div>
+      </div>
+    </div>
+
+    <!-- Horizontal 24-Hour Timeline Bar -->
+    <div class="timeline-wrapper">
+      <div class="timeline-inner" id="visTimelineInner">
+        <div class="timeline-axis-row" id="visAxisTop">
+          <!-- Local Time Ticks -->
+        </div>
+        <div class="timeline-days-band" id="visDaysBand">
+          <!-- Today vs Tomorrow (Server Day) Band -->
+        </div>
+        <div class="timeline-track-area" id="visTrackArea">
+          <div class="timeline-bar" id="visTimelineBar">
+            <!-- Proportional Interval Segments -->
+          </div>
+          <!-- Server Reset Marker & Restore Point Nodes injected via JS -->
+        </div>
+        <div class="timeline-axis-row" id="visAxisBottom">
+          <!-- Server Time (SVT) Ticks -->
+        </div>
+        <div class="timeline-reset-row" id="visResetRow">
+          <!-- Server Reset Pill -->
+        </div>
+      </div>
+    </div>
+
+    <!-- 4-Cycle Restore Breakdown Cards -->
+    <div class="restore-schedule-grid" id="visRestoreScheduleGrid">
+      <!-- Populated via JS -->
+    </div>
+  </div>
+
+  <!-- BANKING SECTION: Controls + Decision Panel -->
+  <div class="controls-card" id="bankingControlsCard" style="margin-bottom: 16px;">
+    <div class="control-group">
+      <label class="control-label" for="bankSpendSelect">
+        <span>🏦 2. Tasks To Consume on Bank Day</span>
+        <span style="color:var(--cyan-color);" id="bankSpendBadge">7 tasks</span>
+      </label>
+      <select id="bankSpendSelect">
+        <option value="0">0 Tasks (Pure Maximum Banking)</option>
+        <option value="1">1 Task</option>
+        <option value="2">2 Tasks</option>
+        <option value="3">3 Tasks</option>
+        <option value="4">4 Tasks</option>
+        <option value="5">5 Tasks (Battle Pass / Sky Predator / Dailies)</option>
+        <option value="6">6 Tasks</option>
+        <option value="7" selected>7 Tasks (Taylor 4★ Chest)</option>
+        <option value="8">8 Tasks (Taylor 5★ Chest)</option>
+        <option value="9">9 Tasks</option>
+        <option value="10">10 Tasks</option>
+      </select>
     </div>
   </div>
 
@@ -974,6 +1537,8 @@
     </div>
   </div>
 
+  </div><!-- /#radarResultsContainer -->
+
   <!-- Footer -->
   <footer>
     <p>Last War: Survival Tactical Tools &bull; Radar Banking & Pre-Bank Carryover Calculator &bull; <a href="../hub/index.html">Back to Tools Hub</a></p>
@@ -1133,7 +1698,51 @@
     };
   }
 
+  function saveBankingSettings() {
+    try {
+      localStorage.setItem('radar-banking-settings', JSON.stringify({
+        radarLevel: radarLevelSelect.value,
+        bankSpend: bankSpendSelect.value,
+        customRefresh: customRefresh.value,
+        customDisplay: customDisplay.value,
+        customStorage: customStorage.value
+      }));
+    } catch (e) {}
+  }
+
+  function loadBankingSettings() {
+    try {
+      const saved = JSON.parse(localStorage.getItem('radar-banking-settings') || '{}');
+      if (saved.radarLevel) {
+        radarLevelSelect.value = saved.radarLevel;
+        if (saved.radarLevel === 'custom') {
+          customBox.classList.add('visible');
+        }
+      }
+      if (saved.bankSpend !== undefined) bankSpendSelect.value = saved.bankSpend;
+      if (saved.customRefresh) customRefresh.value = saved.customRefresh;
+      if (saved.customDisplay) customDisplay.value = saved.customDisplay;
+      if (saved.customStorage) customStorage.value = saved.customStorage;
+    } catch (e) {}
+  }
+
   function updateCalculator() {
+    const promptEl = document.getElementById('selectLevelPrompt');
+    const resultsEl = document.getElementById('radarResultsContainer');
+    const selectedLevel = radarLevelSelect.value;
+
+    if (!selectedLevel) {
+      levelBonusBadge.textContent = 'Select level';
+      bankSpendBadge.textContent = `${parseInt(bankSpendSelect.value) || 0} tasks`;
+      if (promptEl) promptEl.style.display = 'block';
+      if (resultsEl) resultsEl.style.display = 'none';
+      return;
+    }
+
+    if (promptEl) promptEl.style.display = 'none';
+    if (resultsEl) resultsEl.style.display = 'block';
+    saveBankingSettings();
+
     const radar = getRadarProfile();
     const plannedBankSpend = parseInt(bankSpendSelect.value) || 0;
 
@@ -1202,6 +1811,9 @@
 
     // Render Table for active level (or expanded table)
     renderCheatTable(radar, plannedBankSpend);
+
+    // Update Restore & Overflow Timeline Visualizer
+    updateRestoreVisualizer(radar, reqSaveTonight);
   }
 
   // Weekly Planner State (Default: Monday B, Wednesday A Rebuild, Friday B)
@@ -1697,8 +2309,635 @@
     });
   }
 
+  // =========================================================================
+  // RADAR RESTORE & OVERFLOW TIMELINE VISUALIZER
+  // =========================================================================
+  const visMapTasksEl = document.getElementById('visMapTasks');
+  const visStoredTasksEl = document.getElementById('visStoredTasks');
+  const visCountdownHrsEl = document.getElementById('visCountdownHrs');
+  const visCountdownMinsEl = document.getElementById('visCountdownMins');
+  const visNextRestoreTimeEl = document.getElementById('visNextRestoreTime');
+  const visTimezoneSelectEl = document.getElementById('visTimezoneSelect');
+
+  const DETECTED_TZ = (() => {
+    try {
+      return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+    } catch {
+      return 'UTC';
+    }
+  })();
+
+  let visState = (() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('radar-restore-visualizer') || '{}');
+      return {
+        mapTasks: Number.isFinite(saved.mapTasks) ? saved.mapTasks : 9,
+        storedTasks: Number.isFinite(saved.storedTasks) ? saved.storedTasks : 11,
+        countdownMins: Number.isFinite(saved.countdownMins) ? saved.countdownMins : 180,
+        timeZone: typeof saved.timeZone === 'string' && saved.timeZone ? saved.timeZone : 'auto'
+      };
+    } catch {
+      return { mapTasks: 9, storedTasks: 11, countdownMins: 180, timeZone: 'auto' };
+    }
+  })();
+
+  let lastVisContext = { radar: null, reqSaveTonight: 11 };
+
+  function getActiveTimeZone() {
+    if (!visState.timeZone || visState.timeZone === 'auto') return DETECTED_TZ;
+    return visState.timeZone;
+  }
+
+  function getTzShortLabel(tz, date = new Date()) {
+    try {
+      const parts = new Intl.DateTimeFormat('en-US', { timeZone: tz, timeZoneName: 'short' }).formatToParts(date);
+      const tzPart = parts.find(p => p.type === 'timeZoneName');
+      return tzPart ? tzPart.value : '';
+    } catch {
+      return '';
+    }
+  }
+
+  function populateTimezoneSelect() {
+    if (!visTimezoneSelectEl) return;
+    const fallbackZones = [
+      'UTC', 'America/New_York', 'America/Chicago', 'America/Denver', 'America/Los_Angeles',
+      'America/Anchorage', 'Pacific/Honolulu', 'America/Toronto', 'America/Sao_Paulo',
+      'Europe/London', 'Europe/Paris', 'Europe/Berlin', 'Europe/Moscow',
+      'Asia/Dubai', 'Asia/Kolkata', 'Asia/Bangkok', 'Asia/Singapore', 'Asia/Shanghai',
+      'Asia/Seoul', 'Asia/Tokyo', 'Australia/Sydney', 'Pacific/Auckland'
+    ];
+    let zones = fallbackZones;
+    try {
+      if (typeof Intl.supportedValuesOf === 'function') {
+        const supported = Intl.supportedValuesOf('timeZone');
+        if (Array.isArray(supported) && supported.length > 0) zones = supported;
+      }
+    } catch {}
+
+    const now = new Date();
+    const detectedShort = getTzShortLabel(DETECTED_TZ, now);
+    visTimezoneSelectEl.innerHTML = '';
+
+    const autoOpt = document.createElement('option');
+    autoOpt.value = 'auto';
+    autoOpt.textContent = `Auto-Detect (${DETECTED_TZ}${detectedShort ? ' · ' + detectedShort : ''})`;
+    visTimezoneSelectEl.appendChild(autoOpt);
+
+    zones.forEach(tz => {
+      const opt = document.createElement('option');
+      opt.value = tz;
+      const abbr = getTzShortLabel(tz, now);
+      opt.textContent = abbr ? `${tz} (${abbr})` : tz;
+      visTimezoneSelectEl.appendChild(opt);
+    });
+
+    visTimezoneSelectEl.value = visState.timeZone || 'auto';
+    if (visTimezoneSelectEl.value !== (visState.timeZone || 'auto')) {
+      visTimezoneSelectEl.value = 'auto';
+      visState.timeZone = 'auto';
+    }
+  }
+
+  function saveVisState() {
+    try {
+      localStorage.setItem('radar-restore-visualizer', JSON.stringify(visState));
+    } catch (e) {}
+  }
+
+  function pad2(n) {
+    return String(n).padStart(2, '0');
+  }
+
+  function getDatePartsInTz(date, tz = getActiveTimeZone()) {
+    const parts = new Intl.DateTimeFormat('en-CA', {
+      timeZone: tz,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    }).formatToParts(date);
+    const map = {};
+    parts.forEach(p => { map[p.type] = p.value; });
+    const hour = map.hour === '24' ? 0 : parseInt(map.hour, 10);
+    const minute = parseInt(map.minute, 10);
+    return {
+      dateKey: `${map.year}-${map.month}-${map.day}`,
+      hour,
+      minute
+    };
+  }
+
+  function findNextTimestampForClockInTz(hh, mm, now, tz = getActiveTimeZone()) {
+    const curParts = getDatePartsInTz(now, tz);
+    let deltaMins = (hh * 60 + mm) - (curParts.hour * 60 + curParts.minute);
+    if (deltaMins <= 0) deltaMins += 1440;
+    let candidate = new Date(now.getTime() + deltaMins * 60000);
+    // One refinement pass in case a DST boundary fell inside the delta
+    const checkParts = getDatePartsInTz(candidate, tz);
+    const errMins = (hh * 60 + mm) - (checkParts.hour * 60 + checkParts.minute);
+    if (errMins !== 0 && Math.abs(errMins) <= 180) {
+      candidate = new Date(candidate.getTime() + errMins * 60000);
+    }
+    return candidate;
+  }
+
+  function formatLocalTime(date) {
+    return date.toLocaleTimeString([], {
+      timeZone: getActiveTimeZone(),
+      hour: 'numeric',
+      minute: '2-digit'
+    });
+  }
+
+  function formatTimeInputVal(date) {
+    const p = getDatePartsInTz(date, getActiveTimeZone());
+    return `${pad2(p.hour)}:${pad2(p.minute)}`;
+  }
+
+  // Last War Server Time (SVT) = UTC - 2 hours (00:00 SVT = 02:00 UTC)
+  function formatServerTime(date) {
+    const svt = new Date(date.getTime() - 2 * 3600 * 1000);
+    return `${pad2(svt.getUTCHours())}:${pad2(svt.getUTCMinutes())} SVT`;
+  }
+
+  function formatDuration(mins) {
+    const m = Math.max(0, Math.round(mins));
+    const h = Math.floor(m / 60);
+    const rem = m % 60;
+    if (h === 0) return `${rem}m`;
+    return `${h}h ${pad2(rem)}m`;
+  }
+
+  function syncCountdownInputsFromState() {
+    if (visCountdownHrsEl) visCountdownHrsEl.value = Math.floor(visState.countdownMins / 60);
+    if (visCountdownMinsEl) visCountdownMinsEl.value = visState.countdownMins % 60;
+  }
+
+  function syncClockInputFromState(now) {
+    if (!visNextRestoreTimeEl) return;
+    const nextDate = new Date(now.getTime() + visState.countdownMins * 60000);
+    visNextRestoreTimeEl.value = formatTimeInputVal(nextDate);
+  }
+
+  function syncTaskInputsFromState(radar) {
+    if (visMapTasksEl) {
+      visMapTasksEl.max = radar.display;
+      visMapTasksEl.value = visState.mapTasks;
+    }
+    if (visStoredTasksEl) {
+      visStoredTasksEl.max = radar.storage;
+      visStoredTasksEl.value = visState.storedTasks;
+    }
+  }
+
+  function setVisTasks(val) {
+    const radar = lastVisContext.radar || getRadarProfile();
+    let total = 0;
+    if (val === 'prebank') {
+      total = lastVisContext.reqSaveTonight;
+    } else if (val === 'safefull') {
+      total = radar.safeBank;
+    } else {
+      total = Math.max(0, parseInt(val, 10) || 0);
+    }
+    const split = formatBankSplit(total, radar.display, radar.storage);
+    visState.mapTasks = split.mapTasks;
+    visState.storedTasks = split.storedTasks;
+    syncTaskInputsFromState(radar);
+    saveVisState();
+    renderRestoreVisualizer();
+  }
+
+  function setVisCountdown(hrs, mins) {
+    visState.countdownMins = Math.max(0, (hrs * 60) + mins);
+    syncCountdownInputsFromState();
+    syncClockInputFromState(new Date());
+    saveVisState();
+    renderRestoreVisualizer();
+  }
+
+  function handleTaskSplitInput() {
+    const radar = lastVisContext.radar || getRadarProfile();
+    visState.mapTasks = Math.max(0, Math.min(radar.display, parseInt(visMapTasksEl?.value, 10) || 0));
+    visState.storedTasks = Math.max(0, Math.min(radar.storage, parseInt(visStoredTasksEl?.value, 10) || 0));
+    saveVisState();
+    renderRestoreVisualizer();
+  }
+
+  if (visMapTasksEl) visMapTasksEl.addEventListener('input', handleTaskSplitInput);
+  if (visStoredTasksEl) visStoredTasksEl.addEventListener('input', handleTaskSplitInput);
+
+  if (visTimezoneSelectEl) {
+    populateTimezoneSelect();
+    visTimezoneSelectEl.addEventListener('change', () => {
+      visState.timeZone = visTimezoneSelectEl.value || 'auto';
+      syncClockInputFromState(new Date());
+      saveVisState();
+      renderRestoreVisualizer();
+    });
+  }
+
+  function handleCountdownChange() {
+    const hrs = Math.max(0, Math.min(23, parseInt(visCountdownHrsEl?.value, 10) || 0));
+    const mins = Math.max(0, Math.min(59, parseInt(visCountdownMinsEl?.value, 10) || 0));
+    visState.countdownMins = hrs * 60 + mins;
+    syncClockInputFromState(new Date());
+    saveVisState();
+    renderRestoreVisualizer();
+  }
+
+  if (visCountdownHrsEl) visCountdownHrsEl.addEventListener('input', handleCountdownChange);
+  if (visCountdownMinsEl) visCountdownMinsEl.addEventListener('input', handleCountdownChange);
+
+  if (visNextRestoreTimeEl) {
+    visNextRestoreTimeEl.addEventListener('input', () => {
+      const val = visNextRestoreTimeEl.value;
+      if (!val || !val.includes(':')) return;
+      const [hh, mm] = val.split(':').map(Number);
+      if (isNaN(hh) || isNaN(mm)) return;
+
+      const now = new Date();
+      const target = findNextTimestampForClockInTz(hh, mm, now, getActiveTimeZone());
+      const diffMins = Math.max(0, Math.round((target.getTime() - now.getTime()) / 60000));
+      visState.countdownMins = diffMins;
+      syncCountdownInputsFromState();
+      saveVisState();
+      renderRestoreVisualizer();
+    });
+  }
+
+  function updateRestoreVisualizer(radar, reqSaveTonight) {
+    lastVisContext = { radar, reqSaveTonight };
+    visState.mapTasks = Math.max(0, Math.min(radar.display, visState.mapTasks));
+    visState.storedTasks = Math.max(0, Math.min(radar.storage, visState.storedTasks));
+    syncTaskInputsFromState(radar);
+
+    const preBtn = document.getElementById('visBtnPreBank');
+    const safeBtn = document.getElementById('visBtnSafeFull');
+    if (preBtn) preBtn.textContent = `Pre-Bank (${reqSaveTonight})`;
+    if (safeBtn) safeBtn.textContent = `Safe Max (${radar.safeBank})`;
+    renderRestoreVisualizer();
+  }
+
+  function renderRestoreVisualizer() {
+    const radar = lastVisContext.radar || getRadarProfile();
+    const now = new Date();
+
+    // Sync initial clock input if empty
+    if (visNextRestoreTimeEl && !visNextRestoreTimeEl.value) {
+      syncCountdownInputsFromState();
+      syncClockInputFromState(now);
+    }
+
+    // Update live clocks
+    const activeTz = getActiveTimeZone();
+    const tzAbbr = getTzShortLabel(activeTz, now);
+    const localNowLbl = document.getElementById('visLocalNowLbl');
+    const localClockEl = document.getElementById('visLocalNowClock');
+    const svtClockEl = document.getElementById('visServerNowClock');
+    if (localNowLbl) localNowLbl.textContent = tzAbbr ? `Now (${tzAbbr})` : 'Local Now';
+    if (localClockEl) localClockEl.textContent = formatLocalTime(now);
+    if (svtClockEl) svtClockEl.textContent = formatServerTime(now);
+
+    const curTasks = Math.max(0, visState.mapTasks + visState.storedTasks);
+
+    // Update labels & badges
+    const capBadge = document.getElementById('visCapBadge');
+    const regenBadge = document.getElementById('visRegenPerCycleBadge');
+    const mapCapLbl = document.getElementById('visMapCapLbl');
+    const storedCapLbl = document.getElementById('visStoredCapLbl');
+    if (capBadge) capBadge.textContent = `${curTasks} / ${radar.totalCap} Total`;
+    if (regenBadge) regenBadge.textContent = `+${radar.refresh} / 6h`;
+    if (mapCapLbl) mapCapLbl.textContent = `/ ${radar.display} Visible`;
+    if (storedCapLbl) storedCapLbl.textContent = `/ ${radar.storage} Stored`;
+
+    // Next restore time & day badge
+    const firstRestoreDate = new Date(now.getTime() + visState.countdownMins * 60000);
+    const isTomorrow = getDatePartsInTz(firstRestoreDate, activeTz).dateKey !== getDatePartsInTz(now, activeTz).dateKey;
+    const dayBadge = document.getElementById('visNextRestoreDayBadge');
+    const svtNote = document.getElementById('visNextRestoreSvtNote');
+    if (dayBadge) {
+      dayBadge.textContent = visState.countdownMins > 360
+        ? `${isTomorrow ? 'Tomorrow' : 'Today'} (⚠️ >6h)`
+        : (isTomorrow ? 'Tomorrow' : 'Today');
+      dayBadge.style.color = visState.countdownMins > 360 ? 'var(--red-color)' : 'var(--gold-color)';
+    }
+    if (svtNote) {
+      svtNote.textContent = `Server: ${formatServerTime(firstRestoreDate)} • in ${formatDuration(visState.countdownMins)}`;
+    }
+
+    // Simulate next 4 restore points (every 6h = 360m)
+    const horizonMins = Math.max(1440, visState.countdownMins + 3 * 360 + 60);
+    const restores = [];
+    let runningTasks = curTasks;
+    let totalWasted = 0;
+    let firstOverflow = null;
+    let firstCapHit = null;
+
+    for (let i = 0; i < 4; i++) {
+      const offsetMins = visState.countdownMins + i * 360;
+      const restoreDate = new Date(now.getTime() + offsetMins * 60000);
+      const before = runningTasks;
+      const rawAfter = before + radar.refresh;
+      const clampedAfter = Math.min(radar.totalCap, rawAfter);
+      const wasted = Math.max(0, rawAfter - radar.totalCap);
+      totalWasted += wasted;
+      runningTasks = clampedAfter;
+
+      let status = 'safe';
+      if (wasted > 0) {
+        status = 'danger';
+        if (!firstOverflow) firstOverflow = { index: i + 1, date: restoreDate, offsetMins, wasted, rawAfter };
+      } else if (clampedAfter >= radar.totalCap) {
+        status = 'danger';
+        if (!firstCapHit) firstCapHit = { index: i + 1, date: restoreDate, offsetMins };
+      } else if (clampedAfter === radar.safeBank) {
+        status = 'warn';
+      }
+
+      restores.push({
+        index: i + 1,
+        offsetMins,
+        date: restoreDate,
+        before,
+        rawAfter,
+        after: clampedAfter,
+        wasted,
+        status,
+        split: formatBankSplit(clampedAfter, radar.display, radar.storage)
+      });
+    }
+
+    // Compute Server Reset (00:00 SVT = 02:00 UTC) and Through-Reset Safe Bank (n-1)
+    const nowSvtForReset = new Date(now.getTime() - 2 * 3600 * 1000);
+    const nextResetMs = Date.UTC(nowSvtForReset.getUTCFullYear(), nowSvtForReset.getUTCMonth(), nowSvtForReset.getUTCDate() + 1, 0, 0, 0) + 2 * 3600 * 1000;
+    const resetDateObj = new Date(nextResetMs);
+    const restoresBeforeReset = restores.filter(r => r.date.getTime() < nextResetMs);
+    const countBeforeReset = restoresBeforeReset.length;
+    const regenBeforeReset = countBeforeReset * radar.refresh;
+    const rawAtReset = curTasks + regenBeforeReset;
+    const spendThroughReset = Math.max(0, rawAtReset - radar.safeBank);
+    const wastedBeforeReset = restoresBeforeReset.reduce((sum, r) => sum + r.wasted, 0);
+
+    // Populate Through-Reset & Full-24h Target Boxes
+    const resetTargetBox = document.getElementById('visResetTargetBox');
+    const resetTargetTime = document.getElementById('visResetTargetTime');
+    const resetTargetMain = document.getElementById('visResetTargetMain');
+    const resetTargetSub = document.getElementById('visResetTargetSub');
+    if (resetTargetBox && resetTargetTime && resetTargetMain && resetTargetSub) {
+      resetTargetTime.textContent = `${formatLocalTime(resetDateObj)} (00:00 SVT)`;
+      if (spendThroughReset > 0) {
+        resetTargetBox.className = `vis-target-box ${wastedBeforeReset > 0 ? 'danger' : 'warn'}`;
+        resetTargetMain.style.color = wastedBeforeReset > 0 ? 'var(--red-color)' : 'var(--gold-color)';
+        resetTargetMain.textContent = `Spend ${spendThroughReset}+ tasks before reset`;
+        resetTargetSub.textContent = `${countBeforeReset} restore${countBeforeReset === 1 ? '' : 's'} (+${regenBeforeReset}) before reset ➔ ${rawAtReset} raw; spending ${spendThroughReset} lands at ${radar.safeBank} (n−1).`;
+      } else {
+        const headroomReset = radar.safeBank - rawAtReset;
+        resetTargetBox.className = 'vis-target-box safe';
+        resetTargetMain.style.color = 'var(--green-color)';
+        resetTargetMain.textContent = `Safe: 0 spend needed (${rawAtReset}/${radar.totalCap} at reset)`;
+        resetTargetSub.textContent = `${countBeforeReset} restore${countBeforeReset === 1 ? '' : 's'} (+${regenBeforeReset}) before reset • ${headroomReset} below ${radar.safeBank} (n−1).`;
+      }
+    }
+
+    const raw24h = curTasks + 4 * radar.refresh;
+    const spend24h = Math.max(0, raw24h - radar.safeBank);
+    const box24h = document.getElementById('vis24hTargetBox');
+    const regen24hEl = document.getElementById('vis24hTargetRegen');
+    const main24h = document.getElementById('vis24hTargetMain');
+    const sub24h = document.getElementById('vis24hTargetSub');
+    if (box24h && regen24hEl && main24h && sub24h) {
+      regen24hEl.textContent = `+${4 * radar.refresh} tasks`;
+      if (spend24h > 0) {
+        box24h.className = `vis-target-box ${totalWasted > 0 ? 'danger' : 'warn'}`;
+        main24h.style.color = totalWasted > 0 ? 'var(--red-color)' : 'var(--gold-color)';
+        main24h.textContent = `Spend ${spend24h}+ tasks over 24h`;
+        sub24h.textContent = `4 restores (+${4 * radar.refresh}) ➔ ${raw24h} raw; spending ${spend24h} keeps you at ${radar.safeBank} (n−1).`;
+      } else {
+        const headroom24h = radar.safeBank - raw24h;
+        box24h.className = 'vis-target-box safe';
+        main24h.style.color = 'var(--green-color)';
+        main24h.textContent = `Safe: 0 spend needed (${raw24h}/${radar.totalCap} in 24h)`;
+        sub24h.textContent = `4 restores (+${4 * radar.refresh}) • ${headroom24h} below ${radar.safeBank} (n−1).`;
+      }
+    }
+
+    // Verdict Banner (Concise Status Alert only — no duplication with boxes below)
+    const verdictBanner = document.getElementById('visVerdictBanner');
+    const verdictText = document.getElementById('visVerdictText');
+
+    if (verdictBanner && verdictText) {
+      if (firstOverflow) {
+        verdictBanner.className = 'vis-verdict-banner danger';
+        verdictText.innerHTML = `🚨 <strong>Overflow Warning:</strong> Hits ${radar.totalCap}/${radar.totalCap} at Restore #${firstOverflow.index} (${formatLocalTime(firstOverflow.date)} / ${formatServerTime(firstOverflow.date)}) — <strong>${totalWasted} task${totalWasted === 1 ? '' : 's'} lost</strong> over 24h.`;
+      } else if (firstCapHit) {
+        verdictBanner.className = 'vis-verdict-banner warn';
+        verdictText.innerHTML = `⚠️ <strong>Full Cap Hit:</strong> Reaches ${radar.totalCap}/${radar.totalCap} at Restore #${firstCapHit.index} (${formatLocalTime(firstCapHit.date)} / ${formatServerTime(firstCapHit.date)}) — 6h cooldown timer freezes until you spend.`;
+      } else {
+        const finalTasks = restores[restores.length - 1].after;
+        verdictBanner.className = 'vis-verdict-banner safe';
+        verdictText.innerHTML = `✅ <strong>No Overflow for Next 24h:</strong> Peaks at <strong>${finalTasks}/${radar.totalCap}</strong> (${restores[3].split.storedTasks}/${radar.storage} Stored + ${restores[3].split.mapTasks} Map).`;
+      }
+    }
+
+    // Build Horizontal Timeline Axes & Segments
+    const axisTop = document.getElementById('visAxisTop');
+    const axisBottom = document.getElementById('visAxisBottom');
+    const trackArea = document.getElementById('visTrackArea');
+    const timelineBar = document.getElementById('visTimelineBar');
+
+    if (axisTop && axisBottom && trackArea && timelineBar) {
+      // Clear previous dynamic nodes & reset line
+      trackArea.querySelectorAll('.timeline-node, .timeline-svt-reset-line').forEach(el => el.remove());
+
+      // Top & Bottom Axis ticks (0%, 25%, 50%, 75%, 100%)
+      axisTop.innerHTML = '';
+      axisBottom.innerHTML = '';
+      [0, 0.25, 0.5, 0.75, 1].forEach((frac, idx) => {
+        const tickDate = new Date(now.getTime() + frac * horizonMins * 60000);
+        const cls = idx === 0 ? 'start' : (idx === 4 ? 'end' : '');
+        const leftPct = (frac * 100).toFixed(2);
+
+        const topTick = document.createElement('span');
+        topTick.className = `timeline-axis-tick ${cls}`;
+        topTick.style.left = `${leftPct}%`;
+        topTick.textContent = idx === 0 ? `Now (${formatLocalTime(tickDate)})` : formatLocalTime(tickDate);
+        axisTop.appendChild(topTick);
+
+        const botTick = document.createElement('span');
+        botTick.className = `timeline-axis-tick ${cls}`;
+        botTick.style.left = `${leftPct}%`;
+        botTick.textContent = formatServerTime(tickDate);
+        axisBottom.appendChild(botTick);
+      });
+
+      // Proportional Interval Segments
+      timelineBar.innerHTML = '';
+      const boundaries = [0, ...restores.map(r => r.offsetMins), horizonMins];
+      const intervalCounts = [curTasks, ...restores.map(r => r.after)];
+
+      for (let i = 0; i < boundaries.length - 1; i++) {
+        const spanMins = Math.max(0, boundaries[i + 1] - boundaries[i]);
+        const widthPct = (spanMins / horizonMins) * 100;
+        const count = intervalCounts[i];
+
+        const seg = document.createElement('div');
+        let segCls = 'seg-safe';
+        if (count >= radar.totalCap) segCls = 'seg-full';
+        else if (count === radar.safeBank) segCls = 'seg-optimal';
+
+        seg.className = `timeline-seg ${segCls}`;
+        seg.style.width = `${widthPct.toFixed(3)}%`;
+        if (widthPct >= 8) {
+          seg.textContent = count >= radar.totalCap ? `${count}/${radar.totalCap} FULL` : `${count}/${radar.totalCap}`;
+        }
+        seg.title = `${count}/${radar.totalCap} tasks during this window`;
+        timelineBar.appendChild(seg);
+      }
+
+      // Server Reset (00:00 SVT = 02:00 UTC) Marker & Today vs Tomorrow Band
+      const nowSvt = new Date(now.getTime() - 2 * 3600 * 1000);
+      const nextResetUtcMs = Date.UTC(nowSvt.getUTCFullYear(), nowSvt.getUTCMonth(), nowSvt.getUTCDate() + 1, 0, 0, 0) + 2 * 3600 * 1000;
+      const resetOffsetMins = (nextResetUtcMs - now.getTime()) / 60000;
+      const resetPct = Math.min(100, Math.max(0, (resetOffsetMins / horizonMins) * 100));
+
+      const daysBand = document.getElementById('visDaysBand');
+      if (daysBand) {
+        daysBand.innerHTML = '';
+        if (resetPct > 0 && resetPct < 100) {
+          const todayHalf = document.createElement('div');
+          todayHalf.className = 'timeline-day-half today';
+          todayHalf.style.width = `${resetPct.toFixed(2)}%`;
+          todayHalf.textContent = resetPct >= 14 ? '◀ TODAY (Server Day)' : '◀ TODAY';
+
+          const tomorrowHalf = document.createElement('div');
+          tomorrowHalf.className = 'timeline-day-half tomorrow';
+          tomorrowHalf.style.width = `${(100 - resetPct).toFixed(2)}%`;
+          tomorrowHalf.textContent = (100 - resetPct) >= 16 ? 'TOMORROW (Next Server Day) ▶' : 'TOMORROW ▶';
+
+          daysBand.appendChild(todayHalf);
+          daysBand.appendChild(tomorrowHalf);
+        } else {
+          const singleHalf = document.createElement('div');
+          singleHalf.className = 'timeline-day-half today full-width';
+          singleHalf.style.width = '100%';
+          singleHalf.textContent = 'TODAY (Current Server Day)';
+          daysBand.appendChild(singleHalf);
+        }
+      }
+
+      const resetRow = document.getElementById('visResetRow');
+      if (resetRow) resetRow.innerHTML = '';
+
+      if (resetOffsetMins >= 0 && resetOffsetMins <= horizonMins) {
+        const resetLine = document.createElement('div');
+        resetLine.className = 'timeline-svt-reset-line';
+        resetLine.style.left = `${resetPct.toFixed(2)}%`;
+        trackArea.appendChild(resetLine);
+
+        if (resetRow) {
+          resetRow.style.display = 'block';
+          const tag = document.createElement('span');
+          tag.className = 'timeline-svt-reset-tag';
+          tag.style.left = `${resetPct.toFixed(2)}%`;
+          if (resetPct < 12) tag.style.transform = 'translateX(0)';
+          else if (resetPct > 88) tag.style.transform = 'translateX(-100%)';
+          tag.textContent = `▲ RESET 00:00 SVT (${formatLocalTime(new Date(nextResetUtcMs))})`;
+          resetRow.appendChild(tag);
+        }
+      } else if (resetRow) {
+        resetRow.style.display = 'none';
+      }
+
+      // Restore Point Nodes
+      restores.forEach(r => {
+        const leftPct = Math.min(98, Math.max(2, (r.offsetMins / horizonMins) * 100));
+        const node = document.createElement('div');
+        node.className = 'timeline-node';
+        node.style.left = `${leftPct.toFixed(2)}%`;
+
+        const badge = document.createElement('span');
+        badge.className = `timeline-node-badge ${r.status}`;
+        badge.textContent = r.wasted > 0
+          ? `+${radar.refresh} (-${r.wasted} lost!)`
+          : `+${radar.refresh} → ${r.after}`;
+
+        const dot = document.createElement('div');
+        dot.className = `timeline-node-dot ${r.status}`;
+
+        const timeLbl = document.createElement('span');
+        timeLbl.className = 'timeline-node-time';
+        timeLbl.textContent = formatLocalTime(r.date);
+
+        node.appendChild(badge);
+        node.appendChild(dot);
+        node.appendChild(timeLbl);
+        trackArea.appendChild(node);
+      });
+    }
+
+    // 4-Cycle Breakdown Cards
+    const scheduleGrid = document.getElementById('visRestoreScheduleGrid');
+    if (scheduleGrid) {
+      scheduleGrid.innerHTML = '';
+      const nowSvtForCards = new Date(now.getTime() - 2 * 3600 * 1000);
+      const resetMsForCards = Date.UTC(nowSvtForCards.getUTCFullYear(), nowSvtForCards.getUTCMonth(), nowSvtForCards.getUTCDate() + 1, 0, 0, 0) + 2 * 3600 * 1000;
+
+      restores.forEach(r => {
+        const card = document.createElement('div');
+        card.className = `restore-step-card ${r.status === 'danger' ? 'danger' : (r.status === 'warn' ? 'warn' : '')}`;
+
+        const isAfterReset = r.date.getTime() >= resetMsForCards;
+        const serverDayTag = isAfterReset
+          ? `<span style="color:var(--gold-color); font-weight:800;">Tomorrow</span>`
+          : `<span style="color:var(--cyan-color); font-weight:800;">Today</span>`;
+
+        let pillHtml = '';
+        if (r.wasted > 0) {
+          pillHtml = `<span class="pill pill-red">🚨 OVERFLOW (−${r.wasted} lost)</span>`;
+        } else if (r.after >= radar.totalCap) {
+          pillHtml = `<span class="pill pill-red">⚠️ Cap Hit (Frozen)</span>`;
+        } else if (r.after === radar.safeBank) {
+          pillHtml = `<span class="pill pill-gold">🛡️ Full Safe Bank</span>`;
+        } else {
+          pillHtml = `<span class="pill pill-green">✓ Safe (${radar.totalCap - r.after} room)</span>`;
+        }
+
+        const countColor = r.status === 'danger'
+          ? 'var(--red-color)'
+          : (r.status === 'warn' ? 'var(--gold-color)' : 'var(--cyan-color)');
+
+        card.innerHTML = `
+          <div class="restore-step-top">
+            <span>Restore #${r.index} · ${serverDayTag}</span>
+            <span>in ${formatDuration(r.offsetMins)}</span>
+          </div>
+          <div class="restore-step-times">${formatLocalTime(r.date)}</div>
+          <div class="restore-step-svt">${formatServerTime(r.date)}</div>
+          <div class="restore-step-count" style="color:${countColor};">
+            ${r.before} ➔ ${r.after} / ${radar.totalCap}
+          </div>
+          <div style="font-size:0.72rem; color:var(--text-muted); font-family:var(--font-mono);">
+            ${r.split.storedTasks}/${radar.storage} Stored + ${r.split.mapTasks} Map
+          </div>
+          <div style="margin-top:2px;">${pillHtml}</div>
+        `;
+        scheduleGrid.appendChild(card);
+      });
+    }
+  }
+
+  // Keep live clocks fresh every 30s
+  setInterval(() => {
+    if (radarLevelSelect.value) renderRestoreVisualizer();
+  }, 30000);
+
   // Initial Load & Apply Theme
   applyTheme();
+  loadBankingSettings();
   updateCalculator();
 </script>
 
