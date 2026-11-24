@@ -346,6 +346,12 @@
     .badge.warn { background: var(--warn-bg); color: var(--warn); }
     .badge.bad { background: var(--bad-bg); color: var(--bad); }
 
+    .bh-jammer-badge {
+      display: inline-block;
+      margin-top: 0.25rem;
+      white-space: normal;
+    }
+
     progress {
       inline-size: 100%;
       block-size: 0.55rem;
@@ -922,6 +928,46 @@
       return Math.min(maxVal, Math.max(0, val));
     }
 
+    const BH_JAMMER_RISK = {
+      '1000-1': { tier: 'warn', pct: 54.0, drift: -1.0, note: '~1.5 zones / ~8 Normals cleared when out' },
+      '1000-2': { tier: 'ok', pct: 0.03, drift: 15.8 },
+      '1000-3': { tier: 'ok', pct: 0.0, drift: 32.5 },
+      '1800-2': { tier: 'warn', pct: 74.3, drift: -4.4, note: '~2.7 zones / ~13 Normals cleared when out' },
+      '1800-3': { tier: 'ok', pct: 2.3, drift: 12.3 },
+      '1800-4': { tier: 'ok', pct: 0.0, drift: 29.0 },
+      '1800-5': { tier: 'ok', pct: 0.0, drift: 45.7 },
+      '3000-2': { tier: 'bad', pct: 100.0, drift: -34.7, note: '~13 zones / ~65 Normals cleared' },
+      '3000-3': { tier: 'bad', pct: 98.8, drift: -18.0, note: '~7 zones / ~35 Normals cleared' },
+      '3000-4': { tier: 'warn', pct: 53.7, drift: -1.3, note: '~2.8 zones / ~14 Normals cleared when out' },
+      '3000-5': { tier: 'ok', pct: 3.0, drift: 15.4 },
+      '3000-6': { tier: 'ok', pct: 0.01, drift: 32.1 },
+      '3000-7': { tier: 'ok', pct: 0.0, drift: 48.8 },
+      '3000-8': { tier: 'ok', pct: 0.0, drift: 65.6 },
+      '3000-9': { tier: 'ok', pct: 0.0, drift: 82.3 },
+      '5000-4': { tier: 'bad', pct: 100.0, drift: -51.8, note: '~19 zones / ~97 Normals cleared' },
+      '5000-5': { tier: 'bad', pct: 100.0, drift: -35.1, note: '~13 zones / ~66 Normals cleared' },
+      '5000-6': { tier: 'bad', pct: 95.6, drift: -18.4, note: '~7 zones / ~36 Normals cleared' },
+      '5000-7': { tier: 'warn', pct: 54.1, drift: -1.6, note: '~3.6 zones / ~18 Normals cleared when out' },
+      '5000-8': { tier: 'ok', pct: 7.8, drift: 15.1 },
+      '5000-9': { tier: 'ok', pct: 0.21, drift: 31.8 },
+      '5000-10': { tier: 'ok', pct: 0.0, drift: 48.5 },
+      '5000-11': { tier: 'ok', pct: 0.0, drift: 65.2 }
+    };
+
+    function getBhJammerRisk(target, n) {
+      return BH_JAMMER_RISK[`${target}-${n}`] || { tier: 'ok', pct: 0, drift: 0, note: '' };
+    }
+
+    function formatBhJammerBadge(risk) {
+      if (risk.tier === 'bad') {
+        return `<span class="badge bad bh-jammer-badge">🔴 Jammer Deficit: ${Math.round(risk.pct)}% run-out (${risk.note})</span>`;
+      }
+      if (risk.tier === 'warn') {
+        return `<span class="badge warn bh-jammer-badge">🟡 Tight Jammers: ${Math.round(risk.pct)}% run-out (${risk.note})</span>`;
+      }
+      return `<span class="badge ok bh-jammer-badge">🟢 Jammers Safe: +${risk.drift.toFixed(1)}/cycle (${risk.pct}% risk)</span>`;
+    }
+
     function populateBhCycles(preferredCycle) {
       const targetVal = els.bhTarget.value;
       els.bhCycle.innerHTML = '';
@@ -952,11 +998,15 @@
           t2 = Math.ceil((needed - maxT1 * 80) / 100);
         }
         const cost = t1 * 5000 + t2 * 10000;
+        const risk = getBhJammerRisk(target, n);
+        const flagTxt = risk.tier === 'bad'
+          ? ` ⛔ ${Math.round(risk.pct)}% Jammer deficit`
+          : (risk.tier === 'warn' ? ` ⚠️ ~${Math.round(risk.pct)}% Jammer out` : '');
         const opt = document.createElement('option');
         opt.value = String(n);
-        opt.textContent = n === 1
+        opt.textContent = (n === 1
           ? `Every event (4 wks) — ${fmt(cost)}/event`
-          : `${n} events (${n * 4} wks) — ${fmt(cost / n)}/event`;
+          : `${n} events (${n * 4} wks) — ${fmt(cost / n)}/event`) + flagTxt;
         els.bhCycle.appendChild(opt);
       }
       if (preferredCycle !== undefined && preferredCycle !== '' && preferredCycle !== null) {
@@ -1074,9 +1124,10 @@
       const bhPlan = bhActive
         ? buildBhPlan(bhTarget, bhCycle)
         : { t1Total: 0, t2Total: 0, totalCost: 0, avgCost: 0, avgSbPacks: 0, t1PerEv: [0], t2PerEv: [0] };
-      els.bhSummaryHint.textContent = bhActive
-        ? `${bhPlan.t1Total} × 5k${bhPlan.t2Total > 0 ? ` + ${bhPlan.t2Total} × 10k` : ''} packs/cycle (${fmt(bhPlan.totalCost)} total)`
-        : 'Choose a milestone & cycle length';
+      const bhRisk = bhActive ? getBhJammerRisk(bhTarget, bhCycle) : null;
+      els.bhSummaryHint.innerHTML = bhActive
+        ? `${bhPlan.t1Total} × 5k${bhPlan.t2Total > 0 ? ` + ${bhPlan.t2Total} × 10k` : ''} packs/cycle (${fmt(bhPlan.totalCost)} total)<br>${formatBhJammerBadge(bhRisk)}`
+        : 'Choose a milestone &amp; cycle length';
 
       const gmMode = els.gmMode.value;
       const gmHints = {
@@ -1397,13 +1448,20 @@
           const lux = ((n - 1) + (target >= 300 ? 1 : 0) + (target >= 1800 ? 3 : 0) + (target >= 5000 ? 5 : 0)) / n;
           const deco = ((target >= 1000 ? 2 : 0) + (target >= 3000 ? 4 : 0)) / n;
           const t2Pen = ((plan.t2Total * 10000) / n) * 0.00025;
-          const score = lux * 22 + deco * 20 - t2Pen;
+          const risk = getBhJammerRisk(target, n);
+          const jammerPen = risk.tier === 'bad' ? 55 : (risk.tier === 'warn' ? 6 : 0);
+          const score = lux * 22 + deco * 20 - t2Pen - jammerPen;
+          const riskBadge = risk.tier === 'bad'
+            ? `<span class="badge bad bh-jammer-badge">🔴 Deficit (${Math.round(risk.pct)}%)</span>`
+            : (risk.tier === 'warn'
+              ? `<span class="badge warn bh-jammer-badge">🟡 Tight (${Math.round(risk.pct)}%)</span>`
+              : `<span class="badge ok bh-jammer-badge">🟢 Safe (${risk.pct}%)</span>`);
           bhChoices.push({
             target, n,
             spend: plan.avgCost,
             sb: plan.avgSbPacks,
             score,
-            label: `${fmt(target)} / ${n === 1 ? '1 event' : `${n} events`}<br><span class="hint">(${fmt(plan.avgCost)})</span>`
+            label: `${fmt(target)} / ${n === 1 ? '1 event' : `${n} events`}<br><span class="hint">(${fmt(plan.avgCost)})</span><br>${riskBadge}`
           });
         }
       }
@@ -1556,6 +1614,12 @@
           whatList.push(`Buy ${t1List} × 5k${t2Note} silver brick packs`);
         } else {
           whatList.push('Buy 0 silver brick packs');
+        }
+        const bhRisk = getBhJammerRisk(bhTarget, bhCycle);
+        if (bhRisk.tier === 'bad') {
+          whatList.push(`<span class="badge bad">🔴 Jammer Deficit (${bhRisk.pct}% risk)</span> Expect to clear ${bhRisk.note} after running out of Jammers`);
+        } else if (bhRisk.tier === 'warn') {
+          whatList.push(`<span class="badge warn">🟡 Tight Jammers (${bhRisk.pct}% risk)</span> If out of Jammers, full-clear ${bhRisk.note}`);
         }
         const rewardsList = bhCycle > 1
           ? [
